@@ -47,11 +47,38 @@ def card(c, art, state='ready', t=0.0):
         d.rectangle([x0 + 3, 84, x0 + 14, 85], fill=(48, 48, 70, 255)); d.rectangle([x0 + 3, 84, x0 + 3 + int(11 * val / 100), 85], fill=col + (255,))
     arr = np.array(im)
     if state == 'cooldown':
-        arr[..., :3] = (arr[..., :3] * 0.42).astype(np.uint8); ov = Image.fromarray(arr, 'RGBA'); od = ImageDraw.Draw(ov)
-        cx, cy = CWD // 2, 36; od.pieslice([cx - 14, cy - 14, cx + 14, cy + 14], -90, -90 + 360 * (1 - t), fill=(8, 8, 20, 200)); od.ellipse([cx - 14, cy - 14, cx + 14, cy + 14], outline=(200, 205, 230, 255)); im = ov
+        arr[..., :3] = (arr[..., :3] * 0.45).astype(np.uint8); im = Image.fromarray(arr, 'RGBA').copy(); _stopwatch(im, c, t)
     elif state == 'unavailable':
         arr[..., :3] = (arr[..., :3] * 0.3).astype(np.uint8); im = Image.fromarray(arr, 'RGBA')
     return im
+
+def _stopwatch(im, c, t, cx=32, cy=37, R=14):
+    """cooldown overlay: a stopwatch in the art window. t = fraction of the cooldown already served (0 just used, 1 ready).
+    The lit wedge is the time still to go; the number inside is the seconds left."""
+    left = max(0.0, 1.0 - t); secs = int(math.ceil(c['cd'] * left - 1e-9)); px = im.load()
+    ring, face, wedge, ink = (226, 232, 250, 255), (12, 14, 30, 255), (44, 92, 168, 255), INK_ + (255,)
+    for y in range(cy - R - 2, cy + R + 3):
+        for x in range(cx - R - 2, cx + R + 3):
+            dx, dy = x - cx + 0.0, y - cy + 0.0; r = math.hypot(dx, dy)
+            if r > R + 1.2: continue
+            if r > R: px[x, y] = ink
+            elif r > R - 2: px[x, y] = ring
+            else:
+                ang = (math.atan2(dx, -dy)) % (2 * math.pi)
+                px[x, y] = wedge if ang <= 2 * math.pi * left else face
+    for k in range(4):                                         # ticks at 12, 3, 6, 9
+        a = k * math.pi / 2; x, y = cx + round(math.sin(a) * (R - 3)), cy - round(math.cos(a) * (R - 3)); px[x, y] = ring
+    if 0 < left < 1:                                           # the hand
+        a = 2 * math.pi * left
+        for i in range(8, R - 2):
+            x, y = cx + round(math.sin(a) * i), cy - round(math.cos(a) * i); px[x, y] = (255, 214, 90, 255)
+    d = ImageDraw.Draw(im)
+    d.rectangle([cx - 3, cy - R - 5, cx + 3, cy - R - 2], fill=ink); d.rectangle([cx - 2, cy - R - 4, cx + 2, cy - R - 3], fill=ring)       # crown
+    d.rectangle([cx - 1, cy - R - 2, cx + 1, cy - R - 1], fill=ring)
+    for (x, y) in ((cx + R - 3, cy - R + 3), (cx + R - 2, cy - R + 4)): d.point((x, y), ring)                                               # side button
+    s = str(secs); t_ = Image.new('RGBA', (text_w(s) + 1, 6), (0, 0, 0, 0)); draw_text(t_, 0, 0, s, (255, 255, 255, 255)); t2 = t_.resize((t_.width * 2, t_.height * 2), Image.NEAREST)
+    im.alpha_composite(t2, (cx - (text_w(s) * 2) // 2, cy - 5))
+
 
 # ------------------------------------------------------------------ emblem recipes
 P_ = CAT

@@ -66,6 +66,7 @@ class CardsTab(ttk.Frame):
         r = ttk.Frame(side); r.pack(fill='x', pady=3)
         ttk.Combobox(r, values=['ready', 'cooldown', 'unavailable'], textvariable=self.state, state='readonly', width=11).pack(side='left')
         self.state.trace_add('write', lambda *_: self.draw())
+        ttk.Label(r, text='served').pack(side='left', padx=(6, 0))
         ttk.Scale(r, from_=0, to=1, variable=self.cool, command=lambda e: self.draw()).pack(side='left', fill='x', expand=True, padx=4)
         self.tip = tk.Canvas(side, width=300, height=190, bg='#1e1f2a', highlightthickness=0); self.tip.pack(pady=2)
         ttk.Button(side, text='Preview a hand of 8', command=self.hand).pack(fill='x', pady=2)
