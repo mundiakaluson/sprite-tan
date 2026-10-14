@@ -15,11 +15,15 @@ summarised in docs/DECISIONS.md.
 - Pitch coordinates: x 0-100 left to right, y 0-100 own goal to opponent goal.
 - Roles: GK, CB, LB, RB, CDM, CM, CAM, LW, RW, ST. Outfield stats PAC SHO PAS DRI DEF PHY, keeper stats REF HAN POS.
 
+## Card design (decided)
+Use the cards/cardlib2.py face: slot number, category, illustrated emblem, name plate, success / risk / cooldown. No effect text on the card;
+the description shows in the hover tooltip (cardlib2.popup). Emblems drawn so far: SH01-SH30 only.
+
 ## Tool status
 Manager tool in tool/ is built (see README). Run `python tool/selftest.py` after changes. Custom animations live in data/animations/*.json and are
 registered into sprites/gen_uv.py via sprites/custom_anims.py.
 
 ## Next up
 1. Tool follow-ups: hair-style and kit editors, pack-odds simulator, Windows test pass, palette-swap shader for indexed export.
-2. Card emblems for all 200 cards.
+2. Illustrated emblems for the other 170 cards (cards/cardlib2.py EMB recipes), then player cards.
 3. Godot skeleton loading the CSVs.

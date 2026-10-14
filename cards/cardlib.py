@@ -1,5 +1,5 @@
-import sys, math, csv, random
-sys.path.insert(0, '/home/claude')
+import sys, os, math, csv, random
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'sprites'))
 import numpy as np
 from PIL import Image, ImageDraw
 import gen_uv as U

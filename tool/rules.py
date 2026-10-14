@@ -5,7 +5,7 @@ GK_STATS = ['REF', 'HAN', 'POS']
 RARITY = ['COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGEND']
 RARITY_COL = dict(COMMON='#9aa0ae', UNCOMMON='#4fb86a', RARE='#4a90e2', EPIC='#a85fd8', LEGEND='#f0b030')
 CARD_CATS = ['SHOT', 'PASS', 'DRIBBLE', 'DEFEND', 'SUPPORT', 'KEEPER', 'TITAN']
-CAT_COL = dict(SHOT='#e05a4a', PASS='#4aa0e0', DRIBBLE='#e0a030', DEFEND='#4a8a5a', SUPPORT='#9a6ad8', KEEPER='#3caa5a', TITAN='#d84a9a')
+CAT_COL = dict(SHOT='#de4c3e', PASS='#4284e2', DRIBBLE='#46b86c', SUPPORT='#ecc63c', DEFEND='#30b8b0', KEEPER='#9264dc', TITAN='#ffce46')
 TIMING = ['ENGAGEMENT', 'ANYTIME']
 KIND = ['ACTION', 'BUFF']
 BEARD = ['none', 'stubble', 'short', 'full']
