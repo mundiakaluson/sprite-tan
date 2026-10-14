@@ -7,3 +7,4 @@ __pycache__/
 sprites/out_actions/
 sprites/out_v2/
 *.bak
+export/

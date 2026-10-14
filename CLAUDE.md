@@ -25,5 +25,5 @@ registered into sprites/gen_uv.py via sprites/custom_anims.py.
 
 ## Next up
 1. Tool follow-ups: hair-style and kit editors, pack-odds simulator, Windows test pass, palette-swap shader for indexed export.
-2. Player cards.
+2. Player cards: done (tool/playercard.py, portrait.py, foil.py; special flag in players.csv). Next: hair-style polish, pack-odds simulator.
 3. Godot skeleton loading the CSVs.

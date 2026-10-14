@@ -2,7 +2,7 @@ import os, tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from PIL import Image, ImageTk
 import numpy as np
-import tables, looks
+import tables, looks, playercard, foil
 from rules import *
 
 EXPORT = os.path.join(tables.ROOT, 'export')
@@ -33,7 +33,15 @@ class PlayersTab(ttk.Frame):
                                 width_for=dict(name=150, roles=80), extra_buttons=[('Auto rating', self.auto_rating)])
         pw.add(self.grid, weight=3)
         side = ttk.Frame(pw, padding=6); pw.add(side, weight=1)
-        self.cv = tk.Canvas(side, width=300, height=260, bg='#46964a', highlightthickness=0); self.cv.pack()
+        self.nb = ttk.Notebook(side); self.nb.pack(fill='x')
+        self.cv = tk.Canvas(self.nb, width=340, height=280, bg='#46964a', highlightthickness=0); self.nb.add(self.cv, text='Sprite')
+        cf = ttk.Frame(self.nb); self.nb.add(cf, text='Card')
+        self.cc = tk.Canvas(cf, width=340, height=280, bg='#14161f', highlightthickness=0); self.cc.pack()
+        self.tip = tk.IntVar(value=1); self.shim = tk.IntVar(value=1)
+        cr = ttk.Frame(cf); cr.pack(fill='x')
+        ttk.Checkbutton(cr, text='tooltip', variable=self.tip).pack(side='left'); ttk.Checkbutton(cr, text='shimmer', variable=self.shim).pack(side='left', padx=6)
+        self.cstyle = ttk.Combobox(cr, values=['auto'] + list(playercard.STYLES), state='readonly', width=8); self.cstyle.set('auto'); self.cstyle.pack(side='left')
+        self.ct = 0; self._cache = {}
         row = ttk.Frame(side); row.pack(fill='x', pady=2)
         self.anim = ttk.Combobox(row, values=list(looks.anims()), state='readonly', width=9); self.anim.set('run'); self.anim.pack(side='left')
         self.kit = ttk.Combobox(row, values=['auto'] + looks.KITS, state='readonly', width=7); self.kit.set('auto'); self.kit.pack(side='left', padx=3)
@@ -61,6 +69,7 @@ class PlayersTab(ttk.Frame):
         eb = ttk.Frame(side); eb.pack(fill='x', pady=6)
         ttk.Button(eb, text='Export this look (PNG)', command=self.export_one).pack(fill='x')
         ttk.Button(eb, text='Export all 300 looks + index', command=self.export_all).pack(fill='x', pady=2)
+        ttk.Button(eb, text='Export card faces + tooltips (+ shimmer strips)', command=self.export_cards).pack(fill='x')
         self.t.listeners.append(self.reload_form)
         self.after(90, self.tick)
 
@@ -101,7 +110,9 @@ class PlayersTab(ttk.Frame):
     def tick(self):
         try:
             r = self.row()
-            if r and self.winfo_viewable():
+            if r and self.winfo_viewable() and self.nb.index(self.nb.select()) == 1:
+                self.draw_card(r)
+            elif r and self.winfo_viewable():
                 a = self.anim.get() or 'run'
                 n = looks.anims().get(a, {}).get('frames', 1); self.fr = (self.fr + 1) % max(1, n)
                 kit = None if self.kit.get() == 'auto' else self.kit.get()
@@ -110,6 +121,40 @@ class PlayersTab(ttk.Frame):
         except Exception as e:
             self.name.config(text=f'preview error: {e}')
         self.after(90, self.tick)
+
+    def draw_card(self, r):
+        kit = None if self.kit.get() == 'auto' else self.kit.get()
+        st = None if self.cstyle.get() == 'auto' else self.cstyle.get()
+        special = st or (foil.STYLE_BY_RARITY.get(r.get('rarity')) if r.get('special') == '1' else None)
+        N = 36
+        if special and self.shim.get(): self.ct = (self.ct + 1) % N
+        else: self.ct = 0
+        key = (tuple(sorted(r.items())), kit, special, self.ct)
+        im = self._cache.get(key)
+        if im is None:
+            if len(self._cache) > 200: self._cache.clear()
+            im = playercard.card(r, kit, special=special, t=self.ct / N).resize((192, 270), Image.NEAREST); self._cache[key] = im
+        self._cph = ImageTk.PhotoImage(im); self.cc.delete('all'); self.cc.create_image(4, 5, image=self._cph, anchor='nw')
+        if self.tip.get():
+            tp = playercard.popup(r, 142); self._tph = ImageTk.PhotoImage(tp); self.cc.create_image(196, 5, image=self._tph, anchor='nw')
+
+    def export_cards(self):
+        out = os.path.join(EXPORT, 'players'); os.makedirs(out, exist_ok=True)
+        idx = ['id,face,tooltip,special,shimmer_strip,shimmer_frames']
+        N = 36
+        for r in self.t.rows:
+            pid = r['id']
+            sp = r.get('special') == '1'
+            playercard.card(r, special=None).resize((256, 360), Image.NEAREST).save(os.path.join(out, f'{pid}.png'))
+            tp = playercard.popup(r); tp.resize((tp.width * 4, tp.height * 4), Image.NEAREST).save(os.path.join(out, f'{pid}_tip.png'))
+            strip = ''
+            if sp:
+                fr = [playercard.card(r, t=k / N) for k in range(N)]
+                sh = Image.new('RGBA', (64 * N, 90)); [sh.paste(f, (64 * k, 0)) for k, f in enumerate(fr)]
+                sh.save(os.path.join(out, f'{pid}_shimmer.png')); strip = f'players/{pid}_shimmer.png'
+            idx.append(f"{pid},players/{pid}.png,players/{pid}_tip.png,{1 if sp else 0},{strip},{N if sp else 0}")
+        open(os.path.join(EXPORT, 'players_cards_index.csv'), 'w').write('\n'.join(idx) + '\n')
+        messagebox.showinfo('Export', f'Wrote {len(self.t.rows)} player cards to {out}\n(special players also get a {N}-frame shimmer strip, 64x90 per frame; the shimmer is the first 30% of the loop)')
 
     def export_one(self):
         r = self.row()

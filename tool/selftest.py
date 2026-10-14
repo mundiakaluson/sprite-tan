@@ -11,4 +11,7 @@ assert max(abs(back[f][k] - poses[f][k]) for f in range(len(poses)) for k in pos
 r = validate.run(); errs = [x for x in r if x[0] == 'error']
 print('data checks:', len(errs), 'errors,', len(r) - len(errs), 'warnings')
 p = tables.table('players').rows[2]; assert looks.render(p, 'run', 0, 3).getbbox()
+import playercard
+for p in tables.table('players').rows[::25]: assert playercard.card(p).size == (64, 90) and playercard.card(p, special=True, t=0.1).size == (64, 90)
+assert playercard.popup(p).width > 0
 print('ok')
