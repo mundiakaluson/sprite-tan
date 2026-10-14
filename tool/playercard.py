@@ -3,6 +3,7 @@ the three stats that matter most for the role. Full stats go in the hover toolti
 import os, sys, textwrap
 import numpy as np
 from PIL import Image, ImageDraw
+import portrait as PT
 import looks  # noqa: F401  (adds sprites/ to the path)
 import tables
 from rules import *
@@ -39,8 +40,7 @@ def surname(name):
 
 def face(p, kit=None):
     """head and shoulders, facing the camera, big."""
-    im = looks.render(p, 'guard', 0, 0, kit, shadow=False)
-    return im.crop((13, 8, 27, 20)).resize((56, 48), Image.NEAREST)
+    return PT.portrait(p, kit or 'home').resize((PT.W * 2, PT.H * 2), Image.NEAREST)
 
 
 def _text2(im, x, y, s, col, k=2):
