@@ -103,11 +103,14 @@ def card(p, kit=None, state='ready', special=None, t=0.0):
         # outer frame: a colour wave runs around the card; a second line sits inside it
         per = [(x, 0) for x in range(2, CW - 2)] + [(CW - 1, y) for y in range(2, CH - 2)] + [(x, CH - 1) for x in range(CW - 3, 1, -1)] + [(0, y) for y in range(CH - 3, 1, -1)]
         for n, (x, y) in enumerate(per):
-            col = foil.edge_colour(special, n / len(per) * 2 - t)
+            col = foil.edge_colour(special, n / len(per) * 2)
             d.point((x, y), col + (255,))
             ix = 2 if x == 0 else CW - 3 if x == CW - 1 else x; iy = 2 if y == 0 else CH - 3 if y == CH - 1 else y
-            lit = 0.5 + 0.5 * math.sin(2 * math.pi * (n / len(per) * 3 - t * 2))
-            d.point((ix, iy), tuple(int(v * 0.5 + 255 * 0.5 * lit ** 3) for v in col) + (255,))
+            lit = 0.0
+            if t < foil.SHIM:     # one bright spot runs round the frame during the shimmer
+                dist = abs(n - t / foil.SHIM * len(per)); dist = min(dist, len(per) - dist); lit = max(0.0, 1 - dist / 9)
+            d.point((ix, iy), tuple(int(v * 0.55 + 255 * 0.45 * lit) for v in col) + (255,))
+            if lit > 0.3: d.point((x, y), tuple(int(v * (1 - lit * 0.7) + 255 * lit * 0.7) for v in col) + (255,))
         for (x, y) in ((2, 2), (CW - 3, 2), (2, CH - 3), (CW - 3, CH - 3)): _spark(d, x, y, (255, 255, 255, 255))
     # top left: rating (big) and role; top right: rarity
     _text2(im, 5, 5, str(p.get('rating', '')), (255, 255, 255, 255))

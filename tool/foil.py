@@ -35,11 +35,14 @@ def edge_colour(style, u):
     return tuple(int(min(255, v * 1.25 + 30)) for v in c)
 
 
+SHIM = 0.3     # the shimmer takes the first 30% of the loop; the rest of the time the card is still
+
+
 def background(style, t, cx=32, cy=28):
-    a = 2 * math.pi * t
+    a = 0.0 if t >= SHIM else 0.0
     d = np.hypot(X - cx, Y - cy)
     if style == 'rainbow':
-        h = (X * 0.011 + Y * 0.019 - t) % 1.0
+        h = (X * 0.011 + Y * 0.019) % 1.0
         h += 0.06 * np.sin(Y * 0.3 + a * 2)                       # wavy bands
         # posterise the hue to 12 steps so it reads as pixel art
         h = np.round(h * 12) / 12
@@ -60,24 +63,25 @@ def background(style, t, cx=32, cy=28):
         out = ramp(style, n)
         out *= (1 - 0.6 * np.clip((Y - 50) / 30, 0, 1))[..., None]
     # slow glare band sweeping across
-    pos = t * (W + H * 0.6 + 36) - 18
-    g = np.clip(1 - np.abs(X + Y * 0.6 - pos) / 4.5, 0, 1)
-    out = out + g[..., None] * 70
+    if t < SHIM:
+        pos = t / SHIM * (W + H * 0.6 + 36) - 18
+        g = np.clip(1 - np.abs(X + Y * 0.6 - pos) / 4.5, 0, 1)
+        out = out + g[..., None] * 60
     out = np.clip(out, 0, 255)
     # stars (twinkle) and, for galaxy, a shooting star
     rs = np.random.RandomState(11 if style == 'galaxy' else 5)
     n_st = 30 if style != 'rainbow' else 16
     for k in range(n_st):
         x, y = rs.randint(3, W - 3), rs.randint(3, 66); ph, kk = rs.rand(), 1 + k % 2
-        b = 0.5 + 0.5 * math.sin(2 * math.pi * (kk * t + ph))
-        if b < 0.25 and style != 'rainbow': continue
+        b0 = 0.3 + 0.35 * rs.rand(); pulse = max(0.0, 1 - abs(((t - ph) + 0.5) % 1 - 0.5) / 0.07) if k % 3 == 0 else 0.0
+        b = min(1.0, b0 + pulse)
         if 10 < y < 17 and x < 22: continue       # keep the rating readable
         col = np.array([255, 255, 255.]) if k % 3 else np.array([255, 240, 160.])
         out[y, x] = out[y, x] * (1 - b) + col * b
         if k % 6 == 0 and b > 0.7:
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)): out[y + dy, x + dx] = out[y + dy, x + dx] * 0.4 + col * 0.6
-    if style == 'galaxy' and 0.05 <= t < 0.35:
-        u = (t - 0.05) / 0.30
+    if style == 'galaxy' and 0.0 <= t < SHIM:
+        u = t / SHIM
         hx, hy = -6 + u * 84, 8 + u * 46
         for s in range(10):
             x, y = int(hx - s * 1.6), int(hy - s * 0.9)
