@@ -328,7 +328,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.78,
+    "y": 6.89,
+    "z": 2.5
+   }
   },
   "sh02_instep_drive": {
    "frames": 22,
@@ -361,7 +368,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.87,
+    "y": 6.6,
+    "z": 3.65
+   }
   },
   "sh03_finesse_curler": {
    "frames": 24,
@@ -396,7 +410,14 @@
     11.78,
     13.21
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 4.71,
+    "y": 7.89,
+    "z": 2.9
+   }
   },
   "sh04_trivela_bender": {
    "frames": 22,
@@ -429,7 +450,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 4.73,
+    "y": 4.72,
+    "z": 2.52
+   }
   },
   "sh05_chip_lob": {
    "frames": 22,
@@ -462,7 +490,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.27,
+    "y": 8.05,
+    "z": 1.52
+   }
   },
   "sh06_knuckleball": {
    "frames": 22,
@@ -495,7 +530,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.07,
+    "y": 6.44,
+    "z": 3.53
+   }
   },
   "sh07_power_blast": {
    "frames": 22,
@@ -528,7 +570,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.67,
+    "y": 6.79,
+    "z": 3.9
+   }
   },
   "sh08_volley": {
    "frames": 22,
@@ -561,7 +610,14 @@
     10.12,
     11.21
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 2.15,
+    "y": 15.72,
+    "z": 15.36
+   }
   },
   "sh09_half_volley": {
    "frames": 22,
@@ -594,7 +650,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.07,
+    "y": 7.81,
+    "z": 4.4
+   }
   },
   "sh10_diving_header": {
    "frames": 26,
@@ -631,7 +694,14 @@
     12.29,
     12.69
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "head",
+    "x": 0.29,
+    "y": 16.96,
+    "z": 44.64
+   }
   },
   "sh11_glancing_header": {
    "frames": 22,
@@ -664,7 +734,14 @@
     7.11,
     8.19
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "head",
+    "x": -1.59,
+    "y": 4.32,
+    "z": 52.29
+   }
   },
   "sh12_power_header": {
    "frames": 22,
@@ -697,7 +774,14 @@
     9.45,
     10.53
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "head",
+    "x": -0.22,
+    "y": 13.28,
+    "z": 48.47
+   }
   },
   "sh13_rabona_strike": {
    "frames": 22,
@@ -730,7 +814,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": -3.0,
+    "y": 5.76,
+    "z": 1.62
+   }
   },
   "sh14_toe_poke": {
    "frames": 22,
@@ -763,7 +854,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.27,
+    "y": 8.1,
+    "z": 2.3
+   }
   },
   "sh15_outside_flick": {
    "frames": 22,
@@ -796,7 +894,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 3.09,
+    "y": 6.81,
+    "z": 2.22
+   }
   },
   "sh16_low_skimmer": {
    "frames": 22,
@@ -829,7 +934,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.07,
+    "y": 6.9,
+    "z": 2.45
+   }
   },
   "sh17_far_post_bender": {
    "frames": 24,
@@ -864,7 +976,14 @@
     11.78,
     13.21
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 5.91,
+    "y": 7.89,
+    "z": 2.9
+   }
   },
   "sh18_near_post_lash": {
    "frames": 22,
@@ -897,7 +1016,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": -1.41,
+    "y": 6.1,
+    "z": 3.25
+   }
   },
   "sh19_dipping_drive": {
    "frames": 22,
@@ -930,7 +1056,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.87,
+    "y": 6.59,
+    "z": 4.36
+   }
   },
   "sh20_rising_drive": {
    "frames": 22,
@@ -963,7 +1096,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.87,
+    "y": 6.82,
+    "z": 2.16
+   }
   },
   "sh21_lofted_finesse": {
    "frames": 24,
@@ -998,7 +1138,14 @@
     11.78,
     13.21
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 4.71,
+    "y": 7.89,
+    "z": 4.4
+   }
   },
   "sh22_rocket_long_shot": {
    "frames": 22,
@@ -1031,7 +1178,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.67,
+    "y": 7.14,
+    "z": 4.13
+   }
   },
   "sh23_snap_shot": {
    "frames": 16,
@@ -1058,7 +1212,14 @@
     1.26,
     1.26
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 7,
+    "part": "boot_R",
+    "x": 2.0,
+    "y": 6.94,
+    "z": 2.59
+   }
   },
   "sh24_one_touch_finish": {
    "frames": 22,
@@ -1091,7 +1252,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.1,
+    "y": 9.64,
+    "z": 1.84
+   }
   },
   "sh25_cut_inside_shot": {
    "frames": 22,
@@ -1124,7 +1292,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 5.6,
+    "y": 6.3,
+    "z": 3.45
+   }
   },
   "sh26_shot_fake": {
    "frames": 30,
@@ -1198,7 +1373,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.36,
+    "y": 6.1,
+    "z": 3.25
+   }
   },
   "sh28_composure_finish": {
    "frames": 22,
@@ -1231,7 +1413,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.78,
+    "y": 6.89,
+    "z": 2.5
+   }
   },
   "sh29_lob_volley": {
    "frames": 22,
@@ -1264,7 +1453,14 @@
     10.12,
     11.21
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.95,
+    "y": 14.05,
+    "z": 12.52
+   }
   },
   "sh30_backheel_shot": {
    "frames": 22,
@@ -1297,7 +1493,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.07,
+    "y": -1.55,
+    "z": 4.63
+   }
   },
   "ps01_through_ball": {
    "frames": 22,
@@ -1330,7 +1533,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.78,
+    "y": 6.89,
+    "z": 2.5
+   }
   },
   "ps02_lofted_through": {
    "frames": 22,
@@ -1363,7 +1573,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.87,
+    "y": 6.82,
+    "z": 2.16
+   }
   },
   "ps03_driven_pass": {
    "frames": 22,
@@ -1396,7 +1613,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.87,
+    "y": 6.6,
+    "z": 3.65
+   }
   },
   "ps04_one_two": {
    "frames": 28,
@@ -1436,7 +1660,14 @@
     19.67,
     20.97
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 2.4,
+    "y": 6.89,
+    "z": 2.5
+   }
   },
   "ps05_backheel_pass": {
    "frames": 22,
@@ -1469,7 +1700,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.47,
+    "y": -0.8,
+    "z": 3.0
+   }
   },
   "ps06_no_look_pass": {
    "frames": 22,
@@ -1502,7 +1740,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.78,
+    "y": 6.89,
+    "z": 2.5
+   }
   },
   "ps07_cross": {
    "frames": 22,
@@ -1535,7 +1780,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.07,
+    "y": 8.05,
+    "z": 1.52
+   }
   },
   "ps08_driven_cross": {
    "frames": 22,
@@ -1568,7 +1820,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": -0.33,
+    "y": 6.6,
+    "z": 3.65
+   }
   },
   "ps09_cutback": {
    "frames": 24,
@@ -1603,7 +1862,14 @@
     8.6,
     9.4
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 14,
+    "part": "boot_R",
+    "x": -0.8,
+    "y": 1.8,
+    "z": 3.0
+   }
   },
   "ps10_switch_play": {
    "frames": 22,
@@ -1636,7 +1902,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.67,
+    "y": 7.14,
+    "z": 4.13
+   }
   },
   "ps11_rabona_cross": {
    "frames": 22,
@@ -1669,7 +1942,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": -3.0,
+    "y": 5.76,
+    "z": 1.62
+   }
   },
   "ps12_outside_foot_pass": {
    "frames": 22,
@@ -1702,7 +1982,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 4.73,
+    "y": 4.72,
+    "z": 2.52
+   }
   },
   "ps13_chipped_pass": {
    "frames": 22,
@@ -1735,7 +2022,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.27,
+    "y": 8.05,
+    "z": 1.52
+   }
   },
   "ps14_pass_and_move": {
    "frames": 26,
@@ -1773,7 +2067,14 @@
     17.55,
     18.9
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 2.23,
+    "y": 6.89,
+    "z": 2.5
+   }
   },
   "ps15_killer_ball": {
    "frames": 28,
@@ -1812,7 +2113,14 @@
     5.49,
     5.49
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.44,
+    "y": 7.4,
+    "z": 2.45
+   }
   },
   "ps16_square_ball": {
    "frames": 22,
@@ -1845,7 +2153,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.78,
+    "y": 6.89,
+    "z": 2.5
+   }
   },
   "ps17_return_pass": {
    "frames": 18,
@@ -1874,7 +2189,14 @@
     0.72,
     0.72
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 7,
+    "part": "boot_R",
+    "x": 2.31,
+    "y": 6.89,
+    "z": 2.1
+   }
   },
   "ps18_long_ball_forward": {
    "frames": 22,
@@ -1907,7 +2229,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.67,
+    "y": 7.14,
+    "z": 4.13
+   }
   },
   "ps19_corner_delivery": {
    "frames": 26,
@@ -1944,7 +2273,14 @@
     5.4,
     5.4
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 4.71,
+    "y": 7.89,
+    "z": 2.9
+   }
   },
   "ps20_short_corner": {
    "frames": 16,
@@ -1971,7 +2307,14 @@
     0.81,
     0.81
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 7,
+    "part": "boot_R",
+    "x": 2.05,
+    "y": 5.56,
+    "z": 1.7
+   }
   },
   "ps21_free_kick_cross": {
    "frames": 22,
@@ -2004,7 +2347,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 0.4,
+    "y": 8.05,
+    "z": 1.52
+   }
   },
   "ps22_quick_free_kick": {
    "frames": 16,
@@ -2031,7 +2381,14 @@
     2.61,
     2.93
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 7,
+    "part": "boot_R",
+    "x": 2.2,
+    "y": 5.01,
+    "z": 2.0
+   }
   },
   "ps23_lay_off": {
    "frames": 18,
@@ -2060,7 +2417,14 @@
     -0.18,
     -0.18
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 8,
+    "part": "boot_R",
+    "x": 2.59,
+    "y": 7.85,
+    "z": 2.13
+   }
   },
   "ps24_flick_on": {
    "frames": 22,
@@ -2093,7 +2457,14 @@
     7.11,
     8.19
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "head",
+    "x": 1.87,
+    "y": -0.91,
+    "z": 54.66
+   }
   },
   "ps25_reverse_pass": {
    "frames": 22,
@@ -2126,7 +2497,14 @@
     10.94,
     12.37
    ],
-   "custom": true
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 1.27,
+    "y": -0.8,
+    "z": 3.0
+   }
   },
   "dr01_step_over": {
    "frames": 22,
@@ -4578,6 +4956,270 @@
     0.0
    ],
    "custom": true
+  },
+  "air_pass_low": {
+   "frames": 22,
+   "ms_per_frame": 70,
+   "loop": false,
+   "events": {
+    "strike": 12
+   },
+   "root_forward_px": [
+    -8.91,
+    -7.88,
+    -6.84,
+    -5.81,
+    -4.77,
+    -3.74,
+    -2.7,
+    -1.35,
+    0.18,
+    0.54,
+    0.9,
+    1.08,
+    1.26,
+    1.71,
+    2.43,
+    3.33,
+    4.32,
+    7.02,
+    7.92,
+    8.82,
+    9.72,
+    10.62
+   ],
+   "root_side_px": [
+    -0.06,
+    -0.15,
+    -0.2,
+    -0.19,
+    -0.14,
+    -0.04,
+    0.06,
+    0.15,
+    0.15,
+    0.13,
+    0.11,
+    0.08,
+    0.05,
+    0.03,
+    -0.0,
+    -0.02,
+    -0.04,
+    -0.04,
+    0.06,
+    0.15,
+    0.2,
+    0.19
+   ],
+   "mist": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 2.6,
+    "y": 7.61,
+    "z": 10.91
+   }
+  },
+  "air_pass_mid": {
+   "frames": 22,
+   "ms_per_frame": 70,
+   "loop": false,
+   "events": {
+    "strike": 12
+   },
+   "root_forward_px": [
+    -8.91,
+    -7.88,
+    -6.84,
+    -5.81,
+    -4.77,
+    -3.74,
+    -2.7,
+    -1.35,
+    0.18,
+    0.54,
+    0.9,
+    1.08,
+    1.26,
+    1.71,
+    2.43,
+    3.33,
+    4.32,
+    7.02,
+    7.92,
+    8.82,
+    9.72,
+    10.62
+   ],
+   "root_side_px": [
+    -0.06,
+    -0.15,
+    -0.2,
+    -0.19,
+    -0.14,
+    -0.04,
+    0.06,
+    0.15,
+    0.15,
+    0.13,
+    0.11,
+    0.08,
+    0.05,
+    0.03,
+    -0.0,
+    -0.02,
+    -0.04,
+    -0.04,
+    0.06,
+    0.15,
+    0.2,
+    0.19
+   ],
+   "mist": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 2.6,
+    "y": 7.61,
+    "z": 19.91
+   }
+  },
+  "air_pass_high": {
+   "frames": 22,
+   "ms_per_frame": 70,
+   "loop": false,
+   "events": {
+    "strike": 12
+   },
+   "root_forward_px": [
+    -8.91,
+    -7.88,
+    -6.84,
+    -5.81,
+    -4.77,
+    -3.74,
+    -2.7,
+    -1.35,
+    0.18,
+    0.54,
+    0.9,
+    1.08,
+    1.26,
+    1.71,
+    2.43,
+    3.33,
+    4.32,
+    7.02,
+    7.92,
+    8.82,
+    9.72,
+    10.62
+   ],
+   "root_side_px": [
+    -0.06,
+    -0.15,
+    -0.2,
+    -0.19,
+    -0.14,
+    -0.04,
+    0.06,
+    0.15,
+    0.15,
+    0.13,
+    0.11,
+    0.08,
+    0.05,
+    0.03,
+    -0.0,
+    -0.02,
+    -0.04,
+    -0.04,
+    0.06,
+    0.15,
+    0.2,
+    0.19
+   ],
+   "mist": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "custom": true,
+   "contact": {
+    "frame": 12,
+    "part": "boot_R",
+    "x": 2.6,
+    "y": 7.61,
+    "z": 29.91
+   }
   }
  }
 }

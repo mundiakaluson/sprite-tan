@@ -33,10 +33,19 @@ class MovePanel(ttk.Frame):
         ttk.Scale(r2, from_=0, to=31, variable=self.dirv, command=lambda e: self.render(), length=n[0] - 150).pack(side='left', padx=4)
         self.foot = tk.StringVar(value='R'); ttk.Label(r2, text='foot').pack(side='left', padx=(4, 1))
         fc = ttk.Combobox(r2, values=['R', 'L'], textvariable=self.foot, state='readonly', width=2); fc.pack(side='left'); fc.bind('<<ComboboxSelected>>', lambda e: self.render())
+        r3 = ttk.Frame(self); r3.pack(fill='x', pady=1)
+        ttk.Label(r3, text='ball').pack(side='left')
+        self.bstate = tk.StringVar(value='on the ground')
+        bc = ttk.Combobox(r3, values=['on the ground', 'in the air: low', 'in the air: mid', 'in the air: high'], textvariable=self.bstate, state='readonly', width=16); bc.pack(side='left', padx=3)
+        bc.bind('<<ComboboxSelected>>', lambda e: self.set_card(self.card))
+        ttk.Label(r3, text='(passes: the game picks the air version from the ball height)', foreground='#8a90a0').pack(side='left')
+        self.card = None
         self.tick()
 
     def set_card(self, card):
-        self.name = find(card['id']); self.cache = {}; self.f = 0
+        self.card = card; self.name = find(card['id']); self.cache = {}; self.f = 0
+        st = self.bstate.get()
+        if card['id'].startswith('PS') and st != 'on the ground': self.name = 'air_pass_' + st.split(': ')[1]
         if self.name: self.a = C.load(self.name); self.poses = C.build_poses(self.a)
         else: self.a = None; self.poses = []
         self.render()
@@ -55,7 +64,7 @@ class MovePanel(ttk.Frame):
         if self.foot.get() == 'L': p = M.mirror_pose(p)
         if key not in self.cache:
             bg = U.bg_pitch(U.CW, U.CH); under, over = U.extras(U.centered(p), dn)
-            body = U.apply_skin(U.render_uv(U.centered(p), dn, with_ball=ball), self.atlas()); gh = U.ghosts(U.centered(p), dn, body)
+            body = U.apply_skin(U.render_uv(U.centered(p), dn, with_ball=ball), self.atlas()); mp = M.mirror_pose if self.foot.get() == 'L' else (lambda q: q); gh = U.leg_trail([mp(self.poses[(self.f - k) % len(self.poses)]) for k in (1, 2, 3)], p, dn)
             bg.alpha_composite(under)
             if gh is not None: bg.alpha_composite(gh)
             bg.alpha_composite(body); bg.alpha_composite(over)

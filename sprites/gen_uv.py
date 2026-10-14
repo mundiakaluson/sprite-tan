@@ -439,22 +439,31 @@ def extras(pose, dname, dust=None):
     return under, over
 
 
-def ghosts(pose, dname, body, n=3, step=4.0):
-    """speed mist: grey translucent copies of the player's own silhouette trailing behind the direction of travel (like a dash afterimage).
-    A game-side effect: draw these under the sprite. body = the rendered sprite (RGBA image); returns an RGBA layer or None."""
-    m = pose.get('fxm', 0.0)
-    if m < 0.02: return None
-    Rf = face_matrix(VEC[dname]); T = pose.get('fxd', 0.0)
-    p = Rf @ np.array([-math.sin(T), math.cos(T), 0.0]); sx, sy = p[0] * SC, -float(p @ UP) * SC
+def leg_trail(prev, cur, dname, atlas=None, n=3):
+    """speed effect for the plain dribbles ('fxm' > 0): quicksilver legs. Grey translucent afterimages of the LEGS ONLY from the previous frames of the same
+    animation, pushed back along the direction of travel, plus short speed streaks off the boots. A game-side effect (the game draws the previous frames' leg rows
+    tinted grey, under the sprite). prev = previous world poses, nearest first; cur = this frame's world pose. Returns an RGBA layer or None."""
+    m = cur.get('fxm', 0.0)
+    if m < 0.02 or not prev: return None
+    Rf = face_matrix(VEC[dname]); T = cur.get('fxd', 0.0)
+    pv = Rf @ np.array([-math.sin(T), math.cos(T), 0.0]); sx, sy = pv[0] * SC, -float(pv @ UP) * SC
     L = max(math.hypot(sx, sy), 0.6 * SC); ux, uy = -sx / L, -sy / L
-    a = np.array(body)[..., 3] > 0; H, W = a.shape; out = np.zeros((H, W, 4), np.uint8)
-    for i in range(n, 0, -1):
-        ox = int(round(ux * step * i)); oy = int(round(uy * step * i + 1.2 * math.sin(pose.get('fxp', 0.0) + i * 1.3)))
-        sh = np.zeros_like(a)
-        ys0, ys1 = max(0, oy), min(H, H + oy); xs0, xs1 = max(0, ox), min(W, W + ox)
-        sh[ys0:ys1, xs0:xs1] = a[ys0 - oy:ys1 - oy, xs0 - ox:xs1 - ox]
-        al = int(120 * m * (1.0 - 0.28 * (i - 1)) ** 1.6)
-        out[sh] = (196, 201, 212, al)
+    cc = centered(cur)
+    hp = Rf @ np.array([cc['root_x'], cc['root_y'], cc['pz']]); hip_row = int(OY - float(hp @ UP) * SC) + 3
+    out = np.zeros((CH, CW, 4), np.uint8)
+    for i, pp in enumerate(prev[:n], 1):
+        al = np.array(render_uv(centered(pp, cur), dname, False))[..., 3] > 0
+        al[:hip_row] = False
+        ox = int(round(ux * 2.2 * i)); oy = int(round(uy * 2.2 * i))
+        sh = np.zeros_like(al); ys0, ys1 = max(0, oy), min(CH, CH + oy); xs0, xs1 = max(0, ox), min(CW, CW + ox)
+        sh[ys0:ys1, xs0:xs1] = al[ys0 - oy:ys1 - oy, xs0 - ox:xs1 - ox]
+        out[sh] = (200, 205, 216, int(130 * m * (1.0 - 0.3 * (i - 1))))
+    for s_ in ('R', 'L'):                                   # streaks trailing off each boot
+        fp = Rf @ np.array([cc[s_ + '_ax'], cc[s_ + '_ay'], cc[s_ + '_az']])
+        px, py = OX + fp[0] * SC, OY - float(fp @ UP) * SC
+        for j in range(1, 9):
+            x, y = int(round(px + ux * j)), int(round(py + uy * j))
+            if 0 <= x < CW and 0 <= y < CH and out[y, x, 3] < 150: out[y, x] = (214, 218, 228, int(150 * m * (1 - j / 9.0)))
     return Image.fromarray(out, 'RGBA')
 
 
@@ -472,13 +481,13 @@ def anim_run():
     return [dict(DEFAULT, **run_pose(BASE, k / 12.0, 0.0)) for k in range(12)], None
 
 
-def centered(pose):
+def centered(pose, ref=None):
     p = dict(pose)
-    dy = p['root_y']
+    dy = (ref or p)['root_y']
     for k in ('root_y', 'R_ay', 'L_ay', 'by'):
         p[k] = p[k] - dy
     if p.get('cx', 0.0) > 0.5:      # moves that travel sideways (turns, cuts): centre on x as well
-        dx = p['root_x']
+        dx = (ref or p)['root_x']
         for k in ('root_x', 'R_ax', 'L_ax', 'bx'):
             p[k] = p[k] - dx
     return p

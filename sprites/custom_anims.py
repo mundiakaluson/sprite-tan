@@ -142,6 +142,7 @@ def export(name, with_hair=False, progress=print, procs=2):
     meta['animations'][name] = dict(frames=n, ms_per_frame=a.get('ms', 70), loop=a.get('loop', False), events=a.get('events', {}),
                                     root_forward_px=[round(p['root_y'] * U.SC, 2) for p in poses], root_side_px=[round(p['root_x'] * U.SC, 2) for p in poses],
                                     mist=[round(p.get('fxm', 0.0), 2) for p in poses], custom=True)
+    if a.get('contact'): meta['animations'][name]['contact'] = a['contact']
     json.dump(meta, open(mp, 'w'), indent=1)
     progress('done')
 

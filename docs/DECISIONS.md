@@ -32,5 +32,13 @@ Full text: the design document (see CLAUDE.md for the link).
   First-pass values were read off the animations; tune them in the Cards tab (ball speed / arc / curve).
 - Dribble animations (sprites/moves_dribble.py): plain dribbles (Ball Roll, Drive Through, Quick Touch, Slalom, Burst of Pace, Wall Run, Dummy Run) show a grey translucent speed mist
   behind the direction of travel; the skill moves (step over, roulette, elastico, Cruyff turn, rainbow flick...) are custom body animations with no mist.
-  The mist is a Celeste-style dash trail: 2-3 grey translucent copies of the player's own silhouette trailing behind, fading out. It is a game-side effect, not part of the sprite sheet (the tool draws it with gen_uv.ghosts): animations.json carries a per-frame `mist` strength (0-1) and the heading, and the game spawns the grey wave itself
-  (the tool previews it in the Cards and Animations tabs). Turning moves rotate the body (and `root_side_px` carries the sideways travel); the game keeps the new facing after the clip.
+  The mist is 'quicksilver legs': grey translucent afterimages of the LEGS ONLY, taken from the previous 2-3 frames of the same animation and pushed back along the direction of travel,
+  plus short speed streaks off each boot. It is a game-side effect, not part of the sprite sheet (the tool draws it with gen_uv.leg_trail; the game draws the previous frames' leg rows tinted grey under the
+  sprite). animations.json carries a per-frame `mist` strength (0-1) and the heading. Turning moves rotate the body (`root_side_px` carries the sideways travel); the game keeps the new facing after the clip.
+- The ball is independent: it is its own object in the game with its own position, height and velocity. Animations only supply the body. Each shot/pass animation stores a `contact` point
+  (animations.json and the animation file: frame, part = boot_R / boot_L / head, and x, y, z relative to the player's root). The game plays the clip so that point lands on the ball
+  (nudging the player to it) and launches the ball itself on the strike frame, using the card's ball variables and the player's stats. Ball paths inside the clips are previews only.
+  Regenerating sprites/moves_*.py drops `contact`: run `python sprites/contacts.py` afterwards.
+- Air passes: when the ball is already in the air (after a flick, a lob, a knock-down) a pass card uses an air version instead of its ground animation: the leg goes up to the ball.
+  Three contact heights, chosen from the ball height at the moment the card is played: air_pass_low (knee, z~11), air_pass_mid (waist, z~20), air_pass_high (chest, z~30, standing foot hops).
+  Above head height the player uses a header instead. These are generic animations, not tied to one card; the Cards tab can preview them (ball: in the air).

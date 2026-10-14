@@ -407,7 +407,7 @@ class AnimTab(ttk.Frame):
                 a[..., :3] = (a[..., :3] * 0.4 + np.array(tint) * 0.6).astype(np.uint8); a[..., 3] = (a[..., 3] * 0.45).astype(np.uint8)
                 im.alpha_composite(Image.fromarray(a, 'RGBA'))
         body = self.frame_img(full[self.f], dn, self.showball.get() and full[self.f].get('bvis', 0) > 0.5)
-        gh = U.ghosts(U.centered(full[self.f]), dn, body)
+        gh = U.leg_trail([full[(self.f - k) % n] for k in (1, 2, 3)], full[self.f], dn)
         if gh is not None: im.alpha_composite(gh)
         im.alpha_composite(body); im.alpha_composite(over)
         self._ph = ImageTk.PhotoImage(im.resize((440, 440), Image.NEAREST)); self.cv.delete('all'); self.cv.create_image(0, 0, anchor='nw', image=self._ph)

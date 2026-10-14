@@ -23,12 +23,12 @@ def poses_of(name):
     return U.ANIMS[name][0]()[0]
 
 
-def frame(pose, dn):
+def frame(pose, dn, prev=None):
     bg = U.bg_pitch(U.CW, U.CH)
     under, over = U.extras(U.centered(pose), dn)
     body = U.apply_skin(U.render_uv(U.centered(pose), dn, with_ball=pose.get('bvis', 0) > 0.5), atlas())
     bg.alpha_composite(under)
-    gh = U.ghosts(U.centered(pose), dn, body)
+    gh = U.leg_trail(prev or [], pose, dn)
     if gh is not None: bg.alpha_composite(gh)
     bg.alpha_composite(body)
     bg.alpha_composite(over)
@@ -39,7 +39,7 @@ def strip(poses, dirs=(8,), path='/tmp/strip.png', S=2, per_row=11, label=''):
     cells = []
     for d in dirs:
         for i, p in enumerate(poses):
-            cells.append((d, i, frame(p, U.DIRS[d])))
+            cells.append((d, i, frame(p, U.DIRS[d], poses[max(0, i - 3):i][::-1])))
     W, H = U.CW * S, U.CH * S
     rows = (len(cells) + per_row - 1) // per_row
     sheet = Image.new('RGBA', (per_row * W, rows * H), (30, 34, 46, 255))
