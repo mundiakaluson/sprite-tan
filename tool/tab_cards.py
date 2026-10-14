@@ -63,16 +63,18 @@ class CardsTab(ttk.Frame):
         ch = dict(cat=CARD_CATS, rarity=RARITY, timing=TIMING, kind=KIND)
         self.grid = tables.Grid(pw, self.t, choices=ch, new_row=new_card, on_select=self.select, width_for=dict(name=150, description=320, stats=90), editable=False)
         pw.add(self.grid)
-        side = ttk.Frame(pw, padding=6, width=330); side.pack_propagate(False); pw.add(side)
-        self.cv = tk.Canvas(side, width=300, height=400, bg='#1e1f2a', highlightthickness=0); self.cv.pack()
+        side = ttk.Frame(pw, padding=6, width=470); side.pack_propagate(False); pw.add(side)
+        top = ttk.Frame(side); top.pack(fill='x')
+        self.cv = tk.Canvas(top, width=140, height=190, bg='#1e1f2a', highlightthickness=0); self.cv.pack(side='left')
+        self.tip = tk.Canvas(top, width=300, height=190, bg='#1e1f2a', highlightthickness=0); self.tip.pack(side='left', padx=(4, 0))
         r = ttk.Frame(side); r.pack(fill='x', pady=3)
         ttk.Combobox(r, values=['ready', 'cooldown', 'unavailable'], textvariable=self.state, state='readonly', width=11).pack(side='left')
         self.state.trace_add('write', lambda *_: self.draw())
         ttk.Label(r, text='served').pack(side='left', padx=(6, 0))
         ttk.Scale(r, from_=0, to=1, variable=self.cool, command=lambda e: self.draw()).pack(side='left', fill='x', expand=True, padx=4)
-        self.tip = tk.Canvas(side, width=300, height=190, bg='#1e1f2a', highlightthickness=0); self.tip.pack(pady=2)
-        ttk.Button(side, text='▶ Play move (rotate)', command=self.play_move).pack(fill='x', pady=2)
-        ttk.Button(side, text='✎ Edit move (Animations tab)', command=self.edit_move).pack(fill='x', pady=2)
+        import movewin
+        self.mp = movewin.MovePanel(side, S=7); self.mp.pack(pady=2)
+        ttk.Button(side, text='✎ Edit this move (Animations tab)', command=self.edit_move).pack(fill='x', pady=2)
         ttk.Button(side, text='Preview a hand of 8', command=self.hand).pack(fill='x', pady=2)
         ttk.Button(side, text='Export all card faces + tooltips (PNG)', command=self.export_all).pack(fill='x')
         self.note = ttk.Label(side, text='', wraplength=300, justify='left', foreground='#9aa0ae'); self.note.pack(anchor='w', pady=4)
@@ -164,8 +166,8 @@ class CardsTab(ttk.Frame):
         if self.i is None or self.i >= len(self.t.rows): return
         c = self.t.rows[self.i]
         try:
-            self._ph = ImageTk.PhotoImage(card_face(c, self.state.get(), float(self.cool.get()), 4)); self.cv.delete('all'); self.cv.create_image(150, 200, image=self._ph)
-            self._tp = ImageTk.PhotoImage(tooltip(c, 2)); self.tip.delete('all'); self.tip.create_image(150, 95, image=self._tp)
+            self._ph = ImageTk.PhotoImage(card_face(c, self.state.get(), float(self.cool.get()), 2)); self.cv.delete('all'); self.cv.create_image(70, 95, image=self._ph)
+            self._tp = ImageTk.PhotoImage(tooltip(c, 2)); self.tip.delete('all'); self.tip.create_image(150, 95, image=self._tp); self.mp.set_card(c) if getattr(self, '_mp_id', None) != c['id'] else None; self._mp_id = c['id']
             self.note.config(text='' if has_art(c['id']) else 'Placeholder emblem (category default). Add a recipe for this id in cards/recipes.py.')
         except Exception as e:
             self.note.config(text=f'card error: {e}')
@@ -179,10 +181,6 @@ class CardsTab(ttk.Frame):
         for w in nb.winfo_children():
             if hasattr(w, 'open') and hasattr(w, 'plist'):
                 nb.select(w); w.refresh_list(); w.open(name); return
-
-    def play_move(self):
-        if self.i is None: return
-        import movewin; movewin.MoveWin(self, self.t.rows[self.i])
 
     def hand(self):
         rows = random.sample(self.t.rows, min(8, len(self.t.rows))); win = tk.Toplevel(self); win.title('Hand preview (cooldown and unavailable states mixed in)')
