@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+# generated previews
+*.gif
+sprites/out_actions/
+sprites/out_v2/

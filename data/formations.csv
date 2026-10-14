@@ -1,0 +1,11 @@
+id,name,family,line_height,width,compactness,press,overlap,directness,counter,risk,note
+F01,4-4-2,FOUR_BACK,,,0.6,,,0.55,,,"Balanced, two banks of four. Direct and honest."
+F02,4-3-3,FOUR_BACK,,0.7,,0.65,0.55,,,,"Wide forwards, high press, one holding mid."
+F03,4-2-3-1,FOUR_BACK,,,0.6,,,0.45,,,"Double pivot, a creator behind a lone striker."
+F04,4-1-4-1,FOUR_BACK,0.45,,0.7,,,,0.6,,Compact midfield four in front of a screen. Counter-attacking.
+F05,4-3-2-1,FOUR_BACK,,0.45,0.75,,,0.4,,,Narrow Christmas tree. Two shadows feed one striker. Fullbacks give width.
+F06,4-1-2-1-2,FOUR_BACK,,0.4,,,0.7,0.5,,,Narrow diamond. Fullbacks must supply all the width.
+F07,3-5-2,THREE_BACK,,0.65,,,0.7,,,,"Wingbacks supply width, two strikers up top."
+F08,3-4-3,THREE_BACK,0.6,,,0.7,,,,0.6,All-out attack. Three forwards and wingbacks. Vulnerable on the break.
+F09,5-3-2,FIVE_BACK,,,,,,,0.65,,"Solid back five, quick strike pair."
+F10,5-4-1,FIVE_BACK,0.25,,0.9,0.2,,0.7,0.8,0.25,"Low block. Concede space, hit on the counter."

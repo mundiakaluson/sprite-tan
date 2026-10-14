@@ -1,0 +1,46 @@
+{
+ "layer": "draw each hair sheet over the matching body sheet; same cell size, rows (32 directions) and frames; use the same skin atlas (HAIR region at 48,12 16x6 holds the hair colour)",
+ "files": "<style>__<anim>.png",
+ "styles": {
+  "H01_buzz": {
+   "static_parts": 0,
+   "sway_chains": 0
+  },
+  "H02_crop": {
+   "static_parts": 1,
+   "sway_chains": 0
+  },
+  "H03_sidepart": {
+   "static_parts": 3,
+   "sway_chains": 0
+  },
+  "H04_quiff": {
+   "static_parts": 2,
+   "sway_chains": 0
+  },
+  "H05_curly": {
+   "static_parts": 9,
+   "sway_chains": 0
+  },
+  "H06_afro": {
+   "static_parts": 1,
+   "sway_chains": 0
+  },
+  "H07_braids": {
+   "static_parts": 1,
+   "sway_chains": 4
+  },
+  "H08_long": {
+   "static_parts": 1,
+   "sway_chains": 3
+  },
+  "H09_ponytail": {
+   "static_parts": 2,
+   "sway_chains": 1
+  },
+  "H10_bun": {
+   "static_parts": 2,
+   "sway_chains": 0
+  }
+ }
+}
