@@ -88,8 +88,8 @@ def card(p, kit=None, state='ready', special=None, t=0.0):
     # head and shoulders, fading into the dark at the bottom
     fc = face(p, kit, PT.face_state(face_kind(p), t) if special else None)
     if special:   # shoulders fade out instead of darkening the whole card
-        a = np.array(fc); k = np.clip(1 - (np.arange(a.shape[0]) - 27) / 11.0, 0, 1); a[..., 3] = (a[..., 3] * k[:, None]).astype(np.uint8); fc = Image.fromarray(a, 'RGBA')
-    im.alpha_composite(fc, (11, 21))
+        a = np.array(fc); k = np.clip(1 - (np.arange(a.shape[0]) - 31) / 11.0, 0, 1); a[..., 3] = (a[..., 3] * k[:, None]).astype(np.uint8); fc = Image.fromarray(a, 'RGBA')
+    im.alpha_composite(fc, (11, 19))
     for y in range(46, 61 if not special else 46):
         tt = (y - 46) / 14
         for x in range(CW):

@@ -126,7 +126,7 @@ class PlayersTab(ttk.Frame):
         kit = None if self.kit.get() == 'auto' else self.kit.get()
         st = None if self.cstyle.get() == 'auto' else self.cstyle.get()
         special = st or (foil.STYLE_BY_RARITY.get(r.get('rarity')) if r.get('special') == '1' else None)
-        N = 36
+        N = 48
         if special and self.shim.get(): self.ct = (self.ct + 1) % N
         else: self.ct = 0
         key = (tuple(sorted(r.items())), kit, special, self.ct)
@@ -141,7 +141,7 @@ class PlayersTab(ttk.Frame):
     def export_cards(self):
         out = os.path.join(EXPORT, 'players'); os.makedirs(out, exist_ok=True)
         idx = ['id,face,tooltip,special,shimmer_strip,shimmer_frames']
-        N = 36
+        N = 48
         for r in self.t.rows:
             pid = r['id']
             sp = r.get('special') == '1'
