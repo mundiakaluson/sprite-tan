@@ -6,6 +6,17 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, 'data')
 
 
+def project(key='name', default='Dugout'):
+    """game name and tagline, from data/project.csv (one place to rename the game)"""
+    try:
+        with open(os.path.join(DATA, 'project.csv'), encoding='utf-8-sig') as f:
+            for r in csv.DictReader(f):
+                if r['key'] == key: return r['value']
+    except OSError:
+        pass
+    return default
+
+
 def read_csv(path):
     with open(path, 'rb') as f:
         raw = f.read()

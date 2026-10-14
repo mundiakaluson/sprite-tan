@@ -1,4 +1,6 @@
-# sprite-tan
+# Dugout
+
+(Repository name: sprite-tan. The game's name lives in `data/project.csv`.)
 
 A pixel-art football game where the 22 players play by themselves and you are the manager: you step in at
 "engagements" (duels, shots, passes, aerials, one-on-ones) with a hand of ability cards, against an AI manager

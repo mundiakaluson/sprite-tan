@@ -1,4 +1,4 @@
-"""Pixel Football manager tool.  Run from the repo root:  python tool/app.py
+"""Game manager tool (name in data/project.csv).  Run from the repo root:  python tool/app.py
 Tabs: Dashboard (start page) | Players | Cards | Formations | Animations | Hair styles | Kits | Other tables | Checks | Build | Sprite import.
 All data is plain CSV in data/ (edit in Excel too: changes on disk are picked up automatically)."""
 import os, sys
@@ -9,7 +9,7 @@ import tables
 
 
 def main():
-    root = tk.Tk(); root.title('Pixel Football - manager tool'); root.geometry('1360x820')
+    root = tk.Tk(); root.title(tables.project() + ' - manager tool'); root.geometry('1360x820')
     try: ttk.Style().theme_use('clam')
     except tk.TclError: pass
     nb = ttk.Notebook(root); nb.pack(fill='both', expand=True)

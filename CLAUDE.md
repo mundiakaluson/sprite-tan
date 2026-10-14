@@ -1,6 +1,6 @@
 # Project notes for Claude
 
-Pixel-art football manager-card game (see README.md). Design source of truth: the Claude Docs document
+Dugout: a pixel-art football manager-card game (see README.md; the name is in data/project.csv). Design source of truth: the Claude Docs document
 "Pixel Football Card Game - Design Document" (https://claude.ai/code/artifact/0d90f732-ad07-4972-8473-3f28f323153c),
 summarised in docs/DECISIONS.md.
 

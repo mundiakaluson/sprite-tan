@@ -30,7 +30,7 @@ class DashboardTab(ttk.Frame):
         super().__init__(master)
         self.app = None
         top = ttk.Frame(self, padding=(10, 8)); top.pack(fill='x')
-        ttk.Label(top, text='Pixel Football', font=('TkDefaultFont', 16, 'bold')).pack(side='left')
+        ttk.Label(top, text=tables.project(), font=('TkDefaultFont', 16, 'bold')).pack(side='left')
         self.sub = ttk.Label(top, text='', foreground='#8a90a0'); self.sub.pack(side='left', padx=12)
         ttk.Button(top, text='Refresh', command=self.refresh).pack(side='right')
         body = ttk.Frame(self, padding=(10, 0)); body.pack(fill='both', expand=True)
