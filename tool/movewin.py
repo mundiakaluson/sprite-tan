@@ -66,9 +66,11 @@ class MovePanel(ttk.Frame):
         self._gen += 1; self.render(); self.after(1, lambda g=self._gen: self.warm(g))
 
     def atlas(self):
-        if not hasattr(self, '_at'):
-            self._at = looks.player_skin(dict(role='CM', skin='2', hair_color='brown', hair_style='H01_buzz'), 'home')
-        return self._at
+        gk = bool(self.card and self.card['id'].startswith('GK'))
+        if not hasattr(self, '_at'): self._at = {}
+        if gk not in self._at:
+            self._at[gk] = looks.player_skin(dict(role='GK' if gk else 'CM', skin='2', hair_color='brown', hair_style='H01_buzz'), 'keeper' if gk else 'home')
+        return self._at[gk]
 
     def wq(self):
         """support overlay weight, quantised to 8 steps (0 = none) from the card's own timer"""
