@@ -42,3 +42,6 @@ Full text: the design document (see CLAUDE.md for the link).
 - Air passes: when the ball is already in the air (after a flick, a lob, a knock-down) a pass card uses an air version instead of its ground animation: the leg goes up to the ball.
   Three contact heights, chosen from the ball height at the moment the card is played: air_pass_low (knee, z~11), air_pass_mid (waist, z~20), air_pass_high (chest, z~30, standing foot hops).
   Above head height the player uses a header instead. These are generic animations, not tied to one card; the Cards tab can preview them (ball: in the air).
+
+## SUPPORT cards (decided)
+Most support cards show only an aura: a glow around the selected player, or a brief pulse across the whole team for team effects (data/support_auras.csv: scope self/team/two/target/opponent, colour, shape, seconds). The drawn gesture animations (sp01-sp30) are optional cast poses.
