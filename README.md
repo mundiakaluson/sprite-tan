@@ -67,7 +67,7 @@ Tabs:
 - **Animations**: make new moves without drawing. Start blank or from run/kick/finesse/guard/slide, pose the figure with sliders
   (hips, chest, head, feet, knees, arms, ball), key frames on the timeline, preview with onion skin, then export to the game
   sprite sheets (optionally with hair layers). Saved as `data/animations/<name>.json`.
-- **Other tables**: packs, looks palette, styles, families. **Checks**: validates every CSV. **Sprite import**: recolour any PNG sheet.
+- **Other tables**: packs, looks palette, styles, families. **Checks**: validates every CSV. **Build**: buttons for the self-test, the body-sheet rebuild (`gen_uv.py`) and the hair-layer rebuild (`export_hair.py`), with a live log and a Stop button. **Sprite import**: recolour any PNG sheet.
 
 Everything is plain CSV in `data/`, so Excel works side by side: edits made in Excel appear in the tool automatically (unless you have
 unsaved edits there), and the tool writes a `.bak` copy before each save. Close the file in Excel before saving from the tool.
