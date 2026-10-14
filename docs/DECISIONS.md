@@ -47,3 +47,6 @@ Full text: the design document (see CLAUDE.md for the link).
 Support cards never replace what the player is doing. Default is an aura only: a glow around the selected player, or a brief pulse across the whole team for team effects (data/support_auras.csv: scope self/team/two/target/opponent, colour, shape, seconds).
 A few cards add an upper-body overlay (columns overlay + side; sprites/overlays.py): head scan (Radar Vision), arm raise (Sixth Sense), fist up (Rally the Team), point (Wide Open, Captain's Orders, Decoy Run). It is blended onto the current animation, touching only that arm / the head, so the player keeps running, dribbling or shooting.
 The earlier standalone gesture animations (sp01-sp30) were removed. The Cards tab preview has a "player is" selector (running / dribbling / shooting / jockeying / sprinting).
+
+## KEEPER cards (decided)
+GK01-GK25 are authored in sprites/moves_keeper.py (dives go to the keeper's right; the game mirrors for left). Saves are hand contacts: the animation has a strike frame and the game uses a hand reach zone; only the foot actions (sweeper clear, kick save, long kick, rebound clear) store a boot contact point. Carried balls (catches, throws) are held in the hands; incoming balls in the preview are placeholders, the game owns the ball. The Cards tab previews GK cards in the keeper kit.
