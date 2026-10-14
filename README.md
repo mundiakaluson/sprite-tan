@@ -52,3 +52,11 @@ Python 3.10 or newer. The scripts that make `data/*.csv` are in `scripts/` and a
 
 Names in `players.csv` are respelled versions of real player names. They sit in one column and can be swapped
 before any public or commercial release. `players_invented_names.csv` has a fully invented set.
+
+## Sprite manager (first version)
+
+```
+python tool/app.py
+```
+Open any PNG sheet, detect or set the cell grid, see the colour ramps, click a pixel to select its ramp, pick a new
+colour, watch the animation row, then export a baked PNG or an indexed sheet plus palette strip.

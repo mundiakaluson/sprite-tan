@@ -24,8 +24,8 @@ Goal: a flexible Python tool for editing the game data and preparing sprites.
    composited with the player's look at load time (to be settled with the Godot side).
 
 ## Interface
-Local Streamlit web app (editable tables, image previews) is the proposed first version; PySide6 desktop app if a
-native window is wanted later.
+Desktop app in tkinter (ships with Python, nothing extra to install): `python tool/app.py`. Logic lives in
+`tool/sprite_core.py` (no GUI, testable). Data editors and the per-player atlas view come as extra tabs later.
 
 ## Build order
 Grid and palette detection -> recolour with live preview -> indexed export and shader -> player/card/formation editors
