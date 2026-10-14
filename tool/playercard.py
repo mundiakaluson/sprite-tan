@@ -40,11 +40,7 @@ def surname(name):
 
 def face(p, kit=None):
     """head and shoulders, facing the camera, big."""
-    g = PT.portrait(p, kit or 'home').resize((21, 18), Image.BOX)
-    a = g.getchannel('A').point(lambda v: 255 if v > 110 else 0); g.putalpha(a)
-    if (p.get('glasses') or 'none') == 'none':
-        for ex in (8, 12): g.putpixel((ex, 7), (26, 22, 34, 255))
-    return g.resize((42, 36), Image.NEAREST)
+    return PT.portrait(p, kit or 'home').resize((PT.W * 2, PT.H * 2), Image.NEAREST)
 
 
 def _text2(im, x, y, s, col, k=2):
@@ -86,8 +82,8 @@ def card(p, kit=None, state='ready', special=None, t=0.0):
     # head and shoulders, fading into the dark at the bottom
     fc = face(p, kit)
     if special:   # shoulders fade out instead of darkening the whole card
-        a = np.array(fc); k = np.clip(1 - (np.arange(a.shape[0]) - 25) / 11.0, 0, 1); a[..., 3] = (a[..., 3] * k[:, None]).astype(np.uint8); fc = Image.fromarray(a, 'RGBA')
-    im.alpha_composite(fc, (11, 22))
+        a = np.array(fc); k = np.clip(1 - (np.arange(a.shape[0]) - 27) / 11.0, 0, 1); a[..., 3] = (a[..., 3] * k[:, None]).astype(np.uint8); fc = Image.fromarray(a, 'RGBA')
+    im.alpha_composite(fc, (11, 21))
     for y in range(46, 61 if not special else 46):
         tt = (y - 46) / 14
         for x in range(CW):
