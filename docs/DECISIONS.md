@@ -44,4 +44,6 @@ Full text: the design document (see CLAUDE.md for the link).
   Above head height the player uses a header instead. These are generic animations, not tied to one card; the Cards tab can preview them (ball: in the air).
 
 ## SUPPORT cards (decided)
-Most support cards show only an aura: a glow around the selected player, or a brief pulse across the whole team for team effects (data/support_auras.csv: scope self/team/two/target/opponent, colour, shape, seconds). The drawn gesture animations (sp01-sp30) are optional cast poses.
+Support cards never replace what the player is doing. Default is an aura only: a glow around the selected player, or a brief pulse across the whole team for team effects (data/support_auras.csv: scope self/team/two/target/opponent, colour, shape, seconds).
+A few cards add an upper-body overlay (columns overlay + side; sprites/overlays.py): head scan (Radar Vision), arm raise (Sixth Sense), fist up (Rally the Team), point (Wide Open, Captain's Orders, Decoy Run). It is blended onto the current animation, touching only that arm / the head, so the player keeps running, dribbling or shooting.
+The earlier standalone gesture animations (sp01-sp30) were removed. The Cards tab preview has a "player is" selector (running / dribbling / shooting / jockeying / sprinting).

@@ -22,4 +22,4 @@ Animation,Skill card animations: SHOT 30 (done, baked, no hair),done,Cards tab: 
 Animation,Skill card animations: PASS 25 + 3 air-pass variants (done, baked),done,
 Animation,Player animations: walking / tired running,todo,
 Animation,Skill card animations: DRIBBLE 29 (Hold Up Play animation removed; done, baked; mist effect is game-side),done,
-Animation,Skill card animations: DEFEND 35 done (moves_defend.py); SUPPORT 30 done (auras + cast poses) / KEEPER 25 / TITAN 25 todo,in progress,checkpoint per category
+Animation,Skill card animations: DEFEND 35 done (moves_defend.py); SUPPORT 30 done (auras + arm/head overlays on the current state) / KEEPER 25 / TITAN 25 todo,in progress,checkpoint per category

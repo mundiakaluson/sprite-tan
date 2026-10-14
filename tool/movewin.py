@@ -9,6 +9,7 @@ import gen_uv as U
 import custom_anims as C
 import moves as M
 import aura
+import overlays
 
 KITS = ['home', 'away']
 
@@ -41,6 +42,13 @@ class MovePanel(ttk.Frame):
         bc = ttk.Combobox(r3, values=['on the ground', 'in the air: low', 'in the air: mid', 'in the air: high'], textvariable=self.bstate, state='readonly', width=16); bc.pack(side='left', padx=3)
         bc.bind('<<ComboboxSelected>>', lambda e: self.set_card(self.card))
         ttk.Label(r3, text='(passes: the game picks the air version from the ball height)', foreground='#8a90a0').pack(side='left')
+        r4 = ttk.Frame(self); r4.pack(fill='x', pady=1)
+        ttk.Label(r4, text='player is').pack(side='left')
+        self.base = tk.StringVar(value='running')
+        self.BASES = {'running': 'run', 'dribbling': 'dr17_drive_through', 'shooting': 'sh01_side_foot_place', 'jockeying': 'df10_jockey', 'sprinting': 'df07_recovery_sprint'}
+        bb = ttk.Combobox(r4, values=list(self.BASES), textvariable=self.base, state='readonly', width=12); bb.pack(side='left', padx=3)
+        bb.bind('<<ComboboxSelected>>', lambda e: self.set_card(self.card))
+        ttk.Label(r4, text='(support cards ride on top of whatever the player is doing)', foreground='#8a90a0').pack(side='left')
         self.card = None; self.tc = 0; self._gen = 0; self._last = time.perf_counter(); self._acc = 0.0; self._tca = 0.0
         self.tick()
 
@@ -48,7 +56,12 @@ class MovePanel(ttk.Frame):
         self.card = card; self.name = find(card['id']); self.cache = {}; self.f = 0
         st = self.bstate.get()
         if card['id'].startswith('PS') and st != 'on the ground': self.name = 'air_pass_' + st.split(': ')[1]
-        if self.name: self.a = C.load(self.name); self.poses = C.build_poses(self.a)
+        if card['id'].startswith('SP') and aura.row(card['id']):
+            self.name = self.BASES[self.base.get()]
+            if self.name == 'run': self.a = {'label': 'Run', 'ms': U.ANIMS['run'][1] if isinstance(U.ANIMS['run'][1], (int, float)) else 70}; self.poses = list(U.ANIMS['run'][0]()[0])
+            else: self.a = C.load(self.name); self.poses = C.build_poses(self.a)
+            self.a = dict(self.a); self.a['label'] = card['name'] + ' on ' + self.base.get()
+        elif self.name: self.a = C.load(self.name); self.poses = C.build_poses(self.a)
         else: self.a = None; self.poses = []
         self._gen += 1; self.render(); self.after(1, lambda g=self._gen: self.warm(g))
 
@@ -57,11 +70,21 @@ class MovePanel(ttk.Frame):
             self._at = looks.player_skin(dict(role='CM', skin='2', hair_color='brown', hair_style='H01_buzz'), 'home')
         return self._at
 
-    def parts(self, f, d, ball, foot):
+    def wq(self):
+        """support overlay weight, quantised to 8 steps (0 = none) from the card's own timer"""
+        ar = aura.row(self.card['id']) if self.card else None
+        if not ar or not ar.get('overlay'): return 0
+        dur = float(ar['duration_s']) * 1000 / 70; cyc = dur + 14
+        return int(round(overlays.env((self.tc % cyc) / dur) * 8))
+
+    def parts(self, f, d, ball, foot, wq=0):
         """the expensive part (ray-cast body, trail, shadow) for one frame/angle; cached as PIL layers"""
-        key = (f, d, ball, foot)
+        key = (f, d, ball, foot, wq)
         if key not in self.cache:
-            p = self.poses[f]; dn = U.DIRS[d]; mp = M.mirror_pose if foot == 'L' else (lambda q: q)
+            p = self.poses[f]; dn = U.DIRS[d]
+            if wq:
+                ar = aura.row(self.card['id']); p = overlays.apply(p, ar['overlay'], ar['side'], wq / 8.0, f)
+            mp = M.mirror_pose if foot == 'L' else (lambda q: q)
             if foot == 'L': p = M.mirror_pose(p)
             under, over = U.extras(U.centered(p), dn)
             body = U.apply_skin(U.render_uv(U.centered(p), dn, with_ball=ball), self.atlas())
@@ -76,7 +99,7 @@ class MovePanel(ttk.Frame):
             self.cv.create_text(int(U.CW * self.S) // 2, int(U.CH * self.S) // 2, fill='#8a90a0', text='No animation for this card yet'); return
         self.f %= len(self.poses); d = int(round(float(self.dirv.get()))) % 32
         ball = self.ball.get() and self.poses[self.f].get('bvis', 0) > 0.5
-        under, gh, body, over = self.parts(self.f, d, ball, self.foot.get())
+        under, gh, body, over = self.parts(self.f, d, ball, self.foot.get(), self.wq())
         ar = aura.row(self.card['id']) if self.card else None
         bg = U.bg_pitch(U.CW, U.CH); bg.alpha_composite(under)
         if ar:
