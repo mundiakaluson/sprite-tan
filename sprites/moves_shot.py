@@ -360,9 +360,11 @@ def sh04():
     frame(m, 10, R=(-1.6, -8.5, 55, 11.0, 0.5, 0.2), L=(-3.0, 5.0, -6), root_y=2.0, pz=23.6, cpitch=0.2, croll=0.32, proll=0.18, pyaw=-0.45, root_x=0.6)
     frame(m, 11, R=(1.8, -1.0, 68, 8.5, 0.9, 0.35), L=(-3.0, 5.4, -6), root_y=2.4, pz=23.2, cpitch=0.2, croll=0.42, proll=0.24, pyaw=-0.15, root_x=0.8)
     frame(m, 12, R=(5.4, 7.6, 78, 3.6, 1.0, 0.45), L=(-2.8, 5.8, -6), root_y=2.7, pz=23.0, cpitch=0.2, croll=0.5, proll=0.28, pyaw=0.15, root_x=1.0)
-    frame(m, 13, R=(6.6, 12.5, 66, 6.5, 0.8, 0.3), L=(-2.8, 6.0, -5), root_y=3.8, pz=23.4, cpitch=0.18, croll=0.4, proll=0.22, pyaw=0.3, root_x=0.8)
-    frame(m, 14, R=(4.2, 15.5, 40, 8.0, 0.3), L=(-3.0, 6.6, 10, 5.0), root_y=6.0, pz=24.4, cpitch=0.14, croll=0.2, proll=0.1, pyaw=0.25)
-    frame(m, 15, R=(2.4, 17.0, 14, None), L=(-2.6, 8.4, 20, 6.0), root_y=8.8, pz=24.2, cpitch=0.12, croll=0.06, proll=0.0)
+    frame(m, 13, R=(5.8, 15.5, 62, 7.0, 0.9, 0.35), L=(-2.8, 6.0, -5), root_y=3.8, pz=23.4, cpitch=0.18, croll=0.4, proll=0.22, pyaw=0.35, root_x=0.8)
+    frame(m, 14, R=(3.0, 20.0, 55, 10.0, 0.7, 0.3), L=(-3.0, 6.6, 10, 5.0), root_y=5.8, pz=24.6, cpitch=0.14, croll=0.28, proll=0.14, pyaw=0.55)
+    frame(m, 15, R=(-0.8, 22.5, 45, 12.0, 0.4), L=(-3.0, 7.6, 14, 4.0), root_y=7.8, pz=25.2, cpitch=0.12, croll=0.16, proll=0.06, pyaw=0.7)          # leg swings across the body, still reaching
+    frame(m, 16, R=(-1.0, 22.0, 30, 9.0), L=(-2.6, 9.0, 20, 5.0), root_y=9.8, pz=25.0, cpitch=0.1, croll=0.06, pyaw=0.5)
+    frame(m, 17, R=(1.0, 20.0, 12, None), L=(-2.4, 11.0, 20, 6.0), root_y=12.0, pz=24.0, cpitch=0.1, croll=0.0, pyaw=0.2)
     arms_out(m, 11, (-0.2, 1.3, 0.2, 1.0), (1.2, 1.6, 1.6, 1.5)); arms_out(m, 12, (-0.3, 1.4, 0.0, 1.0), (1.3, 1.7, 1.7, 1.6))
     c = M.aim_ball(m, 12, 'boot', 'R', vin=(0.0, 0.0, 0.0), pre=0, off=(0, 0.6, 0.4))
     for f in range(0, 12): m.k(f, bx=c[0], by=c[1], bz=c[2], bvis=1.0)
@@ -490,23 +492,24 @@ def sh13():
 
 @move('SH23', 'Snap Shot')
 def sh23():
-    m = blank(18, 58, ball=(1.4, 8.0, 3.0), events={'strike': 8})
-    # tight space: head up checking the keeper, quick shuffle, ball nudged across, then the leg SNAPS through with almost no swing
-    for f in range(0, 18): m.k(f, bx=1.4, by=8.0, bz=3.0, bvis=1.0)
-    frame(m, 0, R=(2.2, 0.0, 0), L=(-2.2, 0.4, 0), hpitch=-0.3, cpitch=0.1)
-    frame(m, 2, R=(2.0, 0.4, 0), L=(-3.0, 1.6, 20, 3.0), root_y=0.2, pz=24.2, hpitch=0.1, root_x=0.6, cpitch=0.14, pyaw=0.1)      # quick shuffle, eyes drop to ball
-    frame(m, 4, R=(2.6, -0.6, 30, 3.0), L=(-3.6, 2.2, -4), root_y=0.4, pz=24.0, hpitch=-0.35, root_x=0.4, cpitch=0.18, pyaw=0.2, proll=0.08)    # glance up at keeper
-    frame(m, 6, R=(2.4, -2.8, 70, 8.0), L=(-3.6, 4.0, -6), root_y=0.8, pz=24.4, hpitch=0.2, cpitch=0.3, pyaw=-0.15)           # knee lifts, lower leg cocked
-    frame(m, 7, R=(2.2, 3.0, 80, 5.0), L=(-3.6, 4.4, -6), root_y=1.0, pz=24.4, cpitch=0.34, pyaw=0.0)
-    frame(m, 8, R=(2.0, 7.5, 84, 3.4), L=(-3.6, 4.6, -6), root_y=1.2, pz=24.4, cpitch=0.36, pyaw=0.1)                           # snap
-    frame(m, 9, R=(1.8, 10.0, 70, 5.0), L=(-3.6, 4.8, -6), root_y=1.6, pz=24.4, cpitch=0.3, pyaw=0.12)
-    frame(m, 11, R=(2.0, 8.0, 40, 6.0), L=(-3.2, 5.0, 8, 3.0), root_y=2.4, pz=24.6, cpitch=0.2)
-    frame(m, 14, R=(2.2, 5.0, 8, None), L=(-2.6, 5.0, 8, None), root_y=2.8, pz=24.6, cpitch=0.12, hpitch=-0.2)
-    frame(m, 17, R=(2.2, 3.0, 0, None), L=(-2.2, 3.4, 0, None), root_y=2.8, pz=24.6, cpitch=0.1, hpitch=-0.2)
-    arms_out(m, 4, (0.3, 1.0, 0.9, 0.7), (0.4, 1.0, 0.9, 0.7)); arms_out(m, 6, (-0.4, 1.2, 0.2, 1.0), (1.3, 1.5, 1.5, 1.3)); arms_out(m, 8, (0.4, 1.0, 0.8, 0.8), (1.0, 1.3, 1.5, 1.1))
-    c = M.aim_ball(m, 8, 'boot', 'R', vin=(0.0, 0.0, 0.0), pre=0)
-    for f in range(0, 8): m.k(f, bx=1.4, by=8.0, bz=3.0)
-    m.ball(9, fly(c, (0.0, 8.0, 0.0), 8, g=0.0), spin_x=2.0)
+    m = blank(16, 58, ball=(1.4, 8.0, 3.0), events={'strike': 7})
+    # no windup: the knee lifts, the lower leg whips through, the body barely moves. Arms stay close and swing a little
+    frame(m, 0, R=(2.2, 0.0, 0), L=(-2.2, 0.4, 0), hpitch=0.25, cpitch=0.1)
+    frame(m, 2, R=(2.2, 0.0, 0), L=(-3.0, 1.4, 20, 3.0), root_y=0.2, pz=24.4, hpitch=0.3, cpitch=0.14)
+    frame(m, 4, R=(2.4, -1.5, 40, 3.0), L=(-3.6, 2.6, -4), root_y=0.5, pz=24.2, hpitch=0.4, cpitch=0.2, pyaw=-0.1)
+    frame(m, 5, R=(2.4, -2.8, 60, 7.0), L=(-3.6, 3.6, -6), root_y=0.8, pz=24.4, hpitch=0.5, cpitch=0.26, pyaw=-0.15)
+    frame(m, 6, R=(2.2, 2.5, 76, 5.0), L=(-3.6, 4.2, -6), root_y=1.0, pz=24.4, cpitch=0.3, pyaw=0.0)
+    frame(m, 7, R=(2.0, 7.5, 84, 3.4), L=(-3.6, 4.6, -6), root_y=1.2, pz=24.4, cpitch=0.34, pyaw=0.1)
+    frame(m, 8, R=(1.8, 10.5, 66, 5.0), L=(-3.6, 4.8, -6), root_y=1.6, pz=24.4, cpitch=0.3, pyaw=0.12)
+    frame(m, 10, R=(2.0, 9.0, 36, 6.0), L=(-3.2, 5.0, 8, 3.0), root_y=2.4, pz=24.6, cpitch=0.2)
+    frame(m, 13, R=(2.2, 6.0, 8, None), L=(-2.6, 5.0, 8, None), root_y=2.8, pz=24.6, cpitch=0.12, hpitch=0.0)
+    frame(m, 15, R=(2.2, 3.5, 0, None), L=(-2.2, 3.8, 0, None), root_y=2.8, pz=24.6, cpitch=0.1, hpitch=0.0)
+    for f in (0, 2, 4): arms_out(m, f, (0.1, 0.35, 0.5, 0.2), (0.1, 0.35, 0.5, 0.2))
+    arms_out(m, 5, (-0.3, 0.45, 0.2, 0.3), (0.5, 0.5, 0.9, 0.4)); arms_out(m, 7, (0.2, 0.4, 0.6, 0.3), (0.6, 0.5, 0.9, 0.4))
+    for f in (10, 13, 15): arms_out(m, f, (0.2, 0.35, 0.5, 0.2), (0.2, 0.35, 0.5, 0.2))
+    c = M.aim_ball(m, 7, 'boot', 'R', vin=(0.0, 0.0, 0.0), pre=0, off=(0, 1.6, 0.6))
+    for f in range(0, 7): m.k(f, bx=c[0], by=c[1], bz=c[2], bvis=1.0)
+    m.ball(8, fly(c, (0.0, 8.0, 0.0), 8, g=0.0), spin_x=2.0)
     return m
 
 
@@ -540,25 +543,20 @@ def sh26():
 
 @move('SH28', 'Composure Finish')
 def sh28():
-    m = kick_base(); m.N = 24
-    for f in range(8, 24): m.keys[f] = {}
-    # unbothered: jogs in with chin up, eyes on the keeper, one glance at the ball, a tiny tap with the inside of the boot, then a calm raised-arm walk off
-    for f in range(0, 8): m.k(f, hpitch=-0.35, cpitch=m.keys[f].get('cpitch', 0.1) - 0.06)
-    frame(m, 8, R=(2.2, -2.5, 40, 4.0), L=(-3.0, 2.0, 5, 6.0), root_y=0.4, pz=24.8, hpitch=-0.3, cpitch=0.05)
-    frame(m, 9, R=(2.4, -3.5, 44, 6.0), L=(-4.4, 5.0, -6), root_y=1.4, pz=24.4, hpitch=0.65, cpitch=0.16, pyaw=-0.1)                  # eyes drop to the ball
-    frame(m, 10, R=(2.8, 0.0, 50, 5.0, -1.1, 0.1), L=(-4.6, 5.6, -6), root_y=2.0, pz=24.2, hpitch=0.7, cpitch=0.2, pyaw=0.0)
-    frame(m, 11, R=(2.6, 5.0, 54, 3.8, -1.3, 0.1), L=(-4.6, 6.0, -6), root_y=2.3, pz=24.2, hpitch=0.7, cpitch=0.2, pyaw=0.1)
-    frame(m, 12, R=(2.2, 8.0, 54, 3.4, -1.3, 0.1), L=(-4.4, 6.2, -6), root_y=2.6, pz=24.2, hpitch=0.65, cpitch=0.2, pyaw=0.12)         # tap
-    frame(m, 13, R=(1.8, 10.0, 46, 4.0, -1.0), L=(-4.2, 6.4, -6), root_y=3.2, pz=24.4, hpitch=-0.2, cpitch=0.12)                   # head snaps up
-    frame(m, 14, R=(1.8, 11.5, 30, 3.5), L=(-3.6, 6.8, 8, 3.0), root_y=4.6, pz=24.6, hpitch=-0.35, cpitch=0.04)
-    frame(m, 15, R=(2.2, 12.5, 6, None), L=(-2.6, 8.4, 20, 6.0), root_y=6.8, pz=24.6, hpitch=-0.3, cpitch=0.0)
-    for f in range(16, 24):
-        m.keys[f] = run_pose_at(f, 6.8, step=1.6); m.keys[f].update(hpitch=-0.3, cpitch=0.0)
-        m.arms(f, 'R', 2.5, 0.3, 2.8, 0.2); m.arms(f, 'L', 0.2, 0.3, 0.5, 0.2)
-    arms_out(m, 10, (0.0, 0.3, 0.4, 0.2), (0.3, 0.5, 0.6, 0.3))
-    c = M.aim_ball(m, 12, 'boot', 'R', vin=(0.0, 0.0, 0.0), pre=0)
-    for f in range(0, 12): m.k(f, bx=1.2, by=11.5, bz=3.0, bvis=1.0)
-    m.ball(13, fly(c, (0.0, 6.2, 0.0), 11, g=0.0), spin_x=1.4)
+    m = kick_base()
+    # simple and tidy: jogs in, eyes on the ball, a neat inside-foot tap, easy follow-through
+    for f in range(8, 14): m.k(f, hpitch=0.65)
+    frame(m, 9, R=(2.4, -3.0, 38, 6.0), L=(-4.0, 3.5, -6), root_y=1.5, pz=24.8, cpitch=0.12, ppitch=0.05, pyaw=-0.1)
+    frame(m, 10, R=(2.6, -5.0, 42, 8.0), L=(-4.6, 5.5, -6), root_y=2.0, pz=24.4, cpitch=0.14, pyaw=-0.14)
+    frame(m, 11, R=(2.8, 1.5, 50, 6.0, -1.1, 0.1), L=(-4.6, 6.0, -6), root_y=2.4, pz=24.3, cpitch=0.14, pyaw=0.05)
+    frame(m, 12, R=(2.2, 8.0, 52, 3.6, -1.3, 0.1), L=(-4.4, 6.4, -6), root_y=2.8, pz=24.2, cpitch=0.16, pyaw=0.12)
+    frame(m, 13, R=(1.4, 13.0, 48, 4.6, -1.0), L=(-4.2, 6.4, -6), root_y=4.0, pz=24.4, cpitch=0.14, pyaw=0.18, hpitch=0.3)
+    frame(m, 14, R=(0.8, 16.5, 40, 5.5, -0.5), L=(-3.8, 6.2, -5), root_y=6.5, pz=24.4, cpitch=0.12, pyaw=0.14, hpitch=0.1)
+    frame(m, 15, R=(1.6, 17.5, 25, 3.2, -0.2), L=(-3.0, 8.0, 18, 5.0), root_y=9.5, pz=24.4, cpitch=0.12, hpitch=0.0)
+    frame(m, 16, R=(2.0, 19.5, 10, None), L=(-2.4, 10.0, 20, 6.5), root_y=12.2, pz=23.6, cpitch=0.14, hpitch=0.0)
+    arms_out(m, 10, (-0.2, 0.6, 0.3, 0.3), (0.7, 1.1, 1.4, 0.8)); arms_out(m, 12, (-0.1, 0.6, 0.4, 0.3), (0.8, 1.1, 1.4, 0.9))
+    m.ball(12, path(10, speed=5.8, rise=0.0, start=(1.4, 16.0, 3.0)), spin_x=1.6)
+    m.events = {'strike': 12}
     return m
 
 
@@ -578,7 +576,7 @@ def snap_ball(m, rest=True, side='R', off=(0.0, 1.6, 0.6)):
     return m
 
 
-SNAP_FULL = {'SH01', 'SH02', 'SH03', 'SH05', 'SH06', 'SH07', 'SH14', 'SH15', 'SH16', 'SH17', 'SH18', 'SH19', 'SH20', 'SH21', 'SH22', 'SH27'}
+SNAP_FULL = {'SH28', 'SH01', 'SH02', 'SH03', 'SH05', 'SH06', 'SH07', 'SH14', 'SH15', 'SH16', 'SH17', 'SH18', 'SH19', 'SH20', 'SH21', 'SH22', 'SH27'}
 SNAP_POST = {'SH09', 'SH24', 'SH25', 'SH30'}
 
 
