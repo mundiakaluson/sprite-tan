@@ -21,7 +21,7 @@ def contact(name):
 if __name__ == '__main__':
     mp = os.path.join(C.OUT, 'animations.json'); meta = json.load(open(mp)); n = 0
     for name in C.files():
-        if not name.startswith(('sh', 'ps', 'air_pass')): continue
+        if not name.startswith(('sh', 'ps', 'air_pass', 'df')): continue
         c = contact(name); a = C.load(name)
         if c: a['contact'] = c; n += 1
         else: a.pop('contact', None)

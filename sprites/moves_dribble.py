@@ -25,7 +25,7 @@ def pch(pts, f):
 
 class Dr:
     def __init__(s, N, ms=60, speed=2.0):
-        s.N = N; s.m = Move({}, N, ms, {'touch': 6}); s.th = {0: 0.0}; s.sp = {0: speed}; s.fx = {0: 0.0}
+        s.N = N; s.m = Move({}, N, ms, {'touch': 6}); s.th = {0: 0.0}; s.sp = {0: speed}; s.fx = {0: 0.0}; s.lt = {0: 0.0}
         for f in range(N): s.m.keys[f] = {}
 
     def at(s, f, R=None, L=None, ball=None, **body):
@@ -51,11 +51,12 @@ class Dr:
 
     def turn(s, **pts): s.th.update({int(k[1:]): v for k, v in pts.items()})
     def speed(s, **pts): s.sp.update({int(k[1:]): v for k, v in pts.items()})
+    def lateral(s, **pts): s.lt.update({int(k[1:]): v for k, v in pts.items()})
 
     def build(s):
         poses = s.m.poses(); out = {}; rx = ry = 0.0
         for f, p in enumerate(poses):
-            T = pch(s.th, f); sp = pch(s.sp, f); c, sn = math.cos(T), math.sin(T)
+            T = pch(s.th, f); sp = pch(s.sp, f); lt = pch(s.lt, f); c, sn = math.cos(T), math.sin(T)
             rot = lambda x, y: (c * x - sn * y, sn * x + c * y)
             q = dict(p)
             for a, b in (('R_ax', 'R_ay'), ('L_ax', 'L_ay'), ('bx', 'by'), ('R_kx', 'R_ky'), ('L_kx', 'L_ky')):
@@ -66,7 +67,7 @@ class Dr:
             q['brz'] = p.get('brz', 0.0) + T
             q['cx'] = 1.0; q['fxd'] = T; q['fxm'] = max(0.0, pch(s.fx, f)); q['fxp'] = f * 0.9
             out[f] = q
-            rx += -sn * sp; ry += c * sp
+            rx += -sn * sp + c * lt; ry += c * sp + sn * lt
         s.m.keys = out
         return s.m
 
