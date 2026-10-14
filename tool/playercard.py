@@ -28,46 +28,71 @@ def key_stats(p):
     return [(OUT_STATS[i], to_int(p.get(OUT_STATS[i]), 0)) for i in ks]
 
 
+PARTICLES = {'van', 'de', 'dos', 'da', 'di', 'del', 'der', 'den', 'al', 'el', 'le', 'la', 'ter', 'von', 'bin'}
+
+
+def surname(name):
+    w = (name or '').split()
+    if len(w) < 2: return (name or '').upper()
+    return (' '.join(w[-2:]) if w[-2].lower() in PARTICLES else w[-1]).upper()
+
+
 def face(p, kit=None):
-    """close-up of the player's head and shoulders, facing the camera."""
+    """head and shoulders, facing the camera, big."""
     im = looks.render(p, 'guard', 0, 0, kit, shadow=False)
-    return im.crop((11, 8, 29, 23)).resize((54, 45), Image.NEAREST)   # 18x15 -> x3
+    return im.crop((13, 8, 27, 20)).resize((56, 48), Image.NEAREST)
+
+
+def _text2(im, x, y, s, col, k=2):
+    t = Image.new('RGBA', (text_w(s) + 2, 7), (0, 0, 0, 0)); draw_text(t, 0, 0, s, col)
+    im.alpha_composite(t.resize((t.width * k, t.height * k), Image.NEAREST), (x, y))
+
+
+def _mix(a, b, t):
+    return tuple(int(a[i] * (1 - t) + b[i] * t) for i in range(3))
 
 
 def card(p, kit=None, state='ready'):
     r = RC.get(p.get('rarity'), RC['COMMON']); legend = p.get('rarity') == 'LEGEND'
-    im = Image.new('RGBA', (CW, CH), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-    d.rectangle([0, 0, CW - 1, CH - 1], fill=INK + (255,)); d.rectangle([1, 1, CW - 2, CH - 2], fill=r['main'] + (255,)); d.rectangle([2, 2, CW - 3, CH - 3], fill=PANEL + (255,))
-    if legend:
-        d.rectangle([2, 2, CW - 3, 2], fill=(255, 250, 200, 255)); d.rectangle([2, CH - 3, CW - 3, CH - 3], fill=(255, 250, 200, 255))
-        for (x, y) in ((1, 1), (CW - 2, 1), (1, CH - 2), (CW - 2, CH - 2)):
-            for k in (-1, 0, 1): d.point((x + k, y), (255, 250, 200, 255)); d.point((x, y + k), (255, 250, 200, 255))
-    # rarity strip: rating box, rarity name, role
-    d.rectangle([3, 3, 15, 11], fill=INK + (255,)); d.rectangle([4, 4, 14, 10], fill=r['main'] + (255,))
-    rt = str(p.get('rating', '')); draw_text(im, 4 + (11 - text_w(rt)) // 2 + 1, 5, rt, INK + (255,))
-    rn = (p.get('rarity') or '').upper(); draw_text(im, 18, 5, rn, r['light'] + (255,))
-    role = p.get('role', ''); d.rectangle([CW - 4 - text_w(role) - 3, 3, CW - 4, 11], fill=INK + (255,)); draw_text(im, CW - 4 - text_w(role) - 1, 5, role, (255, 255, 255, 255))
-    # art window with the face
-    ax0, ay0, ax1, ay1 = 4, 13, CW - 5, 58
-    for y in range(ay0, ay1 + 1):
-        t = (y - ay0) / (ay1 - ay0); base = tuple(int(r['dark'][i] * (1 - 0.5 * t) + 20 * t) for i in range(3)); d.line([(ax0, y), (ax1, y)], fill=base + (255,))
-    for x in range(ax0, ax1 + 1, 2):
-        for y in range(ay0 + 18, ay0 + 30):
-            if (x + y) % 4 == 0: d.point((x, y), tuple(min(255, v + 16) for v in r['dark']) + (255,))
-    fc = face(p, kit); im.alpha_composite(fc, (ax0 + 1, ay0 + 1)); d.rectangle([ax0 - 1, ay0 - 1, ax1 + 1, ay1 + 1], outline=INK + (255,))
-    # name plate (surname on the plate; long names wrap)
-    d.rectangle([4, 60, CW - 5, 73], fill=INK + (255,)); d.rectangle([5, 61, CW - 6, 72], fill=r['main'] + (255,))
-    nm = (p.get('name') or '').upper()
-    if text_w(nm) <= CW - 12: draw_text(im, (CW - text_w(nm)) // 2, 64, nm, INK + (255,))
-    else:
-        w = nm.split(' '); l1, l2 = ' '.join(w[:-1]), w[-1]
-        if text_w(l1) > CW - 12: l1 = w[0][0] + '. ' + ' '.join(w[1:-1]) if len(w) > 2 else w[0][0] + '.'
-        draw_text(im, (CW - text_w(l1)) // 2, 62, l1, INK + (255,)); draw_text(im, (CW - text_w(l2)) // 2, 67, l2, INK + (255,))
-    # three key stats
-    for ci, (k, v) in enumerate(key_stats(p)):
-        x0 = 4 + ci * 19; d.rectangle([x0, 75, x0 + 17, 87], fill=INK + (255,))
-        draw_text(im, x0 + 3, 76, k, (170, 176, 208, 255)); draw_text(im, x0 + 3, 82, str(v), STAT_COL + (255,))
-        d.rectangle([x0 + 11, 83, x0 + 15, 85], fill=(48, 48, 70, 255)); d.rectangle([x0 + 11, 85 - int(2 * v / 100), x0 + 15, 85], fill=STAT_COL + (255,))
+    base = (12, 13, 20); im = Image.new('RGBA', (CW, CH), (0, 0, 0, 0)); px = im.load()
+    cx, cy = 32, 28
+    for y in range(CH):
+        for x in range(CW):
+            t = y / (CH - 1); c = _mix(_mix(r['dark'], base, 0.55), base, t)
+            dd = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5          # glow behind the head
+            if dd < 30: c = _mix(c, r['main'], 0.38 * (1 - dd / 30) ** 1.5)
+            if (x - y // 2) % 9 == 0 and 14 < y < 60: c = _mix(c, r['light'], 0.05)   # faint diagonal streaks
+            px[x, y] = c + (255,)
+    # head and shoulders, fading into the dark at the bottom
+    fc = face(p, kit); im.alpha_composite(fc, (4, 12))
+    for y in range(46, 61):
+        t = (y - 46) / 14
+        for x in range(CW):
+            c = px[x, y]; px[x, y] = _mix(c[:3], _mix(r['dark'], base, 0.8), min(1, t * t * 1.15)) + (255,)
+    d = ImageDraw.Draw(im)
+    # chamfered outline in the rarity colour
+    edge = r['light'] if legend else r['main']
+    for x in range(2, CW - 2): d.point((x, 0), edge + (255,)); d.point((x, CH - 1), edge + (255,))
+    for y in range(2, CH - 2): d.point((0, y), edge + (255,)); d.point((CW - 1, y), edge + (255,))
+    for (x, y, dx, dy) in ((1, 1, 1, 1), (CW - 2, 1, -1, 1), (1, CH - 2, 1, -1), (CW - 2, CH - 2, -1, -1)): d.point((x, y), edge + (255,))
+    for (x, y) in ((0, 0), (CW - 1, 0), (0, CH - 1), (CW - 1, CH - 1)): d.point((x, y), (0, 0, 0, 0))
+    # top left: rating (big) and role; top right: rarity
+    _text2(im, 5, 5, str(p.get('rating', '')), (255, 255, 255, 255))
+    role = p.get('role', ''); draw_text(im, 5, 18, role, r['light'] + (255,))
+    d.line([(5, 25), (5 + max(text_w(role), 10), 25)], fill=r['main'] + (255,))
+    rn = (p.get('rarity') or '').upper(); draw_text(im, CW - 5 - text_w(rn), 5, rn, r['light'] + (255,))
+    # surname
+    nm = surname(p.get('name')); ww = text_w(nm)
+    draw_text(im, (CW - ww) // 2, 63, nm, (255, 255, 255, 255))
+    d.line([(5, 66), (CW // 2 - ww // 2 - 3, 66)], fill=r['dark'] + (255,)); d.line([(CW // 2 + ww // 2 + 3, 66), (CW - 6, 66)], fill=r['dark'] + (255,))
+    d.line([(CW // 2 - 6, 70), (CW // 2 + 5, 70)], fill=edge + (255,))
+    # three stats: no boxes, thin dividers
+    for ci, (kk, v) in enumerate(key_stats(p)):
+        x0 = 4 + ci * 19; cxm = x0 + 9
+        draw_text(im, cxm - text_w(kk) // 2, 76, kk, (140, 146, 176, 255))
+        _text2(im, cxm - text_w(str(v)) + 1, 82, str(v), STAT_COL + (255,), 1) if False else draw_text(im, cxm - text_w(str(v)) // 2, 82, str(v), (255, 255, 255, 255))
+        if ci: d.line([(x0 - 1, 76), (x0 - 1, 86)], fill=r['dark'] + (255,))
+        d.line([(x0 + 3, 87), (x0 + 3 + int(12 * v / 100), 87)], fill=r['main'] + (255,))
     arr = np.array(im)
     if state == 'unavailable':
         arr[..., :3] = (arr[..., :3] * 0.3).astype(np.uint8); im = Image.fromarray(arr, 'RGBA')
