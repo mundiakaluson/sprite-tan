@@ -365,6 +365,11 @@ def merge(keys, f, d):
 
 
 def anim_kick():
+    keys, N = kick_keys()
+    return build_anim(keys, N), None
+
+
+def kick_keys():
     N = 22
     keys = {}
     rooty_run = [-19.8, -17.5, -15.2, -12.9, -10.6, -8.3, -6.0, -3.0]
@@ -429,10 +434,15 @@ def anim_kick():
     K(14, root_y=6.5, pz=27.5, ppitch=0.2, pyaw=0.25, cyaw=-0.15)
     merge(keys, 14, foot('R', 0.2, 20.0, 19.0, 55)); merge(keys, 14, foot('L', -3.6, 5.5, 8.0, 20))
     merge(keys, 15, foot('R', 0.0, 20.5, 17.5, 40)); merge(keys, 15, foot('L', -3.0, 3.5, 10.0, 25))
-    return build_anim(keys, N), None
+    return keys, N
 
 
 def anim_finesse():
+    keys, N = finesse_keys()
+    return build_anim(keys, N), None
+
+
+def finesse_keys():
     """Right-foot inside-of-foot curler: angled approach, wide bent plant leg, big lean away
     from the kicking side, arms flung wide, short open-hip backswing, foot sweeps ACROSS the
     body, ball starts left of target and bends back right."""
@@ -534,7 +544,7 @@ def anim_finesse():
             (-5.4, 49.0, 14.8), (-4.4, 54.0, 15.4), (-2.9, 58.5, 15.6), (-1.2, 62.5, 15.4)]
     for i, (x, y, z) in enumerate(path):
         merge(keys, 13 + i, dict(bx=x, by=y, bz=z, brx=0.8 * (i + 1), brz=-1.6 * (i + 1), bvis=1.0))
-    return build_anim(keys, N), None
+    return keys, N
 
 
 def anim_guard():
