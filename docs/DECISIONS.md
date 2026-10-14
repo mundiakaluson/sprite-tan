@@ -20,3 +20,13 @@ Full text: the design document (see CLAUDE.md for the link).
   the mirrored pose (moves.mirror_pose, previewed in the Cards tab) or, in the game, the right-foot sprite flipped horizontally with the direction index mirrored (32 - d).
 - Shot animations: sprites/moves_shot.py generates data/animations/shXX_*.json (do not hand-edit those unless you also remove the id from the generator).
   Contact points are computed from the rig (moves.aim_ball / snap_ball), so the ball always meets the boot or head.
+- Passing is the core verb, so pass cards have short cooldowns (1-5 turns of the 3-13 shot range; roughly 45% of the first pass values). Tune in data/cards.csv.
+- Pass flow (interaction state): the manager picks a pass card, then taps the teammate to pass to (valid targets are highlighted, with an aim line showing speed and risk).
+  The holder turns to face the target and plays the card's animation; the ball is released on the animation's `strike` event.
+  If the manager does nothing the players pass by themselves: the holder scores teammates by openness, distance, forward progress and the holder's PAS,
+  and keeps looking for a better opening until a defender closes in. A card played mid-hold overrides the AI choice.
+- Ball variables on cards (cards.csv: ball_speed 0-10, ball_arc 0-10, ball_curve -5..5, blank when a card has no ball flight). The game flies the ball itself from
+  these and the target, so the baked animation only supplies the body and the release frame. Player stats modify them:
+  speed = ball_speed x (0.7 + 0.6 x stat/100), where stat is the average of the card's `stats` for that player (PAS for passes, SHO for shots; PHY adds to headers/long balls).
+  Arc and curve scale the same way, and a weak stat also widens the aim error. So a driven pass from a high-PAS player is both faster and more accurate than from a low-PAS one.
+  First-pass values were read off the animations; tune them in the Cards tab (ball speed / arc / curve).

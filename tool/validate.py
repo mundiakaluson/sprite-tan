@@ -54,6 +54,9 @@ def run():
         for k in ('succ', 'risk'):
             v = to_int(r.get(k))
             if v is None or not 0 <= v <= 100: add('error', 'cards', i, f'{k} must be 0-100')
+        for k, lo, hi in (('ball_speed', 0, 10), ('ball_arc', 0, 10), ('ball_curve', -5, 5)):
+            v = r.get(k, '')
+            if v != '' and (to_int(v) is None or not lo <= to_int(v) <= hi): add('error', 'cards', i, f'{k} must be blank or a number {lo} to {hi}')
         if to_int(r.get('cd')) is None or to_int(r['cd']) < 0: add('error', 'cards', i, 'cd must be a number >= 0')
         if to_int(r.get('slots')) is None or to_int(r['slots']) < 1: add('error', 'cards', i, 'slots must be >= 1')
         for s in (r.get('stats') or '').split('+'):

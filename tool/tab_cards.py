@@ -99,8 +99,9 @@ class CardsTab(ttk.Frame):
         ef = ttk.LabelFrame(tb, text='Selected card', padding=4); ef.pack(fill='x')
         self.sel_lbl = ttk.Label(ef, text='nothing selected', foreground='#8a90a0'); self.sel_lbl.grid(row=0, column=0, columnspan=2, sticky='w')
         fields = (('name', 'entry', None), ('cat', 'combo', CARD_CATS), ('rarity', 'combo', RARITY), ('timing', 'combo', TIMING), ('kind', 'combo', KIND), ('stats', 'entry', None),
-                  ('slots', 'spin', (1, 12)), ('succ', 'spin', (1, 100)), ('risk', 'spin', (0, 100)), ('cd', 'spin', (0, 99)))
-        lab = dict(cat='category', succ='success', cd='cooldown')
+                  ('slots', 'spin', (1, 12)), ('succ', 'spin', (1, 100)), ('risk', 'spin', (0, 100)), ('cd', 'spin', (0, 99)),
+                  ('ball_speed', 'spin', (0, 10)), ('ball_arc', 'spin', (0, 10)), ('ball_curve', 'spin', (-5, 5)))
+        lab = dict(cat='category', succ='success', cd='cooldown', ball_speed='ball speed', ball_arc='ball arc', ball_curve='ball curve')
         for n, (k, kind, arg) in enumerate(fields, 1):
             ttk.Label(ef, text=lab.get(k, k)).grid(row=n, column=0, sticky='w')
             if kind == 'combo':
