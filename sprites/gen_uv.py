@@ -454,16 +454,16 @@ def leg_trail(prev, cur, dname, atlas=None, n=3):
     for i, pp in enumerate(prev[:n], 1):
         al = np.array(render_uv(centered(pp, cur), dname, False))[..., 3] > 0
         al[:hip_row] = False
-        ox = int(round(ux * 2.2 * i)); oy = int(round(uy * 2.2 * i))
+        ox = int(round(ux * 1.0 * i)); oy = int(round(uy * 1.0 * i))
         sh = np.zeros_like(al); ys0, ys1 = max(0, oy), min(CH, CH + oy); xs0, xs1 = max(0, ox), min(CW, CW + ox)
         sh[ys0:ys1, xs0:xs1] = al[ys0 - oy:ys1 - oy, xs0 - ox:xs1 - ox]
         out[sh] = (200, 205, 216, int(130 * m * (1.0 - 0.3 * (i - 1))))
     for s_ in ('R', 'L'):                                   # streaks trailing off each boot
         fp = Rf @ np.array([cc[s_ + '_ax'], cc[s_ + '_ay'], cc[s_ + '_az']])
         px, py = OX + fp[0] * SC, OY - float(fp @ UP) * SC
-        for j in range(1, 9):
+        for j in range(1, 8):
             x, y = int(round(px + ux * j)), int(round(py + uy * j))
-            if 0 <= x < CW and 0 <= y < CH and out[y, x, 3] < 150: out[y, x] = (214, 218, 228, int(150 * m * (1 - j / 9.0)))
+            if 0 <= x < CW and 0 <= y < CH and out[y, x, 3] < 150: out[y, x] = (214, 218, 228, int(170 * m * (1 - j / 8.0)))
     return Image.fromarray(out, 'RGBA')
 
 
