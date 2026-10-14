@@ -27,18 +27,23 @@ no outline. Hair is a separate layer sheet per style and animation (`sprites/out
 
 ## Run it
 
+Windows (PowerShell):
+
 ```
 git clone https://github.com/mundiakaluson/sprite-tan
 cd sprite-tan
-python3 -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+python -m venv .venv
+.venv\Scripts\Activate.ps1      # if blocked: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 pip install -r requirements.txt
 
-cd sprites                       # the scripts must be run from this folder
-python3 gen_uv.py                # body sheets, skin atlases, previews (about 2 minutes)
-python3 export_hair.py           # 10 hair styles x 5 animations into out_uv/hair (about 2 minutes)
-python3 preview_hair_styles.py   # contact sheet of all hair styles -> hair_test.png
+cd sprites                        # run the scripts from this folder
+python gen_uv.py                  # body sheets and skin atlases, about 2 minutes
+python export_hair.py             # the 10 hair styles, about 2 minutes
+python preview_hair_styles.py     # makes hair_test.png, a contact sheet of every style
 ```
+
+macOS / Linux: the same, but use `python3`, and activate with `source .venv/bin/activate`.
+Already cloned? Run `git pull` to get the latest files.
 
 The built sheets are already committed in `sprites/out_uv/`, so you only need to run these after changing the code.
 Python 3.10 or newer. The scripts that make `data/*.csv` are in `scripts/` and are run from `data/`.
