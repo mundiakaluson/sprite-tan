@@ -57,9 +57,11 @@ class CardsTab(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.t = tables.table('cards'); self.i = None; self.state = tk.StringVar(value='ready'); self.cool = tk.DoubleVar(value=0.5)
-        pw = tables.Split(self); pw.pack(fill='both', expand=True)
+        self.loading = False; self.w = {}
+        self.toolbar()
+        pw = tables.Split(self); pw.pack(side='left', fill='both', expand=True)
         ch = dict(cat=CARD_CATS, rarity=RARITY, timing=TIMING, kind=KIND)
-        self.grid = tables.Grid(pw, self.t, choices=ch, new_row=new_card, on_select=self.select, width_for=dict(name=150, description=320, stats=90))
+        self.grid = tables.Grid(pw, self.t, choices=ch, new_row=new_card, on_select=self.select, width_for=dict(name=150, description=320, stats=90), editable=False)
         pw.add(self.grid)
         side = ttk.Frame(pw, padding=6, width=330); side.pack_propagate(False); pw.add(side)
         self.cv = tk.Canvas(side, width=300, height=400, bg='#1e1f2a', highlightthickness=0); self.cv.pack()
@@ -72,10 +74,89 @@ class CardsTab(ttk.Frame):
         ttk.Button(side, text='Preview a hand of 8', command=self.hand).pack(fill='x', pady=2)
         ttk.Button(side, text='Export all card faces + tooltips (PNG)', command=self.export_all).pack(fill='x')
         self.note = ttk.Label(side, text='', wraplength=300, justify='left', foreground='#9aa0ae'); self.note.pack(anchor='w', pady=4)
-        self.t.listeners.append(self.draw)
+        self.t.listeners.append(self.draw); self.t.listeners.append(self.load_form)
+
+    # ------------------------------------------------------------------ left toolbar: sort, show, edit the selected card(s)
+    SORTS = [('id', 'id'), ('name', 'name'), ('category', 'cat'), ('rarity', 'rarity'), ('slots', 'slots'), ('success', 'succ'), ('risk', 'risk'), ('cooldown', 'cd')]
+
+    def toolbar(self):
+        tb = ttk.Frame(self, padding=6, width=262); tb.pack(side='left', fill='y'); tb.pack_propagate(False)
+        sf = ttk.LabelFrame(tb, text='Sort', padding=4); sf.pack(fill='x')
+        self.sortv = tk.StringVar(value='id'); self.desc = tk.IntVar(value=0)
+        cb = ttk.Combobox(sf, values=[n for n, _ in self.SORTS], textvariable=self.sortv, state='readonly', width=11); cb.pack(side='left'); cb.bind('<<ComboboxSelected>>', lambda e: self.apply_sort())
+        ttk.Checkbutton(sf, text='high to low', variable=self.desc, command=self.apply_sort).pack(side='left', padx=6)
+        ff = ttk.LabelFrame(tb, text='Show', padding=4); ff.pack(fill='x', pady=4)
+        self.flt = {}
+        for n, (k, vals) in enumerate((('cat', CARD_CATS), ('rarity', RARITY), ('timing', TIMING), ('kind', KIND))):
+            ttk.Label(ff, text={'cat': 'category'}.get(k, k)).grid(row=n, column=0, sticky='w')
+            v = tk.StringVar(value='all'); self.flt[k] = v
+            c = ttk.Combobox(ff, values=['all'] + vals, textvariable=v, state='readonly', width=14); c.grid(row=n, column=1, sticky='ew', pady=1); c.bind('<<ComboboxSelected>>', lambda e: self.apply_filter())
+        ttk.Button(ff, text='Show all', command=self.clear_filter).grid(row=4, column=0, columnspan=2, sticky='ew', pady=(3, 0))
+        ef = ttk.LabelFrame(tb, text='Selected card', padding=4); ef.pack(fill='x')
+        self.sel_lbl = ttk.Label(ef, text='nothing selected', foreground='#8a90a0'); self.sel_lbl.grid(row=0, column=0, columnspan=2, sticky='w')
+        fields = (('name', 'entry', None), ('cat', 'combo', CARD_CATS), ('rarity', 'combo', RARITY), ('timing', 'combo', TIMING), ('kind', 'combo', KIND), ('stats', 'entry', None),
+                  ('slots', 'spin', (1, 12)), ('succ', 'spin', (1, 100)), ('risk', 'spin', (0, 100)), ('cd', 'spin', (0, 99)))
+        lab = dict(cat='category', succ='success', cd='cooldown')
+        for n, (k, kind, arg) in enumerate(fields, 1):
+            ttk.Label(ef, text=lab.get(k, k)).grid(row=n, column=0, sticky='w')
+            if kind == 'combo':
+                w = ttk.Combobox(ef, values=arg, state='readonly', width=14); w.bind('<<ComboboxSelected>>', lambda e, k=k, w=w: self.put(k, w.get()))
+            elif kind == 'entry':
+                w = ttk.Entry(ef, width=17); w.bind('<Return>', lambda e, k=k, w=w: self.put(k, w.get())); w.bind('<FocusOut>', lambda e, k=k, w=w: self.put(k, w.get()))
+            else:
+                w = ttk.Spinbox(ef, from_=arg[0], to=arg[1], width=6, command=lambda k=k: self.put_num(k)); w.bind('<Return>', lambda e, k=k: self.put_num(k)); w.bind('<FocusOut>', lambda e, k=k: self.put_num(k))
+            w.grid(row=n, column=1, sticky='w', pady=1); self.w[k] = w
+        ttk.Label(ef, text='description').grid(row=len(fields) + 1, column=0, sticky='nw')
+        self.desc_w = tk.Text(ef, width=17, height=5, wrap='word', font=('TkDefaultFont', 9)); self.desc_w.grid(row=len(fields) + 1, column=1, sticky='w', pady=1)
+        self.desc_w.bind('<FocusOut>', lambda e: self.put('description', self.desc_w.get('1.0', 'end').strip()))
+        self.rng = dict((k, a) for k, _, a in fields if _ == 'spin')
+
+    def apply_sort(self):
+        col = dict(self.SORTS)[self.sortv.get()]; self.grid.sort_col = col; self.grid.sort_rev = bool(self.desc.get()); self.grid.fill()
+
+    def apply_filter(self):
+        f = {k: v.get() for k, v in self.flt.items() if v.get() != 'all'}
+        self.grid.extra_filter = (lambda r: all(r.get(k) == v for k, v in f.items())) if f else None; self.grid.fill()
+
+    def clear_filter(self):
+        for v in self.flt.values(): v.set('all')
+        self.apply_filter()
+
+    def idxs(self):
+        return [i for i in self.grid.selected_indices() if i < len(self.t.rows)]
+
+    def put(self, k, v):
+        if self.loading: return
+        ix = self.idxs()
+        if not ix: return
+        if all(self.t.rows[i].get(k, '') == v for i in ix): return
+        self.t.snapshot()
+        for i in ix: self.t.set(i, k, v, snap=False)
+
+    def put_num(self, k):
+        if self.loading: return
+        v = to_int(self.w[k].get()); lo, hi = self.rng[k]
+        if v is None: self.load_form(); return
+        self.put(k, str(max(lo, min(hi, v))))
+
+    def load_form(self):
+        ix = self.idxs(); self.loading = True
+        try:
+            if not ix:
+                self.sel_lbl.config(text='nothing selected'); return
+            r = self.t.rows[ix[0]]
+            self.sel_lbl.config(text=f"{r['id']}  {r['name']}" if len(ix) == 1 else f'{len(ix)} cards selected: edits apply to all')
+            for k, w in self.w.items():
+                v = r.get(k, '')
+                if isinstance(w, ttk.Combobox): w.set(v)
+                elif w.get() != v: w.delete(0, 'end'); w.insert(0, v)
+            d = r.get('description', '')
+            if self.desc_w.get('1.0', 'end').strip() != d: self.desc_w.delete('1.0', 'end'); self.desc_w.insert('1.0', d)
+        finally:
+            self.loading = False
 
     def select(self, idx):
-        self.i = idx[0] if idx else None; self.draw()
+        self.i = idx[0] if idx else None; self.load_form(); self.draw()
 
     def draw(self):
         if self.i is None or self.i >= len(self.t.rows): return

@@ -127,8 +127,9 @@ def watch_all(root, ms=1500, status=None):
 class Grid(ttk.Frame):
     """Treeview grid bound to a Table. Double-click a cell to edit, header click sorts, filter box, add/duplicate/delete."""
 
-    def __init__(self, master, tbl, choices=None, new_row=None, on_select=None, hide=(), width_for=None, extra_buttons=()):
+    def __init__(self, master, tbl, choices=None, new_row=None, on_select=None, hide=(), width_for=None, extra_buttons=(), editable=True):
         super().__init__(master)
+        self.editable = editable; self.extra_filter = None
         self.t = tbl; self.choices = choices or {}; self.new_row = new_row; self.on_select = on_select
         self.hide = set(hide); self.sort_col = None; self.sort_rev = False; self.edit = None; self.view = []
         bar = ttk.Frame(self); bar.pack(fill='x')
@@ -164,7 +165,7 @@ class Grid(ttk.Frame):
     def fill(self):
         sel = self.selected_indices()
         q = self.filter.get().lower().strip()
-        idx = [i for i, r in enumerate(self.t.rows) if not q or any(q in str(v).lower() for v in r.values())]
+        idx = [i for i, r in enumerate(self.t.rows) if (not q or any(q in str(v).lower() for v in r.values())) and (not self.extra_filter or self.extra_filter(r))]
         if self.sort_col:
             def key(i):
                 v = self.t.rows[i].get(self.sort_col, '')
@@ -192,6 +193,7 @@ class Grid(ttk.Frame):
 
     # --- editing
     def begin_edit(self, ev):
+        if not self.editable: return
         if self.tv.identify_region(ev.x, ev.y) != 'cell': return
         iid = self.tv.identify_row(ev.y); col = self.tv.identify_column(ev.x)
         if not iid: return
