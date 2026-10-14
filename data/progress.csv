@@ -1,7 +1,7 @@
 stage,item,status,note
-Design,Core rules and decisions (design doc),done,
-Design,Open questions: deck size / coins / resolution constants / pass cards / name swap,todo,checkpoint before Godot
-Sprites,Body rig and 32-direction sheets,done,
+Design,Core rules and decisions (design doc),todo,
+Design,Open questions: deck size / coins / resolution constants / pass cards / name swap,doing,checkpoint before Godot
+Sprites,Body rig and 32-direction sheets,todo,
 Sprites,Hair layers (10 styles),done,
 Sprites,Kits (data/kits.csv),done,
 Data,300 players,done,
