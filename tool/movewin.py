@@ -7,6 +7,7 @@ import looks  # puts sprites/ on the path
 import gen_uv as U
 import custom_anims as C
 import moves as M
+import aura
 
 KITS = ['home', 'away']
 
@@ -39,7 +40,7 @@ class MovePanel(ttk.Frame):
         bc = ttk.Combobox(r3, values=['on the ground', 'in the air: low', 'in the air: mid', 'in the air: high'], textvariable=self.bstate, state='readonly', width=16); bc.pack(side='left', padx=3)
         bc.bind('<<ComboboxSelected>>', lambda e: self.set_card(self.card))
         ttk.Label(r3, text='(passes: the game picks the air version from the ball height)', foreground='#8a90a0').pack(side='left')
-        self.card = None
+        self.card = None; self.tc = 0
         self.tick()
 
     def set_card(self, card):
@@ -62,16 +63,24 @@ class MovePanel(ttk.Frame):
         self.f %= len(self.poses); d = int(round(float(self.dirv.get()))) % 32; p = self.poses[self.f]; dn = U.DIRS[d]
         ball = self.ball.get() and p.get('bvis', 0) > 0.5; key = (self.f, d, ball, self.foot.get())
         if self.foot.get() == 'L': p = M.mirror_pose(p)
+        ar = aura.row(self.card['id']) if self.card else None
+        if ar: key = key + (self.tc % 280,)
         if key not in self.cache:
             bg = U.bg_pitch(U.CW, U.CH); under, over = U.extras(U.centered(p), dn)
             body = U.apply_skin(U.render_uv(U.centered(p), dn, with_ball=ball), self.atlas()); mp = M.mirror_pose if self.foot.get() == 'L' else (lambda q: q); gh = U.leg_trail([mp(self.poses[(self.f - k) % len(self.poses)]) for k in (1, 2, 3)], p, dn)
             bg.alpha_composite(under)
+            if ar:
+                au, ao = aura.layers(ar, self.tc, U.CW, U.CH); bg.alpha_composite(au)
+                if ar['scope'] in ('target', 'two', 'opponent'): bg.alpha_composite(aura.marker(ar, self.tc, U.CW, U.CH, 33, 31))
+                if ar['scope'] == 'two': bg.alpha_composite(aura.marker(ar, self.tc, U.CW, U.CH, 7, 31))
             if gh is not None: bg.alpha_composite(gh)
             bg.alpha_composite(body); bg.alpha_composite(over)
+            if ar: bg.alpha_composite(ao)
             self.cache[key] = ImageTk.PhotoImage(bg.resize((int(U.CW * self.S), int(U.CH * self.S)), Image.NEAREST))
             if len(self.cache) > 700: self.cache.clear()
         self.cv.create_image(0, 0, anchor='nw', image=self.cache[key])
         self.cv.create_text(6, 6, anchor='nw', fill='white', text=f"{self.a['label']}  {self.f + 1}/{len(self.poses)}  angle {d}")
+        if ar: self.cv.create_text(6, int(U.CH * self.S) - 6, anchor='sw', fill=ar['color'], text=f"aura: {ar['scope']}, {ar['shape']}, {ar['duration_s']}s")
 
     def toggle(self):
         self.playing = not self.playing; self.playb.config(text='Pause' if self.playing else 'Play')
@@ -81,5 +90,6 @@ class MovePanel(ttk.Frame):
         if self.playing and self.poses:
             self.f = (self.f + 1) % len(self.poses)
             if self.rot.get() and self.f == 0: self.dirv.set((int(float(self.dirv.get())) + 2) % 32)
+        self.tc += 1
         if self.winfo_ismapped(): self.render()
         self.after(int((self.a.get('ms', 70) if self.a else 100) / max(self.spd.get(), 0.1)), self.tick)
