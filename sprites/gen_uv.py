@@ -269,8 +269,18 @@ def make_skin(s):
     fill('CHEST', 0, 0, 27, 11, j)
     fill('CHEST', 0, 0, 27, 0, j2)                         # collar ring
     fill('CHEST', 9, 1, 11, 2, sk)                         # V-neck
-    if s.get('band'):
-        fill('CHEST', 0, 6, 27, 7, s['band'])
+    band = s.get('band') or j2
+    pat = s.get('pattern') or ('hoop' if s.get('band') else 'plain')
+    if pat == 'hoop':
+        fill('CHEST', 0, 6, 27, 7, band)
+    elif pat == 'hoops':
+        fill('CHEST', 0, 4, 27, 5, band); fill('CHEST', 0, 8, 27, 9, band)
+    elif pat == 'stripes':
+        for cx in range(0, 28, 4):
+            fill('CHEST', cx, 1, cx + 1, 11, band)
+    elif pat == 'sash':
+        for r in range(1, 12):
+            fill('CHEST', max(0, min(27, 5 + r)), r, max(0, min(27, 6 + r)), r, band)
     num = s['number']
     digs = list(num)
     x0 = 21 + (7 - (len(digs) * 3 + (len(digs) - 1))) // 2
@@ -363,8 +373,30 @@ SKINS = {
                   stripe=hexc('22222e'), socks=hexc('22222e'), sock_trim=hexc('ecba3c'), skin=hexc('d09468'),
                   hair=hexc('d6a64c'), boots=hexc('62e04a'), accent=hexc('1c1c28'), number='9', band=hexc('ecba3c')),
 }
+
+
+def load_kits(path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'kits.csv')):
+    """data/kits.csv (edited in the manager tool) replaces/extends the built-in kits above. Colours are #rrggbb; blank = not used."""
+    import csv
+    if not os.path.exists(path):
+        return
+    for r in csv.DictReader(open(path, encoding='utf-8-sig')):
+        k = {c: hexc(r[c]) for c in ('jersey', 'trim', 'shorts', 'shorts_trim', 'stripe', 'socks', 'sock_trim', 'boots', 'accent') if r.get(c)}
+        for c in ('band', 'glove'):
+            if r.get(c):
+                k[c] = hexc(r[c])
+        k['number'] = r.get('number') or '10'
+        k['pattern'] = r.get('pattern') or 'plain'
+        base = SKINS.get(r['id'], SKINS['home'])
+        SKINS[r['id']] = dict(base, **k) if r['id'] in SKINS else dict(SKINS['home'], **k)
+        for opt in ('band', 'glove'):
+            if opt not in k:
+                SKINS[r['id']].pop(opt, None)
+
+
+load_kits()
 SKINS['home_muddy'] = dict(SKINS['home'], mud=True)
-SKIN_ORDER = ['home', 'away', 'keeper', 'third', 'home_muddy']
+SKIN_ORDER = [k for k in SKINS if k != 'home_muddy'] + ['home_muddy']
 
 
 def apply_skin(uv, skin):

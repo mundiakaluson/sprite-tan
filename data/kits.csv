@@ -1,0 +1,5 @@
+id,name,pattern,jersey,trim,shorts,shorts_trim,stripe,socks,sock_trim,boots,accent,band,glove,number
+home,Home,plain,#d63240,#f4f4fa,#f0f0f8,#d63240,#d63240,#d63240,#f4f4fa,#f0f0fa,#24243c,,,10
+away,Away,plain,#eceef6,#24306e,#24306e,#eceef6,#eceef6,#eceef6,#24306e,#1c1c2c,#f0c040,,,7
+keeper,Keeper,plain,#3caa5a,#fad63c,#1c1c28,#fad63c,#3caa5a,#1c1c28,#fad63c,#f08a30,#1c1c28,,#e8f03c,1
+third,Third,hoop,#22222e,#ecba3c,#ecba3c,#22222e,#22222e,#22222e,#ecba3c,#62e04a,#1c1c28,#ecba3c,,9

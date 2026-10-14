@@ -85,4 +85,11 @@ def run():
             tot = sum(float(r[k]) for k in ('common', 'uncommon', 'rare', 'epic', 'legend'))
             if abs(tot - 100) > 0.5: add('warn', 'pack_odds', r['pack'], f'odds add up to {tot}, not 100')
         except ValueError: add('error', 'pack_odds', r['pack'], 'non-numeric odds')
+    import re
+    for r in tables.table('kits').rows:
+        for c in ('jersey', 'trim', 'shorts', 'shorts_trim', 'stripe', 'socks', 'sock_trim', 'boots', 'accent'):
+            if not re.fullmatch(r'#[0-9a-fA-F]{6}', r.get(c) or ''): add('error', 'kits', r['id'], f'{c} must be #rrggbb')
+        for c in ('band', 'glove'):
+            if r.get(c) and not re.fullmatch(r'#[0-9a-fA-F]{6}', r[c]): add('error', 'kits', r['id'], f'{c} must be #rrggbb or blank')
+        if r.get('pattern') not in ('plain', 'hoop', 'hoops', 'stripes', 'sash'): add('error', 'kits', r['id'], 'unknown pattern')
     return out

@@ -41,7 +41,7 @@ PREFIX = ('R_', 'L_')
 class AnimTab(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
-        self.a = None; self._poses = None; self.f = 0; self.dirty = False; self.playing = False; self.clip = None; self.q = queue.Queue(); self.rows = {}
+        self.a = None; self.hist = []; self.redo = []; self._poses = None; self.f = 0; self.dirty = False; self.playing = False; self.clip = None; self.q = queue.Queue(); self.rows = {}
         self.dirv = tk.IntVar(value=2); self.onion = tk.BooleanVar(value=False); self.showball = tk.BooleanVar(value=True)
         self.kit = tk.StringVar(value='home'); self.hair = tk.BooleanVar(value=True); self._busy = False; self._after = None
         self.skin = looks.player_skin(dict(role='CM', skin='2', hair_color='brown', hair_style='H01_buzz'))
@@ -58,7 +58,7 @@ class AnimTab(ttk.Frame):
         ttk.Button(top, text='Delete', command=self.delete).pack(side='left', padx=2)
         pr = ttk.Frame(left); pr.pack(fill='x', pady=3)
         self.v_frames = tk.IntVar(value=8); self.v_ms = tk.IntVar(value=70); self.v_loop = tk.BooleanVar(); self.v_ground = tk.BooleanVar(value=True)
-        self.v_events = tk.StringVar()
+        self.v_events = tk.StringVar(); self.v_interp = tk.StringVar(value='smooth'); self.v_wx = tk.DoubleVar(value=0); self.v_wy = tk.DoubleVar(value=-0.1); self.v_wz = tk.DoubleVar(value=0)
         ttk.Label(pr, text='Frames').grid(row=0, column=0); sb = ttk.Spinbox(pr, from_=2, to=60, width=4, textvariable=self.v_frames, command=self.props); sb.grid(row=0, column=1)
         ttk.Label(pr, text='ms/frame').grid(row=0, column=2); ttk.Spinbox(pr, from_=20, to=300, increment=5, width=4, textvariable=self.v_ms, command=self.props).grid(row=0, column=3)
         ttk.Checkbutton(pr, text='Loop', variable=self.v_loop, command=self.props).grid(row=0, column=4, padx=4)
@@ -66,6 +66,14 @@ class AnimTab(ttk.Frame):
         ttk.Label(pr, text='Events (name=frame, ...)').grid(row=1, column=0, columnspan=3, sticky='w'); e = ttk.Entry(pr, textvariable=self.v_events); e.grid(row=1, column=3, columnspan=3, sticky='ew')
         e.bind('<FocusOut>', lambda ev: self.props()); e.bind('<Return>', lambda ev: self.props())
         for w in (sb,): w.bind('<Return>', lambda ev: self.props())
+        pr2 = ttk.Frame(left); pr2.pack(fill='x')
+        ttk.Label(pr2, text='Between keys').pack(side='left'); ic = ttk.Combobox(pr2, values=['smooth', 'linear', 'step'], textvariable=self.v_interp, state='readonly', width=7); ic.pack(side='left', padx=3)
+        ic.bind('<<ComboboxSelected>>', lambda ev: self.props())
+        ttk.Label(pr2, text='  Hair wind x y z').pack(side='left')
+        for v in (self.v_wx, self.v_wy, self.v_wz):
+            w = ttk.Spinbox(pr2, from_=-1, to=1, increment=0.05, width=5, textvariable=v, command=self.props); w.pack(side='left', padx=1); w.bind('<Return>', lambda ev: self.props())
+        ttk.Button(pr2, text='Undo', width=5, command=self.undo).pack(side='left', padx=(10, 1)); ttk.Button(pr2, text='Redo', width=5, command=self.redo_).pack(side='left')
+        self.bind_all('<Control-z>', lambda ev: self.undo()); self.bind_all('<Control-y>', lambda ev: self.redo_())
         nb = ttk.Notebook(left); nb.pack(fill='both', expand=True)
         for gname, params in GROUPS:
             fr = ttk.Frame(nb); nb.add(fr, text=gname)
@@ -75,7 +83,8 @@ class AnimTab(ttk.Frame):
             for n, (k, lab, lo, hi, ang) in enumerate(params):
                 ttk.Label(inner, text=lab, width=28).grid(row=n, column=0, sticky='w')
                 var = tk.DoubleVar(); s = ttk.Scale(inner, from_=lo, to=hi, variable=var, length=170, command=lambda v, k=k: self.slide(k)); s.grid(row=n, column=1, padx=2)
-                val = ttk.Label(inner, text='0', width=6); val.grid(row=n, column=2)
+                val = tk.StringVar(value='0'); en = ttk.Entry(inner, textvariable=val, width=7); en.grid(row=n, column=2)
+                en.bind('<Return>', lambda ev, k=k: self.type_value(k)); s.bind('<ButtonPress-1>', lambda ev: self.snap())
                 key = ttk.Button(inner, text='◇', width=2, command=lambda k=k: self.toggle_key(k)); key.grid(row=n, column=3)
                 self.rows[k] = (var, s, val, key)
         mid = ttk.Frame(pw, padding=4, width=470); mid.pack_propagate(False); pw.add(mid, weight=3)
@@ -87,11 +96,15 @@ class AnimTab(ttk.Frame):
         self.tl = tk.Canvas(mid, height=54, bg='#23252b', highlightthickness=0); self.tl.pack(fill='x', pady=3); self.tl.bind('<Button-1>', self.tl_click); self.tl.bind('<B1-Motion>', self.tl_click)
         for row in ((('▶ Play', self.play), ('◀', lambda: self.go(self.f - 1)), ('▶', lambda: self.go(self.f + 1)), ('Key all', self.key_all), ('Clear keys here', self.clear_here)),
                     (('Copy', self.copy), ('Paste', self.paste), ('Insert frame', self.insert), ('Delete frame', self.remove_frame)),
-                    (('Mirror L/R', self.mirror), ('Reverse', self.reverse))):
+                    (('Mirror L/R', self.mirror), ('Reverse', self.reverse), ('Stretch to N frames', self.stretch)),
+                    (('Ball to R foot', lambda: self.ball_to('R')), ('Ball to L foot', lambda: self.ball_to('L')), ('Look at ball', self.look_ball))):
             c2 = ttk.Frame(mid); c2.pack(fill='x', pady=1)
             for t, fn in row:
                 b = ttk.Button(c2, text=t, command=fn, width=len(t) + 2 if len(t) > 3 else 4); b.pack(side='left', padx=1)
                 if t == '▶ Play': self.playb = b
+        c4 = ttk.Frame(mid); c4.pack(fill='x', pady=1)
+        ttk.Label(c4, text='Pose library').pack(side='left'); self.lib = ttk.Combobox(c4, values=self.lib_names(), state='readonly', width=16); self.lib.pack(side='left', padx=3)
+        ttk.Button(c4, text='Apply here', width=9, command=self.lib_apply).pack(side='left'); ttk.Button(c4, text='Save this pose...', width=14, command=self.lib_save).pack(side='left', padx=2)
         c3 = ttk.Frame(mid); c3.pack(fill='x', pady=4)
         ttk.Button(c3, text='Export to game sprites', command=self.export).pack(side='left')
         ttk.Checkbutton(c3, text='+ hair layers', variable=self.hair).pack(side='left', padx=6)
@@ -158,11 +171,13 @@ class AnimTab(ttk.Frame):
     def sync_props(self):
         a = self.a
         self.v_frames.set(a['frames']); self.v_ms.set(a.get('ms', 70)); self.v_loop.set(a.get('loop', False)); self.v_ground.set(a.get('ground', True))
-        self.v_events.set(', '.join(f'{k}={v}' for k, v in a.get('events', {}).items()))
+        self.v_events.set(', '.join(f'{k}={v}' for k, v in a.get('events', {}).items())); self.v_interp.set(a.get('interp', 'smooth'))
+        w = a.get('wind', [0, -0.1, 0]); self.v_wx.set(w[0]); self.v_wy.set(w[1]); self.v_wz.set(w[2])
 
     def props(self):
         if not self.a: return
         a = self.a
+        self.snap()
         try:
             n = max(2, min(60, int(self.v_frames.get())))
         except (tk.TclError, ValueError):
@@ -174,8 +189,26 @@ class AnimTab(ttk.Frame):
                 k, v = part.split('=', 1)
                 try: ev[k.strip()] = int(v)
                 except ValueError: ev[k.strip()] = v.strip()
-        a['events'] = ev
+        a['events'] = ev; a['interp'] = self.v_interp.get(); a['wind'] = [self.v_wx.get(), self.v_wy.get(), self.v_wz.get()]
         a['keys'] = {f: v for f, v in a['keys'].items() if int(f) < n}; self.f = min(self.f, n - 1)
+        self.mark(); self.update_all()
+
+    def snap(self):
+        if not self.a: return
+        self.hist.append(copy.deepcopy(self.a)); self.hist = self.hist[-80:]; self.redo = []
+
+    def undo(self):
+        if self.hist and self.winfo_viewable():
+            self.redo.append(copy.deepcopy(self.a)); self.a = self.hist.pop(); self.f = min(self.f, self.a['frames'] - 1); self.mark(); self.sync_props(); self.update_all()
+
+    def redo_(self):
+        if self.redo and self.winfo_viewable():
+            self.hist.append(copy.deepcopy(self.a)); self.a = self.redo.pop(); self.f = min(self.f, self.a['frames'] - 1); self.mark(); self.sync_props(); self.update_all()
+
+    def type_value(self, k):
+        try: v = float(self.rows[k][2].get())
+        except ValueError: self.update_labels(); return
+        self.snap(); self.a['keys'].setdefault(str(self.f), {})[k] = v / DEG if ALLP[k][2] else v
         self.mark(); self.update_all()
 
     def mark(self):
@@ -199,6 +232,7 @@ class AnimTab(ttk.Frame):
         self.mark(); self._poses = None; self.update_labels(only=k); self.render(); self.draw_tl()
 
     def toggle_key(self, k):
+        self.snap()
         ks = self.a['keys'].setdefault(str(self.f), {})
         if k in ks:
             if sum(1 for fr in self.a['keys'].values() if k in fr) > 1: del ks[k]
@@ -208,21 +242,25 @@ class AnimTab(ttk.Frame):
         self.mark(); self.update_all()
 
     def key_all(self):
+        self.snap()
         p = self.plist()[self.f]; ks = self.a['keys'].setdefault(str(self.f), {})
         for k in ALLP: ks[k] = p.get(k, DEFAULT.get(k, 0.0))
         self.mark(); self.update_all()
 
     def clear_here(self):
+        self.snap()
         self.a['keys'].pop(str(self.f), None); self.mark(); self.update_all()
 
     def copy(self):
         self.clip = dict(self.plist()[self.f]); self.msg.config(text='copied frame')
 
     def paste(self):
+        self.snap()
         if self.clip:
             self.a['keys'][str(self.f)] = {k: self.clip[k] for k in ALLP if k in self.clip}; self.mark(); self.update_all()
 
     def insert(self):
+        self.snap()
         a = self.a
         if a['frames'] >= 60: return
         keys = {}
@@ -231,6 +269,7 @@ class AnimTab(ttk.Frame):
         a['keys'] = keys; a['frames'] += 1; self.v_frames.set(a['frames']); self.mark(); self.go(self.f + 1); self.update_all()
 
     def remove_frame(self):
+        self.snap()
         a = self.a
         if a['frames'] <= 2: return
         full = self.poses(); a['frames'] -= 1; self.v_frames.set(a['frames'])
@@ -243,6 +282,7 @@ class AnimTab(ttk.Frame):
         self.f = min(self.f, a['frames'] - 1); self.mark(); self.update_all()
 
     def mirror(self):
+        self.snap()
         full = self.poses(); out = {}
         for f, p in enumerate(full):
             q = {}
@@ -255,8 +295,56 @@ class AnimTab(ttk.Frame):
         self.a['keys'] = out; self.mark(); self.update_all()
 
     def reverse(self):
+        self.snap()
         full = self.poses(); n = len(full)
         self.a['keys'] = {str(n - 1 - f): {k: p.get(k, 0.0) for k in ALLP} for f, p in enumerate(full)}; self.mark(); self.update_all()
+
+    # ------------------------------------------------------------------ extra tools
+    POSES = os.path.join(tables.DATA, 'poses.json')
+
+    def lib_load(self):
+        try: return json.load(open(self.POSES))
+        except (OSError, ValueError): return {'stand': {k: v for k, v in DEFAULT.items() if k in ALLP}}
+
+    def lib_names(self):
+        return sorted(self.lib_load())
+
+    def lib_save(self):
+        if not self.a: return
+        name = simpledialog.askstring('Pose library', 'Name this pose:', parent=self)
+        if not name: return
+        lib = self.lib_load(); p = self.plist()[self.f]; lib[name.strip()] = {k: p.get(k, DEFAULT.get(k, 0.0)) for k in ALLP}
+        json.dump(lib, open(self.POSES, 'w'), indent=1); self.lib['values'] = sorted(lib); self.lib.set(name.strip())
+
+    def lib_apply(self):
+        if not self.a or not self.lib.get(): return
+        self.snap(); self.a['keys'][str(self.f)] = dict(self.lib_load()[self.lib.get()]); self.mark(); self.update_all()
+
+    def stretch(self):
+        if not self.a: return
+        n2 = simpledialog.askinteger('Stretch', 'New number of frames (2-60):', parent=self, minvalue=2, maxvalue=60, initialvalue=self.a['frames'])
+        if not n2 or n2 == self.a['frames']: return
+        self.snap(); old = self.poses(); n = len(old); loop = self.a.get('loop', False); keys = {}
+        for f in range(n2):
+            x = f * (n if loop else n - 1) / n2 if loop else f * (n - 1) / (n2 - 1)
+            i = int(math.floor(x)); t = x - i; p0, p1 = old[i % n], old[(i + 1) % n if loop else min(i + 1, n - 1)]
+            keys[str(f)] = {k: p0[k] + (p1[k] - p0[k]) * t for k in ALLP if k in p0}
+        self.a['frames'] = n2; self.a['keys'] = keys; self.v_frames.set(n2); self.f = min(self.f, n2 - 1)
+        for k, v in self.a.get('events', {}).items():
+            if isinstance(v, int): self.a['events'][k] = round(v * (n2 - 1) / max(1, n - 1))
+        self.sync_props(); self.mark(); self.update_all()
+
+    def ball_to(self, s):
+        if not self.a: return
+        self.snap(); p = self.plist()[self.f]; ks = self.a['keys'].setdefault(str(self.f), {})
+        ks.update(bvis=1.0, bx=p[f'{s}_ax'] + p.get('root_x', 0) * 0, by=p[f'{s}_ay'] + 3.2, bz=3.0); self.mark(); self.update_all()
+
+    def look_ball(self):
+        if not self.a: return
+        self.snap(); p = self.plist()[self.f]; ks = self.a['keys'].setdefault(str(self.f), {})
+        dx, dy = p['bx'] - p['root_x'], p['by'] - p['root_y']
+        yaw = math.atan2(dx, max(0.5, dy)) - p['pyaw'] - p['cyaw']
+        ks['hyaw'] = max(-1.0, min(1.0, yaw)); ks['hpitch'] = max(-0.2, min(0.6, 0.15 + 0.012 * math.hypot(dx, dy))); self.mark(); self.update_all()
 
     # ------------------------------------------------------------------ view
     def go(self, f):
@@ -269,7 +357,7 @@ class AnimTab(ttk.Frame):
         for k, (var, s, val, kb) in self.rows.items():
             if only and k != only: continue
             v = p.get(k, DEFAULT.get(k, 0.0)); disp = v * DEG if ALLP[k][2] else v
-            var.set(max(ALLP[k][0], min(ALLP[k][1], disp))); val.config(text=f'{disp:.1f}')
+            var.set(max(ALLP[k][0], min(ALLP[k][1], disp))); val.set(f'{disp:.1f}')
             kb.config(text='◆' if self.keyed(k) else '◇')
             if k.endswith('_az'): s.state(['disabled'] if self.a.get('ground', True) else ['!disabled'])
             if k.endswith('_lift'): s.state(['!disabled'] if self.a.get('ground', True) else ['disabled'])

@@ -65,7 +65,7 @@ class PlayersTab(ttk.Frame):
         self.after(90, self.tick)
 
     def refresh(self):
-        self.anim['values'] = list(looks.anims())
+        self.anim['values'] = list(looks.anims()); self.kit['values'] = ['auto'] + looks.kit_ids(); self.w['hair_style']['values'] = looks.hair_styles()
 
     def select(self, idx):
         self.i = idx[0] if idx else None; self.reload_form()

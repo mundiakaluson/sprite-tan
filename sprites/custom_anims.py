@@ -27,13 +27,36 @@ def save(a):
     json.dump(a, open(os.path.join(ANIM_DIR, a['name'] + '.json'), 'w'), indent=1, sort_keys=False)
 
 
+def _build(A, keys, N, loop, mode):
+    """Like gen_actions.build_anim but with a choice of interpolation: smooth (PCHIP), linear, step (hold until next key)."""
+    if mode == 'smooth':
+        return A.build_anim(keys, N, loop)
+    series = {}
+    for f in sorted(keys):
+        for k, v in keys[f].items():
+            series.setdefault(k, []).append((f, v))
+    out = []
+    for f in range(N):
+        pose = dict(A.DEFAULT)
+        for k, pts in series.items():
+            xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
+            if loop and len(pts) > 1:
+                xs = [x - N for x in xs] + xs + [x + N for x in xs]; ys = ys * 3
+            if mode == 'step':
+                i = max([j for j, x in enumerate(xs) if x <= f] or [0]); pose[k] = ys[i]
+            else:
+                pose[k] = float(np.interp(f, xs, ys))
+        out.append(pose)
+    return out
+
+
 def build_poses(a):
     import gen_actions as A
     keys = {int(f): dict(v) for f, v in a['keys'].items()}
     keys = {f: v for f, v in keys.items() if 0 <= f < a['frames']}
     if not keys:
         keys = {0: {}}
-    poses = A.build_anim(keys, a['frames'], a.get('loop', False))
+    poses = _build(A, keys, a['frames'], a.get('loop', False), a.get('interp', 'smooth'))
     for p in poses:
         for k, v in EXTRA_DEFAULT.items():
             if k in a.get('keyed_extra', ()) or True:

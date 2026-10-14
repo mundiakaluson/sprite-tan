@@ -12,7 +12,31 @@ if SPR not in sys.path:
 import gen_uv as U  # noqa: E402
 
 CW, CH = U.CW, U.CH
-KITS = list(U.SKINS)
+
+
+def kit_ids():
+    return [r['id'] for r in tables.table('kits').rows]
+
+
+KITS = kit_ids()
+KIT_COLS = ('jersey', 'trim', 'shorts', 'shorts_trim', 'stripe', 'socks', 'sock_trim', 'boots', 'accent')
+
+
+def kit_dict(name):
+    """Skin-generator kit dict for a kit id (from data/kits.csv, live, so unsaved-to-disk edits in the tool show too)."""
+    if isinstance(name, dict):
+        return name
+    for r in tables.table('kits').rows:
+        if r['id'] == name:
+            k = dict(U.SKINS['home'])
+            for c in KIT_COLS:
+                if r.get(c): k[c] = hexrgb(r[c])
+            for c in ('band', 'glove'):
+                k.pop(c, None)
+                if r.get(c): k[c] = hexrgb(r[c])
+            k['number'] = r.get('number') or '10'; k['pattern'] = r.get('pattern') or 'plain'
+            return k
+    return U.SKINS[name]
 
 
 def hexrgb(h):
@@ -28,14 +52,8 @@ def palette():
 
 
 def hair_styles():
-    p = os.path.join(OUT, 'hair', 'hair_styles.json')
-    if os.path.exists(p):
-        try:
-            d = json.load(open(p))
-            return list(d['styles'])
-        except Exception:
-            pass
-    return list(__import__('gen_hair').STYLE_ORDER)
+    import gen_hair
+    return list(gen_hair.STYLE_ORDER)
 
 
 def _fill(A_, reg, x0, y0, x1, y1, col):
@@ -54,7 +72,7 @@ def player_skin(p, kit=None):
     tone = hexrgb(pal['skin'].get(str(p.get('skin') or '2'), '#eebe96'))
     hair = hexrgb(pal['hair'].get(p.get('hair_color') or 'brown', '#62422a'))
     style = p.get('hair_style') or 'H02_crop'
-    s = dict(U.SKINS[kit], skin=tone, hair=hair, hair_style=style)
+    s = dict(kit_dict(kit), skin=tone, hair=hair, hair_style=style)
     A_ = U.make_skin(s)
     ac = {k: hexrgb(v) for k, v in pal.get('accent', {}).items()}
     beard = p.get('beard') or 'none'

@@ -147,3 +147,42 @@ def hair_layer(body_sc, info, style, chain_pts):
 def hair_skin(hair_rgb, style='H02_crop', base='home'):
     s = dict(SKINS[base], hair=hair_rgb, hair_style=style)
     return make_skin(s)
+
+
+# ------------------------------------------------------------------ styles as data (data/hair_styles.json, edited in the manager tool)
+STYLES_JSON = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'hair_styles.json')
+_CH_KEYS = ('n', 'seg', 'r0', 'r1', 'k', 'damp', 'grav', 'wind')
+
+
+def styles_to_json(styles):
+    out = {}
+    for name, sp in styles.items():
+        out[name] = dict(
+            static=[dict(c=[round(float(x), 3) for x in e['c']], abc=[round(float(x), 3) for x in e['abc']], pitch=round(float(e['pitch']), 3), roll=round(float(e['roll']), 3)) for e in sp['static']],
+            chains=[dict(anchor=[round(float(x), 3) for x in c['anchor']], dir=[round(float(x), 3) for x in c['dir']], **{k: c[k] for k in _CH_KEYS}) for c in sp['chains']])
+    return out
+
+
+def styles_from_json(d):
+    out = {}
+    for name, sp in d.items():
+        out[name] = dict(static=[E(e['c'], e['abc'], e.get('pitch', 0.0), e.get('roll', 0.0)) for e in sp.get('static', [])],
+                         chains=[CH_(c['anchor'], c['dir'], c['n'], c['seg'], c['r0'], c['r1'], c.get('k', .2), c.get('damp', .8), c.get('grav', .1), c.get('wind', 1.0)) for c in sp.get('chains', [])])
+    return out
+
+
+def save_styles(d=None):
+    json.dump(d if d is not None else styles_to_json(STYLES), open(STYLES_JSON, 'w'), indent=1)
+
+
+def reload_styles():
+    global STYLES, STYLE_ORDER
+    d = json.load(open(STYLES_JSON))
+    STYLES.clear(); STYLES.update(styles_from_json(d))
+    STYLE_ORDER[:] = list(STYLES)
+
+
+if os.path.exists(STYLES_JSON):
+    reload_styles()
+else:
+    save_styles()
