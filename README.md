@@ -62,7 +62,7 @@ Tabs:
 - **Players**: the 300 players as an Excel-style grid (double-click a cell to edit), with a live animated sprite preview, look pickers
   (skin, hair style and colour, beard, glasses, chain, headband, wristband, tattoo), stat boxes, auto rating, and export of
   every player's look atlas to `export/looks/`.
-- **Cards**: the 200 cards with the live card face (the `cards/cardlib2.py` design: no description on the card, hover tooltip instead), ready / cooldown / unavailable states, a hand-of-8 preview, and export of faces and tooltips to `export/cards/`. Illustrated emblems exist for SH01-SH30; other cards show a category placeholder until drawn.
+- **Cards**: the 200 cards with the live card face (the `cards/cardlib2.py` design: no description on the card, hover tooltip instead), ready / cooldown / unavailable states, a hand-of-8 preview, and export of faces and tooltips to `export/cards/`. All 200 cards have an illustrated emblem (SH01-SH30 in cards/cardlib2.py, the rest in cards/recipes.py); new cards get a category placeholder until a recipe is added.
 - **Formations**: formation settings, slots, and a pitch where you drag the dots; BUILD/ATTACK/DEFEND shows each style's offsets.
 - **Animations**: make new moves without drawing. Start blank or from run/kick/finesse/guard/slide, pose the figure with sliders
   (hips, chest, head, feet, knees, arms, ball), key frames on the timeline, preview with onion skin, then export to the game

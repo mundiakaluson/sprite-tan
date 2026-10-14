@@ -17,7 +17,7 @@ summarised in docs/DECISIONS.md.
 
 ## Card design (decided)
 Use the cards/cardlib2.py face: slot number, category, illustrated emblem, name plate, success / risk / cooldown. No effect text on the card;
-the description shows in the hover tooltip (cardlib2.popup). Emblems drawn so far: SH01-SH30 only.
+the description shows in the hover tooltip (cardlib2.popup). All 200 emblems drawn (cards/recipes.py + cardlib2.EMB); first-pass art, tweak individual recipes as needed.
 
 ## Tool status
 Manager tool in tool/ is built (see README). Run `python tool/selftest.py` after changes. Custom animations live in data/animations/*.json and are
@@ -25,5 +25,5 @@ registered into sprites/gen_uv.py via sprites/custom_anims.py.
 
 ## Next up
 1. Tool follow-ups: hair-style and kit editors, pack-odds simulator, Windows test pass, palette-swap shader for indexed export.
-2. Illustrated emblems for the other 170 cards (cards/cardlib2.py EMB recipes), then player cards.
+2. Player cards.
 3. Godot skeleton loading the CSVs.

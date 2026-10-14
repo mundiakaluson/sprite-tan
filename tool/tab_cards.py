@@ -12,9 +12,11 @@ CARDS_DIR = os.path.join(tables.ROOT, 'cards')
 if CARDS_DIR not in sys.path:
     sys.path.insert(0, CARDS_DIR)
 import cardlib2 as CL  # noqa: E402
+import recipes  # noqa: E402
+recipes.install(CL.EMB)   # illustrated emblems for every card in cards.csv
 
 PREFIX = dict(SHOT='SH', PASS='PS', DRIBBLE='DR', DEFEND='DF', SUPPORT='SP', KEEPER='GK', TITAN='TT')
-# Illustrated emblems exist for SH01-SH30. Everything else gets a placeholder by category until its own emblem is drawn.
+# All 200 shipped cards have an illustrated emblem (SH01-SH30 in cardlib2, the rest in recipes.py). A new card gets a category placeholder until you draw one.
 PLACEHOLDER = dict(PASS=CL.R_two_arrows, DRIBBLE=CL.R_toe, DEFEND=CL.EXTRA['shield'], SUPPORT=CL.EXTRA['flex'], KEEPER=CL.EXTRA['glove'], TITAN=CL.R_bolt, SHOT=CL.R_impact)
 
 
@@ -80,7 +82,7 @@ class CardsTab(ttk.Frame):
         try:
             self._ph = ImageTk.PhotoImage(card_face(c, self.state.get(), float(self.cool.get()), 4)); self.cv.delete('all'); self.cv.create_image(150, 200, image=self._ph)
             self._tp = ImageTk.PhotoImage(tooltip(c, 2)); self.tip.delete('all'); self.tip.create_image(150, 95, image=self._tp)
-            self.note.config(text='' if has_art(c['id']) else 'Placeholder emblem (category default). This card has no illustrated emblem yet.')
+            self.note.config(text='' if has_art(c['id']) else 'Placeholder emblem (category default). Add a recipe for this id in cards/recipes.py.')
         except Exception as e:
             self.note.config(text=f'card error: {e}')
 
