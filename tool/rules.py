@@ -8,6 +8,7 @@ CARD_CATS = ['SHOT', 'PASS', 'DRIBBLE', 'DEFEND', 'SUPPORT', 'KEEPER', 'TITAN']
 CAT_COL = dict(SHOT='#de4c3e', PASS='#4284e2', DRIBBLE='#46b86c', SUPPORT='#ecc63c', DEFEND='#30b8b0', KEEPER='#9264dc', TITAN='#ffce46')
 TIMING = ['ENGAGEMENT', 'ANYTIME']
 KIND = ['ACTION', 'BUFF']
+FACE_ANIMS = ['wink', 'lookup', 'smile']     # special cards: the face moment (blank = picked from the id)
 BEARD = ['none', 'stubble', 'short', 'full']
 GLASSES = ['none', 'clear', 'dark']
 # rating weights per role over PAC SHO PAS DRI DEF PHY (from scripts/gen_players.py)

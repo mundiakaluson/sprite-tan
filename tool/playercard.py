@@ -38,9 +38,15 @@ def surname(name):
     return (' '.join(w[-2:]) if w[-2].lower() in PARTICLES else w[-1]).upper()
 
 
-def face(p, kit=None):
+def face_kind(p):
+    k = (p.get('face_anim') or '').strip()
+    if k in ('wink', 'lookup', 'smile'): return k
+    return ('wink', 'lookup', 'smile')[sum(map(ord, p.get('id', 'x'))) % 3]      # blank = pick one from the id
+
+
+def face(p, kit=None, expr=None):
     """head and shoulders, facing the camera, big."""
-    return PT.portrait(p, kit or 'home').resize((PT.W * 2, PT.H * 2), Image.NEAREST)
+    return PT.portrait(p, kit or 'home', expr).resize((PT.W * 2, PT.H * 2), Image.NEAREST)
 
 
 def _text2(im, x, y, s, col, k=2):
@@ -80,7 +86,7 @@ def card(p, kit=None, state='ready', special=None, t=0.0):
                 if (x - y // 2) % 9 == 0 and 14 < y < 60: c = _mix(c, r['light'], 0.05)   # faint diagonal streaks
                 px[x, y] = c + (255,)
     # head and shoulders, fading into the dark at the bottom
-    fc = face(p, kit)
+    fc = face(p, kit, PT.face_state(face_kind(p), t) if special else None)
     if special:   # shoulders fade out instead of darkening the whole card
         a = np.array(fc); k = np.clip(1 - (np.arange(a.shape[0]) - 27) / 11.0, 0, 1); a[..., 3] = (a[..., 3] * k[:, None]).astype(np.uint8); fc = Image.fromarray(a, 'RGBA')
     im.alpha_composite(fc, (11, 21))

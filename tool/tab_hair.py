@@ -36,6 +36,10 @@ class HairTab(ttk.Frame):
         self.sel = ttk.Combobox(top, state='readonly', width=22, values=list(self.d)); self.sel.pack(side='left'); self.sel.bind('<<ComboboxSelected>>', lambda e: self.open(self.sel.get()))
         for t, fn in (('New', self.new), ('Duplicate', self.dup), ('Delete', self.delete), ('Save', self.save)):
             ttk.Button(top, text=t, command=fn, width=9).pack(side='left', padx=2)
+        rc = ttk.Frame(left); rc.pack(fill='x', pady=(2, 0))
+        ttk.Label(rc, text='Card face draws like').pack(side='left')
+        self.like = ttk.Combobox(rc, state='readonly', width=16, values=self.LIKE); self.like.pack(side='left', padx=4); self.like.bind('<<ComboboxSelected>>', lambda e: self.set_like(self.like.get()))
+        ttk.Label(rc, text='(the card portrait has ten built-in hair shapes; a new style borrows one)', foreground='#9aa0ae').pack(side='left')
         pl = ttk.LabelFrame(left, text='Parts (blobs and strands)', padding=4); pl.pack(fill='x', pady=4)
         self.lb = tk.Listbox(pl, height=7, exportselection=False); self.lb.pack(side='left', fill='x', expand=True); self.lb.bind('<<ListboxSelect>>', lambda e: self.pick())
         bb = ttk.Frame(pl); bb.pack(side='left', padx=4)
@@ -62,7 +66,7 @@ class HairTab(ttk.Frame):
 
     # ------------------------------------------------------------------ styles
     def open(self, name):
-        self.cur = name; self.sel.set(name); self.part = None; self.refresh_parts(); self.changed(False)
+        self.cur = name; self.sel.set(name); self.like.set(self.get_like(name)); self.part = None; self.refresh_parts(); self.changed(False)
 
     def refresh_parts(self):
         sp = self.d[self.cur]; self.lb.delete(0, 'end')
@@ -72,18 +76,35 @@ class HairTab(ttk.Frame):
         if self.part is not None and self.part < self.lb.size(): self.lb.selection_set(self.part)
         self.build_fields()
 
+    LIKE = ['H01_buzz', 'H02_crop', 'H03_sidepart', 'H04_quiff', 'H05_curly', 'H06_afro', 'H07_braids', 'H08_long', 'H09_ponytail', 'H10_bun']
+
+    def get_like(self, key):
+        for r in tables.table('hair_card').rows:
+            if r['style'] == key and r.get('card_like'): return next((s for s in self.LIKE if s.startswith(r['card_like'][:3])), 'H02_crop')
+        return next((s for s in self.LIKE if s.startswith(key[:3])), 'H02_crop')
+
+    def set_like(self, v, key=None):
+        key = key or self.cur
+        if not key: return
+        t = tables.table('hair_card')
+        for i, r in enumerate(t.rows):
+            if r['style'] == key: t.set(i, 'card_like', v[:3]); break
+        else:
+            t.snapshot(); t.rows.append(dict(style=key, card_like=v[:3])); t.dirty = True; t.notify()
+        t.save()
+
     def new(self):
         name = simpledialog.askstring('New hair style', 'Name (e.g. mohawk):', parent=self)
         if not name: return
         slug = re.sub(r'[^a-z0-9]+', '_', name.lower()).strip('_')
         n = max([int(k[1:3]) for k in self.d if k[1:3].isdigit()] + [0]) + 1
         key = f'H{n:02d}_{slug}'; self.d[key] = copy.deepcopy(self.d.get('H02_crop', dict(static=[], chains=[])))
-        self.sel['values'] = list(self.d); self.open(key); self.changed()
+        self.sel['values'] = list(self.d); self.open(key); self.set_like('H02_crop', key); self.like.set('H02_crop'); self.changed()
 
     def dup(self):
         if not self.cur: return
         n = max([int(k[1:3]) for k in self.d if k[1:3].isdigit()] + [0]) + 1
-        key = f'H{n:02d}_{self.cur[4:]}_copy'; self.d[key] = copy.deepcopy(self.d[self.cur]); self.sel['values'] = list(self.d); self.open(key); self.changed()
+        key = f'H{n:02d}_{self.cur[4:]}_copy'; self.d[key] = copy.deepcopy(self.d[self.cur]); self.sel['values'] = list(self.d); like = self.get_like(self.cur); self.open(key); self.set_like(like, key); self.like.set(like); self.changed()
 
     def delete(self):
         used = [r['id'] for r in tables.table('players').rows if r.get('hair_style') == self.cur]
