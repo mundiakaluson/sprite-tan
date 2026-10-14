@@ -56,17 +56,67 @@ def _mix(a, b, t):
     return tuple(int(a[i] * (1 - t) + b[i] * t) for i in range(3))
 
 
-def card(p, kit=None, state='ready'):
-    r = RC.get(p.get('rarity'), RC['COMMON']); legend = p.get('rarity') == 'LEGEND'
-    base = (12, 13, 20); im = Image.new('RGBA', (CW, CH), (0, 0, 0, 0)); px = im.load()
-    cx, cy = 32, 28
+HOLO = dict(LEGEND=[(255, 236, 150), (255, 160, 60), (255, 252, 235), (240, 110, 70)],
+            EPIC=[(168, 95, 216), (255, 110, 200), (110, 200, 255), (224, 170, 255)],
+            RARE=[(74, 144, 226), (90, 230, 240), (225, 242, 255), (120, 120, 255)])
+STYLES = ('foil', 'burst', 'prism')
+
+
+def _hash(a, b):
+    return ((a * 73856093) ^ (b * 19349663)) % 1000 / 1000.0
+
+
+def _bg(px, r, rar, style, cx, cy):
+    import math
+    base = (12, 13, 20); H = HOLO.get(rar, HOLO['RARE'])
     for y in range(CH):
         for x in range(CW):
             t = y / (CH - 1); c = _mix(_mix(r['dark'], base, 0.55), base, t)
-            dd = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5          # glow behind the head
-            if dd < 30: c = _mix(c, r['main'], 0.38 * (1 - dd / 30) ** 1.5)
-            if (x - y // 2) % 9 == 0 and 14 < y < 60: c = _mix(c, r['light'], 0.05)   # faint diagonal streaks
+            dd = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+            if style == 'foil':
+                u = ((x + y * 0.8) / (CW + CH * 0.8)) * 3.0; i = int(u) % 4; f = u - int(u)
+                hc = _mix(H[i], H[(i + 1) % 4], f); c = _mix(c, hc, 0.30 if 12 < y < 62 else 0.16)
+                if abs((x + y * 0.6) - 52) < 4: c = _mix(c, (255, 255, 255), 0.30)
+                if abs((x + y * 0.6) - 70) < 1.5: c = _mix(c, (255, 255, 255), 0.22)
+                if dd < 28: c = _mix(c, r['light'], 0.34 * (1 - dd / 28) ** 1.5)
+            elif style == 'burst':
+                ang = math.atan2(y - cy, x - cx); ray = int((ang + math.pi) / (2 * math.pi) * 20) % 2
+                fall = max(0.0, 1 - dd / 52)
+                if ray: c = _mix(c, r['light'], 0.34 * fall + 0.05)
+                if dd < 22: c = _mix(c, r["main"], 0.55 * (1 - dd / 22) ** 1.2)
+                if 18 <= dd < 19.5: c = _mix(c, r['light'], 0.75)
+            else:   # prism: faceted low-poly shards
+                cxl, cyl = x // 8, y // 8; lo = (x % 8) + (y % 8) < 8
+                sh = _hash(cxl * 2 + (1 if lo else 0), cyl) - 0.5
+                c = _mix(c, r['light'] if sh > 0 else r['dark'], abs(sh) * 0.55)
+                if (x % 8) + (y % 8) == 8 or x % 8 == 0 or y % 8 == 0: c = _mix(c, r['light'], 0.16)
+                if dd < 24: c = _mix(c, r['main'], 0.45 * (1 - dd / 24))
             px[x, y] = c + (255,)
+
+
+def _spark(d, x, y, col, big=False):
+    d.point((x, y), col)
+    for k in ((1, 0), (-1, 0), (0, 1), (0, -1)): d.point((x + k[0], y + k[1]), col)
+    if big:
+        for k in ((2, 0), (-2, 0), (0, 2), (0, -2)): d.point((x + k[0], y + k[1]), col)
+
+
+def card(p, kit=None, state='ready', special=None):
+    r = RC.get(p.get('rarity'), RC['COMMON']); legend = p.get('rarity') == 'LEGEND'
+    if special is None: special = STYLES[0] if str(p.get('special', '0')) in ('1', 'True', 'true') else None
+    if special is True: special = STYLES[0]
+    base = (12, 13, 20); im = Image.new('RGBA', (CW, CH), (0, 0, 0, 0)); px = im.load()
+    cx, cy = 32, 28
+    if special:
+        _bg(px, r, p.get('rarity'), special, cx, cy)
+    else:
+        for y in range(CH):
+            for x in range(CW):
+                t = y / (CH - 1); c = _mix(_mix(r['dark'], base, 0.55), base, t)
+                dd = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5          # glow behind the head
+                if dd < 30: c = _mix(c, r['main'], 0.38 * (1 - dd / 30) ** 1.5)
+                if (x - y // 2) % 9 == 0 and 14 < y < 60: c = _mix(c, r['light'], 0.05)   # faint diagonal streaks
+                px[x, y] = c + (255,)
     # head and shoulders, fading into the dark at the bottom
     fc = face(p, kit); im.alpha_composite(fc, (11, 22))
     for y in range(46, 61):
@@ -80,11 +130,21 @@ def card(p, kit=None, state='ready'):
     for y in range(2, CH - 2): d.point((0, y), edge + (255,)); d.point((CW - 1, y), edge + (255,))
     for (x, y, dx, dy) in ((1, 1, 1, 1), (CW - 2, 1, -1, 1), (1, CH - 2, 1, -1), (CW - 2, CH - 2, -1, -1)): d.point((x, y), edge + (255,))
     for (x, y) in ((0, 0), (CW - 1, 0), (0, CH - 1), (CW - 1, CH - 1)): d.point((x, y), (0, 0, 0, 0))
+    if special:
+        H = HOLO.get(p.get('rarity'), HOLO['RARE']); lt = r['light'] + (255,)
+        for x in range(2, CW - 2): d.point((x, 2), edge + (255,)); d.point((x, CH - 3), edge + (255,))
+        for y in range(2, CH - 2): d.point((2, y), edge + (255,)); d.point((CW - 3, y), edge + (255,))
+        for (x, y) in ((2, 2), (CW - 3, 2), (2, CH - 3), (CW - 3, CH - 3)): _spark(d, x, y, (255, 255, 255, 255))
+        for x in (CW // 2,):
+            d.point((x, 2), (255, 255, 255, 255)); d.point((x, CH - 3), (255, 255, 255, 255))
+        for (x, y) in ((50, 20), (12, 46), (54, 42), (9, 33)): _spark(d, x, y, lt)
+        _spark(d, 46, 15, (255, 255, 255, 255), True)
     # top left: rating (big) and role; top right: rarity
     _text2(im, 5, 5, str(p.get('rating', '')), (255, 255, 255, 255))
     role = p.get('role', ''); draw_text(im, 5, 18, role, r['light'] + (255,))
     d.line([(5, 25), (5 + max(text_w(role), 10), 25)], fill=r['main'] + (255,))
     rn = (p.get('rarity') or '').upper(); draw_text(im, CW - 5 - text_w(rn), 5, rn, r['light'] + (255,))
+    if special: _spark(d, CW - 5 - text_w(rn) - 4, 7, (255, 255, 255, 255))
     # surname
     nm = surname(p.get('name')); ww = text_w(nm)
     draw_text(im, (CW - ww) // 2, 63, nm, (255, 255, 255, 255))
