@@ -6,3 +6,4 @@ __pycache__/
 *.gif
 sprites/out_actions/
 sprites/out_v2/
+*.bak

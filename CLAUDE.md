@@ -15,9 +15,11 @@ summarised in docs/DECISIONS.md.
 - Pitch coordinates: x 0-100 left to right, y 0-100 own goal to opponent goal.
 - Roles: GK, CB, LB, RB, CDM, CM, CAM, LW, RW, ST. Outfield stats PAC SHO PAS DRI DEF PHY, keeper stats REF HAN POS.
 
+## Tool status
+Manager tool in tool/ is built (see README). Run `python tool/selftest.py` after changes. Custom animations live in data/animations/*.json and are
+registered into sprites/gen_uv.py via sprites/custom_anims.py.
+
 ## Next up
-1. Python manager tool in tool/: edit players, cards and formations; flexible sprite import with colour-scheme
-   detection and swapping (grid detection, palette ramps, slot assignment, indexed export with a palette-swap shader);
-   per-player look atlas export (skin, hair, beard, glasses, chain) using the hair layers.
+1. Tool follow-ups: hair-style and kit editors, pack-odds simulator, Windows test pass, palette-swap shader for indexed export.
 2. Card emblems for all 200 cards.
 3. Godot skeleton loading the CSVs.

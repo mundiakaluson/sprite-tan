@@ -1,0 +1,26 @@
+kind,key,hex,note
+skin,1,#f6d2b4,pale
+skin,2,#eebe96,light
+skin,3,#d4a070,tan
+skin,4,#b27c52,brown
+skin,5,#8a5a3c,dark brown
+skin,6,#5c3a28,deep
+hair,black,#14101a,
+hair,darkbrown,#3a2618,
+hair,brown,#62422a,
+hair,auburn,#8a3a22,
+hair,blonde,#d6a64c,
+hair,ginger,#c4602a,
+hair,grey,#9a9aa4,
+hair,white,#e6e6ee,
+hair,platinum,#f0e6b8,
+hair,blue,#3a6ad8,
+beard_style,stubble,,darker skin tint on jaw
+beard_style,short,,"hair-coloured, chin and jaw"
+beard_style,full,,"hair-coloured, cheeks to chin"
+glasses,clear,#c8dcea,pale lenses
+glasses,dark,#16161e,dark lenses
+accent,chain,#f0c040,gold chain
+accent,headband,#f4f4fa,headband
+accent,wristband,#f4f4fa,wristband
+accent,tattoo,#3c4a78,tattoo ink

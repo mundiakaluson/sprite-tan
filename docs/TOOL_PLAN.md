@@ -30,3 +30,10 @@ Desktop app in tkinter (ships with Python, nothing extra to install): `python to
 ## Build order
 Grid and palette detection -> recolour with live preview -> indexed export and shader -> player/card/formation editors
 -> per-player atlas export.
+
+## Status
+Built: all tabs above (players, cards, formations, animations, other tables, checks, sprite import).
+Not yet: hair-style editor (styles still live in sprites/gen_hair.py), kit editor, pack-odds simulator, hand-made card emblems
+(generated placeholders only), tkinter GUI tested only under a virtual display on Linux, not yet on Windows.
+Animation editor notes: keys are sparse per-parameter; frames between keys use the same PCHIP interpolation as the built-in moves; "auto-ground" plants
+both feet from foot pitch/turn/roll plus a lift value; preview shows the body only (hair layers appear in the Players preview after export with "+ hair layers").

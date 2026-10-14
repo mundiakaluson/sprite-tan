@@ -438,6 +438,13 @@ ANIMS = {
 }
 
 
+try:   # animations authored in the manager tool (data/animations/*.json)
+    import custom_anims
+    custom_anims.register(ANIMS)
+except ImportError:
+    pass
+
+
 def write_sheet(frames, n, path):
     sheet = Image.new('RGBA', (CW * n, CH * len(DIRS)), (0, 0, 0, 0))
     for r, dn in enumerate(DIRS):

@@ -53,10 +53,22 @@ Python 3.10 or newer. The scripts that make `data/*.csv` are in `scripts/` and a
 Names in `players.csv` are respelled versions of real player names. They sit in one column and can be swapped
 before any public or commercial release. `players_invented_names.csv` has a fully invented set.
 
-## Sprite manager (first version)
+## Manager tool
 
 ```
 python tool/app.py
 ```
-Open any PNG sheet, detect or set the cell grid, see the colour ramps, click a pixel to select its ramp, pick a new
-colour, watch the animation row, then export a baked PNG or an indexed sheet plus palette strip.
+Tabs:
+- **Players**: the 300 players as an Excel-style grid (double-click a cell to edit), with a live animated sprite preview, look pickers
+  (skin, hair style and colour, beard, glasses, chain, headband, wristband, tattoo), stat boxes, auto rating, and export of
+  every player's look atlas to `export/looks/`.
+- **Cards**: the 200 cards with a live card face and generated placeholder emblems; export all faces to `export/cards/`.
+- **Formations**: formation settings, slots, and a pitch where you drag the dots; BUILD/ATTACK/DEFEND shows each style's offsets.
+- **Animations**: make new moves without drawing. Start blank or from run/kick/finesse/guard/slide, pose the figure with sliders
+  (hips, chest, head, feet, knees, arms, ball), key frames on the timeline, preview with onion skin, then export to the game
+  sprite sheets (optionally with hair layers). Saved as `data/animations/<name>.json`.
+- **Other tables**: packs, looks palette, styles, families. **Checks**: validates every CSV. **Sprite import**: recolour any PNG sheet.
+
+Everything is plain CSV in `data/`, so Excel works side by side: edits made in Excel appear in the tool automatically (unless you have
+unsaved edits there), and the tool writes a `.bak` copy before each save. Close the file in Excel before saving from the tool.
+Headless checks: `python tool/selftest.py`. Custom animations also export from the command line: `python sprites/custom_anims.py NAME --hair`.
