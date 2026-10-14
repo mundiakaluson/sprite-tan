@@ -37,11 +37,13 @@ class PlayersTab(ttk.Frame):
         self.cv = tk.Canvas(self.nb, width=340, height=280, bg='#46964a', highlightthickness=0); self.nb.add(self.cv, text='Sprite')
         cf = ttk.Frame(self.nb); self.nb.add(cf, text='Card')
         self.cc = tk.Canvas(cf, width=340, height=280, bg='#14161f', highlightthickness=0); self.cc.pack()
-        self.tip = tk.IntVar(value=1); self.shim = tk.IntVar(value=1)
+        self.shim = tk.IntVar(value=1)
         cr = ttk.Frame(cf); cr.pack(fill='x')
-        ttk.Checkbutton(cr, text='tooltip', variable=self.tip).pack(side='left'); ttk.Checkbutton(cr, text='shimmer', variable=self.shim).pack(side='left', padx=6)
+        ttk.Checkbutton(cr, text='shimmer', variable=self.shim).pack(side='left', padx=6)
         self.cstyle = ttk.Combobox(cr, values=['auto'] + list(playercard.STYLES), state='readonly', width=8); self.cstyle.set('auto'); self.cstyle.pack(side='left')
         self.ct = 0; self._cache = {}
+        sf2 = ttk.Frame(self.nb); self.nb.add(sf2, text='Stats card')
+        self.cs = tk.Canvas(sf2, width=340, height=280, bg='#14161f', highlightthickness=0); self.cs.pack()
         row = ttk.Frame(side); row.pack(fill='x', pady=2)
         self.anim = ttk.Combobox(row, values=list(looks.anims()), state='readonly', width=9); self.anim.set('run'); self.anim.pack(side='left')
         self.kit = ttk.Combobox(row, values=['auto'] + looks.KITS, state='readonly', width=7); self.kit.set('auto'); self.kit.pack(side='left', padx=3)
@@ -110,8 +112,11 @@ class PlayersTab(ttk.Frame):
     def tick(self):
         try:
             r = self.row()
-            if r and self.winfo_viewable() and self.nb.index(self.nb.select()) == 1:
+            tab = self.nb.index(self.nb.select()) if self.winfo_viewable() else 0
+            if r and tab == 1:
                 self.draw_card(r)
+            elif r and tab == 2:
+                self.draw_stats(r)
             elif r and self.winfo_viewable():
                 a = self.anim.get() or 'run'
                 n = looks.anims().get(a, {}).get('frames', 1); self.fr = (self.fr + 1) % max(1, n)
@@ -134,9 +139,14 @@ class PlayersTab(ttk.Frame):
         if im is None:
             if len(self._cache) > 200: self._cache.clear()
             im = playercard.card(r, kit, special=special, t=self.ct / N).resize((192, 270), Image.NEAREST); self._cache[key] = im
-        self._cph = ImageTk.PhotoImage(im); self.cc.delete('all'); self.cc.create_image(4, 5, image=self._cph, anchor='nw')
-        if self.tip.get():
-            tp = playercard.popup(r, 142); self._tph = ImageTk.PhotoImage(tp); self.cc.create_image(196, 5, image=self._tph, anchor='nw')
+        self._cph = ImageTk.PhotoImage(im); self.cc.delete('all'); self.cc.create_image(74, 5, image=self._cph, anchor='nw')
+
+    def draw_stats(self, r):
+        key = ('stats', tuple(sorted(r.items())))
+        im = self._cache.get(key)
+        if im is None:
+            tp = playercard.popup(r, 148); im = tp.resize((tp.width * 2, tp.height * 2), Image.NEAREST); self._cache[key] = im
+        self._sph = ImageTk.PhotoImage(im); self.cs.delete('all'); self.cs.create_image(22, 8, image=self._sph, anchor='nw')
 
     def export_cards(self):
         out = os.path.join(EXPORT, 'players'); os.makedirs(out, exist_ok=True)

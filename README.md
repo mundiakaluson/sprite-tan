@@ -62,7 +62,7 @@ python tool/app.py
 ```
 Tabs:
 - **Dashboard** (opens first): live numbers from the data, the roadmap (double-click a row to change its status; saved to `data/progress.csv`), and a command panel for saving, checks, builds, exports and opening folders.
-- **Players**: the 300 players as an Excel-style grid (double-click a cell to edit), with a live animated sprite preview, look pickers
+- **Players**: the 300 players as an Excel-style grid (double-click a cell to edit), with three preview tabs (Sprite: live animated sprite; Card: the player card with shimmer; Stats card: the full stat sheet), look pickers
   (skin, hair style and colour, beard, glasses, chain, headband, wristband, tattoo), stat boxes, auto rating, and export of
   every player's look atlas to `export/looks/`.
 - **Cards**: the 200 cards with the live card face (the `cards/cardlib2.py` design: no description on the card, hover tooltip instead), ready / cooldown / unavailable states, a hand-of-8 preview, and export of faces and tooltips to `export/cards/`. All 200 cards have an illustrated emblem (SH01-SH30 in cards/cardlib2.py, the rest in cards/recipes.py); new cards get a category placeholder until a recipe is added.
