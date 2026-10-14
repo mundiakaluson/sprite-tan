@@ -40,7 +40,11 @@ def surname(name):
 
 def face(p, kit=None):
     """head and shoulders, facing the camera, big."""
-    return PT.portrait(p, kit or 'home').resize((PT.W * 2, PT.H * 2), Image.NEAREST)
+    g = PT.portrait(p, kit or 'home').resize((21, 18), Image.BOX)
+    a = g.getchannel('A').point(lambda v: 255 if v > 110 else 0); g.putalpha(a)
+    if (p.get('glasses') or 'none') == 'none':
+        for ex in (8, 12): g.putpixel((ex, 7), (26, 22, 34, 255))
+    return g.resize((42, 36), Image.NEAREST)
 
 
 def _text2(im, x, y, s, col, k=2):
@@ -64,7 +68,7 @@ def card(p, kit=None, state='ready'):
             if (x - y // 2) % 9 == 0 and 14 < y < 60: c = _mix(c, r['light'], 0.05)   # faint diagonal streaks
             px[x, y] = c + (255,)
     # head and shoulders, fading into the dark at the bottom
-    fc = face(p, kit); im.alpha_composite(fc, (4, 12))
+    fc = face(p, kit); im.alpha_composite(fc, (11, 22))
     for y in range(46, 61):
         t = (y - 46) / 14
         for x in range(CW):

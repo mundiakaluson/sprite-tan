@@ -29,11 +29,9 @@ def portrait(p, kit='home'):
     cx = 14
     # shoulders + collar
     d.polygon([(2, 23), (4, 19), (10, 18), (18, 18), (24, 19), (26, 23)], fill=A(jersey))
-    d.polygon([(2, 23), (4, 19), (6, 19), (5, 23)], fill=A(_sh(jersey, .8))); d.polygon([(26, 23), (24, 19), (22, 19), (23, 23)], fill=A(_sh(jersey, .8)))
     d.line([(10, 18), (12, 20), (15, 20), (17, 18)], fill=A(trim))
     # neck
-    d.rectangle([12, 15, 15, 19], fill=skd); d.rectangle([12, 19, 15, 19], fill=sk)
-    d.polygon([(11, 18), (12, 20), (15, 20), (16, 18)], fill=sk)
+    d.rectangle([12, 15, 15, 19], fill=skd)
     # back hair for long styles / ponytail / braids / afro
     if style in ('H08', 'H07'):
         d.rectangle([7, 6, 20, 21 if style == 'H08' else 20], fill=hd)
@@ -41,24 +39,17 @@ def portrait(p, kit='home'):
         d.ellipse([5, 0, 22, 14], fill=hd)
     if style == 'H09': d.rectangle([20, 7, 23, 14], fill=hd); d.rectangle([22, 12, 23, 17], fill=hd)
     # ears
-    d.rectangle([7, 9, 7, 12], fill=skd); d.rectangle([20, 9, 20, 12], fill=skd)
     # head
     d.ellipse([8, 3, 19, 17], fill=sk)
     d.rectangle([8, 11, 8, 12], fill=sk); d.rectangle([19, 11, 19, 12], fill=sk)
-    d.line([(18, 6), (18, 13)], fill=skd); d.line([(11, 17), (16, 17)], fill=skd)
-    d.line([(9, 6), (9, 8)], fill=skl)
     # face
-    d.line([(9, 8), (11, 8)], fill=hd if hair != (0, 0, 0) else hc); d.line([(16, 8), (18, 8)], fill=hd)      # brows
     for ex in (9, 16):
-        d.point((ex, 10), A((250, 250, 255))); d.point((ex + 1, 10), A((28, 24, 36))); d.point((ex + 2, 10), A((250, 250, 255)))
-    d.point((13, 12), skd); d.point((14, 12), skd); d.point((14, 13), skd)                               # nose
-    d.line([(12, 15), (15, 15)], fill=A(_sh(skin, .6)))                                                     # mouth
+        d.rectangle([ex + 1, 10, ex + 1, 11], fill=A((28, 24, 36)))
+    d.line([(12, 15), (15, 15)], fill=A(_sh(skin, .62)))
     # beard
     bd = p.get('beard') or 'none'
     if bd == 'stubble':
-        for x in range(9, 19):
-            for y in (14, 15, 16):
-                if (x + y) % 2 == 0 and not (12 <= x <= 15 and y == 15): d.point((x, y), A(_sh(hair, .9)))
+        d.rectangle([9, 14, 18, 16], fill=A(_sh(skin, .86)))
     elif bd in ('short', 'full'):
         d.polygon([(8, 12), (9, 15), (11, 17), (16, 17), (18, 15), (19, 12), (18, 12), (17, 14), (10, 14), (9, 12)], fill=hd)
         d.line([(12, 15), (15, 15)], fill=A(_sh(skin, .6)))
@@ -66,28 +57,28 @@ def portrait(p, kit='home'):
         d.line([(12, 13), (15, 13)], fill=hd)
     # hair on top
     if style == 'H01': d.chord([8, 2, 19, 10], 180, 360, fill=hd); d.line([(9, 6), (18, 6)], fill=hd)
-    elif style == 'H02': d.chord([7, 1, 20, 11], 180, 360, fill=hc); d.rectangle([8, 5, 19, 6], fill=hc); d.line([(9, 7), (18, 7)], fill=hd)
+    elif style == 'H02': d.chord([8, 1, 19, 11], 180, 360, fill=hc); d.rectangle([9, 5, 18, 6], fill=hc); d.line([(9, 7), (18, 7)], fill=hd)
     elif style == 'H03':
-        d.chord([7, 1, 20, 11], 180, 360, fill=hc); d.rectangle([8, 5, 19, 7], fill=hc); d.polygon([(8, 7), (14, 5), (14, 7)], fill=hc); d.line([(9, 4), (16, 3)], fill=hl)
+        d.chord([8, 1, 19, 11], 180, 360, fill=hc); d.rectangle([9, 5, 18, 7], fill=hc); d.polygon([(8, 7), (14, 5), (14, 7)], fill=hc)
     elif style == 'H04':
-        d.chord([7, 0, 20, 10], 180, 360, fill=hc); d.rectangle([9, 0, 19, 3], fill=hc); d.rectangle([8, 5, 19, 6], fill=hc); d.line([(10, 1), (17, 1)], fill=hl)
+        d.chord([7, 0, 20, 10], 180, 360, fill=hc); d.rectangle([9, 0, 19, 3], fill=hc); d.rectangle([9, 5, 18, 6], fill=hc)
     elif style == 'H05':
         for (x, y) in ((8, 4), (10, 2), (13, 1), (16, 2), (18, 4), (7, 7), (20, 7)): d.ellipse([x - 2, y - 2, x + 2, y + 2], fill=hc)
-        d.rectangle([8, 4, 19, 6], fill=hc); d.point((10, 2), hl); d.point((15, 1), hl)
+        d.rectangle([8, 4, 19, 6], fill=hc)
     elif style == 'H06':
-        d.ellipse([5, 0, 22, 9], fill=hc); d.rectangle([7, 4, 20, 5], fill=hc); d.rectangle([6, 5, 7, 10], fill=hc); d.rectangle([20, 5, 21, 10], fill=hc); d.line([(9, 2), (13, 1)], fill=hl)
+        d.ellipse([5, 0, 22, 9], fill=hc); d.rectangle([7, 4, 20, 5], fill=hc); d.rectangle([6, 5, 7, 10], fill=hc); d.rectangle([20, 5, 21, 10], fill=hc)
     elif style == 'H07':
-        d.chord([7, 1, 20, 11], 180, 360, fill=hc); d.rectangle([8, 5, 19, 6], fill=hc)
+        d.chord([8, 1, 19, 11], 180, 360, fill=hc); d.rectangle([9, 5, 18, 6], fill=hc)
         for x in (7, 9, 18, 20): d.line([(x, 8), (x, 19)], fill=hc); d.point((x, 12), hd); d.point((x, 16), hd)
     elif style == 'H08':
-        d.chord([7, 1, 20, 11], 180, 360, fill=hc); d.rectangle([8, 5, 19, 6], fill=hc)
-        d.rectangle([7, 7, 8, 20], fill=hc); d.rectangle([19, 7, 20, 20], fill=hc); d.line([(10, 3), (14, 2)], fill=hl)
+        d.chord([8, 1, 19, 11], 180, 360, fill=hc); d.rectangle([9, 5, 18, 6], fill=hc)
+        d.rectangle([7, 7, 8, 20], fill=hc); d.rectangle([19, 7, 20, 20], fill=hc)
     elif style == 'H09':
-        d.chord([7, 1, 20, 11], 180, 360, fill=hc); d.rectangle([8, 5, 19, 6], fill=hc); d.line([(10, 3), (15, 2)], fill=hl)
+        d.chord([8, 1, 19, 11], 180, 360, fill=hc); d.rectangle([9, 5, 18, 6], fill=hc)
     elif style == 'H10':
-        d.chord([7, 1, 20, 11], 180, 360, fill=hc); d.rectangle([8, 5, 19, 6], fill=hc); d.ellipse([11, -2, 16, 3], fill=hc); d.point((12, -1), hl)
+        d.chord([8, 1, 19, 11], 180, 360, fill=hc); d.rectangle([9, 5, 18, 6], fill=hc); d.ellipse([11, -2, 16, 3], fill=hc)
     # extras
-    if p.get('headband') in ('1', 1, True): d.rectangle([8, 5, 19, 6], fill=A(trim))
+    if p.get('headband') in ('1', 1, True): d.rectangle([9, 5, 18, 6], fill=A(trim))
     gl = p.get('glasses') or 'none'
     if gl != 'none':
         col = A((20, 20, 30)) if gl == 'dark' else A((170, 200, 230))
