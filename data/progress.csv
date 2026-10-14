@@ -1,0 +1,19 @@
+stage,item,status,note
+Design,Core rules and decisions (design doc),done,
+Design,Open questions: deck size / coins / resolution constants / pass cards / name swap,todo,checkpoint before Godot
+Sprites,Body rig and 32-direction sheets,done,
+Sprites,Hair layers (10 styles),done,
+Sprites,Kits (data/kits.csv),done,
+Data,300 players,done,
+Data,200 skill cards,done,
+Data,Formations and styles,done,
+Data,Pack odds table,done,
+Art,Skill card faces and 200 emblems,done,first pass
+Art,Player cards,done,
+Art,Special foil cards (rainbow / galaxy / aurora),done,
+Tool,Manager tool (players / cards / formations / animations / hair / kits),done,
+Tool,Build tab and dashboard,done,
+Tool,Pack-odds simulator,todo,
+Tool,Palette-swap shader for indexed export,todo,
+Tool,Test pass on a clean machine,todo,
+Game,Godot skeleton loading the CSVs,todo,waiting for your go

@@ -59,6 +59,7 @@ before any public or commercial release. `players_invented_names.csv` has a full
 python tool/app.py
 ```
 Tabs:
+- **Dashboard** (opens first): live numbers from the data, the roadmap (double-click a row to change its status; saved to `data/progress.csv`), and a command panel for saving, checks, builds, exports and opening folders.
 - **Players**: the 300 players as an Excel-style grid (double-click a cell to edit), with a live animated sprite preview, look pickers
   (skin, hair style and colour, beard, glasses, chain, headband, wristband, tattoo), stat boxes, auto rating, and export of
   every player's look atlas to `export/looks/`.
