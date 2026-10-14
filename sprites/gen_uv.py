@@ -427,6 +427,19 @@ def extras(pose, dname, dust=None):
         bx_, by_ = OX + (bw[0] + 1.0 + g('bz') * 0.25) * SC, OY + bw[1] * sE * SC
         d.ellipse([bx_ - 2.2, by_ - 1.1, bx_ + 2.2, by_ + 1.1], fill=(10, 10, 30, 90))
     over = Image.new('RGBA', (CW, CH), (0, 0, 0, 0))
+    if pose.get('fxm', 0.0) > 0.02:     # speed mist: grey translucent wave trailing behind the direction of travel (a game-side effect, not part of the sprite sheet)
+        hx, hy = -math.sin(pose.get('fxd', 0.0)), math.cos(pose.get('fxd', 0.0))
+        n = 11
+        for i in range(n):
+            d = 5.0 + 2.6 * i; lat = math.sin(i * 0.85 + pose.get('fxp', 0.0)) * (0.8 + 0.18 * i)
+            wx, wy = g('root_x') - hx * d + hy * lat, g('root_y') - hy * d - hx * lat
+            for hz, ra in ((1.6, 1.0), (4.6, 0.7)):
+                p = Rf @ np.array([wx, wy, hz])
+                px, py = OX + p[0] * SC, OY - float(p @ UP) * SC
+                rr = (1.3 + 0.36 * i) * ra
+                al = int(70 * pose.get('fxm', 0.0) * (1 - i / n) ** 1.3 * (1.0 if hz < 3 else 0.7))
+                ly = Image.new('RGBA', (CW, CH), (0, 0, 0, 0)); ImageDraw.Draw(ly).ellipse([px - rr * 1.4, py - rr * 0.8, px + rr * 1.4, py + rr * 0.8], fill=(196, 200, 210, al))
+                under.alpha_composite(ly)
     if dust:
         for (x, y, z, size, col, a) in dust:
             p = Rf @ np.array([x, y, z])
@@ -458,6 +471,10 @@ def centered(pose):
     dy = p['root_y']
     for k in ('root_y', 'R_ay', 'L_ay', 'by'):
         p[k] = p[k] - dy
+    if p.get('cx', 0.0) > 0.5:      # moves that travel sideways (turns, cuts): centre on x as well
+        dx = p['root_x']
+        for k in ('root_x', 'R_ax', 'L_ax', 'bx'):
+            p[k] = p[k] - dx
     return p
 
 

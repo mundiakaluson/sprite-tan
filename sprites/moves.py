@@ -130,7 +130,7 @@ def aim_ball(m, f, target='head', side='R', off=(0, 0, 0), vin=(0, -2.5, 0), pre
 
 
 # ------------------------------------------------------------------ left-footed players: mirror the whole pose
-SIGN = ('root_x', 'pyaw', 'proll', 'cyaw', 'croll', 'hyaw', 'hroll', 'bx', 'brz')
+SIGN = ('fxd', 'root_x', 'pyaw', 'proll', 'cyaw', 'croll', 'hyaw', 'hroll', 'bx', 'brz')
 
 
 def mirror_pose(p):

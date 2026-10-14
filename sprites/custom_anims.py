@@ -11,7 +11,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 ANIM_DIR = os.path.join(os.path.dirname(HERE), 'data', 'animations')
 OUT = os.path.join(HERE, 'out_uv')
-EXTRA_DEFAULT = {'R_lift': 0.0, 'L_lift': 0.0}
+EXTRA_DEFAULT = {'R_lift': 0.0, 'L_lift': 0.0, 'cx': 0.0, 'fxm': 0.0, 'fxd': 0.0, 'fxp': 0.0}   # cx: centre on x too; fxm/fxd/fxp: speed-mist strength, heading, phase
 
 
 def files():
@@ -140,7 +140,8 @@ def export(name, with_hair=False, progress=print, procs=2):
     mp = os.path.join(OUT, 'animations.json')
     meta = json.load(open(mp))
     meta['animations'][name] = dict(frames=n, ms_per_frame=a.get('ms', 70), loop=a.get('loop', False), events=a.get('events', {}),
-                                    root_forward_px=[round(p['root_y'] * U.SC, 2) for p in poses], custom=True)
+                                    root_forward_px=[round(p['root_y'] * U.SC, 2) for p in poses], root_side_px=[round(p['root_x'] * U.SC, 2) for p in poses],
+                                    mist=[round(p.get('fxm', 0.0), 2) for p in poses], custom=True)
     json.dump(meta, open(mp, 'w'), indent=1)
     progress('done')
 

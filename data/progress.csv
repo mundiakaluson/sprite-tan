@@ -21,4 +21,5 @@ Game,Godot skeleton loading the CSVs,todo,waiting for your go
 Animation,Skill card animations: SHOT 30 (done, baked, no hair),done,Cards tab: Play move
 Animation,Skill card animations: PASS 25 (done, baked),done,
 Animation,Player animations: walking / tired running,todo,
-Animation,Skill card animations: DRIBBLE / DEFEND / SUPPORT / KEEPER / TITAN (145),todo,checkpoint per category
+Animation,Skill card animations: DRIBBLE 30 (done, baked; mist effect is game-side),done,
+Animation,Skill card animations: DEFEND / SUPPORT / KEEPER / TITAN (115),todo,checkpoint per category
