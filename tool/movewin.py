@@ -55,7 +55,10 @@ class MovePanel(ttk.Frame):
         if self.foot.get() == 'L': p = M.mirror_pose(p)
         if key not in self.cache:
             bg = U.bg_pitch(U.CW, U.CH); under, over = U.extras(U.centered(p), dn)
-            bg.alpha_composite(under); bg.alpha_composite(U.apply_skin(U.render_uv(U.centered(p), dn, with_ball=ball), self.atlas())); bg.alpha_composite(over)
+            body = U.apply_skin(U.render_uv(U.centered(p), dn, with_ball=ball), self.atlas()); gh = U.ghosts(U.centered(p), dn, body)
+            bg.alpha_composite(under)
+            if gh is not None: bg.alpha_composite(gh)
+            bg.alpha_composite(body); bg.alpha_composite(over)
             self.cache[key] = ImageTk.PhotoImage(bg.resize((int(U.CW * self.S), int(U.CH * self.S)), Image.NEAREST))
             if len(self.cache) > 700: self.cache.clear()
         self.cv.create_image(0, 0, anchor='nw', image=self.cache[key])

@@ -26,8 +26,11 @@ def poses_of(name):
 def frame(pose, dn):
     bg = U.bg_pitch(U.CW, U.CH)
     under, over = U.extras(U.centered(pose), dn)
+    body = U.apply_skin(U.render_uv(U.centered(pose), dn, with_ball=pose.get('bvis', 0) > 0.5), atlas())
     bg.alpha_composite(under)
-    bg.alpha_composite(U.apply_skin(U.render_uv(U.centered(pose), dn, with_ball=pose.get('bvis', 0) > 0.5), atlas()))
+    gh = U.ghosts(U.centered(pose), dn, body)
+    if gh is not None: bg.alpha_composite(gh)
+    bg.alpha_composite(body)
     bg.alpha_composite(over)
     return bg
 

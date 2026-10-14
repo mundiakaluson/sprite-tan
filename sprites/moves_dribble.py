@@ -73,13 +73,15 @@ class Dr:
 
 # ---------------------------------------------------------------- reusable segments (return the next free frame)
 def stepover(d, f0, side='R'):
+    """three frames: the foot lifts outside, loops over the front of the ball and lands the far side, while the torso leans AWAY from the working foot"""
     sg = 1 if side == 'R' else -1; o = 'L' if side == 'R' else 'R'
-    pos = lambda x, y, fp, z=None: (sg * x, y, fp, z)
-    g = dict(R=None, L=None)
-    kw = lambda a, b: {side: a, o: b}
-    d.at(f0, ball=(sg * 0.2, 8.0), **kw(pos(2.4, 5.2, 30, 6.0), (-sg * 2.2, 1.0, 0, None)), croll=0.1 * sg, cpitch=0.2)
-    d.at(f0 + 1, ball=(sg * 0.2, 8.2), **kw(pos(0.2, 9.6, 50, 8.5), (-sg * 2.2, 2.0, 0, None)), croll=-0.12 * sg, cpitch=0.22)
-    d.at(f0 + 2, ball=(sg * 0.2, 8.4), **kw(pos(-3.0, 8.4, 0, None), (-sg * 1.4, 3.2, 0, None)), croll=-0.2 * sg, proll=-0.1 * sg)
+    work = lambda x, y, fp, z=None: {side: (sg * x, y, fp, z)}
+    other = {o: (-sg * 2.0, 1.8, 0, None)}
+    kw = lambda a, b: {**a, **other} if b is None else {**a, **b}
+    d.at(f0, ball=(sg * 0.2, 8.2), **kw(work(3.4, 5.6, 25, 6.5), None), croll=-0.3 * sg, proll=-0.14 * sg, cpitch=0.2, hpitch=0.45, pz=23.8)
+    d.at(f0 + 1, ball=(sg * 0.2, 8.3), **kw(work(0.2, 10.4, 45, 8.6), {o: (-sg * 2.2, 2.8, 0, None)}), croll=-0.42 * sg, proll=-0.2 * sg, cpitch=0.24, hpitch=0.5, pz=23.4)
+    d.at(f0 + 2, ball=(sg * 0.2, 8.4), **kw(work(-3.0, 8.6, 0, None), {o: (-sg * 1.6, 3.6, 0, None)}), croll=-0.12 * sg, proll=-0.06 * sg, cpitch=0.22, hpitch=0.4, pz=23.8)
+    for f in range(f0, f0 + 3): d.arms(f, (-0.2, 0.6, 0.5, 0.4) if side == 'R' else (0.9, 1.0, 1.2, 0.7), (0.9, 1.0, 1.2, 0.7) if side == 'R' else (-0.2, 0.6, 0.5, 0.4))
     return f0 + 3
 
 
@@ -169,19 +171,17 @@ def dr05():
 
 @move('DR06', 'Sombrero Flick')
 def dr06():
-    d = Dr(26); d.carry(0, 5); d.speed(f0=2.0, f8=1.5, f15=2.4)
-    d.at(6, R=(0.8, 6.0, -10, None), L=(-2.2, 2.0, 0, None), ball=(0.8, 7.4), cpitch=0.3, pz=23.4)
-    d.at(7, R=(0.8, 7.6, -5, None), ball=(0.8, 7.8, 2.6), cpitch=0.24, pz=23.8)                                      # toe scoops under it
-    d.at(8, R=(0.8, 9.0, 15, 6.5), ball=(0.8, 9.0, 7.0), cpitch=0.1)
-    for f in range(9, 19):
-        u = (f - 8) / 9.0; d.m.k(f, bx=0.8 + 0.0, by=9.0 + 1.6 * (f - 8) - 2.0 * (f - 8) * 1.1 * 0 - 0.0, bz=7.0 + 27.0 * 4 * u * (1 - u), bvis=1.0)
-    for f in range(9, 19): d.m.k(f, by=9.0 - 1.35 * (f - 8))
-    for f in range(8, 17): d.m.k(f, hpitch=-0.6, cpitch=0.05, hyaw=0.0)
-    d.at(9, R=(0.8, 9.6, 5, 8.0), cpitch=0.0); d.at(10, R=(0.8, 8.0, 0, None), cpitch=0.1)
-    burst(d, 11, 25, 0.25); d.arms(10, (1.0, 1.1, 1.2, 1.0), (1.0, 1.1, 1.2, 1.0))
-    for f in range(19, 26):
-        saw = (f % 6) / 6.0; d.m.k(f, bx=0.6, by=11.6 - 3.0 * saw, bz=3.0, bvis=1.0)
-    d.m.k(18, by=3.2, bz=3.0)
+    d = Dr(26); d.carry(0, 5); d.speed(f0=2.0, f8=1.6, f15=2.4)
+    d.at(6, R=(0.8, 6.0, -10, None), L=(-2.2, 2.0, 0, None), ball=(0.8, 7.8), cpitch=0.3, pz=23.4)
+    d.at(7, R=(0.8, 7.6, -15, None), ball=(0.8, 8.0, 2.8), cpitch=0.26, pz=23.6, hpitch=0.5)                              # toe slides under the ball
+    d.at(8, R=(0.8, 9.4, -20, 6.5), ball=(0.8, 10.0, 9.0), cpitch=0.12, hpitch=0.2)                                         # and lifts it
+    arc = ((12.5, 20), (13.8, 29), (14.6, 34), (14.8, 35), (14.2, 33), (12.8, 28), (10.6, 20), (8.2, 11), (6.6, 5), (6.0, 3))
+    for i, (y, z) in enumerate(arc): d.m.k(9 + i, bx=0.8, by=y, bz=z, bvis=1.0)
+    for f in range(9, 15): d.m.k(f, hpitch=-0.6, cpitch=-0.02)
+    d.at(9, R=(0.8, 10.8, 10, 8.0)); d.at(10, R=(0.6, 9.0, 0, None), L=(-2.0, 5.0, 10, None)); d.at(11, R=(1.4, 6.0, 20, 4.0))
+    burst(d, 12, 25, 0.25)
+    for f in (9, 10, 11, 12): d.arms(f, (0.9, 0.9, 1.2, 0.7), (1.0, 1.0, 1.3, 0.8))
+    settle(d, 19, 25)
     return d.build()
 
 
@@ -242,12 +242,19 @@ def dr10():
 
 @move('DR11', 'Ball Roll')
 def dr11():
-    d = Dr(20); d.carry(0, 4); d.speed(f0=2.2, f12=2.6); d.fx = {0: 0.5, 19: 0.6}
-    d.at(5, R=(0.8, 6.0, -40, 5.0), L=(-2.2, 2.4, 0, None), ball=(0.8, 7.2, 2.6), cpitch=0.26)
-    d.at(6, R=(0.0, 6.4, -45, 4.8), ball=(0.0, 7.0, 2.6), cpitch=0.28)
-    d.at(7, R=(-0.9, 6.6, -45, 4.8), ball=(-0.9, 7.2, 2.6), cpitch=0.3)                                                    # sole rolls it across
-    d.at(8, L=(-1.2, 7.8, 40, 3.2, 1.0, 0.1), R=(1.6, 3.0, 0, None), ball=(-0.4, 9.6), cpitch=0.34)                      # other foot pushes on
-    burst(d, 9, 19, 0.3); settle(d, 9, 19); d.fx.update({9: 0.9, 12: 1.0})
+    d = Dr(22); d.carry(0, 4); d.speed(f0=1.8, f11=2.6); d.fx = {0: 0.5, 21: 0.6}
+    # sole on top of the ball rolling it across the body, torso and hips leaning AWAY from the rolling foot, head over the ball, arms out for balance
+    lean = dict(croll=-0.56, proll=-0.3, cpitch=0.16, hpitch=0.55, pz=23.0, root_x=-1.4)
+    d.at(5, R=(2.6, 7.2, -45, 5.8), L=(-2.2, 1.8, 0, None), ball=(1.8, 8.0), **lean)
+    d.at(6, R=(1.6, 7.4, -50, 4.9), L=(-2.2, 1.8, 0, None), ball=(1.6, 8.0, 2.4), **lean)
+    d.at(7, R=(0.4, 7.2, -50, 4.9), ball=(0.4, 8.0, 2.4), **lean)
+    d.at(8, R=(-0.8, 7.0, -50, 4.9), ball=(-0.8, 7.8, 2.4), **dict(lean, croll=-0.62))
+    d.at(9, R=(-1.8, 6.8, -45, 4.8), ball=(-1.8, 7.6, 2.4), **dict(lean, croll=-0.66))
+    d.at(10, R=(-0.6, 7.0, -50, 4.9), ball=(-0.6, 7.8, 2.4), **dict(lean, croll=-0.52))                                    # rolled back
+    d.at(11, L=(-1.4, 8.4, 40, 3.2, 1.0, 0.1), R=(1.8, 3.0, 0, None), ball=(-0.2, 10.8), croll=0.12, proll=0.05, cpitch=0.3, hpitch=0.2)
+    d.at(12, L=(-1.8, 10.6, 30, 4.4), R=(1.0, 6.0, 20, 4.0), ball=(0.0, 12.0), croll=0.1, cpitch=0.3)
+    for f in range(5, 11): d.arms(f, (-0.2, 0.7, 0.6, 0.5), (1.0, 1.1, 1.3, 0.8))
+    burst(d, 13, 21, 0.3); settle(d, 13, 21)
     return d.build()
 
 
@@ -258,16 +265,6 @@ def dr12():
         d.m.k(f, pyaw=-0.9, cyaw=-1.0, hyaw=0.7, croll=-0.14, cpitch=0.16, pz=23.6, bx=-1.6 + 0.3 * math.sin(f * 0.6), by=6.4 + 0.5 * math.sin(f * 0.6), bz=3.0)
         d.arms(f, (1.5, 1.35, 1.5, 1.3), (0.5, 0.5, 1.5, 0.3))                                                          # defender side arm out and braced
     d.speed(f0=1.4)
-    return d.build()
-
-
-@move('DR13', 'Hold Up Play')
-def dr13():
-    d = Dr(24, ms=70, speed=0.0)
-    for f in range(24):
-        sw = math.sin(f * 0.55)
-        d.at(f, R=(3.4, 0.6 + 0.4 * sw, 0, None), L=(-3.4, -1.2, 0, None), ball=(0.2, 4.6, 3.0), pz=22.4, ppitch=-0.2, cpitch=0.36 + 0.05 * sw, croll=0.07 * sw, hpitch=0.25, hyaw=0.0, pyaw=0.04 * sw, root_y=0.0)
-        d.arms(f, (0.6 + 0.12 * sw, 1.0, 1.0, 0.7), (0.6 - 0.12 * sw, 1.0, 1.0, 0.7))                                    # arms out feeling the defender
     return d.build()
 
 
@@ -285,24 +282,26 @@ def dr14():
 
 @move('DR15', 'Stepover Chain')
 def dr15():
-    d = Dr(28); d.carry(0, 4); d.speed(f0=2.0, f5=1.2, f14=3.0)
-    f = stepover(d, 5, 'R'); f = stepover(d, f, 'L'); f = stepover(d, f, 'R')
-    f = push_out(d, f, 'L', dx=-3.0, dy=10.8)
-    burst(d, f, 27); d.turn(**{'f14': 0.0, 'f16': 0.4, 'f27': 0.4}); settle(d, f, 27)
+    d = Dr(30); d.carry(0, 4); d.speed(f0=1.8, f5=1.1, f17=3.0)
+    f = 5
+    for side in ('R', 'L', 'R', 'L'): f = stepover(d, f, side)
+    f = push_out(d, f, 'R', dx=3.0, dy=11.0)
+    burst(d, f, 29); d.turn(**{'f%d' % f: 0.0, 'f%d' % (f + 2): -0.4, 'f29': -0.4}); settle(d, f, 29)
     return d.build()
 
 
 @move('DR16', 'Heel Flick')
 def dr16():
-    d = Dr(22); d.carry(0, 4); d.speed(f0=2.0, f9=1.4, f12=2.8)
-    d.at(5, R=(2.4, 2.0, 20, None), L=(-2.4, 0.0, 0, None), ball=(0.4, 6.0), cpitch=0.2)
-    d.at(6, R=(2.0, 6.0, 30, 3.4), L=(-2.4, 3.0, 0, None), ball=(0.4, 6.0), cpitch=0.3)                                    # steps past the ball
-    d.at(7, R=(0.6, 3.6, -70, 4.0), ball=(0.4, 5.0), cpitch=0.34, pyaw=0.2)                                                # trailing heel taps it forward
-    d.at(8, R=(0.2, 1.8, -70, 6.0), ball=(0.4, 8.8, 4.0), cpitch=0.28)
-    d.at(9, R=(0.4, 3.0, -40, 7.0), ball=(0.4, 12.0, 4.8), cpitch=0.22)
-    d.at(10, R=(1.0, 6.0, 10, 4.0), ball=(0.4, 13.0, 3.0), cpitch=0.2)
-    d.arms(7, (0.8, 1.0, 1.0, 0.8), (0.8, 1.0, 1.0, 0.8))
-    burst(d, 11, 21, 0.34); ball_ahead(d, 11, [12.5, 11, 10, 9.5, 9.5, 9.0, 9.4, 9.0, 9.4, 9.0, 9.2], 0.4)
+    d = Dr(24); d.carry(0, 4); d.speed(f0=2.0, f9=1.2, f12=2.8)
+    d.at(5, R=(2.4, 2.0, 20, None), L=(-2.4, 0.0, 0, None), ball=(0.4, 6.4), cpitch=0.2)
+    d.at(6, R=(2.0, 6.0, 30, 3.4), L=(-2.4, 4.0, 0, None), ball=(0.4, 5.6), cpitch=0.3)                                    # steps past the ball
+    d.at(7, R=(0.8, 3.4, -70, 5.0), ball=(0.4, 4.4, 3.0), cpitch=0.34, pyaw=0.25, hpitch=0.5)                              # trailing leg sweeps back through
+    d.at(8, R=(0.4, 1.2, -75, 6.4), ball=(0.4, 3.0, 4.0), cpitch=0.3, pyaw=0.3)                                            # heel meets it
+    for i, (y, z) in enumerate(((6.5, 10), (10.5, 16), (14.0, 18), (16.5, 14), (18.0, 8), (18.6, 3.5))): d.m.k(9 + i, bx=0.4, by=y, bz=z, bvis=1.0)   # up and over, in front
+    d.at(9, R=(0.2, 3.0, -50, 9.0), cpitch=0.2, hpitch=0.1); d.at(10, R=(0.6, 5.0, -10, 7.0), cpitch=0.22)
+    d.at(11, R=(1.6, 6.0, 10, 4.0)); 
+    for f in (7, 8, 9): d.arms(f, (0.8, 0.8, 1.0, 0.6), (1.0, 1.0, 1.2, 0.8))
+    burst(d, 11, 23, 0.34); ball_ahead(d, 15, [15.5, 13.5, 12.4, 11.8, 11.8, 11.5, 11.8, 11.4, 11.6], 0.4)
     return d.build()
 
 
@@ -342,37 +341,49 @@ def dr19():
 
 @move('DR20', 'Quick Touch')
 def dr20():
-    d = Dr(18, speed=1.6); d.carry(0, 17, cad=1.8, tight=True); d.fx = {0: 0.5, 17: 0.6}
+    d = Dr(20, speed=1.5); d.fx = {0: 0.45, 19: 0.5}
+    # tiny alternating taps with the inside of each boot, feet shuffling close together, low and busy, shoulders rocking
+    for f in range(20):
+        ph = f % 4; rk = 1 if (f // 4) % 2 == 0 else -1
+        base = dict(pz=23.2, cpitch=0.2, hpitch=0.5, croll=0.1 * (1 if ph < 2 else -1), proll=0.06 * (1 if ph < 2 else -1))
+        if ph == 0: d.at(f, R=(0.8, 6.6, 30, 3.2, -1.0, 0.1), L=(-2.2, 3.0, 0, None), ball=(-0.4, 7.4), **base)
+        elif ph == 1: d.at(f, R=(1.0, 4.6, 10, 4.0), L=(-1.0, 5.6, 25, 3.6), ball=(-0.6, 7.8), **base)
+        elif ph == 2: d.at(f, L=(-0.8, 6.6, 30, 3.2, 1.0, 0.1), R=(2.2, 3.0, 0, None), ball=(0.4, 7.4), **base)
+        else: d.at(f, L=(-1.0, 4.6, 10, 4.0), R=(1.0, 5.6, 25, 3.6), ball=(0.6, 7.8), **base)
+        d.arms(f, (0.5, 0.8, 0.9, 0.6), (0.5, 0.8, 0.9, 0.6))
     return d.build()
 
 
 @move('DR21', 'Spin Away')
 def dr21():
-    d = Dr(22); d.carry(0, 4); d.speed(f0=2.0, f5=0.8, f10=0.3, f14=2.6)
+    d = Dr(24); d.carry(0, 4); d.speed(f0=2.0, f5=0.8, f10=0.3, f14=2.6)
     d.at(5, R=(2.0, 4.0, 20, None), L=(-2.4, 1.0, 0, None), ball=(0.8, 7.0), cpitch=0.3, pz=23.4)
-    for f, (bx, by) in zip(range(6, 12), ((0.8, 6.0), (0.6, 4.0), (0.0, 2.0), (-0.8, 2.4), (-1.0, 4.0), (-0.4, 6.0))):
-        d.at(f, R=(bx + 0.1, by + 0.4, -45, 4.6), L=(-2.4, 1.4, 0, None), ball=(bx, by, 2.4), cpitch=0.42, pz=22.8, croll=-0.1)
-        d.arms(f, (1.3, 1.25, 1.4, 1.2), (1.3, 1.25, 1.4, 1.2))                                                          # arms wide to hold the defender off
-    d.at(12, R=(1.2, 9.0, 40, 3.2), ball=(0.8, 10.0), cpitch=0.3)
-    d.turn(**{'f6': 0.0, 'f11': PI, 'f21': PI}); burst(d, 13, 21, 0.3); settle(d, 12, 21)
+    arc = ((0.8, 6.0), (0.6, 4.2), (0.0, 2.4), (-0.8, 2.2), (-1.0, 3.8), (-0.4, 5.8))
+    for f, (bx, by) in zip(range(6, 12), arc):
+        u = (f - 6) / 5.0
+        d.at(f, R=(bx + 0.1, by + 0.4, -45, 4.6), L=(-2.4, 1.4, 0, None), ball=(bx, by, 2.4), cpitch=0.42, pz=22.6 + 0.8 * abs(u - 0.5),
+             croll=-0.3, proll=-0.16, hyaw=0.7 * (1 - u), cyaw=0.35 * (1 - u), pyaw=-0.3 * (1 - u))                          # head and shoulders lead, hips follow
+        d.arms(f, (1.1, 0.9, 1.4, 0.8), (0.3, 0.5, 1.2, 0.3))                                                             # outside arm raised, inside arm tucked
+    d.at(12, R=(1.2, 9.0, 40, 3.2), ball=(0.8, 10.0), cpitch=0.3, croll=0.0, proll=0.0)
+    d.turn(**{'f6': 0.0, 'f11': PI, 'f23': PI}); burst(d, 13, 23, 0.3); settle(d, 12, 23)
     return d.build()
 
 
 @move('DR22', 'Trap and Turn')
 def dr22():
     d = Dr(24, speed=0.8)
-    # the ball arrives from the front, is killed under the sole, and the body spins round it
-    for f in range(0, 7): d.at(f, R=(2.2, 1.0, 0, None), L=(-2.2, 1.4, 0, None), ball=(0.6, 14.0 - 1.6 * f, 3.0), hpitch=0.1, cpitch=0.1, pz=24.4, brx=-2.0 * f) if False else None
-    for f in range(0, 7):
+    # the ball arrives from the front, is killed under the sole, and he pivots round it, head leading
+    for f in range(0, 6):
         d.at(f, R=(2.2, 1.0 + 0.2 * f, 0, None), L=(-2.2, 1.4, 0, None), ball=(0.8, 15.0 - 1.4 * f, 3.0), hpitch=0.2, cpitch=0.1, pz=24.4)
+        d.arms(f, (0.4, 0.6, 0.9, 0.4), (0.6, 0.7, 1.0, 0.5))
     d.at(5, R=(1.0, 4.0, -30, 5.5), ball=(0.8, 7.4, 3.0), cpitch=0.2)
     d.at(6, R=(0.8, 6.4, -50, 4.9), ball=(0.8, 6.4, 2.4), cpitch=0.3, pz=23.6)                                            # sole kills it
-    d.at(7, R=(0.8, 5.2, -50, 4.9), ball=(0.8, 5.2, 2.4), cpitch=0.34)
-    d.at(8, R=(0.2, 2.8, -50, 4.9), ball=(0.2, 2.8, 2.4), cpitch=0.34)
-    d.at(9, R=(-1.2, 1.4, -45, 4.9), ball=(-1.2, 1.4, 2.4), cpitch=0.3)
-    d.at(10, R=(-1.0, 4.0, 40, 3.2, -1.0, 0.1), ball=(-0.4, 6.2), cpitch=0.3)
+    d.at(7, R=(0.8, 5.2, -50, 4.9), ball=(0.8, 5.2, 2.4), cpitch=0.34, hyaw=0.6, cyaw=0.3, pyaw=-0.25, croll=-0.18)
+    d.at(8, R=(0.2, 2.8, -50, 4.9), ball=(0.2, 2.8, 2.4), cpitch=0.34, hyaw=0.4, cyaw=0.2, pyaw=-0.2, croll=-0.25, pz=22.8)
+    d.at(9, R=(-1.2, 1.4, -45, 4.9), ball=(-1.2, 1.4, 2.4), cpitch=0.3, hyaw=0.2, cyaw=0.1, pyaw=-0.1, croll=-0.2, pz=22.8)
+    d.at(10, R=(-1.0, 4.0, 40, 3.2, -1.0, 0.1), ball=(-0.4, 6.2), cpitch=0.3, croll=0.0)
     d.at(11, L=(-1.6, 8.0, 20, None), R=(1.6, 5.0, 20, None), ball=(0.4, 9.6), cpitch=0.3)
-    d.arms(7, (1.2, 1.2, 1.3, 1.1), (1.2, 1.2, 1.3, 1.1))
+    for f in (6, 7, 8, 9): d.arms(f, (0.9, 0.9, 1.3, 0.7), (0.4, 0.6, 1.2, 0.3))
     d.turn(**{'f6': 0.0, 'f10': PI, 'f23': PI}); d.speed(f0=0.0, f10=0.4, f12=2.6); burst(d, 12, 23, 0.3); settle(d, 12, 23)
     return d.build()
 
@@ -412,16 +423,18 @@ def dr26():
     d.at(5, R=(2.2, 2.0, 20, None), L=(-2.2, 4.0, 0, None), ball=(0.6, 6.0), cpitch=0.3, pz=23.6)
     d.at(6, R=(0.6, 3.0, 20, None), L=(-0.6, 4.6, 20, None), ball=(0.0, 5.0), cpitch=0.3, pz=23.2)                         # ball pinned between the boots
     d.at(7, R=(0.4, 4.6, -30, 4.6), L=(0.0, 5.2, -20, 3.0), ball=(0.2, 4.6, 5.0), cpitch=0.28, pz=23.4)
-    d.at(8, R=(0.6, 4.0, -30, 7.0), L=(-0.6, 4.6, 40, 3.4), ball=(0.4, 4.2, 7.5), cpitch=0.2, pz=24.4)                      # rolled up the back of the leg
-    d.at(9, R=(0.4, 5.0, -10, 11.0), L=(-1.2, 5.0, 40, 8.0), ball=(0.2, 4.8, 12.0), cpitch=0.1, pz=27.0)                    # hop, flick
-    d.at(10, R=(0.4, 6.0, 0, 10.0), L=(-1.6, 6.0, 30, 9.0), ball=(0.0, 4.0, 24.0), cpitch=-0.1, pz=28.6, hpitch=-0.5)
-    d.at(11, R=(0.6, 5.0, 20, 6.0), L=(-1.6, 4.0, 20, 6.0), ball=(0.0, 4.0, 36.0), cpitch=0.0, pz=27.4, hpitch=-0.6)
-    d.at(12, R=(1.6, 4.0, 20, 3.5), L=(-1.8, 3.0, 20, 3.5), ball=(0.0, 7.0, 38.0), cpitch=0.1, pz=25.4, hpitch=-0.6)
-    d.at(13, R=(2.0, 3.0, 5, None), L=(-2.0, 4.0, 5, None), ball=(0.0, 10.0, 28.0), cpitch=0.2, pz=24.0, hpitch=-0.4)
-    d.at(14, R=(2.0, 4.0, 5, None), L=(-2.0, 5.0, 5, None), ball=(0.2, 11.0, 14.0), cpitch=0.24, pz=23.6)
-    d.at(15, R=(1.8, 8.0, 10, None), L=(-2.0, 3.0, 5, None), ball=(0.2, 11.5, 3.0), cpitch=0.28, pz=24.0)
-    for f in (9, 10, 11): d.arms(f, (1.2, 1.2, 1.4, 1.1), (1.2, 1.2, 1.4, 1.1))
-    burst(d, 16, 25, 0.3); settle(d, 16, 25)
+    d.at(8, R=(0.6, 4.0, -30, 7.0), L=(-0.6, 4.6, 40, 3.4), ball=(0.4, 4.2, 8.0), cpitch=0.2, pz=24.4)                      # rolled up the back of the leg
+    d.at(9, R=(0.4, 5.0, -10, 11.0), L=(-1.2, 5.0, 40, 8.0), ball=(0.3, 4.4, 15.0), cpitch=0.1, pz=27.0)                    # hop and flick
+    arc = ((0.3, 4.0, 28), (0.4, 4.0, 42), (0.6, 5.5, 52), (0.8, 8.0, 56), (1.0, 11.0, 52), (1.0, 14.0, 42), (1.0, 16.0, 28), (1.0, 17.0, 14), (1.0, 16.5, 5))
+    for i, (x, y, z) in enumerate(arc): d.m.k(10 + i, bx=x, by=y, bz=z, bvis=1.0)                                            # up over the head and down in front
+    d.at(10, R=(0.4, 6.0, 0, 10.0), L=(-1.6, 6.0, 30, 9.0), cpitch=-0.1, pz=28.6, hpitch=-0.5)
+    d.at(11, R=(0.6, 5.0, 20, 6.0), L=(-1.6, 4.0, 20, 6.0), cpitch=0.0, pz=27.4, hpitch=-0.7)
+    d.at(12, R=(1.6, 4.0, 20, 3.5), L=(-1.8, 3.0, 20, 3.5), cpitch=0.1, pz=25.4, hpitch=-0.7)
+    d.at(13, R=(2.0, 3.0, 5, None), L=(-2.0, 4.0, 5, None), cpitch=0.2, pz=24.0, hpitch=-0.5)
+    d.at(14, R=(2.0, 4.0, 5, None), L=(-2.0, 5.0, 5, None), cpitch=0.24, pz=23.6, hpitch=-0.2)
+    d.at(15, R=(1.8, 8.0, 10, None), L=(-2.0, 3.0, 5, None), cpitch=0.28, pz=24.0)
+    for f in (9, 10, 11): d.arms(f, (1.0, 0.8, 1.3, 0.7), (0.8, 0.9, 1.4, 0.7))
+    burst(d, 16, 25, 0.3); settle(d, 19, 25)
     return d.build()
 
 
@@ -463,18 +476,19 @@ def dr29():
 
 @move('DR30', 'Showboat Spin')
 def dr30():
-    d = Dr(26, ms=66, speed=0.0)
+    d = Dr(28, ms=64, speed=0.0)
     for f in range(0, 5): d.at(f, R=(2.2, 1.0, 0, None), L=(-2.2, 1.4, 0, None), ball=(0.6, 6.0), pz=24.4, cpitch=0.1)
     d.at(5, R=(1.0, 4.0, 30, 3.4), L=(-2.2, 1.4, 0, None), ball=(0.8, 6.4), cpitch=0.2)
     d.at(6, R=(0.8, 4.6, 30, 6.0), ball=(0.8, 5.6, 9.0), cpitch=0.1, pz=24.6)                                                # ball up onto the foot
-    for f in range(7, 18):
-        bob = 1.2 * math.sin((f - 7) * 1.4)
-        d.at(f, R=(0.8, 4.6, 30, 6.0 + bob), L=(-2.2, 1.4, 0, None), ball=(0.8, 4.8, 9.0 + bob), cpitch=0.1, pz=24.6, hpitch=-0.1)
-        d.arms(f, (1.3, 1.25, 1.4, 1.1), (1.3, 1.25, 1.4, 1.1))
-    d.at(18, R=(1.4, 5.0, 40, 5.0), ball=(1.0, 6.0, 7.0), cpitch=0.2)
-    d.at(19, R=(1.6, 9.0, 60, 3.4), ball=(1.0, 11.0, 3.0), cpitch=0.3)
-    d.turn(**{'f6': 0.0, 'f17': 2 * PI, 'f25': 2 * PI}); d.speed(f0=0.0, f19=1.6, f21=2.4); burst(d, 20, 25, 0.28); settle(d, 20, 25)
-    d.arms(24, (0.3, 0.4, 0.7, 0.3), (0.3, 0.4, 0.7, 0.3))
+    for f in range(7, 19):
+        u = (f - 7) / 11.0; bob = 1.2 * math.sin((f - 7) * 1.4); hop = 1.6 * abs(math.sin(u * PI * 2))
+        d.at(f, R=(0.8, 4.6, 30, 6.0 + bob), L=(-2.2, 1.4, 0, None), ball=(0.8, 4.8, 9.0 + bob), cpitch=0.1 - 0.1 * u, pz=24.6 + hop, hpitch=-0.1,
+             hyaw=0.6 * (1 - u), croll=0.12, proll=0.06)
+        d.arms(f, (2.3, 0.45, 2.6, 0.3), (0.6, 0.6, 1.3, 0.4))                                                            # one arm thrown up, the other at the hip
+    d.at(19, R=(1.4, 5.0, 40, 5.0), ball=(1.0, 6.0, 7.0), cpitch=0.2)
+    d.at(20, R=(1.6, 9.0, 60, 3.4), ball=(1.0, 11.0, 3.0), cpitch=0.3)
+    d.turn(**{'f6': 0.0, 'f18': 2 * PI, 'f27': 2 * PI}); d.speed(f0=0.0, f20=1.6, f22=2.4); burst(d, 21, 27, 0.28); settle(d, 21, 27)
+    d.arms(26, (0.3, 0.4, 0.7, 0.3), (0.3, 0.4, 0.7, 0.3))
     return d.build()
 
 

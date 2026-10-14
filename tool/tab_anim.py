@@ -406,7 +406,10 @@ class AnimTab(ttk.Frame):
                 g = self.frame_img(full[(self.f + off) % n], dn, False).copy(); a = np.array(g)
                 a[..., :3] = (a[..., :3] * 0.4 + np.array(tint) * 0.6).astype(np.uint8); a[..., 3] = (a[..., 3] * 0.45).astype(np.uint8)
                 im.alpha_composite(Image.fromarray(a, 'RGBA'))
-        im.alpha_composite(self.frame_img(full[self.f], dn, self.showball.get() and full[self.f].get('bvis', 0) > 0.5)); im.alpha_composite(over)
+        body = self.frame_img(full[self.f], dn, self.showball.get() and full[self.f].get('bvis', 0) > 0.5)
+        gh = U.ghosts(U.centered(full[self.f]), dn, body)
+        if gh is not None: im.alpha_composite(gh)
+        im.alpha_composite(body); im.alpha_composite(over)
         self._ph = ImageTk.PhotoImage(im.resize((440, 440), Image.NEAREST)); self.cv.delete('all'); self.cv.create_image(0, 0, anchor='nw', image=self._ph)
         self.cv.create_text(8, 8, anchor='nw', fill='white', text=f"{self.a['name']}  frame {self.f + 1}/{n}")
 

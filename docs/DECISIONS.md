@@ -32,5 +32,5 @@ Full text: the design document (see CLAUDE.md for the link).
   First-pass values were read off the animations; tune them in the Cards tab (ball speed / arc / curve).
 - Dribble animations (sprites/moves_dribble.py): plain dribbles (Ball Roll, Drive Through, Quick Touch, Slalom, Burst of Pace, Wall Run, Dummy Run) show a grey translucent speed mist
   behind the direction of travel; the skill moves (step over, roulette, elastico, Cruyff turn, rainbow flick...) are custom body animations with no mist.
-  The mist is a game-side effect, not part of the sprite sheet: animations.json carries a per-frame `mist` strength (0-1) and the heading, and the game spawns the grey wave itself
+  The mist is a Celeste-style dash trail: 2-3 grey translucent copies of the player's own silhouette trailing behind, fading out. It is a game-side effect, not part of the sprite sheet (the tool draws it with gen_uv.ghosts): animations.json carries a per-frame `mist` strength (0-1) and the heading, and the game spawns the grey wave itself
   (the tool previews it in the Cards and Animations tabs). Turning moves rotate the body (and `root_side_px` carries the sideways travel); the game keeps the new facing after the clip.

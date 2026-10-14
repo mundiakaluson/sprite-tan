@@ -427,19 +427,6 @@ def extras(pose, dname, dust=None):
         bx_, by_ = OX + (bw[0] + 1.0 + g('bz') * 0.25) * SC, OY + bw[1] * sE * SC
         d.ellipse([bx_ - 2.2, by_ - 1.1, bx_ + 2.2, by_ + 1.1], fill=(10, 10, 30, 90))
     over = Image.new('RGBA', (CW, CH), (0, 0, 0, 0))
-    if pose.get('fxm', 0.0) > 0.02:     # speed mist: grey translucent wave trailing behind the direction of travel (a game-side effect, not part of the sprite sheet)
-        hx, hy = -math.sin(pose.get('fxd', 0.0)), math.cos(pose.get('fxd', 0.0))
-        n = 11
-        for i in range(n):
-            d = 5.0 + 2.6 * i; lat = math.sin(i * 0.85 + pose.get('fxp', 0.0)) * (0.8 + 0.18 * i)
-            wx, wy = g('root_x') - hx * d + hy * lat, g('root_y') - hy * d - hx * lat
-            for hz, ra in ((1.6, 1.0), (4.6, 0.7)):
-                p = Rf @ np.array([wx, wy, hz])
-                px, py = OX + p[0] * SC, OY - float(p @ UP) * SC
-                rr = (1.3 + 0.36 * i) * ra
-                al = int(70 * pose.get('fxm', 0.0) * (1 - i / n) ** 1.3 * (1.0 if hz < 3 else 0.7))
-                ly = Image.new('RGBA', (CW, CH), (0, 0, 0, 0)); ImageDraw.Draw(ly).ellipse([px - rr * 1.4, py - rr * 0.8, px + rr * 1.4, py + rr * 0.8], fill=(196, 200, 210, al))
-                under.alpha_composite(ly)
     if dust:
         for (x, y, z, size, col, a) in dust:
             p = Rf @ np.array([x, y, z])
@@ -450,6 +437,25 @@ def extras(pose, dname, dust=None):
                 if size > 1 and px + 1 < CW:
                     tgt.putpixel((px + 1, py), col + (a,))
     return under, over
+
+
+def ghosts(pose, dname, body, n=3, step=4.0):
+    """speed mist: grey translucent copies of the player's own silhouette trailing behind the direction of travel (like a dash afterimage).
+    A game-side effect: draw these under the sprite. body = the rendered sprite (RGBA image); returns an RGBA layer or None."""
+    m = pose.get('fxm', 0.0)
+    if m < 0.02: return None
+    Rf = face_matrix(VEC[dname]); T = pose.get('fxd', 0.0)
+    p = Rf @ np.array([-math.sin(T), math.cos(T), 0.0]); sx, sy = p[0] * SC, -float(p @ UP) * SC
+    L = max(math.hypot(sx, sy), 0.6 * SC); ux, uy = -sx / L, -sy / L
+    a = np.array(body)[..., 3] > 0; H, W = a.shape; out = np.zeros((H, W, 4), np.uint8)
+    for i in range(n, 0, -1):
+        ox = int(round(ux * step * i)); oy = int(round(uy * step * i + 1.2 * math.sin(pose.get('fxp', 0.0) + i * 1.3)))
+        sh = np.zeros_like(a)
+        ys0, ys1 = max(0, oy), min(H, H + oy); xs0, xs1 = max(0, ox), min(W, W + ox)
+        sh[ys0:ys1, xs0:xs1] = a[ys0 - oy:ys1 - oy, xs0 - ox:xs1 - ox]
+        al = int(120 * m * (1.0 - 0.28 * (i - 1)) ** 1.6)
+        out[sh] = (196, 201, 212, al)
+    return Image.fromarray(out, 'RGBA')
 
 
 def bg_pitch(w, h, stripe=12):
