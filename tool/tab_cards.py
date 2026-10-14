@@ -71,6 +71,7 @@ class CardsTab(ttk.Frame):
         ttk.Label(r, text='served').pack(side='left', padx=(6, 0))
         ttk.Scale(r, from_=0, to=1, variable=self.cool, command=lambda e: self.draw()).pack(side='left', fill='x', expand=True, padx=4)
         self.tip = tk.Canvas(side, width=300, height=190, bg='#1e1f2a', highlightthickness=0); self.tip.pack(pady=2)
+        ttk.Button(side, text='▶ Play move (rotate)', command=self.play_move).pack(fill='x', pady=2)
         ttk.Button(side, text='Preview a hand of 8', command=self.hand).pack(fill='x', pady=2)
         ttk.Button(side, text='Export all card faces + tooltips (PNG)', command=self.export_all).pack(fill='x')
         self.note = ttk.Label(side, text='', wraplength=300, justify='left', foreground='#9aa0ae'); self.note.pack(anchor='w', pady=4)
@@ -167,6 +168,10 @@ class CardsTab(ttk.Frame):
             self.note.config(text='' if has_art(c['id']) else 'Placeholder emblem (category default). Add a recipe for this id in cards/recipes.py.')
         except Exception as e:
             self.note.config(text=f'card error: {e}')
+
+    def play_move(self):
+        if self.i is None: return
+        import movewin; movewin.MoveWin(self, self.t.rows[self.i])
 
     def hand(self):
         rows = random.sample(self.t.rows, min(8, len(self.t.rows))); win = tk.Toplevel(self); win.title('Hand preview (cooldown and unavailable states mixed in)')

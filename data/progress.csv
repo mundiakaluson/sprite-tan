@@ -18,3 +18,6 @@ Tool,Pack-odds simulator,todo,
 Tool,Palette-swap shader for indexed export,todo,
 Tool,Test pass on a clean machine,todo,
 Game,Godot skeleton loading the CSVs,todo,waiting for your go
+Animation,Skill card animations: SHOT 30 (done, baked, no hair),done,Cards tab: Play move
+Animation,Skill card animations: PASS / DRIBBLE / DEFEND / SUPPORT / KEEPER / TITAN (170),todo,checkpoint per category
+Animation,Player animations: walking / tired running,todo,
