@@ -92,3 +92,58 @@ def blank(N, ms=70, ball=(1.2, 11.5, 3.0), events=None):
     m = Move({}, N, ms, events or {'strike': 12})
     for f in range(N): m.keys[f] = {}
     m.keys[0] = stand(); m.keys[0].update(dict(bx=ball[0], by=ball[1], bz=ball[2], bvis=1.0)); return m
+
+
+# ------------------------------------------------------------------ geometry helpers (same maths as gen_uv.build_scene)
+import numpy as np
+from gen_uv import Rz, Rx, Ry
+
+
+def head_pos(p):
+    """world position of the head centre for a full pose dict"""
+    P = BASE; tr = P['trunk']
+    P0 = np.array([p['root_x'], p['root_y'], p['pz']])
+    Rp = Rz(p['pyaw']) @ Rx(-p['ppitch']) @ Ry(p['proll']); Rc = Rz(p['cyaw']) @ Rx(-p['cpitch']) @ Ry(p['croll']); Rh = Rz(p['hyaw']) @ Rx(-p['hpitch']) @ Ry(p['hroll'])
+    Wst = P0 + Rp @ np.array([0, 0, 6.2 * tr]); neck_b = Wst + Rc @ np.array([0, 0.1, 8.7 * tr]); neck_t = neck_b + Rh @ np.array([0, 0.25, 2.0])
+    return neck_t + Rh @ np.array([0, 0.45, 3.0]), Rh
+
+
+def boot_pos(p, side):
+    """world position of the boot centre (the bit that meets the ball)"""
+    Mf = A.foot_mat(p[side + '_fp'], p[side + '_fy'], p[side + '_fr'])
+    return np.array([p[side + '_ax'], p[side + '_ay'], p[side + '_az']]) + Mf @ np.array([0, 1.3, -1.1])
+
+
+def aim_ball(m, f, target='head', side='R', off=(0, 0, 0), vin=(0, -2.5, 0), pre=5):
+    """put the ball exactly on the head (or the boot of `side`) at frame f, with a straight approach over the `pre` frames before it (velocity vin per frame).
+    Returns the contact position so the follow-through path can start from it."""
+    p = m.poses()[f]
+    if target == 'head':
+        hc, Rh = head_pos(p); c = hc + Rh @ np.array([0, 3.0 + A.BR - 0.4, 0.6]) + np.array(off)     # forehead, a ball-radius out
+    else:
+        c = boot_pos(p, side) + np.array(off)
+    for i in range(1, pre + 1):
+        g = f - i
+        if g >= 0: m.k(g, bx=float(c[0] - vin[0] * i), by=float(c[1] - vin[1] * i), bz=float(max(1.8, c[2] - vin[2] * i)), bvis=1.0)
+    m.k(f, bx=float(c[0]), by=float(c[1]), bz=float(c[2]), bvis=1.0)
+    return tuple(float(v) for v in c)
+
+
+# ------------------------------------------------------------------ left-footed players: mirror the whole pose
+SIGN = ('root_x', 'pyaw', 'proll', 'cyaw', 'croll', 'hyaw', 'hroll', 'bx', 'brz')
+
+
+def mirror_pose(p):
+    q = dict(p)
+    for k in SIGN:
+        if k in q: q[k] = -q[k]
+    for k in list(p):
+        if k[:2] in ('R_', 'L_'):
+            o = ('L_' if k[0] == 'R' else 'R_') + k[2:]; v = p[k]
+            if k[2:] in ('ax', 'kx', 'fy', 'fr'): v = -v
+            q[o] = v
+    return q
+
+
+def mirror_move(poses):
+    return [mirror_pose(p) for p in poses]

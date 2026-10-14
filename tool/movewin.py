@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 import looks  # puts sprites/ on the path
 import gen_uv as U
 import custom_anims as C
+import moves as M
 
 KITS = ['home', 'away']
 
@@ -29,7 +30,9 @@ class MovePanel(ttk.Frame):
         ttk.Label(r, text='speed').pack(side='left', padx=(6, 2)); ttk.Scale(r, from_=0.25, to=2, variable=self.spd, length=70).pack(side='left')
         r2 = ttk.Frame(self); r2.pack(fill='x')
         ttk.Label(r2, text='angle').pack(side='left')
-        ttk.Scale(r2, from_=0, to=31, variable=self.dirv, command=lambda e: self.render(), length=n[0] - 90).pack(side='left', padx=4)
+        ttk.Scale(r2, from_=0, to=31, variable=self.dirv, command=lambda e: self.render(), length=n[0] - 150).pack(side='left', padx=4)
+        self.foot = tk.StringVar(value='R'); ttk.Label(r2, text='foot').pack(side='left', padx=(4, 1))
+        fc = ttk.Combobox(r2, values=['R', 'L'], textvariable=self.foot, state='readonly', width=2); fc.pack(side='left'); fc.bind('<<ComboboxSelected>>', lambda e: self.render())
         self.tick()
 
     def set_card(self, card):
@@ -48,7 +51,8 @@ class MovePanel(ttk.Frame):
         if not self.poses:
             self.cv.create_text(int(U.CW * self.S) // 2, int(U.CH * self.S) // 2, fill='#8a90a0', text='No animation for this card yet'); return
         self.f %= len(self.poses); d = int(round(float(self.dirv.get()))) % 32; p = self.poses[self.f]; dn = U.DIRS[d]
-        ball = self.ball.get() and p.get('bvis', 0) > 0.5; key = (self.f, d, ball)
+        ball = self.ball.get() and p.get('bvis', 0) > 0.5; key = (self.f, d, ball, self.foot.get())
+        if self.foot.get() == 'L': p = M.mirror_pose(p)
         if key not in self.cache:
             bg = U.bg_pitch(U.CW, U.CH); under, over = U.extras(U.centered(p), dn)
             bg.alpha_composite(under); bg.alpha_composite(U.apply_skin(U.render_uv(U.centered(p), dn, with_ball=ball), self.atlas())); bg.alpha_composite(over)

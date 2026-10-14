@@ -38,6 +38,7 @@ def run():
         if r.get('glasses') not in GLASSES: add('error', 'players', i, 'glasses must be ' + '/'.join(GLASSES))
         for k in ('chain', 'headband', 'wristband', 'tattoo'):
             if r.get(k) not in ('0', '1'): add('error', 'players', i, f'{k} must be 0 or 1')
+        if r.get('foot', 'R') not in ('R', 'L'): add('error', 'players', i, 'foot must be R or L (the stronger foot)')
         if r.get('special') not in ('0', '1'): add('error', 'players', i, 'special must be 0 or 1')
         elif r.get('special') == '1' and r.get('rarity') not in ('RARE', 'EPIC', 'LEGEND'): add('error', 'players', i, 'special is only for RARE, EPIC and LEGEND')
     C = tables.table('cards').rows

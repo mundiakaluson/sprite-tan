@@ -16,3 +16,7 @@ Full text: the design document (see CLAUDE.md for the link).
 - Formations: 10, one base class with family defaults and shared style offsets (data/formations*.csv, styles.csv).
 - Economy: one currency (coins) from matches buys packs (500 basic, 1000-2000 rarer). Duplicates level up. No monetisation.
 - HUD: score and clock on top, hand across the bottom, choice timer and orders bottom right.
+- Stronger foot: every player has `foot` (R or L) in players.csv. Skill animations are authored and baked for the right foot only; a left-footed player uses
+  the mirrored pose (moves.mirror_pose, previewed in the Cards tab) or, in the game, the right-foot sprite flipped horizontally with the direction index mirrored (32 - d).
+- Shot animations: sprites/moves_shot.py generates data/animations/shXX_*.json (do not hand-edit those unless you also remove the id from the generator).
+  Contact points are computed from the rig (moves.aim_ball / snap_ball), so the ball always meets the boot or head.
