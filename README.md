@@ -25,13 +25,23 @@ Characters are rendered from a 3D rig into small UV-lookup sprites: each pixel s
 atlas to show plus a tone, so skin, kit and hair colours are just different atlases. Cells are 40x40, 32 directions,
 no outline. Hair is a separate layer sheet per style and animation (`sprites/out_uv/hair/`), drawn over the body.
 
+## Run it
+
 ```
-cd sprites
-python3 gen_uv.py          # body sheets, atlases, previews (about 2 minutes)
-python3 export_hair.py     # 10 hair styles x 5 animations
+git clone https://github.com/mundiakaluson/sprite-tan
+cd sprite-tan
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+cd sprites                       # the scripts must be run from this folder
+python3 gen_uv.py                # body sheets, skin atlases, previews (about 2 minutes)
+python3 export_hair.py           # 10 hair styles x 5 animations into out_uv/hair (about 2 minutes)
+python3 preview_hair_styles.py   # contact sheet of all hair styles -> hair_test.png
 ```
 
-Needs Python 3.10+, numpy, pillow (matplotlib for the formation preview).
+The built sheets are already committed in `sprites/out_uv/`, so you only need to run these after changing the code.
+Python 3.10 or newer. The scripts that make `data/*.csv` are in `scripts/` and are run from `data/`.
 
 ## Data
 
