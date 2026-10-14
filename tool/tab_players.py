@@ -16,7 +16,7 @@ def next_id(t, prefix, width=3):
 def new_player(t):
     r = {c: '' for c in t.cols}
     r.update(id=next_id(t, 'PL'), name='New Player', rarity='COMMON', role='CM', roles='CM', rating='60', skin='2',
-             hair_style='H02_crop', hair_color='brown', beard='none', glasses='none', chain='0', headband='0', wristband='0', tattoo='0', special='0', face_anim='')
+             hair_style='H02_crop', hair_color='brown', beard='none', glasses='none', chain='0', headband='0', wristband='0', tattoo='0', special='0')
     for k in OUT_STATS: r[k] = '60'
     r['rating'] = str(auto_rating(r))
     return r
@@ -28,7 +28,7 @@ class PlayersTab(ttk.Frame):
         self.t = tables.table('players'); self.i = None; self.loading = False; self.fr = 0; self.pal = looks.palette()
         pw = tables.Split(self); pw.pack(fill='both', expand=True)
         ch = dict(rarity=RARITY, role=ROLES, skin=list(self.pal['skin']), hair_style=looks.hair_styles(), hair_color=list(self.pal['hair']),
-                  beard=BEARD, glasses=GLASSES, chain=['0', '1'], headband=['0', '1'], wristband=['0', '1'], tattoo=['0', '1'], special=['0', '1'], face_anim=[''] + FACE_ANIMS)
+                  beard=BEARD, glasses=GLASSES, chain=['0', '1'], headband=['0', '1'], wristband=['0', '1'], tattoo=['0', '1'], special=['0', '1'])
         self.grid = tables.Grid(pw, self.t, choices=ch, new_row=new_player, on_select=self.select,
                                 width_for=dict(name=150, roles=80), extra_buttons=[('Auto rating', self.auto_rating)])
         pw.add(self.grid, weight=3)
@@ -50,12 +50,12 @@ class PlayersTab(ttk.Frame):
         self.name = ttk.Label(side, text='Select a player', font=('TkDefaultFont', 11, 'bold')); self.name.pack(anchor='w')
         lf = ttk.LabelFrame(side, text='Look', padding=4); lf.pack(fill='x', pady=4)
         self.w = {}
-        for n, (k, vals) in enumerate((('skin', list(self.pal['skin'])), ('hair_style', looks.hair_styles()), ('hair_color', list(self.pal['hair'])), ('beard', BEARD), ('glasses', GLASSES), ('face_anim', [''] + FACE_ANIMS))):
+        for n, (k, vals) in enumerate((('skin', list(self.pal['skin'])), ('hair_style', looks.hair_styles()), ('hair_color', list(self.pal['hair'])), ('beard', BEARD), ('glasses', GLASSES))):
             ttk.Label(lf, text=k).grid(row=n, column=0, sticky='w')
             c = ttk.Combobox(lf, values=vals, state='readonly', width=16); c.grid(row=n, column=1, sticky='ew', pady=1)
             c.bind('<<ComboboxSelected>>', lambda e, k=k, c=c: self.put(k, c.get())); self.w[k] = c
         self.flags = {}
-        fb = ttk.Frame(lf); fb.grid(row=6, column=0, columnspan=2)
+        fb = ttk.Frame(lf); fb.grid(row=5, column=0, columnspan=2)
         for k in ('chain', 'headband', 'wristband', 'tattoo', 'special'):
             v = tk.IntVar(); self.flags[k] = v
             ttk.Checkbutton(fb, text=k, variable=v, command=lambda k=k, v=v: self.put(k, str(v.get()))).pack(side='left')
@@ -126,7 +126,7 @@ class PlayersTab(ttk.Frame):
         kit = None if self.kit.get() == 'auto' else self.kit.get()
         st = None if self.cstyle.get() == 'auto' else self.cstyle.get()
         special = st or (foil.STYLE_BY_RARITY.get(r.get('rarity')) if r.get('special') == '1' else None)
-        N = 48
+        N = 36
         if special and self.shim.get(): self.ct = (self.ct + 1) % N
         else: self.ct = 0
         key = (tuple(sorted(r.items())), kit, special, self.ct)
@@ -141,7 +141,7 @@ class PlayersTab(ttk.Frame):
     def export_cards(self):
         out = os.path.join(EXPORT, 'players'); os.makedirs(out, exist_ok=True)
         idx = ['id,face,tooltip,special,shimmer_strip,shimmer_frames']
-        N = 48
+        N = 36
         for r in self.t.rows:
             pid = r['id']
             sp = r.get('special') == '1'
