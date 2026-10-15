@@ -68,3 +68,11 @@ The old titan/titan_zap.py and titan_demo.py are kept as the original reference.
 - Build order proposed: idle, walk, jog, tired run -> stumble / knocked off / fall / get-up -> jump -> stun and pain / limp. Waiting for the user's go.
 - BASE step 1 done (sprites/moves_base.py -> data/animations/base_*.json, baked): idle (breathing, weight shift, glance), walk, jog, tired run, sprint. All loop in place; the game moves the root and plays them at rate = speed / ground_speed_px_s (data/gaits.csv, clamped min_rate..max_rate) so feet don't slide. Next: stumble (directional) / knocked off / fall / get-up, then jump, then stun and pain / limp.
 - Base animations have their own tab (tool/tab_base.py, rows in data/base_animations.csv, status = anim file exists), separate from the Cards tab and the skill animations.
+
+## PACKS (decided, not built yet)
+- Sources: bought with coins, or won as a weekly ranked reward (reward packs carry a `source` flag and are not purchasable).
+- Limited timed packs: packs are fully data-driven (definition + pool + odds + schedule start / end), so a "pack studio" (the Packs tab now, a creator tool later) can make new ones without code. Expired packs disappear from the shop.
+- Pity counter: a dry spell raises the next rare-or-better chance (per player, per pack type); counter and thresholds are columns, tweakable.
+- Opening: one card at a time with a reveal animation (rarity flash, bigger for epic / legend); skippable (a skip button in game jumps to the summary, duplicates level up the owned card).
+- Pieces: pack definition + pool tables, pack wrapper art generated from data, opening animation, Packs tab (create / duplicate pack, price, counts, odds with a live total, pools by category / rarity / id, guarantee, pity, schedule, wrapper + opening preview), pack-odds simulator.
+- Build order proposed: data tables + Packs tab -> simulator -> wrapper art -> opening animation. Waiting for the user's go.
