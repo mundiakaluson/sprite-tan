@@ -150,7 +150,7 @@ offset_right = 392.0
 offset_bottom = -4.0
 script = ExtResource("3")
 
-[node name="Hand" type="HBoxContainer" parent="Root/HandPanel"]
+[node name="Hand" type="Control" parent="Root/HandPanel"]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -161,12 +161,13 @@ offset_right = -4.0
 offset_bottom = -4.0
 unique_name_in_owner = true
 mouse_filter = 2
-theme_override_constants/separation = 1
 script = ExtResource("8")
 
 [node name="Slot1" type="Control" parent="Root/HandPanel/Hand"]
-custom_minimum_size = Vector2(96, 135)
-layout_mode = 2
+offset_left = 0.0
+offset_top = 4.0
+offset_right = 96.0
+offset_bottom = 139.0
 mouse_filter = 2
 
 [node name="Card" parent="Root/HandPanel/Hand/Slot1" instance=ExtResource("10")]
@@ -175,8 +176,10 @@ scale = Vector2(1.5, 1.5)
 card_id = "SH01"
 
 [node name="Slot2" type="Control" parent="Root/HandPanel/Hand"]
-custom_minimum_size = Vector2(96, 135)
-layout_mode = 2
+offset_left = 97.0
+offset_top = 4.0
+offset_right = 193.0
+offset_bottom = 139.0
 mouse_filter = 2
 
 [node name="Card" parent="Root/HandPanel/Hand/Slot2" instance=ExtResource("10")]
@@ -185,8 +188,10 @@ scale = Vector2(1.5, 1.5)
 card_id = "SH02"
 
 [node name="Slot3" type="Control" parent="Root/HandPanel/Hand"]
-custom_minimum_size = Vector2(96, 135)
-layout_mode = 2
+offset_left = 194.0
+offset_top = 4.0
+offset_right = 290.0
+offset_bottom = 139.0
 mouse_filter = 2
 
 [node name="Card" parent="Root/HandPanel/Hand/Slot3" instance=ExtResource("10")]
@@ -195,8 +200,10 @@ scale = Vector2(1.5, 1.5)
 card_id = "PS01"
 
 [node name="Slot4" type="Control" parent="Root/HandPanel/Hand"]
-custom_minimum_size = Vector2(96, 135)
-layout_mode = 2
+offset_left = 291.0
+offset_top = 4.0
+offset_right = 387.0
+offset_bottom = 139.0
 mouse_filter = 2
 
 [node name="Card" parent="Root/HandPanel/Hand/Slot4" instance=ExtResource("10")]
@@ -205,8 +212,10 @@ scale = Vector2(1.5, 1.5)
 card_id = "PS02"
 
 [node name="Slot5" type="Control" parent="Root/HandPanel/Hand"]
-custom_minimum_size = Vector2(96, 135)
-layout_mode = 2
+offset_left = 388.0
+offset_top = 4.0
+offset_right = 484.0
+offset_bottom = 139.0
 mouse_filter = 2
 
 [node name="Card" parent="Root/HandPanel/Hand/Slot5" instance=ExtResource("10")]
@@ -215,8 +224,10 @@ scale = Vector2(1.5, 1.5)
 card_id = "DR01"
 
 [node name="Slot6" type="Control" parent="Root/HandPanel/Hand"]
-custom_minimum_size = Vector2(96, 135)
-layout_mode = 2
+offset_left = 485.0
+offset_top = 4.0
+offset_right = 581.0
+offset_bottom = 139.0
 mouse_filter = 2
 
 [node name="Card" parent="Root/HandPanel/Hand/Slot6" instance=ExtResource("10")]
@@ -225,8 +236,10 @@ scale = Vector2(1.5, 1.5)
 card_id = "DR02"
 
 [node name="Slot7" type="Control" parent="Root/HandPanel/Hand"]
-custom_minimum_size = Vector2(96, 135)
-layout_mode = 2
+offset_left = 582.0
+offset_top = 4.0
+offset_right = 678.0
+offset_bottom = 139.0
 mouse_filter = 2
 
 [node name="Card" parent="Root/HandPanel/Hand/Slot7" instance=ExtResource("10")]
@@ -235,8 +248,10 @@ scale = Vector2(1.5, 1.5)
 card_id = "DF01"
 
 [node name="Slot8" type="Control" parent="Root/HandPanel/Hand"]
-custom_minimum_size = Vector2(96, 135)
-layout_mode = 2
+offset_left = 679.0
+offset_top = 4.0
+offset_right = 775.0
+offset_bottom = 139.0
 mouse_filter = 2
 
 [node name="Card" parent="Root/HandPanel/Hand/Slot8" instance=ExtResource("10")]
