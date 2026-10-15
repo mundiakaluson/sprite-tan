@@ -8,6 +8,7 @@ extends Sprite2D
 
 signal clip_event(event_name: String)       # "strike", "land", ... fired by the animation's method track
 
+static var _logged := false
 const SHADER := preload("res://shaders/uv_skin.gdshader")
 
 ## whose look to use (the Player sets it in game; set it here to preview in the editor)
@@ -74,6 +75,7 @@ func _apply_skin() -> void:
 		material = m
 	var skin := Data.tex("looks/%s.png" % player_id)
 	if skin != null: m.set_shader_parameter("skin", skin)
+	_apply_kit()
 
 func _apply_kit() -> void:
 	var m := material as ShaderMaterial
@@ -83,6 +85,9 @@ func _apply_kit() -> void:
 		if not Data.ok: return
 		k = KitColors.from_preset("keeper" if str(Data.row("players", player_id).get("role", "")) == "GK" else "home")
 	m.set_shader_parameter("use_kit", true)
+	if not _logged:
+		_logged = true
+		print("PlayerSprite kit applied: ", player_id, " jersey ", k.jersey, " shader ", m.shader.resource_path)
 	for part in ["jersey", "trim", "shorts", "shorts_trim", "stripe", "socks", "sock_trim", "boots", "accent", "glove"]:
 		var c: Color = k.get(part)
 		m.set_shader_parameter("kit_" + part, Vector3(c.r, c.g, c.b))
@@ -95,4 +100,3 @@ func _apply_sheet() -> void:
 func _apply_region() -> void:
 	var c: Array = Data.anims.get("cell", [40, 40])
 	region_rect = Rect2(frame_index * c[0], direction * c[1], c[0], c[1])
-	_apply_kit()
