@@ -1,10 +1,8 @@
-[gd_resource type="Resource" script_class="AiProfile" load_steps=31 format=3]
+[gd_resource type="Resource" script_class="AiProfile" load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/ai_profile.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ai/formations/ai_formation.gd" id="11"]
 [ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="12"]
-[ext_resource type="Script" path="res://scripts/ai/behaviours/ai_behaviour.gd" id="13"]
-[ext_resource type="Resource" path="res://scenes/ai/behaviours/jockey.tres" id="r_jockey"]
 [ext_resource type="Resource" path="res://scenes/ai/roles/attacking_midfielder.tres" id="r_cam"]
 [ext_resource type="Resource" path="res://scenes/ai/roles/centre_back.tres" id="r_cb"]
 [ext_resource type="Resource" path="res://scenes/ai/roles/holding_midfielder.tres" id="r_cdm"]
@@ -42,6 +40,5 @@ central_midfielder = ExtResource("r_cm")
 attacking_midfielder = ExtResource("r_cam")
 winger = ExtResource("r_wing")
 striker = ExtResource("r_st")
-behaviours = Array[ExtResource("13")]([ExtResource("r_jockey")])
 formations = Array[ExtResource("11")]([ExtResource("r_f442"), ExtResource("r_ff02"), ExtResource("r_ff03"), ExtResource("r_ff04"), ExtResource("r_ff05"), ExtResource("r_ff06"), ExtResource("r_ff07"), ExtResource("r_ff08"), ExtResource("r_ff09"), ExtResource("r_ff10")])
 stances = Array[ExtResource("12")]([ExtResource("r_stance_auto"), ExtResource("r_stance_press_high"), ExtResource("r_stance_mid_block"), ExtResource("r_stance_park_bus"), ExtResource("r_stance_push_up"), ExtResource("r_stance_counter")])

@@ -32,9 +32,25 @@ extends Resource
 @export var interact: AiInteract
 
 @export_group("Behaviours")
-## extra decisions, one small script each (scripts/ai/behaviours/, copy ai_jockey.gd): tried in this order for every matching player, after the formation file and before the role's own cases.
-## A new behaviour = a script extending AiBehaviour + a .tres in scenes/ai/behaviours/ + one entry here
+## every script in scripts/ai/behaviours/ is used automatically (see ai_behaviour.gd). Add an entry here only to give THIS team its own copy of one (different numbers, or switched off):
+## it replaces the automatic one of the same script. Entries of other scripts are added to the list.
 @export var behaviours: Array[AiBehaviour] = []
+var _all: Array[AiBehaviour] = []
+var _all_ready := false
+
+## the behaviours this team uses: the automatic ones (replaced by this profile's own copy of the same script), plus the extra entries
+func all_behaviours() -> Array[AiBehaviour]:
+	if _all_ready: return _all
+	_all_ready = true
+	for b in AiBehaviour.discover():
+		var mine: AiBehaviour = null
+		for e in behaviours:
+			if e != null and e.get_script() == b.get_script(): mine = e
+		_all.append(mine if mine != null else b)
+	for e in behaviours:
+		if e != null and not _all.has(e): _all.append(e)
+	_all.sort_custom(AiBehaviour.before)
+	return _all
 
 @export_group("Formations")
 ## team play per formation (4-4-2 here: banks, press triggers, who drops, overlaps). A role follows its formation's file first, then its own AI.
