@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/match/match_hud.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/match/hud_overlay.gd" id="2"]
@@ -8,7 +8,6 @@
 [ext_resource type="Script" path="res://scripts/ui/pixel_image.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/ui/scorebug.gd" id="7"]
 [ext_resource type="Script" path="res://scripts/match/hand_bar.gd" id="8"]
-[ext_resource type="Script" path="res://scripts/match/stance_grid.gd" id="9"]
 
 [ext_resource type="PackedScene" path="res://scenes/cards/skill_card.tscn" id="10"]
 
@@ -281,17 +280,73 @@ color = Color(0.55, 0.57, 0.69, 1)
 text_scale = 2
 script = ExtResource("4")
 
-[node name="TeamGrid" type="GridContainer" parent="Root/TeamPanel"]
+[node name="TeamGrid" type="Control" parent="Root/TeamPanel"]
 offset_left = 6.0
 offset_top = 22.0
 offset_right = 234.0
 offset_bottom = 92.0
 unique_name_in_owner = true
 mouse_filter = 2
-columns = 2
-theme_override_constants/h_separation = 4
-theme_override_constants/v_separation = 4
-script = ExtResource("9")
+
+[node name="Stance_auto" type="Control" parent="Root/TeamPanel/TeamGrid"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 112.0
+offset_bottom = 20.0
+text = "AUTO"
+text_scale = 2
+toggle_mode = true
+script = ExtResource("5")
+
+[node name="Stance_press_high" type="Control" parent="Root/TeamPanel/TeamGrid"]
+offset_left = 116.0
+offset_top = 0.0
+offset_right = 228.0
+offset_bottom = 20.0
+text = "PRESS HIGH"
+text_scale = 2
+toggle_mode = true
+script = ExtResource("5")
+
+[node name="Stance_mid_block" type="Control" parent="Root/TeamPanel/TeamGrid"]
+offset_left = 0.0
+offset_top = 24.0
+offset_right = 112.0
+offset_bottom = 44.0
+text = "MID BLOCK"
+text_scale = 2
+toggle_mode = true
+script = ExtResource("5")
+
+[node name="Stance_park_bus" type="Control" parent="Root/TeamPanel/TeamGrid"]
+offset_left = 116.0
+offset_top = 24.0
+offset_right = 228.0
+offset_bottom = 44.0
+text = "PARK BUS"
+text_scale = 2
+toggle_mode = true
+script = ExtResource("5")
+
+[node name="Stance_push_up" type="Control" parent="Root/TeamPanel/TeamGrid"]
+offset_left = 0.0
+offset_top = 48.0
+offset_right = 112.0
+offset_bottom = 68.0
+text = "PUSH UP"
+text_scale = 2
+toggle_mode = true
+script = ExtResource("5")
+
+[node name="Stance_counter" type="Control" parent="Root/TeamPanel/TeamGrid"]
+offset_left = 116.0
+offset_top = 48.0
+offset_right = 228.0
+offset_bottom = 68.0
+text = "COUNTER"
+text_scale = 2
+toggle_mode = true
+script = ExtResource("5")
 
 [node name="TeamNote" type="Control" parent="Root/TeamPanel"]
 offset_left = 8.0

@@ -3,7 +3,7 @@ extends CanvasLayer
 ## Match HUD. It is a real scene (scenes/match/match_hud.tscn, instanced in match.tscn) so you can open it, select any node and move / restyle it in the editor:
 ## Score, Who (selected player), Orders (the four order buttons, named Order_<id>), CommandBox (the current command), Message (GOAL!, KICK OFF), Controls (help text),
 ## Hand (the skill cards are added here), TeamTitle / TeamGrid (the stance buttons are added here), Overlay (rings and aim lines over the pitch). This script only fills them in.
-## The pitch view is everything above the Strip node (the match scene follows the strip height), so nothing covers the play.
+## The pitch view (View in match.tscn) ends where the Strip starts: keep View's bottom offset and Overlay's bottom offset equal to minus the Strip height (-160).
 ## Layout: every group is a panel with its parts inside (OrdersPanel > Who, Orders; HandPanel > Hand; TeamPanel > TeamTitle, TeamGrid, TeamNote; CommandPanel > title, note). Move or resize any node in the 2D view.
 ## No pop-ups: orders are buttons in the strip. Cards are the real SkillCard faces; the number on a card is its cooldown in seconds.
 
@@ -14,7 +14,6 @@ signal team_command(id: String)         ## a team command button was pressed
 ## size of the hover tooltip (the card's tooltip image x this)
 @export_range(1.0, 4.0, 1.0) var tooltip_scale := 2.0
 
-signal strip_changed(height: float)    ## the Strip node was moved / resized in the scene: the pitch view takes the rest of the screen
 ## colour of each command kind in the command box and on the highlighted players
 const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), "lob": Color(1.0, 0.9, 0.3), "shoot": Color(1.0, 0.4, 0.35), "run": Color(0.5, 1.0, 0.5),
 	"press": Color(1.0, 0.65, 0.3), "tackle": Color(1.0, 0.65, 0.3), "card": Color(0.8, 0.6, 1.0), "team": Color(0.6, 0.75, 1.0)}
@@ -25,8 +24,7 @@ const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), 
 @onready var _team_panel: PixelPanel = %TeamPanel
 @onready var _cmd_panel: PixelPanel = %CommandPanel
 @onready var _hand: HandBar = %Hand
-@onready var _strip: Control = %Strip
-@onready var _team_grid: StanceGrid = %TeamGrid
+@onready var _team_grid: Control = %TeamGrid
 @onready var _team_note: PixelLabel = %TeamNote
 @onready var _cmd_title: PixelLabel = %CommandTitle
 @onready var _hint: PixelLabel = %CommandNote
@@ -53,8 +51,6 @@ var _toast_t := 0.0
 
 func _ready() -> void:
 	_overlay.hud = self
-	_strip.resized.connect(_fit_pitch)
-	_fit_pitch()
 	_msg.text = ""
 	# the order buttons are the children of Orders named Order_<id>
 	for b in _orders.get_children():
@@ -69,15 +65,6 @@ func _ready() -> void:
 		var idx := i
 		slots[i].pressed.connect(func(_id): card_pressed.emit(idx))
 	_show_command()
-
-## height of the HUD strip: the pitch view is everything above it. Move the Strip node's top edge in the scene to change it.
-func strip_height() -> float:
-	return _strip.offset_bottom - _strip.offset_top    # the strip is anchored to the bottom, so this is its height at any window size
-
-func _fit_pitch() -> void:
-	var h := strip_height()
-	_overlay.offset_bottom = -h
-	strip_changed.emit(h)
 
 func _process(dt: float) -> void:
 	if _msg_t > 0.0:
@@ -142,20 +129,20 @@ func set_cooldowns(cd: Dictionary) -> void:
 
 ## the team command buttons: [{"id": "press_high", "label": "PRESS HIGH"}, ...]. Pressing one emits team_command(id). An empty list shows "no commands yet".
 func set_team_commands(commands: Array) -> void:
-	for c in _team_grid.get_children(): c.queue_free()
 	_team_buttons.clear()
 	_team_note.visible = commands.is_empty()
-	for cmd in commands:
-		var b := PixelButton.new()
-		b.text = String(cmd["label"])
-		b.custom_minimum_size = _team_grid.button_size
-		b.text_scale = 2
+	var wanted := {}
+	for cmd in commands: wanted[String(cmd["id"])] = cmd
+	for n in _team_grid.get_children():
+		var b := n as PixelButton
+		if b == null: continue
+		var id := String(b.name).trim_prefix("Stance_")
+		b.visible = wanted.has(id)
+		if not wanted.has(id): continue
+		if b.text == "": b.text = String(wanted[id]["label"])
 		b.accent = _team_accent
-		b.toggle_mode = true
-		b.tooltip_text = String(cmd.get("note", ""))
-		var id := String(cmd["id"])
+		b.tooltip_text = String(wanted[id].get("note", ""))
 		b.pressed.connect(func(): team_command.emit(id))
-		_team_grid.add_child(b)
 		_team_buttons[id] = b
 
 ## the home team's colour tints the score and team panels and the lit stance button
