@@ -1,0 +1,14 @@
+id,group,name,anim,note
+BA01,Locomotion,Idle,base_idle,breathing and a small glance
+BA02,Locomotion,Walk,base_walk,
+BA03,Locomotion,Jog,base_jog,
+BA04,Locomotion,Tired run,base_tired_run,
+BA05,Locomotion,Sprint,base_sprint,
+BA06,Contact,Stumble (directional),,sizes small / medium / big; from the hit direction
+BA07,Contact,Knocked off the ball,,still on their feet
+BA08,Contact,Fall,,one fall for every case
+BA09,Contact,Get up,,same for every fall
+BA10,Contact,Recover step,,catching balance
+BA11,Air,Jump,,crouch / take-off / air / land
+BA12,States,Stun,,for skills that stun
+BA13,States,Pain / limp,,after a heavy fall

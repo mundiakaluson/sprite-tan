@@ -22,7 +22,7 @@ def find(cid):
 
 class MovePanel(ttk.Frame):
     """Small embedded player: set_card(card) loads data/animations/<id>_*.json; rotate by slider or auto-rotate."""
-    def __init__(self, master, S=6):
+    def __init__(self, master, S=6, simple=False):
         super().__init__(master); self.S = S; self.name = None; self.a = None; self.poses = []; self.f = 0; self.playing = True; self.cache = {}
         n = int(U.CW * S), int(U.CH * S)
         self.cv = tk.Canvas(self, width=n[0], height=n[1], bg='#222', highlightthickness=0); self.cv.pack()
@@ -37,19 +37,22 @@ class MovePanel(ttk.Frame):
         ttk.Scale(r2, from_=0, to=31, variable=self.dirv, command=lambda e: (self.render(), self.after(1, lambda g=self._gen: self.warm(g))), length=n[0] - 150).pack(side='left', padx=4)
         self.foot = tk.StringVar(value='R'); ttk.Label(r2, text='foot').pack(side='left', padx=(4, 1))
         fc = ttk.Combobox(r2, values=['R', 'L'], textvariable=self.foot, state='readonly', width=2); fc.pack(side='left'); fc.bind('<<ComboboxSelected>>', lambda e: (self.render(), self.after(1, lambda g=self._gen: self.warm(g))))
-        r3 = ttk.Frame(self); r3.pack(fill='x', pady=1)
-        ttk.Label(r3, text='ball').pack(side='left')
-        self.bstate = tk.StringVar(value='on the ground')
-        bc = ttk.Combobox(r3, values=['on the ground', 'in the air: low', 'in the air: mid', 'in the air: high'], textvariable=self.bstate, state='readonly', width=16); bc.pack(side='left', padx=3)
-        bc.bind('<<ComboboxSelected>>', lambda e: self.set_card(self.card))
-        ttk.Label(r3, text='(passes: the game picks the air version from the ball height)', foreground='#8a90a0').pack(side='left')
-        r4 = ttk.Frame(self); r4.pack(fill='x', pady=1)
-        ttk.Label(r4, text='player is').pack(side='left')
-        self.base = tk.StringVar(value='running')
+        self.bstate = tk.StringVar(value='on the ground'); self.base = tk.StringVar(value='running')
         self.BASES = {'running': 'run', 'dribbling': 'dr17_drive_through', 'shooting': 'sh01_side_foot_place', 'jockeying': 'df10_jockey', 'sprinting': 'df07_recovery_sprint'}
-        bb = ttk.Combobox(r4, values=list(self.BASES), textvariable=self.base, state='readonly', width=12); bb.pack(side='left', padx=3)
-        bb.bind('<<ComboboxSelected>>', lambda e: self.set_card(self.card))
-        ttk.Label(r4, text='(support cards ride on top of whatever the player is doing)', foreground='#8a90a0').pack(side='left')
+        if not simple:
+            r3 = ttk.Frame(self); r3.pack(fill='x', pady=1)
+            ttk.Label(r3, text='ball').pack(side='left')
+            self.bstate = tk.StringVar(value='on the ground')
+            bc = ttk.Combobox(r3, values=['on the ground', 'in the air: low', 'in the air: mid', 'in the air: high'], textvariable=self.bstate, state='readonly', width=16); bc.pack(side='left', padx=3)
+            bc.bind('<<ComboboxSelected>>', lambda e: self.set_card(self.card))
+            ttk.Label(r3, text='(passes: the game picks the air version from the ball height)', foreground='#8a90a0').pack(side='left')
+            r4 = ttk.Frame(self); r4.pack(fill='x', pady=1)
+            ttk.Label(r4, text='player is').pack(side='left')
+            self.base = tk.StringVar(value='running')
+            self.BASES = {'running': 'run', 'dribbling': 'dr17_drive_through', 'shooting': 'sh01_side_foot_place', 'jockeying': 'df10_jockey', 'sprinting': 'df07_recovery_sprint'}
+            bb = ttk.Combobox(r4, values=list(self.BASES), textvariable=self.base, state='readonly', width=12); bb.pack(side='left', padx=3)
+            bb.bind('<<ComboboxSelected>>', lambda e: self.set_card(self.card))
+            ttk.Label(r4, text='(support cards ride on top of whatever the player is doing)', foreground='#8a90a0').pack(side='left')
         self.card = None; self.tc = 0; self._gen = 0; self._last = time.perf_counter(); self._acc = 0.0; self._tca = 0.0
         self.tick()
 
@@ -70,6 +73,14 @@ class MovePanel(ttk.Frame):
             else: self.a = dict(C.load(self.name)); self.poses = C.build_poses(self.a)
             self.a['label'] = card['name'] + ' on ' + self.base.get()
         elif self.name: self.a = C.load(self.name); self.poses = C.build_poses(self.a)
+        else: self.a = None; self.poses = []
+        self._gen += 1; self.render(); self.after(1, lambda g=self._gen: self.warm(g))
+
+    def set_anim(self, name, label=None):
+        """play a plain animation by name (base animations tab): no card, no aura"""
+        self.card = None; self.name = name; self.cache = {}; self.f = 0
+        if name:
+            self.a = dict(C.load(name)); self.poses = C.build_poses(self.a); self.a['label'] = label or self.a.get('label', name)
         else: self.a = None; self.poses = []
         self._gen += 1; self.render(); self.after(1, lambda g=self._gen: self.warm(g))
 
