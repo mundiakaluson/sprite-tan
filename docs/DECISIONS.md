@@ -76,3 +76,7 @@ The old titan/titan_zap.py and titan_demo.py are kept as the original reference.
 - Opening: one card at a time with a reveal animation (rarity flash, bigger for epic / legend); skippable (a skip button in game jumps to the summary, duplicates level up the owned card).
 - Pieces: pack definition + pool tables, pack wrapper art generated from data, opening animation, Packs tab (create / duplicate pack, price, counts, odds with a live total, pools by category / rarity / id, guarantee, pity, schedule, wrapper + opening preview), pack-odds simulator.
 - Build order proposed: data tables + Packs tab -> simulator -> wrapper art -> opening animation. Waiting for the user's go.
+
+## SKILL CARD FACE v2 (decided)
+Skill cards now use the player-card language (cards/cardlib2.py `card`; old face kept as `card_old`): dark field with a glow in the CATEGORY colour, thin frame in the RARITY colour,
+big slot number top left with the category under it, rarity top right, plain name with side lines, three stats (HIT / RISK / CD) with no boxes and thin bars. Titan cards use the galaxy foil and a foil frame.

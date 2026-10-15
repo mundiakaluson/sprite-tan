@@ -12,7 +12,7 @@ def fit_lines(txt, width=13, maxl=3):
     lines = textwrap.wrap(txt.upper(), width)
     return lines[:maxl]
 
-def card(c, art, state='ready', t=0.0):
+def card_old(c, art, state='ready', t=0.0):
     cat = c['cat']; pal = CAT[cat]; titan = cat == 'TITAN'
     im = Image.new('RGBA', (CWD, CHD), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
     d.rectangle([0, 0, CWD - 1, CHD - 1], fill=INK_ + (255,)); d.rectangle([1, 1, CWD - 2, CHD - 2], fill=pal['main'] + (255,))
@@ -51,6 +51,86 @@ def card(c, art, state='ready', t=0.0):
     elif state == 'unavailable':
         arr[..., :3] = (arr[..., :3] * 0.3).astype(np.uint8); im = Image.fromarray(arr, 'RGBA')
     return im
+
+RC = dict(COMMON=dict(main=(150, 156, 176), dark=(44, 48, 66), light=(214, 218, 232)), UNCOMMON=dict(main=(76, 184, 106), dark=(22, 64, 44), light=(150, 235, 170)),
+          RARE=dict(main=(74, 144, 226), dark=(22, 44, 96), light=(150, 200, 255)), EPIC=dict(main=(168, 95, 216), dark=(52, 24, 84), light=(224, 170, 255)),
+          LEGEND=dict(main=(240, 176, 48), dark=(84, 52, 12), light=(255, 236, 150)))
+
+
+def _mix(a, b, t): return tuple(int(a[i] * (1 - t) + b[i] * t) for i in range(3))
+
+
+def _t2(im, x, y, s, col, k=2):
+    t = Image.new('RGBA', (text_w(s) + 2, 7), (0, 0, 0, 0)); draw_text(t, 0, 0, s, col); im.alpha_composite(t.resize((t.width * k, t.height * k), Image.NEAREST), (x, y))
+
+
+def _foil():
+    tool = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tool')
+    if tool not in sys.path: sys.path.insert(0, tool)
+    import foil
+    return foil
+
+
+def card(c, art, state='ready', t=0.0):
+    """Skill card in the player-card language: dark field with a glow in the category colour, a thin frame in the RARITY colour, big slot number
+    top left with the category under it, rarity top right, plain name, three stats with no boxes. Titan cards get the galaxy foil."""
+    cat = c['cat']; pal = CAT[cat]; titan = cat == 'TITAN'; r = RC.get(c.get('rarity'), RC['COMMON']); legend = c.get('rarity') == 'LEGEND'
+    base = (12, 13, 20); cx, cy = 32, 36
+    if titan:
+        foil = _foil(); im = Image.fromarray(foil.background('galaxy', 0.9), 'RGB').convert('RGBA'); px = im.load()
+        a_ = np.array(im).astype(float); a_[..., :3] *= 0.8; im = Image.fromarray(a_.astype(np.uint8), 'RGBA').copy(); px = im.load()
+    else:
+        im = Image.new('RGBA', (CWD, CHD), (0, 0, 0, 255)); px = im.load()
+        for y in range(CHD):
+            for x in range(CWD):
+                k = y / (CHD - 1); col = _mix(_mix(pal['dark'], base, 0.6), base, k); dd = math.hypot((x - cx) * 0.9, y - cy)
+                if dd < 30: col = _mix(col, pal['main'], 0.34 * (1 - dd / 30) ** 1.5)
+                if (x - y // 2) % 9 == 0 and 14 < y < 60: col = _mix(col, pal['light'], 0.05)
+                px[x, y] = col + (255,)
+    for y in range(52, 61):                                                                         # settle the bottom into the dark
+        k = (y - 52) / 9
+        for x in range(CWD): px[x, y] = _mix(px[x, y][:3], tuple(int(v * 0.3) for v in px[x, y][:3]) if titan else _mix(pal['dark'], base, 0.8), min(1, k * k * 1.1)) + (255,)
+    for y in range(61, CHD):
+        if not titan:
+            for x in range(CWD): px[x, y] = _mix(_mix(pal['dark'], base, 0.8), base, (y - 61) / 29) + (255,)
+    im.alpha_composite(art, (4, 17)); d = ImageDraw.Draw(im)
+    edge = r['light'] if legend else r['main']
+    for x in range(2, CWD - 2): d.point((x, 0), edge + (255,)); d.point((x, CHD - 1), edge + (255,))
+    for y in range(2, CHD - 2): d.point((0, y), edge + (255,)); d.point((CWD - 1, y), edge + (255,))
+    for (x, y) in ((1, 1), (CWD - 2, 1), (1, CHD - 2), (CWD - 2, CHD - 2)): d.point((x, y), edge + (255,))
+    for (x, y) in ((0, 0), (CWD - 1, 0), (0, CHD - 1), (CWD - 1, CHD - 1)): d.point((x, y), (0, 0, 0, 0))
+    if titan:
+        foil = _foil(); per = [(x, 0) for x in range(2, CWD - 2)] + [(CWD - 1, y) for y in range(2, CHD - 2)] + [(x, CHD - 1) for x in range(CWD - 3, 1, -1)] + [(0, y) for y in range(CHD - 3, 1, -1)]
+        for n, (x, y) in enumerate(per):
+            col = foil.edge_colour('galaxy', n / len(per) * 2); d.point((x, y), col + (255,))
+            ix = 2 if x == 0 else CWD - 3 if x == CWD - 1 else x; iy = 2 if y == 0 else CHD - 3 if y == CHD - 1 else y; d.point((ix, iy), tuple(int(v * 0.55) for v in col) + (255,))
+        for (x, y) in ((2, 2), (CWD - 3, 2), (2, CHD - 3), (CWD - 3, CHD - 3)):
+            for k in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)): d.point((x + k[0], y + k[1]), (255, 255, 255, 255))
+    _t2(im, 5, 5, str(c['slots']), (255, 255, 255, 255))                                            # slot number big, category under it
+    draw_text(im, 5, 18, cat, pal['light'] + (255,)); d.line([(5, 25), (5 + max(text_w(cat), 10), 25)], fill=pal['main'] + (255,))
+    rn = (c.get('rarity') or '').upper(); draw_text(im, CWD - 5 - text_w(rn), 5, rn, r['light'] + (255,))
+    nm = c['name'].upper()
+    if text_w(nm) <= CWD - 14:
+        ww = text_w(nm); draw_text(im, (CWD - ww) // 2, 63, nm, (255, 255, 255, 255))
+        d.line([(5, 66), (CWD // 2 - ww // 2 - 3, 66)], fill=r['dark'] + (255,)); d.line([(CWD // 2 + ww // 2 + 3, 66), (CWD - 6, 66)], fill=r['dark'] + (255,))
+        d.line([(CWD // 2 - 6, 70), (CWD // 2 + 5, 70)], fill=edge + (255,))
+    else:
+        w = nm.split(' '); mid = max(1, len(w) // 2); l1, l2 = ' '.join(w[:mid]), ' '.join(w[mid:])
+        draw_text(im, (CWD - text_w(l1)) // 2, 60, l1, (255, 255, 255, 255)); draw_text(im, (CWD - text_w(l2)) // 2, 66, l2, (255, 255, 255, 255))
+        d.line([(CWD // 2 - 6, 72), (CWD // 2 + 5, 72)], fill=edge + (255,))
+    cells = [('HIT', f"{c['succ']}%", c['succ'], (110, 214, 140)), ('RISK', str(c['risk']), min(100, c['risk'] * 3), (236, 96, 88)), ('CD', f"{c['cd']}S", min(100, c['cd'] * 100 // 60), (120, 176, 250))]
+    for ci, (lab, val, pc, col) in enumerate(cells):
+        x0 = 4 + ci * 19; cxm = x0 + 9
+        draw_text(im, cxm - text_w(lab) // 2, 76, lab, (140, 146, 176, 255)); draw_text(im, cxm - text_w(val) // 2, 82, val, (255, 255, 255, 255))
+        if ci: d.line([(x0 - 1, 76), (x0 - 1, 86)], fill=r['dark'] + (255,))
+        d.line([(x0 + 3, 87), (x0 + 3 + int(12 * pc / 100), 87)], fill=col + (255,))
+    arr = np.array(im)
+    if state == 'cooldown':
+        arr[..., :3] = (arr[..., :3] * 0.45).astype(np.uint8); im = Image.fromarray(arr, 'RGBA').copy(); _stopwatch(im, c, t)
+    elif state == 'unavailable':
+        arr[..., :3] = (arr[..., :3] * 0.3).astype(np.uint8); im = Image.fromarray(arr, 'RGBA')
+    return im
+
 
 def _stopwatch(im, c, t, cx=32, cy=37, R=14):
     """cooldown overlay: a stopwatch in the art window. t = fraction of the cooldown already served (0 just used, 1 ready).
