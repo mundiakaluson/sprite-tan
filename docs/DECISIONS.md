@@ -111,6 +111,7 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 
 ## Stadiums and pitches
 - data/stadiums.csv (3 to start: ST01 Old Ground day, ST02 City Bowl night, ST03 Seaside Park dusk). Generator stadiums/stadiumlib.py, export step `stadiums` writes godot/assets/pitches/<id>/ (tracked).
-- Pitch horizontal, TV side-on view, own goal on the left; 105x68 m at 12 px/m, depth squashed 2:1. Backdrop 1600x708 (stands, crowd, boards, lights) is larger than the viewport; the match camera scrolls over it.
+- Pitch is a flat texture in a 3D scene, TV camera with perspective, own goal on the left; 105x68 m at 16 px/m, depth squashed 2:1. Pitch texture 1872x1280 (stands, crowd, boards, lights) is larger than the viewport; the match camera scrolls over it.
 - Goals are side-on, two layers (back: behind players; front: near post and net over players; right goal = flipped left). Godot: scenes/stadium/stadium.tscn with stadium_id and pitch_to_screen().
 - Player scene: select the root to get a Facing slider (0-31) for previewing directions.
+- Revised: the stadium is a 3D Godot scene (TV camera with real perspective, like FIFA/EA). Generator now outputs pitch.png (flat top-down, 16 px/m), stand.png, boards.png, net.png; stands, goals, flags and floodlights are built from simple 3D parts in stadium.gd. Players stay 2D sprites projected onto the screen (Stadium.add_actor). Debug scene: scenes/debug/stadium_viewer.tscn (A/D camera, 1-3 stadium).

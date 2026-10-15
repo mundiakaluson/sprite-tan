@@ -11,7 +11,7 @@ summarised in docs/DECISIONS.md.
 
 ## Conventions
 - Sprite scripts import each other as top-level modules; run them from `sprites/`.
-- Pitch coordinates: x 0-100 across, y 0-100 own goal to opponent goal. In the Godot TV view the pitch runs left to right (y = screen x, x = screen y, 0 at the top).
+- Pitch coordinates: x 0-100 across, y 0-100 own goal to opponent goal. In the Godot stadium (3D scene, TV camera) the pitch runs left to right: y = along, x = across (0 = far touchline, top of the screen); Stadium.world_pos() converts.
 - Roles: GK, CB, LB, RB, CDM, CM, CAM, LW, RW, ST. Outfield stats PAC SHO PAS DRI DEF PHY, keeper stats REF HAN POS.
 
 ## Card design (decided)

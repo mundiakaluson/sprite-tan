@@ -2,69 +2,34 @@
  "id": "ST01",
  "name": "Old Ground",
  "time": "day",
- "px_per_m": 12.0,
- "squash": 0.5,
+ "ppm": 16,
+ "apron": 6.0,
  "pitch_m": [
   105.0,
   68.0
  ],
- "canvas": [
-  1600,
-  708
+ "texture": [
+  1872,
+  1280
  ],
- "pitch_origin": [
-  170,
-  200
+ "sky": [
+  142,
+  186,
+  232
  ],
- "pitch_size": [
-  1260,
-  408
+ "towers": true,
+ "roof": false,
+ "stand": [
+  138,
+  74,
+  58
  ],
- "orientation": "horizontal TV view (own goal on the left)",
- "goal_left": {
-  "pos": [
-   170.0,
-   404.0
-  ],
-  "origin": [
-   54,
-   62
-  ]
- },
- "goal_right": {
-  "pos": [
-   1430.0,
-   404.0
-  ],
-  "origin": [
-   54,
-   62
-  ],
-  "flip": true
- },
- "flag": {
-  "origin": [
-   5,
-   21
-  ],
-  "corners": [
-   [
-    170.0,
-    200.0
-   ],
-   [
-    170.0,
-    608.0
-   ],
-   [
-    1430.0,
-    200.0
-   ],
-   [
-    1430.0,
-    608.0
-   ]
-  ]
- },
- "capacity": 18000
+ "trim": [
+  201,
+  178,
+  138
+ ],
+ "light": 0.0,
+ "capacity": 18000,
+ "view": "TV side-on, perspective camera behind the near touchline; pitch x along (own goal at -x), z across (far touchline at -z)"
 }
