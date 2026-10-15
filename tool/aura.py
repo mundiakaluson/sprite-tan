@@ -7,11 +7,17 @@ _ROWS = None
 PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'support_auras.csv')
 
 
+TITAN = os.path.join(os.path.dirname(__file__), '..', 'data', 'titan_fx.csv')
+
+
 def row(cid):
+    """aura row for a SUPPORT card (support_auras.csv) or a TITAN card (titan_fx.csv, with a `base` animation it plays over)"""
     global _ROWS
     if _ROWS is None:
-        try: _ROWS = {r['id']: r for r in csv.DictReader(open(PATH, encoding='utf-8'))}
-        except OSError: _ROWS = {}
+        _ROWS = {}
+        for p in (PATH, TITAN):
+            try: _ROWS.update({r['id']: r for r in csv.DictReader(open(p, encoding='utf-8'))})
+            except OSError: pass
     return _ROWS.get(cid)
 
 
@@ -52,7 +58,41 @@ def layers(r, t, w, h):
     elif shape == 'flash':
         e = max(0.0, 1.0 - (t % 28) / 10.0)
         under.alpha_composite(_blob(w, h, 20, 20, 17, 19, col, 0.25 + 0.7 * e)); over.alpha_composite(_ring(w, h, 20, 24, 4 + 16 * (1 - e), 4 + 16 * (1 - e), col, 0.8 * e))
+    elif shape in ('bolt', 'crush', 'ghost', 'fire', 'trail', 'wave', 'vortex', 'freeze'):
+        _titan(under, over, shape, col, t, w, h, s, cyc)
     return under, over
+
+
+def _titan(under, over, shape, col, t, w, h, s, cyc):
+    from PIL import ImageDraw
+    import random
+    if shape == 'bolt':                                  # jagged lightning flicking around the body
+        rnd = random.Random(t // 2); d = ImageDraw.Draw(over)
+        for _ in range(3):
+            x, y = rnd.randint(8, 32), 4
+            pts = [(x, y)]
+            for k in range(5): x += rnd.randint(-5, 5); y += 5; pts.append((x, y))
+            d.line(pts, fill=col + (230,), width=1)
+        under.alpha_composite(_blob(w, h, 20, 20, 16, 18, col, 0.35 + 0.25 * s))
+    elif shape == 'vortex':                              # swirling arms spiralling inward
+        d = ImageDraw.Draw(over)
+        for k in range(10):
+            a = t * 0.3 + k * 0.63; r = 18 - (k + (t % 10)) % 10 * 1.6
+            d.point((int(20 + math.cos(a) * r), int(22 + math.sin(a) * r * 0.55)), fill=col + (230,))
+        under.alpha_composite(_blob(w, h, 20, 24, 14, 8, col, 0.4 + 0.2 * s))
+    elif shape == 'wave':                                # ground shockwave (earthquake / steel shimmer)
+        for k in (0.0, 0.4):
+            c = (cyc + k) % 1.0; under.alpha_composite(_ring(w, h, 20, 31, 4 + 22 * c, 1.5 + 7 * c, col, 0.9 * (1 - c), 0.3))
+    elif shape in ('trail', 'fire'):                     # streaks / flames trailing off to the left of the cell
+        d = ImageDraw.Draw(under); rnd = random.Random(t)
+        for k in range(9):
+            y = 22 + rnd.randint(-9, 9); x1 = 20 - rnd.randint(2, 6); L = rnd.randint(5, 13)
+            d.line([(x1, y), (x1 - L, y)], fill=col + (200 if shape == 'trail' else 230,), width=1)
+        if shape == 'fire': under.alpha_composite(_blob(w, h, 14, 26, 9, 6, (255, 200, 60), 0.5))
+    elif shape == 'freeze':                              # cold white wash
+        under.alpha_composite(_blob(w, h, 20, 20, 40, 40, col, 0.28 + 0.1 * s))
+    elif shape in ('crush', 'ghost'):
+        under.alpha_composite(_blob(w, h, 20, 28, 10, 6, col, 0.5 + 0.3 * s)); over.alpha_composite(_ring(w, h, 20, 31, 6 + 2 * s, 2.2, col, 0.8))
 
 
 def marker(r, t, w, h, x, y):

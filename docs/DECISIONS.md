@@ -50,3 +50,6 @@ The earlier standalone gesture animations (sp01-sp30) were removed. The Cards ta
 
 ## KEEPER cards (decided)
 GK01-GK25 are authored in sprites/moves_keeper.py (dives go to the keeper's right; the game mirrors for left). Saves are hand contacts: the animation has a strike frame and the game uses a hand reach zone; only the foot actions (sweeper clear, kick save, long kick, rebound clear) store a boot contact point. Carried balls (catches, throws) are held in the hands; incoming balls in the preview are placeholders, the game owns the ball. The Cards tab previews GK cards in the keeper kit.
+
+## TITAN cards (decided)
+Titans are the same actions as the normal cards with a big effect on top. Only Bicycle Kick (tt05) and Earthquake Tackle (tt13) have bodies of their own (sprites/moves_titan.py). The other cards point at an existing body (`base` in data/titan_fx.csv, e.g. Hundred Yard Strike = rocket long shot, Dragon Header = power header) or are effect-only (Time Stop, Dream Team, Reality Bend...), with an optional arm/head overlay. Effect shapes: glow, ring, pulse, flash, bolt, vortex, wave, trail, fire, freeze, crush, ghost (tool/aura.py; the game draws the same).

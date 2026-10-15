@@ -1,0 +1,26 @@
+id,name,base,scope,shape,color,duration_s,overlay,side,note
+TT01,Zip Zap,dr24_burst_of_pace,self,bolt,#ffe23e,1,,,blinks forward past three defenders
+TT02,Gravity Cannon,sh07_power_blast,ball,crush,#9a6bff,2,,,ball squashes under its own weight
+TT03,Eagle's Eye,,self,ring,#ffd23e,6,scan,R,eye glints; opponent's cards revealed
+TT04,Triple Weave,dr18_skill_combo,self,glow,#3ec6ff,3,,,slow motion around the player
+TT05,Bicycle Kick,tt05_bicycle_kick,ball,flash,#ffffff,1,,,
+TT06,Time Stop,,pitch,freeze,#bfe9ff,3,,,pitch desaturates and freezes
+TT07,Rocket Legs,df07_recovery_sprint,self,trail,#ff6a2e,4,,,rocket flames from the boots
+TT08,Iron Wall,,team,wave,#9aa6b8,4,,,steel shimmer across the defence
+TT09,Phantom Pass,ps01_through_ball,ball,ghost,#c9b6ff,2,,,ball turns see-through
+TT10,Hundred Yard Strike,sh22_rocket_long_shot,ball,trail,#ffd23e,3,,,long streak behind the ball
+TT11,Dragon Header,sh12_power_header,ball,fire,#ff5a2e,2,,,flame trail
+TT12,Steel Goalkeeper,,keeper,wave,#9aa6b8,4,,,steel glow on the keeper
+TT13,Earthquake Tackle,tt13_earthquake_tackle,pitch,wave,#c9945a,2,,,ground shockwave floors nearby players
+TT14,Wind Walk,dr17_drive_through,self,trail,#bfe9ff,4,,,wind streaks around the legs
+TT15,Meteor Shot,sh19_dipping_drive,ball,fire,#ff7a2e,3,,,burning ball
+TT16,Chain Lightning,ps03_driven_pass,team,bolt,#ffe23e,2,,,arcs between three teammates
+TT17,Black Hole,,self,vortex,#6a3ec6,4,raise,R,vortex pulls defenders in
+TT18,Mirror Match,,opponent,flash,#bfe9ff,2,,,mirror flash
+TT19,Second Heart,,team,pulse,#ff3e6a,2,,,heartbeat pulse across the team
+TT20,Titan Slide,df02_slide_tackle,self,trail,#ff9a2e,2,,,fiery streak along the slide
+TT21,Skyfall,ps18_long_ball_forward,ball,fire,#ff7a2e,3,,,drops like a meteor
+TT22,Lock On,,ball,ring,#ff3e3e,3,point,R,target reticle on the goal
+TT23,Dream Team,,team,pulse,#ffd23e,5,,,all players glow in sync
+TT24,Reality Bend,,pitch,vortex,#c9b6ff,3,,,screen rewinds
+TT25,Chaos Control,,opponent,bolt,#ff3ec6,4,,,opponent's cards scramble

@@ -1,0 +1,77 @@
+"""TITAN skill animations that need a body of their own: TT05 Bicycle Kick and TT13 Earthquake Tackle. The other Titan cards reuse an existing body plus a big effect
+(data/titan_fx.csv). Run:  python moves_titan.py [id ...]"""
+import math, sys
+import numpy as np
+import moves as M
+import moves_shot as S
+from moves_keeper import K, ready, idle, READY, UP
+from moves_dribble import PI
+
+MOVES = {}
+
+
+def move(id_, label):
+    def deco(fn):
+        MOVES[id_] = (label, fn); return fn
+    return deco
+
+
+@move('TT05', 'Bicycle Kick')
+def tt05():
+    d = K(30); idle(d, 0, 3)
+    d.at(4, R=(3.0, 0.8, 0, None), L=(-3.0, -0.6, 0, None), pz=20.2, cpitch=0.5, hpitch=-0.3); d.arms(4, READY, READY)
+    d.at(5, R=(2.4, -1.0, 10, 5.0), L=(-3.0, 1.0, 10, 3.0), pz=27.0, cpitch=-0.2, ppitch=-0.35, hpitch=-0.5); d.arms(5, (1.9, 0.5, 2.2, 0.4), (1.9, 0.5, 2.2, 0.4))          # springs up and back
+    d.at(6, R=(1.6, -1.0, 20, 14.0), L=(-2.0, -3.0, 20, 8.0), pz=32.0, cpitch=-0.45, ppitch=-0.75, hpitch=-0.6); d.arms(6, (1.2, 0.7, 1.2, 0.6), (0.4, 0.8, 0.9, 0.6))      # kicks one leg up, the other sweeps under
+    d.at(7, R=(1.0, 1.0, 40, 30.0), L=(-1.8, -4.0, 20, 14.0), pz=34.0, cpitch=-0.6, ppitch=-1.15, hpitch=-0.6); d.arms(7, (0.9, 0.8, 1.0, 0.6), (0.2, 0.8, 0.8, 0.6))     # horizontal in the air, the striking leg overhead
+    d.at(8, R=(0.8, 1.6, 55, 36.0), L=(-1.6, -4.5, 20, 16.0), pz=34.0, cpitch=-0.65, ppitch=-1.35, hpitch=-0.65); d.arms(8, (0.7, 0.8, 0.9, 0.6), (0.1, 0.8, 0.7, 0.6))     # strike
+    d.at(9, R=(0.8, 1.2, 40, 34.0), L=(-1.6, -4.5, 20, 17.0), pz=32.0, cpitch=-0.65, ppitch=-1.4, hpitch=-0.5); d.arms(9, (0.2, 0.9, 0.5, 0.6), (0.1, 0.9, 0.5, 0.6))
+    d.at(10, R=(1.2, 0.0, 20, 26.0), L=(-1.4, -4.0, 20, 20.0), pz=27.0, cpitch=-0.6, ppitch=-1.4, hpitch=-0.2); d.arms(10, (-0.3, 0.9, -0.1, 0.8), (-0.3, 0.9, -0.1, 0.8))      # falls flat on his back, arms out to break it
+    d.at(11, R=(1.6, -1.0, 10, 14.0), L=(-1.6, -3.0, 10, 14.0), pz=17.0, cpitch=-0.6, ppitch=-1.45, hpitch=-0.1); d.arms(11, (-0.4, 0.9, -0.2, 0.8), (-0.4, 0.9, -0.2, 0.8))
+    for f in range(12, 20): d.at(f, R=(1.8, -1.0, 10, 8.0), L=(-1.8, -3.0, 10, 8.0), pz=10.0, cpitch=-0.6, ppitch=-1.5, hpitch=0.0); d.arms(f, (-0.4, 0.9, -0.2, 0.8), (-0.4, 0.9, -0.2, 0.8))
+    for f in range(20, 30):
+        u = (f - 19) / 10.0
+        d.at(f, R=(2.8, 0.8, 0, None), L=(-2.8, -0.6, 0, None), pz=10.0 + 12.0 * u, cpitch=-0.6 + 0.9 * u, ppitch=-1.5 * (1 - u), hpitch=0.2 * u); d.arms(f, (0.9, 0.8, 1.2, 0.5), (0.9, 0.8, 1.2, 0.5))
+    for f in range(0, 8): d.world(f, 0.8 + 0.0 * f, 8.0, 36.0 - 1.2 * f)                    # a ball dropping from a cross, overhead
+    m = d.done()
+    ps = M.C_poses(m) if hasattr(M, 'C_poses') else None
+    return m, d
+
+
+def _finish_bicycle(m):
+    p = m.poses()[8]; bp = M.boot_pos(p, 'R'); c = (float(bp[0]), float(bp[1]) + 0.2, float(bp[2]) + 1.2)
+    for f in range(0, 9):
+        u = f / 8.0; m.keys[f].update(bx=0.8 + (c[0] - 0.8) * u, by=8.0 + (c[1] - 8.0) * u, bz=36.0 + (c[2] - 36.0) * u ** 2, bvis=1.0)
+    for i, q in enumerate(S.fly(c, (0.5, -5.0, 1.0), 21, g=0.2)): m.keys[9 + i].update(bx=q[0], by=q[1], bz=q[2], bvis=1.0)
+    m.events = {'strike': 8}
+    return m
+
+
+@move('TT13', 'Earthquake Tackle')
+def tt13():
+    d = K(26); idle(d, 0, 3)
+    d.at(4, R=(3.0, 0.8, 0, None), L=(-3.0, -0.6, 0, None), pz=20.6, cpitch=0.55); d.arms(4, READY, READY)
+    d.at(5, R=(2.6, 2.0, 0, 8.0), L=(-3.0, -0.6, 0, None), pz=24.0, cpitch=0.1, hpitch=-0.2); d.arms(5, (1.9, 0.5, 2.3, 0.4), (1.9, 0.5, 2.3, 0.4))
+    d.at(6, R=(2.6, 3.0, 0, 15.0), L=(-3.0, -0.6, 0, None), pz=27.0, cpitch=-0.15, hpitch=-0.3); d.arms(6, UP, UP)                                          # knee up high, fists to the sky
+    d.at(7, R=(2.6, 3.0, 0, 16.0), L=(-3.0, -0.6, 0, None), pz=28.0, cpitch=-0.2, hpitch=-0.4); d.arms(7, UP, UP)
+    d.at(8, R=(2.8, 4.0, 0, 2.0), L=(-3.0, -0.6, 0, None), pz=18.6, cpitch=0.8, hpitch=0.3); d.arms(8, (0.4, 0.4, 0.5, 0.2), (0.4, 0.4, 0.5, 0.2))             # stomp: whole weight slams down
+    d.at(9, R=(2.8, 4.0, 0, None), L=(-3.0, -0.6, 0, None), pz=17.4, cpitch=0.95, hpitch=0.3); d.arms(9, (0.3, 0.4, 0.4, 0.2), (0.3, 0.4, 0.4, 0.2))
+    for f in range(10, 15): d.at(f, R=(2.8, 4.0, 0, None), L=(-3.0, -0.6, 0, None), pz=17.4 + 0.15 * math.sin(f * 3.0), cpitch=0.95, hpitch=0.3); d.arms(f, (0.3, 0.4, 0.4, 0.2), (0.3, 0.4, 0.4, 0.2))
+    for f in range(15, 26):
+        u = (f - 14) / 11.0; d.at(f, R=(2.8, 1.0, 0, None), L=(-3.0, -0.6, 0, None), pz=17.4 + 4.4 * u, cpitch=0.95 - 0.45 * u, hpitch=0.3); d.arms(f, READY, READY)
+    d.m.events = {'strike': 8}
+    return d.done()
+
+
+def build(ids=None):
+    out = []
+    for id_, (label, fn) in MOVES.items():
+        if ids and id_ not in ids: continue
+        m = fn()
+        if isinstance(m, tuple): m = _finish_bicycle(m[0])
+        name = id_.lower() + '_' + label.lower().replace(' ', '_')
+        m.save(name, label, 'auto-generated by sprites/moves_titan.py'); out.append((id_, name))
+    return out
+
+
+if __name__ == '__main__':
+    for id_, name in build(sys.argv[1:] or None): print(id_, name)

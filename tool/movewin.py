@@ -61,6 +61,13 @@ class MovePanel(ttk.Frame):
             if self.name == 'run': self.a = {'label': 'Run', 'ms': U.ANIMS['run'][1] if isinstance(U.ANIMS['run'][1], (int, float)) else 70}; self.poses = list(U.ANIMS['run'][0]()[0])
             else: self.a = C.load(self.name); self.poses = C.build_poses(self.a)
             self.a = dict(self.a); self.a['label'] = card['name'] + ' on ' + self.base.get()
+        elif card['id'].startswith('TT') and aura.row(card['id']) and aura.row(card['id']).get('base'):
+            self.name = aura.row(card['id'])['base']; self.a = dict(C.load(self.name)); self.poses = C.build_poses(self.a)
+        elif card['id'].startswith('TT') and aura.row(card['id']):
+            self.name = self.BASES[self.base.get()]
+            if self.name == 'run': self.a = {'label': 'Run', 'ms': 70}; self.poses = list(U.ANIMS['run'][0]()[0])
+            else: self.a = dict(C.load(self.name)); self.poses = C.build_poses(self.a)
+            self.a['label'] = card['name'] + ' on ' + self.base.get()
         elif self.name: self.a = C.load(self.name); self.poses = C.build_poses(self.a)
         else: self.a = None; self.poses = []
         self._gen += 1; self.render(); self.after(1, lambda g=self._gen: self.warm(g))
