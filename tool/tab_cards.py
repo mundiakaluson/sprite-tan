@@ -74,7 +74,9 @@ class CardsTab(ttk.Frame):
         ttk.Scale(r, from_=0, to=1, variable=self.cool, command=lambda e: self.draw()).pack(side='left', fill='x', expand=True, padx=4)
         import movewin
         self.mp = movewin.MovePanel(side, S=7); self.mp.pack(pady=2)
-        ttk.Button(side, text='✎ Edit this move (Animations tab)', command=self.edit_move).pack(fill='x', pady=2)
+        import titanwin
+        self.tw = titanwin.TitanPanel(side)       # Titan cards play their full cinematic here instead of the move panel
+        self.edit_btn = ttk.Button(side, text='✎ Edit this move (Animations tab)', command=self.edit_move); self.edit_btn.pack(fill='x', pady=2)
         ttk.Button(side, text='Preview a hand of 8', command=self.hand).pack(fill='x', pady=2)
         ttk.Button(side, text='Export all card faces + tooltips (PNG)', command=self.export_all).pack(fill='x')
         self.note = ttk.Label(side, text='', wraplength=300, justify='left', foreground='#9aa0ae'); self.note.pack(anchor='w', pady=4)
@@ -168,10 +170,18 @@ class CardsTab(ttk.Frame):
         c = self.t.rows[self.i]
         try:
             self._ph = ImageTk.PhotoImage(card_face(c, self.state.get(), float(self.cool.get()), 2)); self.cv.delete('all'); self.cv.create_image(70, 95, image=self._ph)
-            self._tp = ImageTk.PhotoImage(tooltip(c, 2)); self.tip.delete('all'); self.tip.create_image(150, 95, image=self._tp); self.mp.set_card(c) if getattr(self, '_mp_id', None) != c['id'] else None; self._mp_id = c['id']
+            self._tp = ImageTk.PhotoImage(tooltip(c, 2)); self.tip.delete('all'); self.tip.create_image(150, 95, image=self._tp); self.show_motion(c)
             self.note.config(text='' if has_art(c['id']) else 'Placeholder emblem (category default). Add a recipe for this id in cards/recipes.py.')
         except Exception as e:
             self.note.config(text=f'card error: {e}')
+
+    def show_motion(self, c):
+        if getattr(self, '_mp_id', None) == c['id']: return
+        self._mp_id = c['id']
+        if c['id'].startswith('TT'):
+            self.mp.pack_forget(); self.tw.pack(pady=2, before=self.edit_btn); self.tw.load(c['id'])
+        else:
+            self.tw.pack_forget(); self.mp.pack(pady=2, before=self.edit_btn); self.mp.set_card(c)
 
     def edit_move(self):
         if self.i is None: return
