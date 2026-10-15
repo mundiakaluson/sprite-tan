@@ -22,8 +22,8 @@ void fragment() {
 		float lon = atan(nl.z, nl.x);
 		float lat = asin(clamp(nl.y, -1.0, 1.0));
 		vec3 col = texture(map, vec2(lon / 6.28318530718 + 0.5, 0.5 - lat / 3.14159265359)).rgb;
-		vec3 light = normalize(vec3(-0.45, 0.6, 0.66));
-		float lam = clamp(dot(n, light), 0.0, 1.0);
+		vec3 light_dir = normalize(vec3(-0.45, 0.6, 0.66));
+		float lam = clamp(dot(n, light_dir), 0.0, 1.0);
 		float mult = 1.08;
 		if (lam < 0.8) { mult = 1.0; }
 		if (lam < 0.5) { mult = 0.88; }
