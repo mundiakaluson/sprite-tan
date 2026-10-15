@@ -92,6 +92,6 @@ Placing in the editor: instance scenes/players/player.tscn or scenes/ball/ball.t
 
 
 ## HUD layout is editable in the scene (match_hud.tscn)
-Every HUD group is a panel with its parts inside it: OrdersPanel (Who, Orders), HandPanel (Hand = HandBar), TeamPanel (TeamTitle, TeamGrid = StanceGrid, TeamNote), CommandPanel (CommandTitle, CommandNote), plus Scorebug, Message, Strip and Overlay.
-Move / resize any of them in the 2D view; panels anchor to the screen edges (left / centre / right of the bottom strip). HandBar (`card_scale`) and StanceGrid (`button_size`) show placeholder cards / buttons in the editor.
+Every HUD group is a panel with its parts inside it: OrdersPanel (Who, Orders), HandPanel (Hand = HandBar: Slot1..Slot8, each a SkillCard you can see in the tree; the game fills the used ones and hides the rest), TeamPanel (TeamTitle, TeamGrid = StanceGrid, TeamNote), CommandPanel (CommandTitle, CommandNote), plus Scorebug, Message, Strip and Overlay.
+Move / resize any of them in the 2D view; panels anchor to the screen edges (left / centre / right of the bottom strip). HandBar (`card_scale`) sizes the slots; StanceGrid (`button_size`) shows placeholder buttons in the editor (the stance buttons are made from the AI profile at start).
 The Strip node's top edge sets the strip height: the pitch view (match.tscn View) and the Overlay follow it at runtime (MatchHud.strip_changed). Re-run Export to game after changing hudlib's strip size (strip art is tiled).

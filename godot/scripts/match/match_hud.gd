@@ -64,6 +64,10 @@ func _ready() -> void:
 		button.disabled = true
 		button.pressed.connect(func(): menu_chosen.emit(id))
 		_order_buttons[id] = button
+	var slots := _hand.cards()
+	for i in slots.size():
+		var idx := i
+		slots[i].pressed.connect(func(_id): card_pressed.emit(idx))
 	_show_command()
 
 ## height of the HUD strip: the pitch view is everything above it. Move the Strip node's top edge in the scene to change it.
@@ -116,24 +120,18 @@ func toast(text: String, seconds := 1.6) -> void:
 	_toast_t = seconds
 
 func set_hand(rows: Array) -> void:
-	for c in _cards: c.queue_free()
 	_cards.clear()
-	var i := 1
-	for r in rows:
-		var box := Control.new()
-		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		box.custom_minimum_size = _hand.card_size()
-		var card := SkillCard.new_card(String(r["id"]))
-		card.scale = Vector2.ONE * _hand.card_scale
-		box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		card.tooltip_scale = tooltip_scale
-		box.add_child(card)
-		_hand.add_child(box)
-		_cards.append(card)
-		var idx := i - 1
-		card.pressed.connect(func(_id): card_pressed.emit(idx))
-		card.play("appear")
-		i += 1
+	var slots := _hand.cards()
+	for i in slots.size():
+		var c := slots[i]
+		var on := i < rows.size()
+		c.get_parent().visible = on
+		if not on: continue
+		c.card_id = String(rows[i]["id"])
+		c.cooldown_left = 0
+		c.tooltip_scale = tooltip_scale
+		_cards.append(c)
+		c.play("appear")
 
 func set_cooldowns(cd: Dictionary) -> void:
 	for i in _cards.size():

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/match/match_hud.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/match/hud_overlay.gd" id="2"]
@@ -9,6 +9,8 @@
 [ext_resource type="Script" path="res://scripts/ui/scorebug.gd" id="7"]
 [ext_resource type="Script" path="res://scripts/match/hand_bar.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/match/stance_grid.gd" id="9"]
+
+[ext_resource type="PackedScene" path="res://scenes/cards/skill_card.tscn" id="10"]
 
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1")
@@ -161,6 +163,86 @@ unique_name_in_owner = true
 mouse_filter = 2
 theme_override_constants/separation = 1
 script = ExtResource("8")
+
+[node name="Slot1" type="Control" parent="Root/HandPanel/Hand"]
+custom_minimum_size = Vector2(96, 135)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Card" parent="Root/HandPanel/Hand/Slot1" instance=ExtResource("10")]
+layout_mode = 0
+scale = Vector2(1.5, 1.5)
+card_id = "SH01"
+
+[node name="Slot2" type="Control" parent="Root/HandPanel/Hand"]
+custom_minimum_size = Vector2(96, 135)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Card" parent="Root/HandPanel/Hand/Slot2" instance=ExtResource("10")]
+layout_mode = 0
+scale = Vector2(1.5, 1.5)
+card_id = "SH02"
+
+[node name="Slot3" type="Control" parent="Root/HandPanel/Hand"]
+custom_minimum_size = Vector2(96, 135)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Card" parent="Root/HandPanel/Hand/Slot3" instance=ExtResource("10")]
+layout_mode = 0
+scale = Vector2(1.5, 1.5)
+card_id = "PS01"
+
+[node name="Slot4" type="Control" parent="Root/HandPanel/Hand"]
+custom_minimum_size = Vector2(96, 135)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Card" parent="Root/HandPanel/Hand/Slot4" instance=ExtResource("10")]
+layout_mode = 0
+scale = Vector2(1.5, 1.5)
+card_id = "PS02"
+
+[node name="Slot5" type="Control" parent="Root/HandPanel/Hand"]
+custom_minimum_size = Vector2(96, 135)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Card" parent="Root/HandPanel/Hand/Slot5" instance=ExtResource("10")]
+layout_mode = 0
+scale = Vector2(1.5, 1.5)
+card_id = "DR01"
+
+[node name="Slot6" type="Control" parent="Root/HandPanel/Hand"]
+custom_minimum_size = Vector2(96, 135)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Card" parent="Root/HandPanel/Hand/Slot6" instance=ExtResource("10")]
+layout_mode = 0
+scale = Vector2(1.5, 1.5)
+card_id = "DR02"
+
+[node name="Slot7" type="Control" parent="Root/HandPanel/Hand"]
+custom_minimum_size = Vector2(96, 135)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Card" parent="Root/HandPanel/Hand/Slot7" instance=ExtResource("10")]
+layout_mode = 0
+scale = Vector2(1.5, 1.5)
+card_id = "DF01"
+
+[node name="Slot8" type="Control" parent="Root/HandPanel/Hand"]
+custom_minimum_size = Vector2(96, 135)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Card" parent="Root/HandPanel/Hand/Slot8" instance=ExtResource("10")]
+layout_mode = 0
+scale = Vector2(1.5, 1.5)
+card_id = "DF02"
 
 [node name="TeamPanel" type="Control" parent="Root"]
 anchor_left = 1.0
