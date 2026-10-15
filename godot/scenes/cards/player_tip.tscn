@@ -1,10 +1,15 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://c3n5akmj6no20"]
 
-[ext_resource type="Script" path="res://scripts/cards/player_tip.gd" id="1"]
+[ext_resource type="Script" uid="uid://dii5dgshq2ja" path="res://scripts/cards/player_tip.gd" id="1"]
 
-[node name="PlayerTip" type="Control"]
+[node name="PlayerTip" type="Control" unique_id=1732181286]
+texture_filter = 1
+custom_minimum_size = Vector2(148, 84)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 148.0
-offset_bottom = 84.0
+offset_left = 77.0
+offset_top = 32.0
+offset_right = 225.0
+offset_bottom = 116.0
 script = ExtResource("1")
+player_id = "PL117"
