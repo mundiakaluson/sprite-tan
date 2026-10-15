@@ -1,0 +1,5 @@
+id,name,frames,ms_per_frame,cycle_s,ground_speed_px_s,min_rate,max_rate,note
+base_walk,Walk,16,70,1.12,5.2,0.6,1.5,both-feet cycle; the game plays at rate = actual speed / ground_speed_px_s (clamped) to avoid foot slide
+base_jog,Jog,12,66,0.792,15.3,0.6,1.5,both-feet cycle; the game plays at rate = actual speed / ground_speed_px_s (clamped) to avoid foot slide
+base_tired_run,Tired Run,14,82,1.148,8.5,0.6,1.5,both-feet cycle; the game plays at rate = actual speed / ground_speed_px_s (clamped) to avoid foot slide
+base_sprint,Sprint,10,52,0.52,46.3,0.6,1.5,both-feet cycle; the game plays at rate = actual speed / ground_speed_px_s (clamped) to avoid foot slide
