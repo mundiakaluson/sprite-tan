@@ -15,11 +15,11 @@ const SHADER := preload("res://shaders/uv_skin.gdshader")
 	set(v):
 		player_id = v
 		_apply_skin()
-## kit to wear (an id from data/kits.csv: home, away, keeper, third...). Empty = the player's default look. Needs the kit atlases from Export to game.
-@export var kit := "":
+## the colours to play in (a KitColors resource; empty = home kit, or the keeper kit for a goalkeeper). Needs the look atlases from Export to game.
+@export var kit: KitColors:
 	set(v):
 		kit = v
-		_apply_skin()
+		_apply_kit()
 ## sprite sheet name = animation name, e.g. "run", "kick", "base_idle". Animated by the AnimationPlayer; pick one here to preview.
 @export var sheet := "base_idle":
 	set(v):
@@ -72,12 +72,20 @@ func _apply_skin() -> void:
 		m = ShaderMaterial.new()
 		m.shader = SHADER
 		material = m
-	var skin: Texture2D = null
-	if kit != "":
-		skin = Data.tex("looks/%s__%s.png" % [player_id, kit])
-		if skin == null and not Engine.is_editor_hint(): push_warning("No kit atlas assets/looks/%s__%s.png: run Export to game (Player look atlases step)." % [player_id, kit])
-	if skin == null: skin = Data.tex("looks/%s.png" % player_id)
+	var skin := Data.tex("looks/%s.png" % player_id)
 	if skin != null: m.set_shader_parameter("skin", skin)
+
+func _apply_kit() -> void:
+	var m := material as ShaderMaterial
+	if m == null: return
+	var k := kit
+	if k == null:
+		if not Data.ok: return
+		k = KitColors.from_preset("keeper" if str(Data.row("players", player_id).get("role", "")) == "GK" else "home")
+	m.set_shader_parameter("use_kit", true)
+	for part in ["jersey", "trim", "shorts", "shorts_trim", "stripe", "socks", "sock_trim", "boots", "accent", "glove"]:
+		var c: Color = k.get(part)
+		m.set_shader_parameter("kit_" + part, Vector3(c.r, c.g, c.b))
 
 func _apply_sheet() -> void:
 	if not Data.ok: Data.reload()
@@ -87,3 +95,4 @@ func _apply_sheet() -> void:
 func _apply_region() -> void:
 	var c: Array = Data.anims.get("cell", [40, 40])
 	region_rect = Rect2(frame_index * c[0], direction * c[1], c[0], c[1])
+	_apply_kit()

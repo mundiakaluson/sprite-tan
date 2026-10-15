@@ -1,9 +1,50 @@
-[gd_resource type="Resource" script_class="MatchSettings" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="MatchSettings" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/match/match_settings.gd" id="1"]
 [ext_resource type="Resource" path="res://scenes/ai/profile_default.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/players/kit_colors.gd" id="3"]
+
+[sub_resource type="Resource" id="kit_home"]
+script = ExtResource("3")
+jersey = Color(0.8392, 0.1961, 0.251, 1)
+trim = Color(0.9569, 0.9569, 0.9804, 1)
+shorts = Color(0.9412, 0.9412, 0.9725, 1)
+shorts_trim = Color(0.8392, 0.1961, 0.251, 1)
+stripe = Color(0.8392, 0.1961, 0.251, 1)
+socks = Color(0.8392, 0.1961, 0.251, 1)
+sock_trim = Color(0.9569, 0.9569, 0.9804, 1)
+boots = Color(0.9412, 0.9412, 0.9804, 1)
+accent = Color(0.1412, 0.1412, 0.2353, 1)
+
+[sub_resource type="Resource" id="kit_away"]
+script = ExtResource("3")
+jersey = Color(0.9255, 0.9333, 0.9647, 1)
+trim = Color(0.1412, 0.1882, 0.4314, 1)
+shorts = Color(0.1412, 0.1882, 0.4314, 1)
+shorts_trim = Color(0.9255, 0.9333, 0.9647, 1)
+stripe = Color(0.9255, 0.9333, 0.9647, 1)
+socks = Color(0.9255, 0.9333, 0.9647, 1)
+sock_trim = Color(0.1412, 0.1882, 0.4314, 1)
+boots = Color(0.1098, 0.1098, 0.1725, 1)
+accent = Color(0.9412, 0.7529, 0.251, 1)
+
+[sub_resource type="Resource" id="kit_keeper"]
+script = ExtResource("3")
+jersey = Color(0.2353, 0.6667, 0.3529, 1)
+trim = Color(0.9804, 0.8392, 0.2353, 1)
+shorts = Color(0.1098, 0.1098, 0.1569, 1)
+shorts_trim = Color(0.9804, 0.8392, 0.2353, 1)
+stripe = Color(0.2353, 0.6667, 0.3529, 1)
+socks = Color(0.1098, 0.1098, 0.1569, 1)
+sock_trim = Color(0.9804, 0.8392, 0.2353, 1)
+boots = Color(0.9412, 0.5412, 0.1882, 1)
+accent = Color(0.1098, 0.1098, 0.1569, 1)
+glove = Color(0.9098, 0.9412, 0.2353, 1)
 
 [resource]
 script = ExtResource("1")
 home_ai = ExtResource("2")
 away_ai = ExtResource("2")
+home_kit = SubResource("kit_home")
+away_kit = SubResource("kit_away")
+keeper_kit = SubResource("kit_keeper")

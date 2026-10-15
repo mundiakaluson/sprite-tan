@@ -7,7 +7,7 @@ var dir := 1.0                  ## +1 attacks towards +x (right of the screen), 
 var human := false
 var score := 0
 var color := Color.WHITE
-var kit := "home"               ## kit id (data/kits.csv)
+var kit: KitColors              ## the colours he plays in
 var formation_id := "F01"
 var players: Array[Footballer] = []
 

@@ -12,11 +12,11 @@ static var current: MatchSettings
 ## formation by name (pick from the list; names come from data/formations.csv)
 @export var home_formation := "4-4-2"
 @export var away_formation := "4-3-3"
-## kit by id (data/kits.csv: home, away, keeper, third, ...). Give the teams different kits so you can tell them apart.
-@export var home_kit := "home"
-@export var away_kit := "away"
-## the goalkeepers' kit
-@export var keeper_kit := "keeper"
+## the colours each team plays in (KitColors: open it, change the colours or use Load Preset to copy a kit from data/kits.csv)
+@export var home_kit: KitColors
+@export var away_kit: KitColors
+## the goalkeepers' colours
+@export var keeper_kit: KitColors
 ## real minutes the 90 game minutes take
 @export_range(1.0, 20.0) var match_minutes := 4.0
 
@@ -161,7 +161,6 @@ func _validate_property(property: Dictionary) -> void:
 		"home_formation", "away_formation":
 			table = "formations"
 			col = "name"
-		"home_kit", "away_kit", "keeper_kit": table = "kits"
 		_: return
 	var names: Array = []
 	for r in Data.table(table): names.append(str(r.get(col, "")))
@@ -175,6 +174,3 @@ static func formation_id(name_or_id: String) -> String:
 		if r["name"] == name_or_id or r["id"] == name_or_id: return r["id"]
 	return "F01"
 
-## jersey colour of a kit, for the HUD
-static func kit_color(kit: String) -> Color:
-	return Color(str(Data.row("kits", kit).get("jersey", "#ffffff")))

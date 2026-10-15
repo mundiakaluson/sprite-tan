@@ -40,7 +40,7 @@ var _chain := {}                # clip -> next clip, for arrows marked auto in a
 static func create() -> Player:
 	return (load(SCENE) as PackedScene).instantiate() as Player
 
-func setup(r: Dictionary, kit := "") -> void:
+func setup(r: Dictionary, kit: KitColors = null) -> void:
 	row = r
 	sprite.kit = kit
 	sprite.setup(str(r.get("id", "")))

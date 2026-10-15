@@ -49,14 +49,17 @@ var _slow := false
 func _ready() -> void:
 	rng.randomize()
 	if settings == null: settings = MatchSettings.new()
+	if settings.home_kit == null: settings.home_kit = KitColors.from_preset("home")
+	if settings.away_kit == null: settings.away_kit = KitColors.from_preset("away")
+	if settings.keeper_kit == null: settings.keeper_kit = KitColors.from_preset("keeper")
 	MatchSettings.current = settings
 	if not Data.ok:
 		hud.message("No exported data. Open the manager tool and press Export to game.", 999.0)
 		return
 	stadium.stadium_id = settings.stadium_id
 	var used := {}
-	home = Team.new(); home.label = "HOME"; home.dir = 1.0; home.human = true; home.kit = settings.home_kit; home.color = MatchSettings.kit_color(settings.home_kit)
-	away = Team.new(); away.label = "AWAY"; away.dir = -1.0; away.kit = settings.away_kit; away.color = MatchSettings.kit_color(settings.away_kit)
+	home = Team.new(); home.label = "HOME"; home.dir = 1.0; home.human = true; home.kit = settings.home_kit; home.color = settings.home_kit.jersey
+	away = Team.new(); away.label = "AWAY"; away.dir = -1.0; away.kit = settings.away_kit; away.color = settings.away_kit.jersey
 	home.build(MatchSettings.formation_id(settings.home_formation), used, rng)
 	away.build(MatchSettings.formation_id(settings.away_formation), used, rng)
 	teams = [home, away]
