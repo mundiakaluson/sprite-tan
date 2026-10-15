@@ -33,6 +33,10 @@ var _x := 0.0
 var _pan := 0.0
 var _tween: Tween
 
+## in the editor the camera re-aims every frame, so changing a value moves the Preview view live
+func _process(_dt: float) -> void:
+	if Engine.is_editor_hint(): _apply()
+
 func follow(target: Vector3, half_width: float, dt: float) -> void:
 	_x = lerpf(_x, clampf(target.x, -limit_x, limit_x), clampf(follow_speed * dt, 0.0, 1.0))
 	_pan = lerpf(_pan, _pan_for(target, half_width), clampf(pan_speed * dt, 0.0, 1.0))
