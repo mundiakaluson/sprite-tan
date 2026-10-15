@@ -12,12 +12,9 @@ def main():
     root = tk.Tk(); root.title(tables.project() + ' - manager tool'); root.geometry('1360x820')
     try: ttk.Style().theme_use('clam')
     except tk.TclError: pass
-    top = tk.Frame(root, bg='#1b1d2b'); top.pack(fill='x')
-    tk.Label(top, text=tables.project().upper(), bg='#1b1d2b', fg='#e8e8f0', font=('TkDefaultFont', 12, 'bold')).pack(side='left', padx=12, pady=8)
-    exp_info = tk.Label(top, text='', bg='#1b1d2b', fg='#9aa0b8'); exp_info.pack(side='right', padx=12)
-    exp_btn = tk.Button(top, text='EXPORT TO GAME', font=('TkDefaultFont', 14, 'bold'), bg='#2fb26a', fg='white', activebackground='#3fd283', activeforeground='white', relief='flat', padx=26, pady=8, cursor='hand2')
-    exp_btn.pack(side='right', padx=8, pady=6)
     nb = ttk.Notebook(root); nb.pack(fill='both', expand=True)
+    exp_btn = ttk.Button(root, text='Export to game')   # sits in the tab strip, top right, same look as the other buttons
+    exp_btn.place(relx=1.0, x=-6, y=2, anchor='ne')
     status = ttk.Label(root, text='Edits are written to data/*.csv when you press Save. Files changed in Excel reload automatically.', anchor='w'); status.pack(fill='x')
     from tab_dashboard import DashboardTab
     from tab_players import PlayersTab
@@ -45,7 +42,7 @@ def main():
 
     import export_dialog
     def show_last():
-        le = export_dialog.export_game.last_export(); exp_info.config(text=f'last export {le[0]} ({le[1]})' if le else 'not exported yet')
+        le = export_dialog.export_game.last_export(); status.config(text=f'Last export to game: {le[0]} ({le[1]})' if le else 'Not exported to game yet')
     def do_export():
         dirty = [t for t in tables._cache.values() if t.dirty]
         if dirty:
