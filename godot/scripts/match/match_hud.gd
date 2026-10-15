@@ -10,12 +10,12 @@ signal menu_chosen(id: String)          ## an order button was pressed ("through
 signal card_pressed(index: int)         ## a card in the hand was clicked
 signal team_command(id: String)         ## a team command button was pressed
 
-## size of the cards in the hand (1 = the full 64 x 90 card, pixel for pixel; keep it 1 unless you want blurry pixels)
-@export_range(0.5, 1.0, 0.25) var card_scale := 1.0
+## size of the cards in the hand (1 = the full 64 x 90 card, pixel for pixel; 1.5 is a touch uneven but bigger, 2 is exact but needs a taller strip)
+@export_range(0.5, 2.0, 0.25) var card_scale := 1.5
 ## size of the hover tooltip (the card's tooltip image x this)
 @export_range(1.0, 4.0, 1.0) var tooltip_scale := 2.0
 ## size of the TEAM stance buttons
-@export var team_button_size := Vector2(90, 26)
+@export var team_button_size := Vector2(112, 20)
 
 const PITCH_H := 580.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
 ## colour of each command kind in the command box and on the highlighted players

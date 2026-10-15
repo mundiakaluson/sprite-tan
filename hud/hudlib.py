@@ -58,17 +58,34 @@ def button(S, state):
     return im
 
 
-def strip(S, w=1280, h=140):
-    """the HUD strip under the pitch: the card's dark field with a faint diagonal weave, lighter at the top, a frame-coloured line on top"""
+def strip(S, w=1280, h=150):
+    """the HUD strip under the pitch: dark card field with a dithered gradient, a faint pitch diagram (centre circle, halfway line, boxes) and a notched frame line on top"""
+    import math
     im = Image.new('RGBA', (w, h)); px = im.load()
+    bayer = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
+    hi, lo = S['field_hi'], S['base']
     for y in range(h):
         k = y / (h - 1)
         for x in range(w):
-            col = _mix(S['field_hi'], S['base'], min(1.0, k * 1.6))
-            if (x - y // 2) % 9 == 0 and y > 4: col = _mix(col, S['text_dim'], 0.05)
+            t = min(1.0, k * 1.5); t += (bayer[y % 4][x % 4] / 16.0 - 0.5) * 0.25      # ordered dither, no smooth gradient
+            col = hi if t < 0.5 else lo
+            if (x - y // 2) % 9 == 0 and y > 4: col = _mix(col, S['text_dim'], 0.06)
             px[x, y] = col + (255,)
+    # pitch diagram, very faint: halfway line + centre circle in the middle, penalty boxes at both ends
+    line = _mix(S['base'], S['text_dim'], 0.16); cy = h // 2 + 3; cx = w // 2
+    def dot(x, y):
+        if 4 <= y < h and 0 <= x < w: px[x, y] = line + (255,)
+    for y in range(4, h): dot(cx, y)
+    for a in range(0, 360 * 2):
+        r = math.radians(a / 2); dot(int(cx + 46 * math.cos(r)), int(cy + 46 * math.sin(r)))
+    for x in range(0, 120): dot(x, cy - 40); dot(x, cy + 40); dot(w - 1 - x, cy - 40); dot(w - 1 - x, cy + 40)
+    for y in range(cy - 40, cy + 41): dot(119, y); dot(w - 120, y)
     d = ImageDraw.Draw(im)
-    d.line([(0, 0), (w, 0)], fill=_mix(S['frame'], S['base'], 0.4) + (255,)); d.line([(0, 1), (w, 1)], fill=S['inner'] + (255,))
+    fr = _mix(S['frame'], S['base'], 0.4) + (255,); dark = S['base'] + (255,)
+    d.line([(0, 0), (w, 0)], fill=fr); d.line([(0, 1), (w, 1)], fill=S['inner'] + (255,)); d.line([(0, 2), (w, 2)], fill=dark); d.line([(0, 3), (w, 3)], fill=_mix(S['field_hi'], S['base'], 0.5) + (255,))
+    for x in range(16, w, 32):                       # small studs along the top edge, like the card rivets
+        d.rectangle([x, 1, x + 1, 2], fill=_mix(S['frame'], S['base'], 0.55) + (255,))
+    d.line([(0, h - 1), (w, h - 1)], fill=dark)
     return im
 
 

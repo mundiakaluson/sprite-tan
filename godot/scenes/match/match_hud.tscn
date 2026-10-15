@@ -28,7 +28,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 0.0
-offset_top = -140.0
+offset_top = -150.0
 offset_right = 0.0
 offset_bottom = 0.0
 script = ExtResource("6")
@@ -41,7 +41,7 @@ anchor_bottom = 1.0
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
-offset_bottom = -140.0
+offset_bottom = -150.0
 unique_name_in_owner = true
 mouse_filter = 2
 script = ExtResource("2")
@@ -60,9 +60,9 @@ anchor_top = 1.0
 anchor_right = 0.0
 anchor_bottom = 1.0
 offset_left = 8.0
-offset_top = -120.0
-offset_right = 260.0
-offset_bottom = -108.0
+offset_top = -142.0
+offset_right = 208.0
+offset_bottom = -130.0
 unique_name_in_owner = true
 text = ""
 script = ExtResource("4")
@@ -74,16 +74,16 @@ anchor_top = 1.0
 anchor_right = 0.0
 anchor_bottom = 1.0
 offset_left = 4.0
-offset_top = -84.0
-offset_right = 264.0
-offset_bottom = -20.0
+offset_top = -120.0
+offset_right = 208.0
+offset_bottom = -8.0
 unique_name_in_owner = true
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 columns = 2
 
 [node name="Order_through" type="Control" parent="Root/Orders"]
-custom_minimum_size = Vector2(124, 30)
+custom_minimum_size = Vector2(100, 52)
 text_scale = 2
 layout_mode = 2
 text = "THROUGH"
@@ -91,7 +91,7 @@ disabled = true
 script = ExtResource("5")
 
 [node name="Order_run" type="Control" parent="Root/Orders"]
-custom_minimum_size = Vector2(124, 30)
+custom_minimum_size = Vector2(100, 52)
 text_scale = 2
 layout_mode = 2
 text = "RUN"
@@ -99,7 +99,7 @@ disabled = true
 script = ExtResource("5")
 
 [node name="Order_press" type="Control" parent="Root/Orders"]
-custom_minimum_size = Vector2(124, 30)
+custom_minimum_size = Vector2(100, 52)
 text_scale = 2
 layout_mode = 2
 text = "PRESS"
@@ -107,7 +107,7 @@ disabled = true
 script = ExtResource("5")
 
 [node name="Order_tackle" type="Control" parent="Root/Orders"]
-custom_minimum_size = Vector2(124, 30)
+custom_minimum_size = Vector2(100, 52)
 text_scale = 2
 layout_mode = 2
 text = "TACKLE"
@@ -119,10 +119,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -270.0
-offset_top = -136.0
-offset_right = 270.0
-offset_bottom = -36.0
+offset_left = -392.0
+offset_top = -144.0
+offset_right = 392.0
+offset_bottom = -6.0
 script = ExtResource("3")
 
 [node name="Hand" type="HBoxContainer" parent="Root"]
@@ -130,23 +130,23 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -265.0
-offset_top = -131.0
-offset_right = 268.0
-offset_bottom = -41.0
+offset_left = -387.0
+offset_top = -139.0
+offset_right = 387.0
+offset_bottom = -11.0
 unique_name_in_owner = true
 mouse_filter = 2
-theme_override_constants/separation = 3
+theme_override_constants/separation = 1
 
 [node name="TeamPanel" type="Control" parent="Root"]
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -294.0
-offset_top = -138.0
+offset_left = -244.0
+offset_top = -144.0
 offset_right = -4.0
-offset_bottom = -60.0
+offset_bottom = -52.0
 unique_name_in_owner = true
 script = ExtResource("3")
 
@@ -164,18 +164,18 @@ text_scale = 2
 unique_name_in_owner = true
 offset_left = 6.0
 offset_top = 20.0
-offset_right = 284.0
-offset_bottom = 74.0
+offset_right = 234.0
+offset_bottom = 88.0
 mouse_filter = 2
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
-columns = 3
+columns = 2
 
 [node name="TeamNote" type="Control" parent="Root/TeamPanel"]
 unique_name_in_owner = true
 offset_left = 8.0
 offset_top = 28.0
-offset_right = 284.0
+offset_right = 234.0
 offset_bottom = 40.0
 text = "NO COMMANDS YET"
 color = Color(0.35, 0.37, 0.45, 1)
@@ -187,10 +187,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -294.0
-offset_top = -56.0
+offset_left = -244.0
+offset_top = -48.0
 offset_right = -4.0
-offset_bottom = -4.0
+offset_bottom = -6.0
 unique_name_in_owner = true
 script = ExtResource("3")
 
@@ -198,7 +198,7 @@ script = ExtResource("3")
 unique_name_in_owner = true
 offset_left = 8.0
 offset_top = 6.0
-offset_right = 282.0
+offset_right = 232.0
 offset_bottom = 18.0
 text = "COMMAND: -"
 script = ExtResource("4")
@@ -207,13 +207,13 @@ text_scale = 2
 [node name="CommandNote" type="Control" parent="Root/CommandPanel"]
 unique_name_in_owner = true
 offset_left = 8.0
-offset_top = 19.0
-offset_right = 282.0
-offset_bottom = 51.0
+offset_top = 21.0
+offset_right = 232.0
+offset_bottom = 40.0
 wrap = true
 color = Color(0.55, 0.57, 0.69, 1)
 script = ExtResource("4")
-text_scale = 2
+text_scale = 1
 
 [node name="Message" type="Control" parent="Root"]
 anchor_left = 0.5
