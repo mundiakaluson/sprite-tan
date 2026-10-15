@@ -174,7 +174,7 @@ class Ctx:
         return ((p[0] - x0) * VW / vw, (p[1] - z - y0) * VH / vh)
 
     def text(s, x, y, txt, col, S=2, center=True):
-        im = pix_text(txt, col, S); s.scr.alpha_composite(im, (int(x - im.width // 2) if center else int(x), int(y)))
+        return                                                                  # no on-screen text in Titan scenes (the card says it)
 
 
 # ------------------------------------------------------------------ the scene registry + runner
@@ -259,9 +259,7 @@ def render_frame(sc, i):
     if bar: od.rectangle([0, 0, VW, bar], fill=(4, 4, 12, 255)); od.rectangle([0, VH - bar, VW, VH], fill=(4, 4, 12, 255))
     if c.flash_a > 0: out.alpha_composite(Image.new('RGBA', (VW, VH), c.flash_rgb + (int(255 * min(1, c.flash_a)),)))
     if t0 <= i < t0 + 5: out.alpha_composite(Image.new('RGBA', (VW, VH), (255, 245, 210, int(210 * (1 - (i - t0) / 5)))))     # the activation flash
-    if t0 + 3 <= i < t1 + 6 and bar >= 20 and c.banner:
-        a = pix_text('TITAN  -  ' + SC_TITLE[sc.cid], sc.color, 2); out.alpha_composite(a, (240 - a.width // 2, max(0, (bar - a.height) // 2)))
-    # hand + the real card flying in
+    # the hand of cards (the Titan card goes hot, then onto cooldown); no on-screen text, the card says it
     if c.hud and (i < t0 + 1 or i >= t1 + 12):
         for ci in range(5):
             hot = (ci == 2) and i < t0 + 1; grey = (ci == 2) and i >= t1 + 12
@@ -269,11 +267,6 @@ def render_frame(sc, i):
             hud_card(od, x, y, 2, hot=hot, grey=grey)
             if grey:
                 cd = min(1.0, (i - t1 - 12) / 38.0); od.pieslice([x + 8, y + 18, x + 36, y + 46], -90, -90 + 360 * (1 - cd), fill=(10, 10, 20, 170))
-    if t0 - 8 <= i < t0 + 30:                                                       # the real card slides in, holds a beat, slides out
-        e = min(clamp((i - (t0 - 8)) / 8), clamp((t0 + 30 - i) / 8)); cf = card_face(sc.cid, 2)
-        if e > 0.02: out.alpha_composite(cf, (int(VW - 12 - cf.width * smooth(e)), 34))
-    if i >= t1 + 12 and sc.result:
-        t = clamp((i - t1 - 12) / 6); b = pix_text(sc.result, sc.color, 2); out.alpha_composite(b, (240 - b.width // 2, int(56 - 20 * (1 - t))))
     return out.convert('RGB')
 
 

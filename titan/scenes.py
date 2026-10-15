@@ -194,11 +194,6 @@ def tt03(c):
                 x = d[0] - 20 + h * 14; y = d[1] - 36 - 4 * math.sin(i * 0.2 + h + q) - abs(h - 1) * 3
                 fx.mini_card(c.od, x, y, 12, 18, col=(255, 214, 80) if (q + h) % 2 else (120, 200, 255))
         c.cam(212, 120, 2.0 + 0.8 * smooth((i - 26) / 14))
-        # eye shape on screen
-        r = eye_r * 0.35
-        c.sd.ellipse([ex - r * 1.6, 60 - r * 0.55, ex + r * 1.6, 60 + r * 0.55], outline=(255, 214, 80, int(220 * e)), width=2)
-        c.sd.ellipse([ex - r * 0.5, 60 - r * 0.5, ex + r * 0.5, 60 + r * 0.5], fill=(255, 214, 80, int(220 * e)))
-        c.sd.ellipse([ex - r * 0.2, 60 - r * 0.2, ex + r * 0.2, 60 + r * 0.2], fill=(10, 8, 30, int(255 * e)))
         # timer arc 6s
         left = clamp(1 - (i - 26) / (104 - 26))
         c.sd.arc([440 - 18, 232 - 18, 440 + 18, 232 + 18], -90, -90 + 360 * left, fill=(255, 214, 80, 255), width=3)
