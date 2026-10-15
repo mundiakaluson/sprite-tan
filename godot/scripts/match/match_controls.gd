@@ -2,7 +2,8 @@ class_name MatchControls
 extends Node
 ## Mouse and controller orders. One flow for both, because the controller just drives the mouse pointer.
 ##   Double click a team mate        -> the ball carrier passes to him.
-##   Right click (a mate or a spot)  -> lob there.
+##   Right click (a mate or a spot)  -> lob there. Right button DRAG from the carrier (Square held on the pad) = lob with the same snapping: let go = lob to the snapped mate,
+##                                      further than `through_pull` = lobbed over the top (he runs onto it), a spot of grass or the goal area = lob there (a cross).
 ##   Drag from the ball carrier      -> the drag snaps to the nearest team mate to the pointer: let go = PASS. Drag further than `through_pull` = THROUGH BALL (the
 ##                                      snapped mate is ringed as the runner). Drag into the goal area (`shoot_zone_x` / `shoot_zone_z`) = SHOOT. Elsewhere on the grass = pass to space.
 ##                                      Time slows a little while you drag so you can line it up. The HUD command box shows which of these you are about to do.
@@ -38,6 +39,9 @@ var _down_pos := Vector2.ZERO
 var _dragging := false
 var _shot_drag := false
 var _skip_release := false
+var _lob_down := false
+var _lob_drag := false
+var _lob_start := Vector2.ZERO
 var _last_click: Footballer
 var _last_click_ms := 0
 
@@ -61,9 +65,21 @@ func _process(dt: float) -> void:
 		_shot_drag = game.carrier == _down
 		game.set_slowmo(_shot_drag)
 		if _shot_drag: hud.set_hint("Drag to a mate: pass. Further: through ball. Into the goal area: shoot")
+	if _lob_down and not _lob_drag and p.distance_to(_lob_start) > drag_threshold:
+		_lob_drag = true
+		game.set_slowmo(true)
+		hud.set_hint("Lob: drag to a mate, further = over the top, or to a spot")
+	if _lob_drag and game.carrier != null:
+		var lplan := _plan(p, game.carrier)
+		var lmate: Footballer = lplan["mate"]
+		var lend := p
+		if lmate != null: lend = lmate.node.position + Vector2(0.0, -13.0 * lmate.node.scale.y)
+		hud.set_drag(game.carrier.node.position, lend, false)
+		hud.set_snap(lmate.node if lmate != null else null, "lob")
+		_show_lob_plan(lplan, game.carrier)
 	if _dragging:
 		if _shot_drag:
-			var plan := _plan(p)
+			var plan := _plan(p, _down)
 			var mate: Footballer = plan["mate"]
 			var end := p
 			if mate != null: end = mate.node.position + Vector2(0.0, -13.0 * mate.node.scale.y)
@@ -90,8 +106,11 @@ func _unhandled_input(ev: InputEvent) -> void:
 	if ev.is_action_pressed("ptr_cancel"):
 		clear()
 		return
-	if ev.is_action_pressed("ptr_lob"):
-		_lob(get_viewport().get_mouse_position())
+	if ev.is_action_pressed("ptr_lob") and not ev.is_echo():
+		_lob_press(get_viewport().get_mouse_position())
+		return
+	if ev.is_action_released("ptr_lob"):
+		_lob_release(get_viewport().get_mouse_position())
 		return
 	var mb := ev as InputEventMouseButton
 	if mb == null or mb.button_index != MOUSE_BUTTON_LEFT: return
@@ -131,7 +150,7 @@ func _release(p: Vector2) -> void:
 		return
 	if _down != null and _dragging:
 		if _shot_drag:
-			var plan := _plan(p)
+			var plan := _plan(p, _down)
 			match plan["kind"]:
 				"shoot": game.orders.shoot_at(_down, plan["spot"])
 				"pass", "through": game.orders.pass_to(_down, plan["kind"], plan["mate"], Vector2.INF)
@@ -157,8 +176,7 @@ func _release(p: Vector2) -> void:
 	hud.clear_drag()
 
 ## what letting go of the drag would do now: {kind: pass / through / shoot / space / none, mate, spot}
-func _plan(p: Vector2) -> Dictionary:
-	var carrier := _down
+func _plan(p: Vector2, carrier: Footballer) -> Dictionary:
 	var spot := _ground(p)
 	if spot != Vector2.INF and spot.x * game.home.dir > MatchGame.HALF_L - shoot_zone_x and absf(spot.y) < shoot_zone_z:
 		return {"kind": "shoot", "mate": null, "spot": spot}
@@ -188,6 +206,44 @@ func _show_plan(plan: Dictionary) -> void:
 		"shoot": c.show("shoot", "SHOOT", _down, null, "let go to shoot where the line ends")
 		"space": c.show("pass", "PASS (SPACE)", _down, null, "let go to play it into space")
 		_: c.show("pass", "PASS", _down, null, "drag onto the pitch")
+
+func _lob_press(p: Vector2) -> void:
+	var lober := game.carrier
+	if lober == null or lober.team != game.home:
+		hud.toast("Right click lobs: your team needs the ball")
+		_lob_down = false
+		return
+	_lob_down = true
+	_lob_drag = false
+	_lob_start = p
+
+func _lob_release(p: Vector2) -> void:
+	if not _lob_down: return
+	var lober := game.carrier
+	var dragged := _lob_drag
+	_lob_down = false
+	_lob_drag = false
+	game.set_slowmo(false)
+	hud.clear_drag()
+	if lober == null or lober.team != game.home: return
+	if not dragged:
+		_lob(p)
+		return
+	var plan := _plan(p, lober)
+	var mate: Footballer = plan["mate"]
+	if mate != null: game.orders.pass_to(lober, "lob", mate, Vector2.INF, plan["kind"] == "through")
+	elif plan["spot"] != Vector2.INF: game.orders.pass_to(lober, "lob", null, plan["spot"])
+	else: game.command.clear()
+	clear()
+
+func _show_lob_plan(plan: Dictionary, carrier: Footballer) -> void:
+	var c := game.command
+	match plan["kind"]:
+		"pass": c.show("lob", "LOB", carrier, plan["mate"], "let go to lob it to him. Drag further: over the top")
+		"through": c.show("lob", "LOB OVER THE TOP", carrier, plan["mate"], "let go: he runs onto it")
+		"shoot": c.show("lob", "LOB (CROSS)", carrier, null, "let go to lob it into the area")
+		"space": c.show("lob", "LOB (SPACE)", carrier, null, "let go to lob it there")
+		_: c.show("lob", "LOB", carrier, null, "drag onto the pitch")
 
 func _lob(p: Vector2) -> void:
 	var lober := game.carrier
@@ -260,6 +316,8 @@ func clear() -> void:
 	_down = null
 	_dragging = false
 	_shot_drag = false
+	_lob_down = false
+	_lob_drag = false
 	if game != null:
 		game.selected = null
 		game.set_slowmo(false)

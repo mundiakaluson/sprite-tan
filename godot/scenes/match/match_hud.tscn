@@ -107,36 +107,38 @@ text = "TACKLE"
 
 [node name="CommandBox" type="Panel" parent="Root"]
 layout_mode = 0
-offset_left = 10.0
-offset_top = 506.0
-offset_right = 202.0
-offset_bottom = 537.0
+offset_left = 782.0
+offset_top = 428.0
+offset_right = 952.0
+offset_bottom = 532.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("box")
 
 [node name="CommandTitle" type="Label" parent="Root/CommandBox"]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 5.0
-offset_right = 190.0
-offset_bottom = 17.0
+offset_left = 7.0
+offset_top = 4.0
+offset_right = 164.0
+offset_bottom = 40.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 13
 text = "COMMAND: -"
+autowrap_mode = 3
 
 [node name="CommandNote" type="Label" parent="Root/CommandBox"]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 5.0
-offset_top = 17.0
-offset_right = 187.0
-offset_bottom = 30.0
+offset_left = 7.0
+offset_top = 44.0
+offset_right = 164.0
+offset_bottom = 100.0
 modulate = Color(1, 1, 1, 0.8)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 8
-clip_text = true
+theme_override_font_sizes/font_size = 9
+autowrap_mode = 3
 
 [node name="Message" type="Label" parent="Root"]
 unique_name_in_owner = true
@@ -148,16 +150,6 @@ theme_override_font_sizes/font_size = 30
 offset_right = 780.0
 offset_bottom = 200.0
 horizontal_alignment = 1
-
-[node name="Controls" type="Label" parent="Root"]
-unique_name_in_owner = true
-offset_left = 790.0
-offset_top = 424.0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 8
-text = "MOUSE\ndrag from ball carrier to a mate: pass\n...further: through ball\n...into the goal area: shoot\ndouble click mate: pass\nright click: lob\ndrag from player: run\nclick player: orders\nEsc: cancel\n\nPAD\nstick pointer, Cross click\nSquare lob, hold Triangle drag\nCircle cancel"
-modulate = Color(1, 1, 1, 0.75)
 
 [node name="Hand" type="HBoxContainer" parent="Root"]
 unique_name_in_owner = true

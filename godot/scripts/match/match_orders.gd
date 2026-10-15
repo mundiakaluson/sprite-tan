@@ -47,17 +47,17 @@ func shoot_at(f: Footballer, spot: Vector2) -> void:
 	g.poss.kick_action(f, "shot", spot, Vector2.ZERO, over)
 
 ## kind = "pass" / "through" / "lob". To a team mate (the ball leads him; a through ball also sends him running) or to a spot.
-func pass_to(f: Footballer, kind: String, mate: Footballer, spot: Vector2) -> void:
+func pass_to(f: Footballer, kind: String, mate: Footballer, spot: Vector2, send_run := false) -> void:
 	if g.carrier != f:
 		g.hud.toast("%s has not got the ball" % f.display_name())
 		return
 	var action := kind if kind in ["pass", "through", "lob"] else "pass"
 	if mate != null:
 		var vel := Vector2.ZERO
-		if action == "through":
+		if action == "through" or send_run:
 			vel = Vector2(f.team.dir * g.settings.through_run_speed, 0.0)
 			_run_order(mate, mate.pos + vel * g.settings.through_lead)
-		g.command.show(action, action.to_upper(), f, mate, "%s runs onto it" % mate.display_name() if action == "through" else "", g.settings.command_hold)
+		g.command.show(action, "LOB OVER THE TOP" if (action == "lob" and send_run) else action.to_upper(), f, mate, "%s runs onto it" % mate.display_name() if send_run or action == "through" else "", g.settings.command_hold)
 		g.poss.kick_action(f, action, mate.pos, mate.vel if vel == Vector2.ZERO else vel, {}, mate)
 	elif spot != Vector2.INF:
 		g.command.show(action, action.to_upper() + " (SPACE)", f, null, "", g.settings.command_hold)
