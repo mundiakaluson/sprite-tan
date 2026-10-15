@@ -25,3 +25,4 @@ Animation,Skill card animations: DRIBBLE 29 (Hold Up Play animation removed; don
 Animation,Skill card animations: DEFEND 35 done (moves_defend.py); SUPPORT 30 done (auras + arm/head overlays on the current state) / KEEPER 25 done (moves_keeper.py) / TITAN 25 done (25 cinematic scenes, titan/scenes.py),in progress,checkpoint per category
 Packs,"Pack system: definitions + pools + schedule + pity, Packs tab, wrapper art, opening animation (skippable), simulator",done,tables + Packs tab + wrapper art from data + opening with skip + simulator. Next: pity state in the save, shop UI, Godot port
 Tool,Global EXPORT TO GAME button + tool/export_game.py,done,writes godot/data and godot/assets
+Game,"Godot: player scene with AnimationPlayer (all sheets) + AnimationTree flow graph from animation_flow.csv",doing,untested in Godot

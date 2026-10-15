@@ -106,6 +106,17 @@ def run():
         if k not in ids: add('error', 'pack_odds', k, 'odds for an unknown pack')
     for x in data['pools']:
         if x['pack'] not in ids: add('error', 'pack_pools', x['pack'], 'pool row for an unknown pack')
+    try:
+        import json
+        known = set(json.load(open(os.path.join(tables.ROOT, 'sprites', 'out_uv', 'animations.json')))['animations'])
+        seen = {}
+        for r in tables.table('animation_flow').rows:
+            for k in ('from', 'to'):
+                if r.get(k) not in known: add('error', 'animation_flow', r.get('from', ''), f"{k} '{r.get(k)}' is not a baked animation")
+            if r.get('from') in seen: add('error', 'animation_flow', r['from'], 'two arrows leave this clip (only one is allowed)')
+            seen[r.get('from')] = 1
+            if r.get('mode') not in ('auto',): add('error', 'animation_flow', r.get('from', ''), "mode must be 'auto'")
+    except (OSError, KeyError): pass
     import re
     for r in tables.table('kits').rows:
         for c in ('jersey', 'trim', 'shorts', 'shorts_trim', 'stripe', 'socks', 'sock_trim', 'boots', 'accent'):

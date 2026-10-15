@@ -8,7 +8,7 @@ var _next: StringName = &""
 func _on_enter(msg: Dictionary) -> void:
 	_next = msg.get("next", go_to_when_clip_ends)
 	if msg.has("face"): player.face_vector(msg["face"])
-	player.play_clip(str(msg.get("clip", "kick")), false)
+	player.play_clip(str(msg.get("clip", "kick")))
 
 func _on_clip_finished(_finished_clip: String) -> bool:
 	if _next != &"": sm.transition_to(_next)

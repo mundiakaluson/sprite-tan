@@ -1,0 +1,12 @@
+from,to,mode,note
+base_fall,base_get_up,auto,one fall for every case; then get up
+base_stumble_back_s,base_recover_step,auto,caught by one wide step
+base_stumble_back_m,base_recover_step,auto,
+base_stumble_back_l,base_recover_step,auto,
+base_stumble_fwd_s,base_recover_step,auto,
+base_stumble_fwd_m,base_recover_step,auto,
+base_stumble_fwd_l,base_recover_step,auto,
+base_stumble_side_s,base_recover_step,auto,
+base_stumble_side_m,base_recover_step,auto,
+base_stumble_side_l,base_recover_step,auto,
+base_knocked_off,base_recover_step,auto,

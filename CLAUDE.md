@@ -23,6 +23,7 @@ Manager tool in tool/ is built (see README). Run `python tool/selftest.py` after
 registered into sprites/gen_uv.py via sprites/custom_anims.py.
 
 ## Godot and export
+**Read godot/CLAUDE.md before touching anything under godot/ or when adding players, animations, cards or packs (it holds the rules: folders, data contract, animation flow, states, input).**
 `godot/` is the Godot 4 project. `tool/export_game.py` (Export to game button in the tool's tab strip) writes `godot/data/` and `godot/assets/` (git-ignored, generated). GDScript is untested: Godot is not installed in the container. Tracked: scripts/ (one folder per feature: core, packs, cards, players + players/states, debug), shaders/, scenes/, project.godot, assets/pitches/ (hand-made). New Godot code goes in its own feature folder, never the scripts or scenes root (scenes/<feature>/ mirrors scripts/<feature>/). Player state machine: scenes/players/player.tscn with states as child nodes of StateMachine, editable in the inspector (PlayerState base node has clip / event_transitions / go_to_when_clip_ends exports; scripts in scripts/players/ and states/). The user also codes in Godot, so new states must stay inspector-friendly (@export, class_name, no hard-wiring). Player cards are modular: shared layers + one face per player, text/stats drawn live in Godot, shaders/, scenes/, project.godot.
 Other tables now: packs, pack_odds, pack_pools (Packs tab, packs/packlib.py, packs/opening.py). Skill card face is the player-card style (cardlib2.card).
 

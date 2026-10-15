@@ -13,6 +13,7 @@ What lands where (godot/ is the Godot 4 project; assets/ and data/ are generated
   assets/card/      shared card layers: bg_/top_ per rarity, foil_ strips (36 frames) per foil style
   assets/font/      the 3x5 pixel font (atlas + chars.txt); data/card_rules.json has the layout numbers
   assets/packs/     pack wrappers drawn from data/packs.csv and the card backs per tier
+  animations/       player_library.tres (one Animation per sprite sheet) and player_flow.tres (AnimationTree state machine, arrows from data/animation_flow.csv); tracked in git
   shaders/          uv_skin.gdshader"""
 import os, sys, json, shutil, time, csv, subprocess
 
@@ -113,6 +114,69 @@ def step_players(c):
     c.counts['player faces'] = len(rows); c.log(f'wrote {len(rows)} player faces, {len(PC.RC)} rarity layers x2, {len(foil.STYLE_BY_RARITY)} foil strips, the pixel font and card_rules.json')
 
 
+def step_animations(c):
+    """one Godot Animation per sprite sheet (AnimationPlayer library) + an AnimationTree state machine whose arrows come from data/animation_flow.csv.
+    Written to godot/animations/ (tracked in git: they only name clips, they never point at generated images)."""
+    meta = json.load(open(os.path.join(UV, 'animations.json')))['animations']; names = sorted(meta); out = os.path.join(c.out, 'animations'); os.makedirs(out, exist_ok=True)
+    flow = [r for r in csv.DictReader(open(os.path.join(DATA, 'animation_flow.csv'), encoding='utf-8-sig')) if r['from'] in meta and r['to'] in meta]
+    # --- library
+    L = ['[gd_resource type="AnimationLibrary" load_steps=%d format=3]\n' % (len(names) + 1)]
+    for n in names:
+        m = meta[n]; fr = int(m['frames']); ms = float(m['ms_per_frame']) / 1000.0
+        times = ', '.join(f'{i * ms:.4f}' for i in range(fr)); trans = ', '.join('1' for _ in range(fr))
+        L.append(f'[sub_resource type="Animation" id="Animation_{n}"]\nresource_name = "{n}"\nlength = {fr * ms:.4f}\nloop_mode = {1 if m.get("loop") else 0}\nstep = {ms:.4f}')
+        def track(i, typ, path, keys, extra=''):
+            L.append(f'tracks/{i}/type = "{typ}"\ntracks/{i}/imported = false\ntracks/{i}/enabled = true\ntracks/{i}/path = NodePath("{path}")\ntracks/{i}/interp = 1\ntracks/{i}/loop_wrap = true\ntracks/{i}/keys = {{\n{keys}\n}}')
+        track(0, 'value', 'Sprite:sheet', f'"times": PackedFloat32Array(0),\n"transitions": PackedFloat32Array(1),\n"update": 1,\n"values": ["{n}"]')
+        track(1, 'value', 'Sprite:frame_index', f'"times": PackedFloat32Array({times}),\n"transitions": PackedFloat32Array({trans}),\n"update": 1,\n"values": [{", ".join(str(i) for i in range(fr))}]')
+        ev = sorted((int(f), k) for k, f in (m.get('events') or {}).items() if isinstance(f, int) and not isinstance(f, bool) and 0 <= f < fr)
+        if ev:
+            vals = ', '.join('{\n"args": ["%s"],\n"method": &"clip_event_fired"\n}' % k for f, k in ev)
+            track(2, 'method', 'Sprite', f'"times": PackedFloat32Array({", ".join(f"{f * ms:.4f}" for f, k in ev)}),\n"transitions": PackedFloat32Array({", ".join("1" for _ in ev)}),\n"values": [{vals}]')
+        L.append('')
+    L.append('[resource]\n_data = {\n' + ',\n'.join(f'&"{n}": SubResource("Animation_{n}")' for n in names) + '\n}\n')
+    open(os.path.join(out, 'player_library.tres'), 'w', newline='\n').write('\n'.join(L))
+    # --- state machine (the graph you see in the AnimationTree panel)
+    chained = {r['from'] for r in flow}; ordered = []
+    for r in flow:
+        for k in (r['from'], r['to']):
+            if k not in ordered: ordered.append(k)
+    groups = {}
+    for n in names:
+        if n not in ordered: groups.setdefault(n.split('_')[0].rstrip('0123456789') or n, []).append(n)
+    pos = {}; col_w, row_h = 230, 80
+    ordered_rows = [ordered] if ordered else []
+    for g in sorted(groups): ordered_rows.append(groups[g])
+    y = 0
+    for row in ordered_rows:
+        for i, n in enumerate(row): pos[n] = (i % 8 * col_w, y + i // 8 * row_h)
+        y += ((len(row) + 7) // 8) * row_h + 60
+    # chains laid out left to right: source column 0, target column 1 for the seeded flows
+    if ordered:
+        srcs = []; tgts = []
+        for r in flow:
+            if r['from'] not in srcs: srcs.append(r['from'])
+            if r['to'] not in tgts: tgts.append(r['to'])
+        for i, n in enumerate(srcs): pos[n] = (0, i * row_h)
+        for i, n in enumerate(tgts):
+            if n not in srcs: pos[n] = (col_w * 1.5, i * row_h * 2)
+        oy = max(v[1] for k, v in pos.items() if k in srcs + tgts) + row_h + 60
+        base_y = oy
+        for row in ordered_rows[1:]:
+            for i, n in enumerate(row): pos[n] = (i % 8 * col_w, base_y + i // 8 * row_h)
+            base_y += ((len(row) + 7) // 8) * row_h + 60
+    S = ['[gd_resource type="AnimationNodeStateMachine" load_steps=%d format=3]\n' % (len(names) + len(flow) + 2)]
+    for n in names: S.append(f'[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_{n}"]\nanimation = &"{n}"\n')
+    S.append('[sub_resource type="AnimationNodeStateMachineTransition" id="Transition_start"]\nadvance_mode = 2\n')
+    for i, r in enumerate(flow): S.append(f'[sub_resource type="AnimationNodeStateMachineTransition" id="Transition_{i}"]\nswitch_mode = 2\nadvance_mode = 2\n')
+    R = ['[resource]', 'states/Start/position = Vector2(-260, 0)', 'states/End/position = Vector2(-260, 90)']
+    for n in names: R.append(f'states/{n}/node = SubResource("AnimationNodeAnimation_{n}")\nstates/{n}/position = Vector2({pos[n][0]:.0f}, {pos[n][1]:.0f})')
+    tr = ['"Start", "base_idle", SubResource("Transition_start")'] + [f'"{r["from"]}", "{r["to"]}", SubResource("Transition_{i}")' for i, r in enumerate(flow)]
+    R.append('transitions = [' + ', '.join(tr) + ']\ngraph_offset = Vector2(-300, -60)')
+    open(os.path.join(out, 'player_flow.tres'), 'w', newline='\n').write('\n'.join(S) + '\n' + '\n'.join(R) + '\n')
+    c.counts['animations'] = len(names); c.counts['flow arrows'] = len(flow); c.log(f'wrote {len(names)} animations (AnimationPlayer library) and a state machine with {len(flow)} arrows from data/animation_flow.csv')
+
+
 def step_packs(c):
     import packlib as PL, design2 as D, opening as O
     data = PL.load(); packs = data['packs']
@@ -129,7 +193,7 @@ def step_manifest(c):
 
 
 STEPS = [('data', 'CSV data', step_data), ('sprites', 'Player sprite sheets + skins', step_sprites), ('hair', 'Hair layers', step_hair), ('looks', 'Player look atlases', step_looks),
-         ('cards', 'Skill cards', step_cards), ('players', 'Player cards', step_players), ('packs', 'Pack wrappers + card backs', step_packs), ('manifest', 'Manifest', step_manifest)]
+         ('animations', 'Animation library + flow graph', step_animations), ('cards', 'Skill cards', step_cards), ('players', 'Player cards', step_players), ('packs', 'Pack wrappers + card backs', step_packs), ('manifest', 'Manifest', step_manifest)]
 
 
 def run(log=print, progress=None, only=None, out=None):

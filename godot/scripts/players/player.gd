@@ -1,22 +1,29 @@
 class_name Player
 extends Node2D
 ## One player on the pitch. Instance scenes/players/player.tscn (Player.create() does it), then setup(row).
-## The scene holds: Sprite (recoloured sheet player) and StateMachine with its states as child nodes. Edit the states in the inspector.
+## Scene: Sprite (the recoloured picture), AnimationPlayer (one Animation per sprite sheet), AnimationTree (the flow graph with arrows
+## between clips), StateMachine (gameplay states as child nodes). States ask for a clip with play_clip(); the tree plays it and follows
+## the arrows (data/animation_flow.csv) by itself.
 ##   var p := Player.create(); add_child(p); p.setup(Data.row("players", "PL242")); p.move_to(Vector2(300, 200)); p.play_action("kick")
 
 signal state_changed(from_state: StringName, to_state: StringName)
+signal clip_event(event_name: String)       # "strike", "land", ... from the animation
 
 const SCENE := "res://scenes/players/player.tscn"
 const BASE_SPEED := 30.0        # pixels per second at PAC 0 (placeholder numbers, tune with the match view)
 const SPEED_PER_PAC := 0.6
 
 @onready var sprite: PlayerSprite = $Sprite
+@onready var anim_player: AnimationPlayer = $AnimationPlayer
+@onready var anim_tree: AnimationTree = $AnimationTree
 @onready var sm: PlayerStateMachine = $StateMachine
 
 var row := {}
 var velocity := Vector2.ZERO
 var move_target := Vector2.ZERO
 var facing := 16                # 0..31, 8 = screen right, 16 = toward the camera
+var _playback: AnimationNodeStateMachinePlayback
+var _chain := {}                # clip -> next clip, for arrows marked auto in animation_flow.csv
 
 static func create() -> Player:
 	return (load(SCENE) as PackedScene).instantiate() as Player
@@ -24,7 +31,13 @@ static func create() -> Player:
 func setup(r: Dictionary) -> void:
 	row = r
 	sprite.setup(str(r.get("id", "")))
-	if not sprite.finished.is_connected(_on_sprite_finished): sprite.finished.connect(_on_sprite_finished)
+	if not sprite.clip_event.is_connected(_on_clip_event): sprite.clip_event.connect(_on_clip_event)
+	_chain.clear()
+	for f in Data.table("animation_flow"):
+		if f.get("mode", "auto") == "auto": _chain[f["from"]] = f["to"]
+	anim_tree.active = true
+	_playback = anim_tree.get("parameters/playback")
+	if not anim_tree.animation_finished.is_connected(_on_anim_finished): anim_tree.animation_finished.connect(_on_anim_finished)
 	if not sm.transitioned.is_connected(_on_transitioned): sm.transitioned.connect(_on_transitioned)
 	sm.start()
 
@@ -52,20 +65,30 @@ func face_vector(v: Vector2) -> void:
 	facing = posmod(int(round(deg / 11.25)), 32)
 	sprite.face(facing)
 
-## starts a clip. A clip that is not baked yet is skipped quietly so states can name future animations; `stand_in` (e.g. "run") is
-## shown frozen on its first frame instead, so a missing idle looks like standing still.
-func play_clip(clip: String, loop: bool, stand_in := "") -> void:
-	if sprite.has_clip(clip):
-		sprite.play(clip)
-		sprite.loop_override = 1 if loop else 0
-		sprite.face(facing)
-	elif stand_in != "" and sprite.has_clip(stand_in):
-		sprite.play(stand_in)
-		sprite.paused = true
-		sprite.face(facing)
+func has_clip(clip: String) -> bool:
+	return anim_player.has_animation(clip)
 
-func _on_sprite_finished(clip: String) -> void:
-	sm.clip_finished(clip)
+## starts a clip from its first frame. Clips with arrows in the flow graph carry on by themselves. Unknown clips are skipped with a warning.
+func play_clip(clip: String) -> void:
+	if not has_clip(clip):
+		push_warning("Player: no animation '%s' (export first, or check the name in the Animation panel)" % clip)
+		return
+	sprite.face(facing)
+	_playback.start(clip)
+
+func current_clip() -> String:
+	return String(_playback.get_current_node()) if _playback != null else ""
+
+func _on_anim_finished(clip: StringName) -> void:
+	var c := String(clip)
+	# a clip that arrows into another non-looping clip is mid-chain: the tree carries on, the state hears about the END of the chain
+	if _chain.has(c):
+		var nxt: Dictionary = Data.anims.get("animations", {}).get(_chain[c], {})
+		if not bool(nxt.get("loop", false)): return
+	sm.clip_finished(c)
+
+func _on_clip_event(event_name: String) -> void:
+	clip_event.emit(event_name)
 
 func _on_transitioned(a: StringName, b: StringName) -> void:
 	state_changed.emit(a, b)

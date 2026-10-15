@@ -6,11 +6,9 @@ extends Node
 ## Inside code: `player` is the Player, `sm` the PlayerStateMachine. Override the _on_* functions, not enter()/exit().
 
 @export_group("Animation")
-## clip to play when the state starts (sheet name, e.g. "run", "kick", "base_idle"). Empty = play nothing. Clips not baked yet are skipped.
+## animation to play when the state starts: any name in the AnimationPlayer (a sprite sheet, e.g. "run", "kick", "base_idle"). Empty = play nothing.
+## Arrows in the flow graph (data/animation_flow.csv) can continue it by themselves.
 @export var clip := ""
-@export var loop := true
-## shown frozen on its first frame when `clip` is not baked yet
-@export var stand_in_clip := ""
 @export_group("Movement")
 ## true = the player stops moving when the state starts
 @export var stop_movement := true
@@ -25,7 +23,7 @@ var sm
 
 func enter(msg := {}) -> void:
 	if stop_movement: player.velocity = Vector2.ZERO
-	if clip != "": player.play_clip(clip, loop, stand_in_clip)
+	if clip != "": player.play_clip(clip)
 	_on_enter(msg)
 
 func exit() -> void:
