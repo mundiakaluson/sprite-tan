@@ -9,7 +9,7 @@ func _init(game: MatchGame) -> void:
 
 ## the order buttons that make sense for a player now
 func menu_for(f: Footballer) -> Array:
-	if g.carrier == f: return ["through", "run"]
+	if g.carrier == f: return ["pass", "through", "lob", "shoot", "run"]
 	return ["run", "press", "tackle"]
 
 ## a run: he goes there by himself (the carrier dribbles there), then the AI takes over again

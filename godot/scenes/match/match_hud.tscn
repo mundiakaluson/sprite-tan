@@ -95,44 +95,79 @@ text = ""
 text_scale = 2
 script = ExtResource("4")
 
-[node name="Orders" type="GridContainer" parent="Root/OrdersPanel"]
+[node name="Orders" type="Control" parent="Root/OrdersPanel"]
 offset_left = 6.0
-offset_top = 26.0
+offset_top = 24.0
 offset_right = 206.0
-offset_bottom = 146.0
+offset_bottom = 148.0
 unique_name_in_owner = true
 mouse_filter = 2
-columns = 2
-theme_override_constants/h_separation = 4
-theme_override_constants/v_separation = 4
+
+[node name="Order_pass" type="Control" parent="Root/OrdersPanel/Orders"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 98.0
+offset_bottom = 27.0
+text = "PASS"
+text_scale = 2
+disabled = true
+script = ExtResource("5")
 
 [node name="Order_through" type="Control" parent="Root/OrdersPanel/Orders"]
-custom_minimum_size = Vector2(98, 58)
-layout_mode = 2
+offset_left = 102.0
+offset_top = 0.0
+offset_right = 200.0
+offset_bottom = 27.0
 text = "THROUGH"
 text_scale = 2
 disabled = true
 script = ExtResource("5")
 
+[node name="Order_lob" type="Control" parent="Root/OrdersPanel/Orders"]
+offset_left = 0.0
+offset_top = 31.0
+offset_right = 98.0
+offset_bottom = 58.0
+text = "LOB"
+text_scale = 2
+disabled = true
+script = ExtResource("5")
+
+[node name="Order_shoot" type="Control" parent="Root/OrdersPanel/Orders"]
+offset_left = 102.0
+offset_top = 31.0
+offset_right = 200.0
+offset_bottom = 58.0
+text = "SHOOT"
+text_scale = 2
+disabled = true
+script = ExtResource("5")
+
 [node name="Order_run" type="Control" parent="Root/OrdersPanel/Orders"]
-custom_minimum_size = Vector2(98, 58)
-layout_mode = 2
+offset_left = 0.0
+offset_top = 62.0
+offset_right = 98.0
+offset_bottom = 89.0
 text = "RUN"
 text_scale = 2
 disabled = true
 script = ExtResource("5")
 
 [node name="Order_press" type="Control" parent="Root/OrdersPanel/Orders"]
-custom_minimum_size = Vector2(98, 58)
-layout_mode = 2
+offset_left = 102.0
+offset_top = 62.0
+offset_right = 200.0
+offset_bottom = 89.0
 text = "PRESS"
 text_scale = 2
 disabled = true
 script = ExtResource("5")
 
 [node name="Order_tackle" type="Control" parent="Root/OrdersPanel/Orders"]
-custom_minimum_size = Vector2(98, 58)
-layout_mode = 2
+offset_left = 0.0
+offset_top = 93.0
+offset_right = 98.0
+offset_bottom = 120.0
 text = "TACKLE"
 text_scale = 2
 disabled = true

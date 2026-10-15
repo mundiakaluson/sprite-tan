@@ -1,13 +1,13 @@
 class_name MatchHud
 extends CanvasLayer
 ## Match HUD. It is a real scene (scenes/match/match_hud.tscn, instanced in match.tscn) so you can open it, select any node and move / restyle it in the editor:
-## Score, Who (selected player), Orders (the four order buttons, named Order_<id>), CommandBox (the current command), Message (GOAL!, KICK OFF), Controls (help text),
+## Score, Who (selected player), Orders (the order buttons PASS, THROUGH, LOB, SHOOT, RUN, PRESS, TACKLE, named Order_<id>), CommandBox (the current command), Message (GOAL!, KICK OFF), Controls (help text),
 ## Hand (the skill cards are added here), TeamTitle / TeamGrid (the stance buttons are added here), Overlay (rings and aim lines over the pitch). This script only fills them in.
 ## The pitch view (View in match.tscn) ends where the Strip starts: keep View's bottom offset and Overlay's bottom offset equal to minus the Strip height (-160).
 ## Layout: every group is a panel with its parts inside (OrdersPanel > Who, Orders; HandPanel > Hand; TeamPanel > TeamTitle, TeamGrid, TeamNote; CommandPanel > title, note). Move or resize any node in the 2D view.
 ## No pop-ups: orders are buttons in the strip. Cards are the real SkillCard faces; the number on a card is its cooldown in seconds.
 
-signal menu_chosen(id: String)          ## an order button was pressed ("through", "run", "press", "tackle")
+signal menu_chosen(id: String)          ## an order button was pressed ("pass", "through", "lob", "shoot", "run", "press", "tackle")
 signal card_pressed(index: int)         ## a card in the hand was clicked
 signal team_command(id: String)         ## a team command button was pressed
 
@@ -29,7 +29,7 @@ const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), 
 @onready var _cmd_title: PixelLabel = %CommandTitle
 @onready var _hint: PixelLabel = %CommandNote
 @onready var _overlay: HudOverlay = %Overlay
-@onready var _orders: Container = %Orders
+@onready var _orders: Control = %Orders
 
 var _hint_base := ""
 var _team_accent := PixelUi.STEEL

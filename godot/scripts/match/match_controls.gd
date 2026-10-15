@@ -297,7 +297,7 @@ func _on_menu(id: String) -> void:
 	else:
 		order = id
 		mode = Mode.AIMING
-		game.command.show(id, id.to_upper(), selected, null, "click a team mate or a spot" if id == "through" else "click where to run")
+		game.command.show(id, id.to_upper(), selected, null, "click where to run" if id == "run" else ("click where to shoot" if id == "shoot" else "click a team mate or a spot"))
 
 func _confirm_aim(p: Vector2) -> void:
 	var mate := _pick(p)
@@ -305,6 +305,8 @@ func _confirm_aim(p: Vector2) -> void:
 	if mate == null and spot == Vector2.INF: return
 	if order == "run":
 		if spot != Vector2.INF: game.orders.run(selected, spot)
+	elif order == "shoot":
+		if spot != Vector2.INF: game.orders.shoot_at(selected, spot)
 	else:
 		game.orders.pass_to(selected, order, mate if mate != selected else null, spot)
 	clear()
