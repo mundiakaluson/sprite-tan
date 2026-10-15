@@ -37,3 +37,4 @@ Game,"Players kick / control the ball using ball power + touch",todo,needs the m
 Tool,"Kick styles + ball spin preview (trivela, finesse, knuckle...)",done,"data/kick_styles.csv, Ball studio tab"
 Game,"Godot ball sprite from real 3D spin (shader) + Ball.kick styles",doing,untested in Godot
 Game,"Playable match scene: 11v11, ball, AI, goals, throw-ins / corners, clock, HUD, hand of 8 cards (shot / pass / dribble / defend)",doing,"scenes/match/match.tscn; untested in Godot; engagement slow-motion, support cards, keeper cards, Titans not built"
+Game,"Match controls: mouse / controller orders (menu, drag runs) and ball states (pass, through, lob, shot)",doing,"match_controls.gd, scripts/ball/states, data/ball_actions.csv; untested in Godot"

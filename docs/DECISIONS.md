@@ -134,3 +134,8 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - Real-time for now (the 5 minute clock with engagement freezes comes later): 90 game minutes in `match_minutes` real minutes. You control the carrier, otherwise the player nearest the ball; WASD move, J pass / tackle, L lob, K shoot, Shift sprint, Q switch, 1-8 cards.
 - Cards in this slice: SHOT and PASS cards kick with a kick style picked from the card's curve / arc (success % decides clean strike or miscue), DRIBBLE cards give a short tackle shield (fail = ball lost), DEFEND cards are tackles near the carrier. Cooldown seconds = cd x cooldown_scale. Other cats say "not in this build".
 - Placeholder AI: formation slots + ball-side shift, one chaser per team, carrier dribbles / shoots inside ~24 m / passes under pressure, keeper tracks the ball and catches or parries by HAN / REF. Tune in MatchGame exports; move numbers into data/ once they settle.
+
+## Match controls and ball states (decided)
+- No keyboard walking: the human is a manager. Mouse: click a player of yours for his order menu (with the ball Pass / Through / Lob / Shoot; without Run / Press / Tackle), then click a team mate or a spot; or drag from a player to a spot to make a run (the AI runs it, then plays on). Controller: the stick moves the pointer, Cross = click, Triangle held = press and hold (drag), Circle = cancel. Same code path as the mouse.
+- Ball states (nodes, editable in the inspector): Free, Held, Pass, Through, Lob, Shot. Kick numbers come from data/ball_actions.csv (style, speed rule, lead, stat). A through ball aims ahead of the receiver and sends him running.
+- Next steps agreed: HUD look, then one AI file per role with switch cases per formation, then player / ball foot collisions.

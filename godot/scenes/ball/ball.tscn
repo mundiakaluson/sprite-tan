@@ -1,6 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ball/ball.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/ball/states/ball_state_machine.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/ball/states/ball_state.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/ball/states/ball_kick.gd" id="5"]
 [ext_resource type="AnimationLibrary" path="res://animations/ball/ball_library.tres" id="2"]
 
 [node name="Ball" type="Node2D"]
@@ -10,3 +13,35 @@ script = ExtResource("1")
 libraries = {
 &"": ExtResource("2")
 }
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("3")
+initial_state = NodePath("Free")
+
+[node name="Free" type="Node" parent="StateMachine"]
+script = ExtResource("4")
+description = "Loose on the pitch: anyone close and fast enough can take it."
+
+[node name="Held" type="Node" parent="StateMachine"]
+script = ExtResource("4")
+description = "At a player's feet; the match places it every frame."
+
+[node name="Pass" type="Node" parent="StateMachine"]
+script = ExtResource("5")
+action_id = "pass"
+go_to_when_stopped = &"Free"
+
+[node name="Through" type="Node" parent="StateMachine"]
+script = ExtResource("5")
+action_id = "through"
+go_to_when_stopped = &"Free"
+
+[node name="Lob" type="Node" parent="StateMachine"]
+script = ExtResource("5")
+action_id = "lob"
+go_to_when_stopped = &"Free"
+
+[node name="Shot" type="Node" parent="StateMachine"]
+script = ExtResource("5")
+action_id = "shot"
+go_to_when_stopped = &"Free"

@@ -7,6 +7,7 @@ extends Node2D
 ## Gameplay hooks (from the ball row): power() scales kicks, touch() scales how easily a player controls it. Everything else (swerve, knuckle, bounce, grip) acts by itself.
 ##   var b := Ball.create("B02"); stadium.add_ball(b); b.launch(Vector3(0, 0.2, 0), Vector3(1, 0.1, 0), 28.0)
 signal bounced(speed: float)
+signal state_changed(from_state: StringName, to_state: StringName)
 
 const SCENE := "res://scenes/ball/ball.tscn"
 const CHASE_VIEW := Basis(Vector3(0, 0, -1), Vector3(0, 1, 0), Vector3(1, 0, 0))   # world x -> view -z, y -> y, z -> x
@@ -30,6 +31,10 @@ const SPRITE_DIAMETER := 14.0       # pixels of ball inside the 16 px cell
 var sprite: Sprite2D
 var shadow: Sprite2D
 @onready var anim_player: AnimationPlayer = $AnimationPlayer
+## Free / Held / Pass / Through / Lob / Shot (child nodes, scenes/ball/ball.tscn)
+@onready var sm: BallStateMachine = get_node_or_null("StateMachine") as BallStateMachine
+## the kick action of the last kick ("pass", "through", "lob", "shot"), kept while the ball is still flying
+var action := ""
 
 var phys := BallPhysics.new()
 var row := {}
@@ -80,6 +85,36 @@ func world_pos() -> Vector3: return phys.pos
 func launch(from: Vector3, dir: Vector3, speed: float, spin := Vector3.ZERO, seed_v := 1.0) -> void:
 	phys.launch(from, dir, speed, spin, seed_v); live = true
 
+## The ball goes to a player's feet (state Held). The caller keeps placing it.
+func hold() -> void:
+	live = false
+	action = ""
+	if sm != null: sm.go(&"Held")
+
+## The ball is loose (state Free).
+func set_free() -> void:
+	if sm != null: sm.go(&"Free")
+
+## Kick it as a pass / through / lob / shot (the kick states, numbers in data/ball_actions.csv). target = metres (x along, z across), stats = the kicker's player row,
+## target_vel = how the receiver moves (the state aims ahead of him by its lead). `over` may replace "style", "speed", "noise" (skill cards do that). Returns the plan used.
+func play_action(action_id: String, target: Vector2, stats := {}, target_vel := Vector2.ZERO, over := {}) -> Dictionary:
+	var st: BallKick = sm.kick_state(action_id) if sm != null else null
+	if st == null:
+		push_warning("Ball.play_action: no kick state for '%s'" % action_id)
+		return {}
+	var plan := st.plan(phys.pos, target, stats, target_vel)
+	for k in over: plan[k] = over[k]
+	var tgt: Vector2 = plan["target"]
+	var from := phys.pos
+	var noise: float = plan["noise"]
+	var aim := Vector3(tgt.x - from.x, 0.0, tgt.y - from.z).rotated(Vector3.UP, deg_to_rad(randf_range(-noise, noise)))
+	var s := Data.row("kick_styles", str(plan["style"]))
+	var base := _f(s, "speed", 25.0) * _f(s, "power", 1.0)
+	kick(from, aim, str(plan["style"]), float(plan["speed"]) / maxf(base, 0.1))
+	action = action_id
+	sm.go(st.name)
+	return plan
+
 func stop() -> void:
 	phys.vel = Vector3.ZERO; phys.spin = Vector3.ZERO; live = false
 
@@ -90,7 +125,11 @@ func _process(dt: float) -> void:
 		_refresh_orient()
 
 func _physics_process(dt: float) -> void:
-	if Engine.is_editor_hint() or not live: return
+	if Engine.is_editor_hint(): return
+	if live: _simulate(dt)
+	if sm != null: sm.update(dt)
+
+func _simulate(dt: float) -> void:
 	var n := maxi(1, int(ceil(dt * 120.0)))
 	var sub := dt / n
 	for _i in n:

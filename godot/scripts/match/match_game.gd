@@ -3,8 +3,8 @@ extends Node
 ## The match. Two teams of 11 (Team / Footballer) play on the 3D stadium with the real ball. The players are plain 2D sprites projected by the Stadium,
 ## all the playing is done here in metres (x along the pitch, z across; home attacks towards +x, the right of the screen).
 ##
-## You control one home player (the one with the ball, otherwise the one closest to it): Input Map actions m_left/right/up/down, m_sprint, m_pass, m_lob, m_shoot, m_switch,
-## card_1 .. card_8 (the hand along the bottom), m_restart after full time. Everyone else plays by themselves.
+## You do not steer a player: you give orders with the mouse or controller (MatchControls): click a player for his menu (Pass, Through, Lob, Shoot, Run, Press, Tackle),
+## drag from a player to make a run, click a skill card to play it with the selected player. Everyone plays by himself between orders. m_restart (R / Start) after full time.
 ## Placeholder AI and numbers: tune the exports below, or move them into data/ when they settle.
 
 signal goal_scored(team: Team, scorer: Footballer)
@@ -30,6 +30,7 @@ enum Phase { KICKOFF, PLAY, GOAL, FULLTIME }
 
 @onready var stadium: Stadium = $Stadium
 @onready var hud: MatchHud = $Hud
+@onready var controls: MatchControls = $Controls
 
 var rng := RandomNumberGenerator.new()
 var home: Team
@@ -39,7 +40,7 @@ var all: Array[Footballer] = []
 var ball: Ball
 var carrier: Footballer
 var last_touch: Footballer
-var controlled: Footballer
+var selected: Footballer          ## the player the human is giving orders to (set by MatchControls)
 var phase := Phase.KICKOFF
 var phase_t := 0.0
 var clock := 0.0
@@ -69,6 +70,8 @@ func _ready() -> void:
 	stadium.add_ball(ball)
 	ball.preview_speed = 1.0
 	_deal_hand()
+	controls.setup(self, hud)
+	hud.card_pressed.connect(_play_card)
 	_next_kick = home
 	_kickoff(home)
 	hud.set_hand(hand)
@@ -90,7 +93,7 @@ func _kickoff(kicking: Team) -> void:
 			f.pos = f.slot
 			if f.pos.x * t.dir > -2.0: f.pos.x = -2.0 * t.dir
 			f.vel = Vector2.ZERO; f.want = Vector2.ZERO; f.lock = 0.0; f.no_touch = 0.0; f.shield = 0.0
-			f.pending = Callable(); f.face = Vector2(t.dir, 0.0); f.think = rng.randf_range(0.2, 0.8)
+			f.pending = Callable(); f.order = {}; f.face = Vector2(t.dir, 0.0); f.think = rng.randf_range(0.2, 0.8)
 	var taker := kicking.players[0]
 	var best := 1e9
 	for f in kicking.players:
@@ -112,8 +115,7 @@ func _take(f: Footballer) -> void:
 	last_touch = f
 	f.hold = 0.0
 	f.think = rng.randf_range(0.25, 0.5)
-	ball.live = false
-	if f.team.human and not f.is_keeper(): controlled = f
+	ball.hold()
 
 func _goal(scorer_team: Team) -> void:
 	scorer_team.score += 1
@@ -170,7 +172,6 @@ func _physics_process(dt: float) -> void:
 			hud.message("FULL TIME  %d - %d     R = play again" % [home.score, away.score], 999.0)
 			full_time.emit(home.score, away.score)
 		else:
-			_human_input(dt)
 			for f in all: _ai(f, dt)
 	elif phase == Phase.KICKOFF or phase == Phase.GOAL:
 		phase_t -= dt
@@ -190,39 +191,13 @@ func _physics_process(dt: float) -> void:
 
 func _update_hud() -> void:
 	hud.set_score(home.score, away.score, int(clock / 60.0))
-	hud.set_controlled(controlled.display_name() if controlled != null else "")
+	hud.set_controlled(selected.display_name() if selected != null else "")
 	hud.set_cooldowns(cooldown)
 
 func _ball2() -> Vector2:
 	return Vector2(ball.phys.pos.x, ball.phys.pos.z)
 
 # ---------------------------------------------------------------- the human
-func _human_input(_dt: float) -> void:
-	var dirv := Input.get_vector("m_left", "m_right", "m_up", "m_down")
-	if carrier != null and carrier.team == home and not carrier.is_keeper():
-		controlled = carrier
-	else:
-		var near := _nearest_to_ball(home, true)
-		if controlled == null or near.pos.distance_to(_ball2()) + 2.0 < controlled.pos.distance_to(_ball2()):
-			controlled = near
-	if Input.is_action_just_pressed("m_switch"):
-		var nxt := _nearest_to_ball(home, true, controlled)
-		if nxt != null: controlled = nxt
-	var c := controlled
-	if c == null: return
-	if c.lock <= 0.0 and phase == Phase.PLAY:
-		var sprint := 1.18 if Input.is_action_pressed("m_sprint") else 0.86
-		c.want = dirv * c.top_speed() * sprint
-	if Input.is_action_just_pressed("m_pass"):
-		if carrier == c: _do_pass(c, dirv, false)
-		else: _try_tackle(c)
-	elif Input.is_action_just_pressed("m_lob") and carrier == c:
-		_do_pass(c, dirv, true)
-	elif Input.is_action_just_pressed("m_shoot") and carrier == c:
-		_do_shot(c, dirv.y)
-	for i in 8:
-		if Input.is_action_just_pressed("card_%d" % (i + 1)): _play_card(i)
-
 func _nearest_to_ball(t: Team, outfield_only: bool, skip: Footballer = null) -> Footballer:
 	var best: Footballer = null
 	var bd := 1e9
@@ -239,8 +214,10 @@ func _ai_speed(f: Footballer) -> float:
 	return 1.0 if f.team.human else lerpf(0.8, 1.0, ai_level)
 
 func _ai(f: Footballer, dt: float) -> void:
-	if f == controlled: return
 	if f.lock > 0.0: return
+	if not f.order.is_empty() and not f.is_keeper():
+		_follow_order(f, dt)
+		return
 	if f.is_keeper():
 		_ai_keeper(f, dt)
 		return
@@ -347,43 +324,27 @@ func _best_target(f: Footballer, aim: Vector2) -> Footballer:
 
 func _do_pass(f: Footballer, aim: Vector2, lob: bool, target: Footballer = null) -> void:
 	var tgt := target if target != null else _best_target(f, aim)
-	var to: Vector2
-	if tgt == null:
-		to = f.pos + (aim if aim.length() > 0.1 else f.face) * 18.0
-	else:
-		to = tgt.pos + tgt.vel * 0.5
-	var dist := f.pos.distance_to(to)
-	var spd := clampf(dist * 0.85 + 6.0, 9.0, 26.0)
-	var style := "K07"
-	if lob:
-		style = "K05"
-		spd = clampf(sqrt(dist * 10.3), 8.0, 30.0)
-	var noise := (100.0 - f.stat("PAS", 60)) * 0.06
-	_act(f, "kick", 0.35, func(): _release(f, style, to, spd, noise))
+	var action := "lob" if lob else "pass"
+	if tgt == null: _kick_action(f, action, f.pos + (aim if aim.length() > 0.1 else f.face) * 18.0)
+	else: _kick_action(f, action, tgt.pos, tgt.vel)
 
 func _do_shot(f: Footballer, aim_z: float) -> void:
-	var gz := clampf(aim_z * 3.0, -3.1, 3.1)
-	var to := Vector2(HALF_L * f.team.dir + f.team.dir * 1.5, gz)
-	var style := "K01"
+	var to := Vector2(HALF_L * f.team.dir + f.team.dir * 1.5, clampf(aim_z * 3.0, -3.1, 3.1))
+	var over := {}
 	var r := rng.randf()
-	var dist := f.pos.distance_to(to)
-	if dist > 15.0 and r < 0.25: style = "K02"
-	elif r > 0.92: style = "K06"
-	var spd := 24.0 + f.stat("SHO", 60) * 0.11
-	var noise := (100.0 - f.stat("SHO", 60)) * 0.11
-	_act(f, "kick", 0.35, func(): _release(f, style, to, spd, noise))
+	if f.pos.distance_to(to) > 15.0 and r < 0.25: over["style"] = "K02"
+	elif r > 0.92: over["style"] = "K06"
+	_kick_action(f, "shot", to, Vector2.ZERO, over)
 
-## kick the ball now. spd is metres per second before the ball's own power factor
-func _release(f: Footballer, style_id: String, target: Vector2, spd: float, noise_deg: float) -> void:
+## The kick animation, then the ball state does the kick (Ball.play_action: Pass / Through / Lob / Shot, numbers in data/ball_actions.csv). `over` may replace style / speed / noise.
+func _kick_action(f: Footballer, action: String, to: Vector2, to_vel := Vector2.ZERO, over := {}) -> void:
+	_act(f, "kick", 0.35, func(): _launch(f, action, to, to_vel, over))
+
+func _launch(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: Dictionary) -> void:
 	if carrier != f: return
-	var s := Data.row("kick_styles", style_id)
-	if s.is_empty(): return
-	var from3 := ball.phys.pos
-	var aim := Vector3(target.x - from3.x, 0.0, target.y - from3.z).rotated(Vector3.UP, deg_to_rad(rng.randf_range(-noise_deg, noise_deg)))
-	var base := Data.num(s.get("speed"), 25.0) * Data.num(s.get("power"), 1.0)
 	carrier = null
 	ball.preview_spin = Vector3.ZERO
-	ball.kick(from3, aim, style_id, spd / maxf(base, 0.1))
+	ball.play_action(action, to, f.row, to_vel, over)
 	f.no_touch = 0.35
 	last_touch = f
 
@@ -428,12 +389,80 @@ func _auto_tackles(dt: float) -> void:
 	if carrier == null or carrier.shield > 0.0: return
 	var other := away if carrier.team == home else home
 	for o in other.players:
-		if o.no_touch > 0.0 or o.lock > 0.0 or o == controlled: continue
+		if o.no_touch > 0.0 or o.lock > 0.0: continue
 		if o.pos.distance_to(carrier.pos) > 1.2: continue
 		var rate := 1.3 * (o.stat("DEF", 60) + 30.0) / (carrier.stat("DRI", 60) + 30.0) * lerpf(0.6, 1.0, ai_level)
 		if rng.randf() < rate * dt:
 			_steal(o, carrier)
 			return
+
+# ---------------------------------------------------------------- orders (from MatchControls)
+## the buttons of the order menu for a player
+func menu_for(f: Footballer) -> Array:
+	if carrier == f: return ["pass", "through", "lob", "shoot"]
+	return ["run", "press", "tackle"]
+
+## a run: he goes there by himself (the carrier dribbles there), then the AI takes over again
+func order_run(f: Footballer, spot: Vector2) -> void:
+	spot.x = clampf(spot.x, -HALF_L + 1.0, HALF_L - 1.0)
+	spot.y = clampf(spot.y, -HALF_W + 1.0, HALF_W - 1.0)
+	f.order = {"kind": "run", "target": spot, "t": 9.0}
+	hud.toast("%s: run" % f.display_name())
+
+## chase the ball (or its carrier) for a few seconds
+func order_press(f: Footballer) -> void:
+	f.order = {"kind": "press", "t": 5.0}
+	hud.toast("%s: press" % f.display_name())
+
+func order_tackle(f: Footballer) -> void:
+	if carrier == null or carrier.team == f.team:
+		hud.toast("Nobody to tackle")
+		return
+	if f.pos.distance_to(carrier.pos) > 3.0:
+		f.order = {"kind": "press", "t": 3.0}
+		hud.toast("Too far: closing down")
+		return
+	_try_tackle(f)
+
+func order_shoot(f: Footballer) -> void:
+	if carrier != f: return
+	_do_shot(f, rng.randf_range(-0.7, 0.7))
+
+## kind = "pass" / "through" / "lob". To a team mate (the ball leads him; a through ball also sends him running) or to a spot.
+func order_pass(f: Footballer, kind: String, mate: Footballer, spot: Vector2) -> void:
+	if carrier != f:
+		hud.toast("%s has not got the ball" % f.display_name())
+		return
+	var action := kind if kind in ["pass", "through", "lob"] else "pass"
+	if mate != null:
+		var vel := Vector2.ZERO
+		if action == "through":
+			vel = Vector2(f.team.dir * 7.0, 0.0)
+			order_run(mate, mate.pos + vel * 1.5)
+		_kick_action(f, action, mate.pos, mate.vel if vel == Vector2.ZERO else vel)
+	elif spot != Vector2.INF:
+		_kick_action(f, action, spot)
+
+func _follow_order(f: Footballer, dt: float) -> void:
+	var o := f.order
+	o["t"] = float(o.get("t", 5.0)) - dt
+	if o["t"] <= 0.0:
+		f.order = {}
+		return
+	var kind := String(o["kind"])
+	if kind == "run":
+		var to: Vector2 = o["target"] - f.pos
+		if to.length() < 1.2:
+			f.order = {}
+			return
+		f.want = to.normalized() * f.top_speed() * (0.95 if carrier == f else 1.1)
+	elif kind == "press":
+		if carrier != null and carrier.team == f.team and carrier != f:
+			f.order = {}
+			return
+		var tgt := carrier.pos if carrier != null and carrier != f else _ball2()
+		var to2 := tgt - f.pos
+		f.want = to2.limit_length(f.top_speed() * 1.1) if to2.length() > 0.8 else Vector2.ZERO
 
 # ---------------------------------------------------------------- cards
 func _card_clip(c: Dictionary, fallback: String) -> String:
@@ -441,20 +470,23 @@ func _card_clip(c: Dictionary, fallback: String) -> String:
 	for ch in String(c["name"]).to_lower():
 		s += ch if (ch >= "a" and ch <= "z") or (ch >= "0" and ch <= "9") else "_"
 	var clip_name := "%s_%s" % [String(c["id"]).to_lower(), s]
-	if controlled != null and controlled.node.has_clip(clip_name): return clip_name
+	if selected != null and selected.node.has_clip(clip_name): return clip_name
 	return fallback
 
 func _play_card(i: int) -> void:
-	if i >= hand.size() or controlled == null or phase != Phase.PLAY: return
+	if i >= hand.size() or phase != Phase.PLAY: return
+	if selected == null:
+		hud.toast("Pick a player first")
+		return
 	var c: Dictionary = hand[i]
 	var id := String(c["id"])
 	if float(cooldown.get(id, 0.0)) > 0.0:
 		hud.toast("%s: cooling down" % c["name"])
 		return
-	var f := controlled
+	var f := selected
 	var ok := false
 	var cat := String(c["cat"])
-	var dirv := Input.get_vector("m_left", "m_right", "m_up", "m_down")
+	var dirv := Vector2.ZERO
 	if cat == "SHOT" or cat == "PASS" or cat == "DRIBBLE":
 		if carrier != f:
 			hud.toast("%s needs the ball" % c["name"])
@@ -486,7 +518,7 @@ func _card_shot(f: Footballer, c: Dictionary, dirv: Vector2) -> bool:
 	if not good: spd *= 0.75
 	var to := Vector2(HALF_L * f.team.dir + f.team.dir * 1.5, clampf(dirv.y * 3.0, -3.1, 3.1))
 	hud.toast(String(c["name"]) if good else "%s: miscued" % c["name"])
-	_act(f, _card_clip(c, "kick"), 0.4, func(): _release(f, style, to, spd, noise))
+	_act(f, _card_clip(c, "kick"), 0.4, func(): _launch(f, "shot", to, Vector2.ZERO, {"style": style, "speed": spd, "noise": noise}))
 	return true
 
 func _card_pass(f: Footballer, c: Dictionary, dirv: Vector2) -> bool:
@@ -504,7 +536,7 @@ func _card_pass(f: Footballer, c: Dictionary, dirv: Vector2) -> bool:
 	var good := _roll(c, (f.stat("PAS", 60) - 60) * 0.3)
 	var noise := 1.0 if good else 10.0
 	hud.toast(String(c["name"]) if good else "%s: scuffed" % c["name"])
-	_act(f, _card_clip(c, "kick"), 0.4, func(): _release(f, style, to, spd, noise))
+	_act(f, _card_clip(c, "kick"), 0.4, func(): _launch(f, "lob" if style == "K05" else "pass", to, Vector2.ZERO, {"style": style, "speed": spd, "noise": noise}))
 	return true
 
 func _card_dribble(f: Footballer, c: Dictionary) -> bool:
@@ -521,6 +553,7 @@ func _card_dribble(f: Footballer, c: Dictionary) -> bool:
 		carrier = null
 		f.no_touch = 0.7
 		ball.launch(ball.phys.pos, Vector3(dir.x, 0.0, dir.y), 4.0)
+		ball.set_free()
 	return true
 
 func _card_defend(f: Footballer, c: Dictionary) -> bool:

@@ -68,6 +68,15 @@ func world_pos(p: Vector2) -> Vector3:
 func pitch_pos(w: Vector3) -> Vector2:
 	return Vector2((w.z / W + 0.5) * 100.0, (w.x / L + 0.5) * 100.0)
 
+## The point on the grass (world metres, y = 0) under a screen position, for mouse / cursor picking. Vector3.INF when the ray misses the ground.
+func ground_at(screen: Vector2) -> Vector3:
+	var o := camera.project_ray_origin(screen)
+	var n := camera.project_ray_normal(screen)
+	if absf(n.y) < 0.0001: return Vector3.INF
+	var t := -o.y / n.y
+	if t < 0.0: return Vector3.INF
+	return o + n * t
+
 # ---- actors (2D players in the 3D scene)
 func add_actor(n: Node2D, pitch: Vector2) -> void:
 	if n.get_parent() != actors:
