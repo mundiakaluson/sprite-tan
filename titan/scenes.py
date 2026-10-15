@@ -93,7 +93,7 @@ def tt06(c):
         c.sd.line([(cx, cy), (cx + math.sin(sweep * 0.08) * R * 0.5, cy - math.cos(sweep * 0.08) * R * 0.5)], fill=(255, 255, 255, int(200 * e)), width=4)
         fx.ring(c, me0, 12, (255, 255, 255), 230 * e)
     # the player does not run: the sprite holds one stiff pose and DASHES (Akuma / Dio) in short bursts, leaving afterimages
-    WP = [P(60 + 0.9 * T0, 120), P(118, 110), P(152, 127), P(184, 114), P(214, 123)]
+    WP = [P(60 + 0.9 * T0, 120), P(118, 120), P(152, 120), P(184, 120), P(214, 120)]
     DASH = [(36, 43), (50, 57), (64, 71), (78, 85)]
     def at(f):
         if f < T0: return P(60 + 0.9 * f, 120)
@@ -109,16 +109,15 @@ def tt06(c):
         seg = next((n for n, (a0, a1) in enumerate(DASH) if a0 < i <= a1 + 6), None)
         face = unit(WP[min(seg + 1, 4)] - WP[seg]) if seg is not None else P(1, 0)
         fdi = dir_index(*face)
-        if dashing(i):
-            for k in range(1, 8):                                                                                  # afterimages strung out behind
-                q = at(i - k)
-                if np.linalg.norm(q - pos) > 1.5:
-                    c.spr('run', 3, face, HOME, q, tint_rgb=(150, 230, 255) if k % 2 else (255, 255, 255), tint_a=int(190 / k), alpha=int(200 / k))
-            pts = [at(i - k) + P(0, -9) for k in range(0, 9)]
-            fx.trail(c, pts, (200, 240, 255), a=200, width=3)
-            fx.trail(c, [q + P(0, -4) for q in pts], (120, 210, 255), a=150, width=2)
-        elif seg is not None and i <= DASH[seg][1] + 3:                                                              # landing puff
-            fx.shock(c, pos, i - DASH[seg][1], (230, 245, 255), 4, 16, 2)
+        keep = 1.0                                                                                                 # the trail stays until time resumes
+        done = [f for f in range(T0, i) if dashing(f) and f % 2 == 0]
+        for n, f in enumerate(done):
+            q = at(f)
+            if np.linalg.norm(q - pos) > 1.5: c.spr('run', 3, face, HOME, q, tint_rgb=(150, 230, 255) if n % 2 else (255, 255, 255), tint_a=170, alpha=int(110 + 70 * n / max(1, len(done))))
+        if done:
+            pts = [at(f) + P(0, -9) for f in range(done[0], i + 1)]
+            fx.trail(c, pts, (200, 240, 255), a=170, width=2, fade=False)
+        if not dashing(i) and seg is not None and i <= DASH[seg][1] + 3: fx.shock(c, pos, i - DASH[seg][1], (230, 245, 255), 4, 16, 2)
         c.spr('run', 3, face, HOME, pos)                                                                           # the frozen pose itself
     else: pos = at(87) + P((i - 88) * 1.0, 0); runner(c, pos, P(1, 0), i=i)
     c.ball(bpos if frozen and i < 88 else (bpos if i < T0 else lerp(bpos, at(87) + P(16, 3), smooth((i - 88) / 12))), bz if i < 88 else max(2, bz * (1 - (i - 88) / 12)), glow=(220, 240, 255) if frozen else None)
