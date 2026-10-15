@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AiProfile" load_steps=10 format=3]
+[gd_resource type="Resource" script_class="AiProfile" load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/ai_profile.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ai/roles/ai_gk.gd" id="2"]
@@ -9,6 +9,13 @@
 [ext_resource type="Script" path="res://scripts/ai/roles/ai_cam.gd" id="7"]
 [ext_resource type="Script" path="res://scripts/ai/roles/ai_winger.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/ai/roles/ai_st.gd" id="9"]
+
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_442.gd" id="10"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_formation.gd" id="11"]
+
+[sub_resource type="Resource" id="f442"]
+script = ExtResource("10")
+formation_ids = PackedStringArray("F01")
 
 [sub_resource type="Resource" id="gk"]
 script = ExtResource("2")
@@ -44,3 +51,4 @@ central_midfielder = SubResource("cm")
 attacking_midfielder = SubResource("cam")
 winger = SubResource("wing")
 striker = SubResource("st")
+formations = Array[ExtResource("11")]([SubResource("f442")])

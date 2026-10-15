@@ -15,6 +15,7 @@ func _init(game: MatchGame) -> void:
 	for t in g.teams:
 		var c := AiContext.new()
 		c.setup(g, t)
+		c.profile = profiles[t]
 		ctx[t] = c
 
 func update(dt: float) -> void:

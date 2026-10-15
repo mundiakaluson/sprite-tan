@@ -14,8 +14,22 @@ extends Resource
 @export var winger: AiWinger
 @export var striker: AiSt
 
+
 ## fills every empty slot with that role's defaults (so a half-made profile still plays)
+@export_group("Formations")
+## team play per formation (4-4-2 here: banks, press triggers, who drops, overlaps). A role follows its formation's file first, then its own AI.
+@export var formations: Array[AiFormation] = []
+
+func formation_for(id: String) -> AiFormation:
+	for x in formations:
+		if x != null and id in x.formation_ids: return x
+	return null
+
 func fill() -> AiProfile:
+	if formations.is_empty():
+		var x := Ai442.new()
+		x.formation_ids = PackedStringArray(["F01"])
+		formations.append(x)
 	if goalkeeper == null: goalkeeper = AiGk.new()
 	if centre_back == null: centre_back = AiCb.new()
 	if fullback == null: fullback = AiFullback.new()

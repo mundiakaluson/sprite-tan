@@ -65,6 +65,10 @@ extends Resource
 @export var range_bonus := 0.0
 
 func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
+	var fx := c.profile.formation_for(c.formation_id) if c.profile != null else null
+	if fx != null:
+		var o := fx.think(f, c, self, dt)
+		if o != null: return o
 	if c.game.pass_target == f and c.carrier == null: return _receive(f, c)
 	if c.carrier == f: return _with_ball(f, c, dt)
 	if c.has_ball: return _support(f, c)

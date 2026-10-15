@@ -11,6 +11,7 @@ static var _styles := {}
 var game: MatchGame
 var s: MatchSettings
 var team: Team
+var profile: AiProfile          ## this team's role + formation tuning
 var other: Team
 var dir := 1.0
 var phase := 0                  ## AiBrain.Phase
