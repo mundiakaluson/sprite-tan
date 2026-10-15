@@ -20,7 +20,7 @@ import os, sys, json, shutil, time, csv, subprocess
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 GODOT = os.path.join(ROOT, 'godot')
-for p in ('tool', 'cards', 'sprites', 'packs', 'titan'):
+for p in ('tool', 'cards', 'sprites', 'packs', 'titan', 'stadiums'):
     sys.path.insert(0, os.path.join(ROOT, p))
 
 UV = os.path.join(ROOT, 'sprites', 'out_uv')
@@ -185,6 +185,12 @@ def step_packs(c):
     c.counts['pack wrappers'] = len(packs); c.log(f'drew {len(packs)} pack wrappers and {len(PL.RARS)} card backs')
 
 
+def step_stadiums(c):
+    import stadiumlib as SL
+    n = SL.render_all(c.path('assets', 'pitches'), log=c.log, tick=c.tick); c.counts['stadiums'] = n
+    c.log(f'drew {n} stadiums (pitch, stands, goals, flag)')
+
+
 def step_manifest(c):
     try: commit = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=ROOT, capture_output=True, text=True, timeout=10).stdout.strip()
     except Exception: commit = ''
@@ -193,7 +199,7 @@ def step_manifest(c):
 
 
 STEPS = [('data', 'CSV data', step_data), ('sprites', 'Player sprite sheets + skins', step_sprites), ('hair', 'Hair layers', step_hair), ('looks', 'Player look atlases', step_looks),
-         ('animations', 'Animation library + flow graph', step_animations), ('cards', 'Skill cards', step_cards), ('players', 'Player cards', step_players), ('packs', 'Pack wrappers + card backs', step_packs), ('manifest', 'Manifest', step_manifest)]
+         ('animations', 'Animation library + flow graph', step_animations), ('cards', 'Skill cards', step_cards), ('players', 'Player cards', step_players), ('packs', 'Pack wrappers + card backs', step_packs), ('stadiums', 'Pitches + stadiums', step_stadiums), ('manifest', 'Manifest', step_manifest)]
 
 
 def run(log=print, progress=None, only=None, out=None):

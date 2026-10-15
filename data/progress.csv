@@ -27,3 +27,4 @@ Packs,"Pack system: definitions + pools + schedule + pity, Packs tab, wrapper ar
 Tool,Global EXPORT TO GAME button + tool/export_game.py,done,writes godot/data and godot/assets
 Game,"Godot: player scene with AnimationPlayer (all sheets) + AnimationTree flow graph from animation_flow.csv",doing,untested in Godot
 Game,"Godot: card scenes with animations (done); port pack opening, Titan scenes and effects to Godot animations",doing,cards done; opening + titan + effects todo
+Game,"Stadiums + pitches + goals (3 to start)",done,"data/stadiums.csv, stadiums/stadiumlib.py, godot stadium scene"

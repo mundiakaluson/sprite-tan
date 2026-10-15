@@ -1,3 +1,4 @@
+@tool
 class_name Player
 extends Node2D
 ## One player on the pitch. Instance scenes/players/player.tscn (Player.create() does it), then setup(row).
@@ -21,7 +22,16 @@ const SPEED_PER_PAC := 0.6
 var row := {}
 var velocity := Vector2.ZERO
 var move_target := Vector2.ZERO
-var facing := 16                # 0..31, 8 = screen right, 16 = toward the camera
+## 0..31, 8 = screen right, 16 = toward the camera. Drag it with the Player root selected to rotate the preview.
+@export_range(0, 31) var facing := 16:
+	set(v):
+		facing = posmod(v, 32)
+		if is_node_ready() and sprite != null: sprite.face(facing)
+## which player's look the preview shows (forwarded to the Sprite)
+@export var preview_player := "PL242":
+	set(v):
+		preview_player = v
+		if is_node_ready() and sprite != null and Engine.is_editor_hint(): sprite.player_id = v
 var _playback: AnimationNodeStateMachinePlayback
 var _chain := {}                # clip -> next clip, for arrows marked auto in animation_flow.csv
 
@@ -40,6 +50,9 @@ func setup(r: Dictionary) -> void:
 	if not anim_tree.animation_finished.is_connected(_on_anim_finished): anim_tree.animation_finished.connect(_on_anim_finished)
 	if not sm.transitioned.is_connected(_on_transitioned): sm.transitioned.connect(_on_transitioned)
 	sm.start()
+
+func _ready() -> void:
+	if Engine.is_editor_hint(): sprite.face(facing)
 
 # ---- orders (the AI and the player's cards call these)
 func send_event(ev: StringName, data := {}) -> void:

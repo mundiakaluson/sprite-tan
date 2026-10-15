@@ -117,6 +117,12 @@ def run():
             seen[r.get('from')] = 1
             if r.get('mode') not in ('auto',): add('error', 'animation_flow', r.get('from', ''), "mode must be 'auto'")
     except (OSError, KeyError): pass
+    try:
+        sd = os.path.join(tables.ROOT, 'stadiums')
+        if sd not in sys.path: sys.path.insert(0, sd)
+        import stadiumlib as SL
+        for sev, rid, msg in SL.check(tables.table('stadiums').rows): add(sev, 'stadiums', rid, msg)
+    except (OSError, KeyError, ImportError): pass
     import re
     for r in tables.table('kits').rows:
         for c in ('jersey', 'trim', 'shorts', 'shorts_trim', 'stripe', 'socks', 'sock_trim', 'boots', 'accent'):

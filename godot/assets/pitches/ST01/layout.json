@@ -1,0 +1,69 @@
+{
+ "id": "ST01",
+ "name": "Old Ground",
+ "time": "day",
+ "px_per_m": 14.0,
+ "squash": 0.5,
+ "pitch_m": [
+  105.0,
+  68.0
+ ],
+ "canvas": [
+  1252,
+  1075
+ ],
+ "pitch_origin": [
+  150,
+  230
+ ],
+ "pitch_size": [
+  952,
+  735
+ ],
+ "orientation": "vertical (own goal at the bottom)",
+ "goal_far": {
+  "pos": [
+   626.0,
+   230.0
+  ],
+  "origin": [
+   75,
+   70
+  ]
+ },
+ "goal_near": {
+  "pos": [
+   626.0,
+   965.0
+  ],
+  "origin": [
+   75,
+   36
+  ]
+ },
+ "flag": {
+  "origin": [
+   5,
+   21
+  ],
+  "corners": [
+   [
+    150.0,
+    965.0
+   ],
+   [
+    1102.0,
+    965.0
+   ],
+   [
+    150.0,
+    230.0
+   ],
+   [
+    1102.0,
+    230.0
+   ]
+  ]
+ },
+ "capacity": 18000
+}
