@@ -9,3 +9,5 @@ sprites/out_v2/
 *.bak
 export/
 export/titan/
+export/packs/open_*.gif
+export/packs/tilt.gif
