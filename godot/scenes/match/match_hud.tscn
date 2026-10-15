@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/match/match_hud.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/match/hud_overlay.gd" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/ui/pixel_label.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/ui/pixel_button.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/ui/pixel_image.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/ui/scorebug.gd" id="7"]
 
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1")
@@ -33,34 +34,13 @@ offset_bottom = 420.0
 mouse_filter = 2
 script = ExtResource("2")
 
-[node name="ScorePanel" type="Control" parent="Root"]
-unique_name_in_owner = true
-offset_left = 4.0
-offset_top = 424.0
-offset_right = 196.0
-offset_bottom = 452.0
-script = ExtResource("3")
-
-[node name="Score" type="Control" parent="Root/ScorePanel"]
+[node name="Scorebug" type="Control" parent="Root"]
 unique_name_in_owner = true
 offset_left = 8.0
-offset_top = 8.0
-offset_right = 128.0
-offset_bottom = 20.0
-text = "HOME 0 - 0 AWAY"
-text_scale = 2
-script = ExtResource("4")
-
-[node name="Clock" type="Control" parent="Root/ScorePanel"]
-unique_name_in_owner = true
-offset_left = 130.0
-offset_top = 11.0
-offset_right = 186.0
-offset_bottom = 17.0
-text = "0'"
-color = Color(0.55, 0.57, 0.69, 1)
-align = 2
-script = ExtResource("4")
+offset_top = 6.0
+offset_right = 264.0
+offset_bottom = 58.0
+script = ExtResource("7")
 
 [node name="Who" type="Control" parent="Root"]
 unique_name_in_owner = true

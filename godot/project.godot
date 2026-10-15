@@ -23,7 +23,8 @@ config/features=PackedStringArray("4.7")
 window/size/viewport_width=960
 window/size/viewport_height=540
 window/stretch/mode="viewport"
-window/stretch/scale_mode="integer"
+window/stretch/scale_mode="fractional"
+window/size/resizable=true
 
 [input]
 

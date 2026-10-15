@@ -22,11 +22,9 @@ const PITCH_H := 420.0                  ## the pitch view is the top part of the
 const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), "lob": Color(1.0, 0.9, 0.3), "shoot": Color(1.0, 0.4, 0.35), "run": Color(0.5, 1.0, 0.5),
 	"press": Color(1.0, 0.65, 0.3), "tackle": Color(1.0, 0.65, 0.3), "card": Color(0.8, 0.6, 1.0), "team": Color(0.6, 0.75, 1.0)}
 
-@onready var _score: PixelLabel = %Score
-@onready var _clock: PixelLabel = %Clock
+@onready var _scorebug: Scorebug = %Scorebug
 @onready var _who: PixelLabel = %Who
 @onready var _msg: PixelLabel = %Message
-@onready var _score_panel: PixelPanel = %ScorePanel
 @onready var _team_panel: PixelPanel = %TeamPanel
 @onready var _cmd_panel: PixelPanel = %CommandPanel
 @onready var _hand: HBoxContainer = %Hand
@@ -76,9 +74,24 @@ func _process(dt: float) -> void:
 		_toast_t -= dt
 		if _toast_t <= 0.0: _show_command()
 
-func set_score(h: int, a: int, minute: int) -> void:
-	if _score != null: _score.text = "HOME %d - %d AWAY" % [h, a]
-	if _clock != null: _clock.text = "%d'" % minute
+## game_seconds = match clock in game seconds (0-5400); reds / added come from the rules when they exist
+func set_score(h: int, a: int, game_seconds: float, h_reds := 0, a_reds := 0, added := 0) -> void:
+	if _scorebug == null: return
+	var m := int(game_seconds / 60.0)
+	var per := "1ST HALF" if game_seconds < 2700.0 else "2ND HALF"
+	_scorebug.update_state(h, a, h_reds, a_reds, "%d:%02d" % [m, int(game_seconds) % 60], per, added)
+
+## names, ranked flag and stakes of the scoreboard (from MatchSettings)
+func setup_scoreboard(s: MatchSettings, home_color: Color, away_color: Color) -> void:
+	if _scorebug == null: return
+	_scorebug.ranked = s.ranked
+	_scorebug.home_name = s.home_name
+	_scorebug.away_name = s.away_name
+	_scorebug.division = s.division
+	_scorebug.win_points = s.win_points
+	_scorebug.loss_points = s.loss_points
+	_scorebug.home_color = home_color
+	_scorebug.away_color = away_color
 
 func set_controlled(who: String) -> void:
 	if _who != null: _who.text = who
@@ -139,7 +152,6 @@ func set_team_commands(commands: Array) -> void:
 ## the home team's colour tints the score and team panels and the lit stance button
 func set_team_colors(home: Color, _away: Color) -> void:
 	_team_accent = home
-	_score_panel.accent = home
 	_team_panel.accent = home
 	for k in _team_buttons: _team_buttons[k].accent = home
 

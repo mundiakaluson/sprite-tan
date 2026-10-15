@@ -90,6 +90,7 @@ func _ready() -> void:
 	cards.deal()
 	hud.bind_command(command)
 	hud.set_team_colors(home.color, away.color)
+	hud.setup_scoreboard(settings, home.color, away.color)
 	hud.set_team_commands(brain.stance_list(home))
 	hud.set_team_active(home.stance_id)
 	hud.team_command.connect(_on_team_command)
@@ -157,6 +158,13 @@ func _physics_process(dt: float) -> void:
 	command.tick(dt)
 	var bp := ball.phys.pos
 	stadium.focus = stadium.pitch_pos(Vector3(bp.x, 0.0, bp.z))
-	hud.set_score(home.score, away.score, int(clock / 60.0))
+	hud.set_score(home.score, away.score, clock)
 	hud.set_controlled(selected.display_name() if selected != null else "")
 	hud.set_cooldowns(cards.cooldown)
+
+## F11 toggles full screen (the 960 x 540 view scales to fit; scale_mode "fractional" in project.godot, so any window size fills as much as it can)
+func _unhandled_key_input(event: InputEvent) -> void:
+	var k := event as InputEventKey
+	if k != null and k.pressed and not k.echo and k.keycode == KEY_F11:
+		var w := get_window()
+		w.mode = Window.MODE_WINDOWED if w.mode == Window.MODE_FULLSCREEN else Window.MODE_FULLSCREEN

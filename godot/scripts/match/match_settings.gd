@@ -20,6 +20,15 @@ static var current: MatchSettings
 ## real minutes the 90 game minutes take
 @export_range(1.0, 20.0) var match_minutes := 4.0
 
+@export_group("Scoreboard")
+## ranked matches get the gold score bug with the stakes line, unranked the steel one
+@export var ranked := false
+@export var home_name := "HOME"
+@export var away_name := "AWAY"
+@export var division := "DIV 3"
+@export var win_points := 24
+@export var loss_points := 18
+
 @export_group("Camera")
 ## take the camera from the stadium (data/stadiums.csv, a TV view that cuts off the near touchline); untick to use the numbers below, which show the whole width of the pitch
 @export var use_stadium_camera := false
