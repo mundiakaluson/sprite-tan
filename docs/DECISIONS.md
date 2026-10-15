@@ -104,3 +104,4 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - Saves hold what is not data: owned cards, pity counters, coins.
 - Godot was not installed where this was written, so the GDScript has not been run.
 - Player cards are modular on purpose: one face image per player, everything else shared or drawn from the CSV. Changing a stat needs no re-export. Skill cards are still one image each (unique emblem art) plus tooltips; making their text live is a possible follow-up.
+- Player states are nodes: scenes/players/player.tscn has Sprite + StateMachine, each state a child node (PlayerState base with clip, event_transitions and go_to_when_clip_ends exports). New states can be added in the inspector with no code, or with a script that extends PlayerState (user and Claude both write Godot code).

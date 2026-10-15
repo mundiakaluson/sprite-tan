@@ -30,13 +30,24 @@ Godot 4.2+. Nothing in here has been run yet (the project was written without Go
 | `scripts/core/` | `data.gd` (autoload `Data`): loads every CSV into `Data.tables` / `Data.by_id`, plus `Data.manifest`, `Data.anims`, `Data.rules`. `Data.tex("cards/SH01.png")` loads an exported image |
 | `scripts/packs/` | `packlib.gd` (`PackLib`): port of `packs/packlib.py` (shop schedule, odds, pity, guarantee, pools, roll) |
 | `scripts/cards/` | `player_card.gd` (`PlayerCard`), `player_tip.gd` (`PlayerTip`), `pixel_text.gd` (`PixelText`): cards built live from the CSV row with shared layers and the player's face. Stats are never baked into images |
-| `scripts/players/` | `player.gd` (`Player`: sprite + row + state machine), `player_sprite.gd` (`PlayerSprite`: sheet player with the recolour shader), `state_machine.gd` (`PlayerStateMachine`), `player_state.gd` (`PlayerState`, the base for every state) |
-| `scripts/players/states/` | one file per state: `state_idle.gd`, `state_run.gd`, `state_action.gd`. To add one: extend `PlayerState`, register it in `Player._build_states()` |
+| `scripts/players/` | `player.gd` (`Player`), `player_sprite.gd` (`PlayerSprite`: recoloured sheet player), `state_machine.gd` (`PlayerStateMachine`), `player_state.gd` (`PlayerState`, the base node for every state) |
+| `scripts/players/states/` | states with logic: `state_run.gd`, `state_action.gd`, `state_timed.gd` |
 | `scripts/debug/` | `main.gd`: debug scene only (click = move, K = kick, SPACE = open a pack) |
 
 Put new features in their own folder (for example `scripts/match/`, `scripts/ai/`, `scripts/ui/`), not in the scripts root.
 
-Player states: a state gets `enter(msg)`, `update(dt)`, `physics_update(dt)`, `on_event(name, data)`, `on_clip_finished(clip)`, `exit()`. Change state with `sm.transition_to(&"run", {"target": pos})`; outside code gives orders with `player.move_to(pos)` and `player.play_action("kick")`. Clips that are not baked yet (like `base_idle`) are skipped, and idle falls back to a frozen `run` frame.
+### Player states (edit them in the inspector)
+`scenes/players/player.tscn` is the player: `Sprite` + `StateMachine`, and every state is a **child node of StateMachine**. The node's name is the state's name. The machine finds its children by itself; pick the start state in its `initial_state`.
+
+Add a state without code: select `StateMachine` -> Add Child Node -> **PlayerState** (or `StateTimed`, `StateRun`, `StateAction`), rename it, then in the inspector set:
+- `clip`, `loop`, `stand_in_clip`: the animation to play (clips not baked yet are skipped, the stand-in is shown frozen),
+- `event_transitions`: `{"move_to": "Run", "stun": "Stunned"}` = event name -> state name,
+- `go_to_when_clip_ends`: where to go when a non-looping clip ends.
+Orders reach states as events: `player.move_to(pos)` sends `move_to`, `player.play_action("kick")` sends `play_action`, `player.send_event(&"stun")` sends anything you like.
+
+Add a state with code: Create Script on the node, `extends PlayerState`, give it a `class_name` so it shows in Add Child Node, and override the `_on_enter`, `_on_exit`, `_on_update(delta)`, `_on_physics_update(delta)`, `_on_event(ev, data) -> bool` and `_on_clip_finished(clip) -> bool` you need. Use `player` and `sm` (`sm.transition_to(&"Run", {"target": pos})`). Use `@export` for anything you want to tune in the inspector. See `states/state_timed.gd` for a 10-line example.
+
+Two Run nodes with different `speed_multiplier` give you Jog and Sprint with no new code.
 
 ## Rules
 - CSV columns are the contract. Add columns, do not rename them, and the game keeps working.

@@ -18,7 +18,7 @@ func _ready() -> void:
 	var m := Data.manifest
 	info.text = "exported %s  commit %s   players %d  cards %d  packs %d\nclick = move   K = kick   SPACE = open a pack" % [m.get("exported", "?"), m.get("git", "?"), Data.table("players").size(), Data.table("cards").size(), Data.table("packs").size()]
 	var pid: String = Data.table("players")[0]["id"]
-	player = Player.new(); player.position = Vector2(80, 200); player.scale = Vector2(4, 4); add_child(player)
+	player = Player.create(); player.position = Vector2(80, 200); player.scale = Vector2(4, 4); add_child(player)
 	player.setup(Data.row("players", pid))
 	player.state_changed.connect(func(a, b): print("state ", a, " -> ", b))
 	var pc := PlayerCard.new(); pc.position = Vector2(200, 80); pc.scale = Vector2(2, 2); add_child(pc); pc.show_player(Data.row("players", pid))
