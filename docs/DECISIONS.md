@@ -139,3 +139,7 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - No keyboard walking: the human is a manager. Mouse: click a player of yours for his order menu (with the ball Pass / Through / Lob / Shoot; without Run / Press / Tackle), then click a team mate or a spot; or drag from a player to a spot to make a run (the AI runs it, then plays on). Controller: the stick moves the pointer, Cross = click, Triangle held = press and hold (drag), Circle = cancel. Same code path as the mouse.
 - Ball states (nodes, editable in the inspector): Free, Held, Pass, Through, Lob, Shot. Kick numbers come from data/ball_actions.csv (style, speed rule, lead, stat). A through ball aims ahead of the receiver and sends him running.
 - Next steps agreed: HUD look, then one AI file per role with switch cases per formation, then player / ball foot collisions.
+
+## Match gestures and layout (decided)
+- Double click a team mate = pass, right click = lob, drag from the ball carrier = shoot with time slowed to ~30% while you line it up, drag from anyone else = a run, click a player = a small menu (Through, Run, Press, Tackle). Controller: Cross click, Square lob, Triangle held drag, Circle cancel.
+- The HUD never covers the pitch: the pitch view is the top 420 px, the HUD strip (score, clock, selected player, hint, hand of 8 cards, controls) sits under it.

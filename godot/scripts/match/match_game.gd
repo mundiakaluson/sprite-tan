@@ -20,6 +20,8 @@ signal full_time(home_score: int, away_score: int)
 @export var cooldown_scale := 1.5
 ## 0 = sleepy opponents, 1 = sharp
 @export_range(0.0, 1.0) var ai_level := 0.6
+## how slow time runs while you line up a shot (1 = no slow motion)
+@export_range(0.05, 1.0) var aim_slowmo := 0.3
 
 const HALF_L := 52.5
 const HALF_W := 34.0
@@ -28,7 +30,7 @@ const BAR := 2.44
 const GAME_SECONDS := 5400.0
 enum Phase { KICKOFF, PLAY, GOAL, FULLTIME }
 
-@onready var stadium: Stadium = $Stadium
+@onready var stadium: Stadium = $View/Viewport/Stadium
 @onready var hud: MatchHud = $Hud
 @onready var controls: MatchControls = $Controls
 
@@ -47,6 +49,7 @@ var clock := 0.0
 var hand: Array = []
 var cooldown := {}
 var _next_kick: Team
+var _slow := false
 
 func _ready() -> void:
 	rng.randomize()
@@ -88,6 +91,7 @@ func _deal_hand() -> void:
 
 # ---------------------------------------------------------------- restarts
 func _kickoff(kicking: Team) -> void:
+	_slow = false
 	for t in teams:
 		for f in t.players:
 			f.pos = f.slot
@@ -118,6 +122,7 @@ func _take(f: Footballer) -> void:
 	ball.hold()
 
 func _goal(scorer_team: Team) -> void:
+	_slow = false
 	scorer_team.score += 1
 	phase = Phase.GOAL
 	phase_t = 3.6
@@ -399,8 +404,27 @@ func _auto_tackles(dt: float) -> void:
 # ---------------------------------------------------------------- orders (from MatchControls)
 ## the buttons of the order menu for a player
 func menu_for(f: Footballer) -> Array:
-	if carrier == f: return ["pass", "through", "lob", "shoot"]
+	if carrier == f: return ["through", "run"]
 	return ["run", "press", "tackle"]
+
+## slow motion while the human lines up a shot (eased in and out in _process)
+func set_slowmo(on: bool) -> void:
+	_slow = on
+
+func _process(dt: float) -> void:
+	var real_dt := dt / maxf(Engine.time_scale, 0.05)
+	var target := aim_slowmo if _slow and phase == Phase.PLAY else 1.0
+	Engine.time_scale = move_toward(Engine.time_scale, target, 5.0 * real_dt)
+
+func _exit_tree() -> void:
+	Engine.time_scale = 1.0
+
+## shoot at a spot of the grass (the drag from the ball carrier)
+func order_shoot_at(f: Footballer, spot: Vector2) -> void:
+	if carrier != f: return
+	var over := {}
+	if rng.randf() < 0.12: over["style"] = "K02"
+	_kick_action(f, "shot", spot, Vector2.ZERO, over)
 
 ## a run: he goes there by himself (the carrier dribbles there), then the AI takes over again
 func order_run(f: Footballer, spot: Vector2) -> void:
@@ -423,10 +447,6 @@ func order_tackle(f: Footballer) -> void:
 		hud.toast("Too far: closing down")
 		return
 	_try_tackle(f)
-
-func order_shoot(f: Footballer) -> void:
-	if carrier != f: return
-	_do_shot(f, rng.randf_range(-0.7, 0.7))
 
 ## kind = "pass" / "through" / "lob". To a team mate (the ball leads him; a through ball also sends him running) or to a spot.
 func order_pass(f: Footballer, kind: String, mate: Footballer, spot: Vector2) -> void:

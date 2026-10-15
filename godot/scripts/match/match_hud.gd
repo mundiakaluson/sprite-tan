@@ -1,14 +1,16 @@
 class_name MatchHud
 extends CanvasLayer
-## Match HUD (built in code, so the scene stays one node): score and clock on top, the hand of skill cards along the bottom, the player you control bottom left,
-## messages (GOAL!, KICK OFF) in the middle and short toasts under the score. Cards are the real SkillCard faces; the number on a card is its cooldown in seconds.
-## Laid out for the 960 x 540 game viewport (project settings).
+## Match HUD (built in code, so the scene stays one node). The pitch has its own area (the top 420 px of the 960 x 540 game viewport, a SubViewport in match.tscn);
+## the HUD lives in the strip below it so nothing covers the play: score / clock / selected player / hint on the left, the hand of skill cards in the middle,
+## the controls on the right. Only short messages (GOAL!, KICK OFF), the order menu and the aim lines are drawn over the pitch.
+## Cards are the real SkillCard faces; the number on a card is its cooldown in seconds.
 
 signal menu_chosen(id: String)          ## an order button was pressed ("pass", "through", "lob", "shoot", "run", "press", "tackle")
 signal card_pressed(index: int)         ## a card in the hand was clicked
 
-const CONTROLS := "Mouse: click a player for orders, drag from a player to make a run, right click cancels.   Pad: stick = pointer, Cross = click, hold Triangle = drag, Circle = cancel."
-const LABELS := {"pass": "PASS", "through": "THROUGH", "lob": "LOB", "shoot": "SHOOT", "run": "RUN", "press": "PRESS", "tackle": "TACKLE"}
+const PITCH_H := 420.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
+const CONTROLS := "MOUSE\ndouble click mate: pass\nright click: lob\ndrag from ball carrier: shoot\ndrag from player: run\nclick player: orders\nEsc: cancel\n\nPAD\nstick pointer, Cross click\nSquare lob, hold Triangle drag\nCircle cancel"
+const LABELS := {"through": "THROUGH", "run": "RUN", "press": "PRESS", "tackle": "TACKLE"}
 
 var _score: Label
 var _msg: Label
@@ -24,6 +26,7 @@ var selected_node: Node2D
 var drag_from := Vector2.ZERO
 var drag_to := Vector2.ZERO
 var dragging := false
+var drag_shot := false
 var aiming := false
 var aim_to := Vector2.ZERO
 var _msg_t := 0.0
@@ -36,34 +39,42 @@ func _ready() -> void:
 	add_child(root)
 	_overlay = _Overlay.new()
 	_overlay.hud = self
-	_overlay.size = Vector2(960, 540)
+	_overlay.size = Vector2(960, PITCH_H)
 	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(_overlay)
-	var bar := PanelContainer.new()
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.position = Vector2(360, 6)
-	root.add_child(bar)
-	_score = _label(bar, 18)
-	_score.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_score.custom_minimum_size = Vector2(240, 0)
+	# the strip under the pitch
+	var strip := ColorRect.new()
+	strip.color = Color(0.07, 0.08, 0.12)
+	strip.position = Vector2(0, PITCH_H)
+	strip.size = Vector2(960, 540.0 - PITCH_H)
+	strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(strip)
+	var line := ColorRect.new()
+	line.color = Color(0.3, 0.32, 0.4)
+	line.position = Vector2(0, PITCH_H)
+	line.size = Vector2(960, 2)
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(line)
+	_score = _label(root, 20)
+	_score.position = Vector2(10, PITCH_H + 6)
+	_who = _label(root, 12)
+	_who.position = Vector2(10, PITCH_H + 38)
 	_toast = _label(root, 11)
-	_toast.position = Vector2(330, 52)
-	_toast.custom_minimum_size = Vector2(300, 0)
-	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_toast.position = Vector2(10, PITCH_H + 58)
+	_toast.custom_minimum_size = Vector2(190, 0)
+	_toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_hint = _label(root, 10)
+	_hint.position = Vector2(10, PITCH_H + 84)
+	_hint.custom_minimum_size = Vector2(190, 0)
+	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_msg = _label(root, 30)
-	_msg.position = Vector2(180, 190)
+	_msg.position = Vector2(180, 150)
 	_msg.custom_minimum_size = Vector2(600, 0)
 	_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_who = _label(root, 12)
-	_who.position = Vector2(10, 396)
-	var controls := _label(root, 9)
-	controls.position = Vector2(10, 522)
+	var controls := _label(root, 8)
+	controls.position = Vector2(776, PITCH_H + 4)
 	controls.text = CONTROLS
-	controls.modulate = Color(1, 1, 1, 0.7)
-	_hint = _label(root, 11)
-	_hint.position = Vector2(180, 380)
-	_hint.custom_minimum_size = Vector2(600, 0)
-	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	controls.modulate = Color(1, 1, 1, 0.75)
 	_menu = PanelContainer.new()
 	_menu.visible = false
 	root.add_child(_menu)
@@ -72,7 +83,7 @@ func _ready() -> void:
 	_hand = HBoxContainer.new()
 	_hand.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hand.add_theme_constant_override("separation", 6)
-	_hand.position = Vector2(203, 414)
+	_hand.position = Vector2(208, PITCH_H + 12)
 	root.add_child(_hand)
 
 func _label(parent: Node, size: int) -> Label:
@@ -92,7 +103,7 @@ func _process(dt: float) -> void:
 		if _toast_t <= 0.0: _toast.text = ""
 
 func set_score(h: int, a: int, minute: int) -> void:
-	if _score != null: _score.text = "HOME %d - %d AWAY    %d'" % [h, a, minute]
+	if _score != null: _score.text = "HOME %d - %d AWAY   %d'" % [h, a, minute]
 
 func set_controlled(who: String) -> void:
 	if _who != null: _who.text = who
@@ -141,7 +152,7 @@ func show_menu(anchor: Vector2, options: Array) -> void:
 		_menu_box.add_child(b)
 	_menu.visible = true
 	_menu.reset_size()
-	_menu.position = Vector2(clampf(anchor.x + 24.0, 4.0, 960.0 - 110.0), clampf(anchor.y - 70.0, 40.0, 400.0))
+	_menu.position = Vector2(clampf(anchor.x + 24.0, 4.0, 960.0 - 110.0), clampf(anchor.y - 70.0, 10.0, PITCH_H - 110.0))
 
 func hide_menu() -> void:
 	if _menu != null: _menu.visible = false
@@ -152,8 +163,9 @@ func set_hint(text: String) -> void:
 func set_selected(n: Node2D) -> void:
 	selected_node = n
 
-func set_drag(from: Vector2, to: Vector2) -> void:
+func set_drag(from: Vector2, to: Vector2, shot := false) -> void:
 	dragging = true
+	drag_shot = shot
 	drag_from = from
 	drag_to = to
 
@@ -183,11 +195,12 @@ class _Overlay extends Control:
 				draw_circle(hud.aim_to, 4.0, Color(1.0, 0.9, 0.3, 0.9))
 		if hud.dragging:
 			var d: Vector2 = hud.drag_to - hud.drag_from
-			draw_line(hud.drag_from, hud.drag_to, Color(1, 1, 1, 0.9), 2.0)
+			var col := Color(1.0, 0.35, 0.3, 0.95) if hud.drag_shot else Color(1, 1, 1, 0.95)
+			draw_line(hud.drag_from, hud.drag_to, col, 2.0)
 			if d.length() > 6.0:
 				var u := d.normalized()
 				var side := Vector2(-u.y, u.x)
-				draw_colored_polygon(PackedVector2Array([hud.drag_to, hud.drag_to - u * 9.0 + side * 5.0, hud.drag_to - u * 9.0 - side * 5.0]), Color(1, 1, 1, 0.95))
+				draw_colored_polygon(PackedVector2Array([hud.drag_to, hud.drag_to - u * 9.0 + side * 5.0, hud.drag_to - u * 9.0 - side * 5.0]), col)
 
 func card_used(i: int) -> void:
 	if i < _cards.size(): _cards[i].play("use")
