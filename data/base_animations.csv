@@ -4,11 +4,19 @@ BA02,Locomotion,Walk,base_walk,
 BA03,Locomotion,Jog,base_jog,
 BA04,Locomotion,Tired run,base_tired_run,
 BA05,Locomotion,Sprint,base_sprint,
-BA06,Contact,Stumble (directional),,sizes small / medium / big; from the hit direction
-BA07,Contact,Knocked off the ball,,still on their feet
-BA08,Contact,Fall,,one fall for every case
-BA09,Contact,Get up,,same for every fall
-BA10,Contact,Recover step,,catching balance
-BA11,Air,Jump,,crouch / take-off / air / land
-BA12,States,Stun,,for skills that stun
-BA13,States,Pain / limp,,after a heavy fall
+BA06,Contact,Stumble back (small),base_stumble_back_s,"from the front, pushed back"
+BA07,Contact,Stumble back (medium),base_stumble_back_m,"from the front, pushed back"
+BA08,Contact,Stumble back (big),base_stumble_back_l,"from the front, pushed back"
+BA09,Contact,Stumble fwd (small),base_stumble_fwd_s,"from behind, pushed forward"
+BA10,Contact,Stumble fwd (medium),base_stumble_fwd_m,"from behind, pushed forward"
+BA11,Contact,Stumble fwd (big),base_stumble_fwd_l,"from behind, pushed forward"
+BA12,Contact,Stumble side (small),base_stumble_side_s,"from the side, shoved left; the mirrored sheet is the other side"
+BA13,Contact,Stumble side (medium),base_stumble_side_m,"from the side, shoved left; the mirrored sheet is the other side"
+BA14,Contact,Stumble side (big),base_stumble_side_l,"from the side, shoved left; the mirrored sheet is the other side"
+BA15,Contact,Knocked off the ball,base_knocked_off,"shoved aside, still standing; the ball is the game's"
+BA16,Contact,Fall,base_fall,one fall for every case; ends lying on the side
+BA17,Contact,Get up,base_get_up,same for every fall
+BA18,Contact,Recover step,base_recover_step,half-lost balance caught by one wide step
+BA19,Air,Jump,base_jump,events: takeoff / apex / land
+BA20,States,Stun,base_stun,loop; the game adds the stars
+BA21,States,Pain / limp,base_limp,"loop, hurt right leg; play at walk speed or slower"

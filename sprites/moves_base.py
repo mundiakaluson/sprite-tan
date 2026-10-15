@@ -57,10 +57,14 @@ def gaits_csv():
 
 
 def build(ids=None):
+    import moves_reactions as R
     out = []
     for name, (label, fn) in MOVES.items():
         if ids and name not in ids: continue
         fn().save(name, label, 'base locomotion, sprites/moves_base.py'); out.append(name)
+    for name, (label, fn, loop) in R.MOVES.items():
+        if ids and name not in ids: continue
+        m = fn(); m.loop = loop; m.save(name, label, 'base reaction, sprites/moves_reactions.py'); out.append(name)
     gaits_csv(); return out
 
 
