@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="FormationLayout" load_steps=13 format=3]
+[gd_resource type="Resource" script_class="FormationLayout" load_steps=13 format=3 uid="uid://0gld0va6udsi"]
 
-[ext_resource type="Script" path="res://scripts/ai/formation_layout.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/ai/formation_slot.gd" id="2"]
+[ext_resource type="Script" uid="uid://cvoueca4clqh7" path="res://scripts/ai/formation_layout.gd" id="1"]
+[ext_resource type="Script" uid="uid://cfdg3qcl15tpp" path="res://scripts/ai/formation_slot.gd" id="2"]
 
 [sub_resource type="Resource" id="s1"]
 script = ExtResource("2")
@@ -14,7 +14,6 @@ y = 18.0
 script = ExtResource("2")
 role = "CB"
 style = "sweeper"
-x = 50.0
 y = 15.0
 
 [sub_resource type="Resource" id="s3"]
@@ -40,14 +39,11 @@ y = 46.0
 
 [sub_resource type="Resource" id="s6"]
 script = ExtResource("2")
-role = "CM"
-style = "box_to_box"
 x = 38.0
 y = 44.0
 
 [sub_resource type="Resource" id="s7"]
 script = ExtResource("2")
-role = "CM"
 style = "playmaker"
 x = 62.0
 y = 44.0
@@ -70,13 +66,9 @@ y = 64.0
 script = ExtResource("2")
 role = "ST"
 style = "poacher"
-x = 50.0
 y = 82.0
 
 [resource]
 script = ExtResource("1")
-id = "C01"
-layout_name = "3-4-2-1"
-family = "THREE_BACK"
 note = "Example formation made in the inspector: three centre backs, wing-backs, two 8s, two 10s behind a lone striker. Copy this file to make your own."
 slots = Array[ExtResource("2")]([SubResource("s1"), SubResource("s2"), SubResource("s3"), SubResource("s4"), SubResource("s5"), SubResource("s6"), SubResource("s7"), SubResource("s8"), SubResource("s9"), SubResource("s10")])

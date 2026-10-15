@@ -33,3 +33,4 @@ func _pass_bias(f: Footballer, m: Footballer, _c: AiContext) -> float:
 	if m.role == "CDM" or m.role == "CM": b += midfield_bonus
 	if m.pos.distance_to(f.pos) > long_pass: b -= long_penalty
 	return b
+

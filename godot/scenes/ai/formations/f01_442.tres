@@ -1,7 +1,6 @@
-[gd_resource type="Resource" script_class="Ai442" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="Ai442" load_steps=2 format=3 uid="uid://cuya71aub2ppm"]
 
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_442.gd" id="script"]
+[ext_resource type="Script" uid="uid://dalw34e68fo3k" path="res://scripts/ai/formations/ai_442.gd" id="script"]
 
 [resource]
 script = ExtResource("script")
-formation_ids = PackedStringArray("F01")

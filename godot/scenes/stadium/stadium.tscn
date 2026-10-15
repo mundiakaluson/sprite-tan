@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://dnaqrnydrw1bh"]
 
-[ext_resource type="Script" path="res://scripts/stadium/stadium.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/camera/camera_rig.gd" id="2"]
+[ext_resource type="Script" uid="uid://d220fr8w7y57a" path="res://scripts/stadium/stadium.gd" id="1"]
+[ext_resource type="Script" uid="uid://0n0w421qv2x4" path="res://scripts/camera/camera_rig.gd" id="2"]
+
+[sub_resource type="Environment" id="Environment_f8uak"]
 
 [node name="Stadium" type="Node3D"]
 script = ExtResource("1")
@@ -9,10 +11,17 @@ script = ExtResource("1")
 [node name="World" type="Node3D" parent="."]
 
 [node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.88, 0.47, 0, -0.47, 0.88, 0, 26, 50)
+transform = Transform3D(0.9999961, -0.0014348723, 0.0023880277, 0, 0.8551506, 0.51382643, -0.0027925232, -0.51382446, 0.85514724, 0.07870352, 16.934452, 40.68355)
+environment = SubResource("Environment_f8uak")
 current = true
-fov = 34.0
+fov = 51.81
+near = 0.058
 far = 400.0
 script = ExtResource("2")
+yaw_deg = 0.160000000000025
+pitch_deg = 31.0
+distance = 32.88
+fov_deg = 51.81
+follow_speed = 5.0
 
 [node name="Actors" type="Node2D" parent="."]
