@@ -52,3 +52,4 @@ Game,"Formation AI for F02-F10 from tactico.pro (shared AiShapedFormation + one 
 Game,"AI interaction layer: cover for defenders who step out, striker finds space when a midfielder presses, player traits (roamer / Zionel Pessi)",doing,"untested in Godot; tune in AiProfile > Interact"
 Game,"Formations can be added from the Godot inspector (FormationLayout in MatchSettings > Custom Formations)",doing,"untested in Godot; example 3-4-2-1 included"
 Game,"Ball touch and keeper saves: smaller ball, eased first touch, keeper dive/catch/deflect clips with mirror",doing,"untested in Godot; tune in MatchSettings > Goalkeeper saves"
+Game,"Players turn before passing; scuffed or pressed passes cause stumble/fall",doing,"untested in Godot; tune in MatchSettings > Kick turn and stumble"

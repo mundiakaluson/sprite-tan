@@ -115,3 +115,6 @@ MatchSettings > Match > Custom Formations: add an element, New FormationLayout (
 
 ## Camera
 `scripts/camera/camera_rig.gd` (CameraRig) is the script on the Camera node in scenes/stadium/stadium.tscn; all camera numbers are its inspector exports (Orbit: yaw / pitch / distance / fov / aim offset; Follow: speed, limit, pan; Stadium: use_stadium_layout). Rotating around the players = yaw_deg, or `orbit_to(yaw, pitch, dist, seconds)` from code. MatchSettings no longer has camera settings. Untested in Godot.
+
+## Kicks turn first, and can stumble
+`scripts/match/match_kicking.gd` (MatchKicking, `g.kicking`): `MatchPossession.kick_action` hands every kick to it. If the target is more than `pivot_min_deg` away from where he faces, he pivots (ball stays at his feet, `Footballer.aim` / `aim_done`) and then plays the kick clip. At the strike frame a pass can be scuffed (more aim error; chance from PAS, nearest opponent, kicking before the turn is done) and he stumbles / falls after it (clips in MatchSettings > Kick turn and stumble). AI and human kicks both use it; card kicks (match_cards) still kick instantly. Untested in Godot.
