@@ -75,11 +75,13 @@ def getup(d, f0, n=6):
 # --------------------------------------------------------------------------------------------------
 @move('GK01', 'Set Stance')
 def gk01():
-    d = K(20)
-    for f in range(20):                                           # settles into the ready crouch, bouncing on his toes, hands out
-        u = min(1.0, f / 6.0); ph = math.sin(f * 0.9)
-        d.at(f, R=(3.0 + 0.4 * u, 0.8, 0, 2.0 if ph > 0.5 else None), L=(-3.0 - 0.4 * u, -0.6, 0, 2.0 if ph < -0.5 else None), pz=23.0 - 1.8 * u + 0.4 * ph, cpitch=0.1 + 0.5 * u, hpitch=0.25 * u)
-        d.arms(f, (0.5 + 0.65 * u, 0.7 - 0.25 * u, 1.1 + 0.45 * u, 0.5 - 0.25 * u), (0.5 + 0.65 * u, 0.7 - 0.25 * u, 1.1 + 0.45 * u, 0.5 - 0.25 * u))
+    d = K(22)
+    # settles into the crouch, claps the gloves together, spreads wide and bounces on the toes, ready for anything
+    for f in range(22):
+        u = min(1.0, f / 6.0); ph = math.sin(f * 0.9); w = max(0.0, min(1.0, (f - 9) / 3.0))
+        d.at(f, R=(3.0 + 0.5 * u, 0.8, 0, 2.0 if (ph > 0.5 and f > 10) else None), L=(-3.0 - 0.5 * u, -0.6, 0, 2.0 if (ph < -0.5 and f > 10) else None), pz=23.0 - 2.0 * u + (0.4 * ph if f > 10 else 0.0), cpitch=0.1 + 0.55 * u, hpitch=0.25 * u)
+        d.arms(f, (0.5 + 0.7 * u, 0.7 - 0.5 * u, 1.1 + 0.5 * u, 0.5 - 0.4 * u), (0.5 + 0.7 * u, 0.7 - 0.5 * u, 1.1 + 0.5 * u, 0.5 - 0.4 * u))
+        if f >= 7: d.arms(f, (1.2 + 0.15 * w, 0.1 + 0.35 * w, 1.6 + 0.0 * w, 0.0 + 0.25 * w), (1.2 + 0.15 * w, 0.1 + 0.35 * w, 1.6 + 0.0 * w, 0.0 + 0.25 * w))       # hands meet at f7-9, then open wide
     return d.done()
 
 

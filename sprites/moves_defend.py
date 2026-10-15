@@ -48,15 +48,18 @@ def hidden(d, f0=0, f1=None):
 # ------------------------------------------------------------------ tackles and blocks
 @move('DF01', 'Stand Tackle')
 def df01():
-    d = Dr(20, speed=0.0)
-    for f in range(0, 4): stance(d, f, sw=math.sin(f * 1.6), ball=(1.0, 10.0 - 0.3 * f))
-    d.at(4, R=(2.8, 1.5, 0, None), L=(-2.8, -0.4, 0, None), ball=(1.0, 9.4), pz=22.2, cpitch=0.4, hpitch=0.5)
-    d.at(5, R=(1.8, 5.0, 40, 4.2), L=(-3.0, 0.2, 0, None), ball=(1.0, 9.0), pz=21.8, cpitch=0.5, hpitch=0.55)
-    d.at(6, R=(1.4, 8.4, 52, 3.4, -0.9, 0.2), L=(-3.0, 0.6, 0, None), ball=(1.0, 9.0), pz=21.4, cpitch=0.56, hpitch=0.6, ppitch=0.2)      # planted, the boot comes through the ball
-    d.at(7, R=(1.2, 10.4, 40, 4.0), L=(-3.0, 1.0, 0, None), ball=(1.6, 12.6), pz=21.6, cpitch=0.5)
-    d.at(8, R=(1.8, 7.0, 20, 4.0), L=(-3.0, 0.6, 0, None), ball=(2.4, 15.0), cpitch=0.4)
-    for f in range(9, 20): stance(d, f, sw=math.sin(f * 1.4), ball=(2.4 + 0.3 * (f - 8), 15.0 + 1.4 * (f - 8)))
-    d.arms(5, (0.2, 0.7, 0.8, 0.5), (0.9, 1.1, 1.2, 0.8)); d.arms(6, (0.0, 0.6, 0.5, 0.4), (1.0, 1.1, 1.3, 0.8))
+    d = Dr(22, speed=0.0)
+    # square up, load the kicking leg back, plant the standing foot forward, then hook the boot through the ball with the whole body behind it
+    for f in range(0, 4): stance(d, f, sw=math.sin(f * 1.6), low=0.6, ball=(1.0, 10.0 - 0.3 * f))
+    d.at(4, R=(2.6, -2.6, 20, 1.8), L=(-2.8, 2.6, 0, None), ball=(1.0, 9.2), pz=21.4, cpitch=0.62, hpitch=0.55, ppitch=0.1)
+    d.at(5, R=(1.8, 4.0, 40, 3.4), L=(-3.0, 3.4, 0, None), ball=(1.0, 9.0), pz=20.6, cpitch=0.7, hpitch=0.6, ppitch=0.2)
+    d.at(6, R=(1.0, 10.8, 62, 2.6, -0.9, 0.2), L=(-3.0, 3.8, 0, None), ball=(1.0, 9.0), pz=19.4, cpitch=0.8, hpitch=0.6, ppitch=0.3)          # planted, the boot comes through the ball
+    d.at(7, R=(1.0, 12.6, 40, 4.0), L=(-3.0, 3.8, 0, None), ball=(1.8, 13.4), pz=19.8, cpitch=0.74, cyaw=0.25)
+    d.at(8, R=(1.8, 9.0, 20, 3.0), L=(-3.0, 3.4, 0, None), ball=(2.6, 16.0), pz=20.6, cpitch=0.6, cyaw=0.15)
+    d.at(9, R=(2.6, 6.0, 0, None), L=(-3.0, 1.6, 0, None), ball=(3.2, 19.0), pz=21.6, cpitch=0.46)
+    d.speed(f0=0.0, f4=0.0, f6=1.1, f8=0.7, f11=0.0)
+    for f in range(10, 22): stance(d, f, sw=math.sin(f * 1.4), ball=(3.2 + 0.3 * (f - 9), 19.0 + 1.6 * (f - 9)))
+    d.arms(4, (0.2, 1.0, 1.0, 0.8), (1.1, 1.0, 1.3, 0.7)); d.arms(5, (0.1, 0.9, 0.8, 0.7), (1.2, 1.0, 1.4, 0.8)); d.arms(6, (-0.2, 0.8, 0.5, 0.6), (1.3, 1.0, 1.5, 0.9)); d.arms(7, (0.0, 0.8, 0.6, 0.6), (1.2, 1.0, 1.4, 0.8))
     d.m.events = {'strike': 6}
     return d.build()
 
@@ -75,31 +78,32 @@ def df02():
 @move('DF03', 'Poke Tackle')
 def df03():
     d = Dr(18, speed=0.0)
-    for f in range(0, 4): stance(d, f, sw=math.sin(f * 1.5), ball=(1.0, 10.0))
-    d.at(4, R=(2.8, 2.0, 20, None), L=(-2.8, -0.4, 0, None), ball=(1.0, 10.0), cpitch=0.4, hpitch=0.5)
-    d.at(5, R=(2.0, 7.0, 75, 3.6), L=(-3.0, 0.4, 0, None), ball=(1.0, 10.0), cpitch=0.5, hpitch=0.55, pz=22.0)
-    d.at(6, R=(1.6, 10.6, 86, 3.2), L=(-3.0, 0.6, 0, None), ball=(1.0, 10.0), cpitch=0.56, pz=21.8)                      # toe flicks out, no commitment
-    d.at(7, R=(1.8, 9.0, 60, 3.8), L=(-3.0, 0.4, 0, None), ball=(2.2, 14.0), cpitch=0.44)
-    d.at(8, R=(2.4, 4.0, 20, None), ball=(3.0, 17.0), cpitch=0.36)
-    for f in range(9, 18): stance(d, f, sw=math.sin(f * 1.4), ball=(3.0 + 0.3 * (f - 8), 17.0 + 1.6 * (f - 8)))
-    d.arms(5, (0.2, 0.7, 0.9, 0.5), (0.9, 1.0, 1.2, 0.7))
+    # upright and light: a quick hop, the toe jabs out and straight back, no commitment
+    for f in range(0, 4): stance(d, f, sw=math.sin(f * 1.5), ball=(1.0, 10.0), pz=22.9)
+    d.at(4, R=(2.8, 3.0, 40, 4.4), L=(-2.8, -0.4, 0, None), ball=(1.0, 10.0), cpitch=0.28, hpitch=0.4, pz=23.4)                      # knee comes up, tiny hop
+    d.at(5, R=(2.2, 9.0, 80, 3.6), L=(-2.8, 0.2, 0, None), ball=(1.0, 10.0), cpitch=0.34, hpitch=0.45, pz=23.2)
+    d.at(6, R=(1.8, 12.0, 90, 3.0), L=(-2.8, 0.4, 0, None), ball=(1.0, 10.0), cpitch=0.4, pz=22.8)                                  # toe flicks the ball loose
+    d.at(7, R=(2.2, 8.0, 50, 3.4), L=(-2.8, 0.2, 0, None), ball=(2.4, 14.4), cpitch=0.34, pz=23.0)
+    d.at(8, R=(2.6, 3.0, 10, 1.8), ball=(3.2, 18.0), cpitch=0.28, pz=23.2)
+    for f in range(9, 18): stance(d, f, sw=math.sin(f * 1.4), ball=(3.2 + 0.3 * (f - 8), 18.0 + 1.8 * (f - 8)))
+    for f in (4, 5, 6, 7): d.arms(f, (0.6, 0.9, 1.0, 0.7), (0.7, 0.9, 1.0, 0.7))
     d.m.events = {'strike': 6}
     return d.build()
 
 
 @move('DF04', 'Intercept Lane')
 def df04():
-    d = Dr(20, speed=0.0)
-    # eyes on the passer, a quick step across, the boot cuts the ball out as it rolls through
-    for f in range(0, 4): stance(d, f, hyaw=0.6, ball=(16.0 - 1.4 * f, 7.0, 3.0))
-    d.at(4, R=(3.4, 1.0, 10, None), L=(-2.4, 0.0, 0, None), ball=(10.4, 7.0), cpitch=0.4, hyaw=0.5, croll=0.25, pz=22.2)
-    d.at(5, R=(5.0, 4.0, 30, 4.0), L=(-1.6, 1.0, 0, None), ball=(8.4, 7.0), cpitch=0.4, hyaw=0.4, croll=0.3, pz=21.8)
-    d.at(6, R=(5.6, 7.0, 55, 3.2, -1.0, 0.1), L=(-1.0, 1.2, 0, None), ball=(6.2, 7.0), cpitch=0.44, hyaw=0.3, croll=0.34, pz=21.6)   # stretches across and meets it
-    d.at(7, R=(4.4, 8.8, 40, 3.6, -0.8), L=(-1.4, 1.4, 0, None), ball=(5.6, 12.0), cpitch=0.4, croll=0.25)
-    d.at(8, R=(3.0, 5.0, 10, None), ball=(5.4, 16.0), cpitch=0.34)
-    d.lateral(f4=0.8, f6=0.4, f8=0.0)
-    for f in range(9, 20): stance(d, f, ball=(5.4, 16.0 + 1.8 * (f - 8)))
-    d.arms(5, (0.8, 1.1, 1.2, 0.8), (0.2, 0.9, 0.8, 0.6))
+    d = Dr(22, speed=0.0)
+    # eyes on the passer, a big cross-step to the side, the far leg stretches out and cuts the ball off as it rolls through
+    for f in range(0, 4): stance(d, f, hyaw=0.7, ball=(17.0 - 1.4 * f, 7.0, 3.0))
+    d.at(4, R=(4.6, 0.6, 10, 2.6), L=(-2.0, 0.0, 0, None), ball=(11.0, 7.0), cpitch=0.42, hyaw=0.6, croll=0.3, pz=21.8)
+    d.at(5, R=(7.4, 3.2, 30, 3.0), L=(-1.2, 0.8, 0, None), ball=(9.0, 7.0), cpitch=0.44, hyaw=0.5, croll=0.4, pz=21.0)
+    d.at(6, R=(9.6, 5.8, 55, 3.0, -1.0, 0.1), L=(-0.6, 1.0, 0, None), ball=(7.4, 7.0), cpitch=0.5, hyaw=0.4, croll=0.5, pz=20.2)    # full stretch across and meets it
+    d.at(7, R=(8.4, 7.6, 40, 3.4, -0.8), L=(-1.0, 1.2, 0, None), ball=(6.8, 12.0), cpitch=0.44, croll=0.4, pz=20.8)
+    d.at(8, R=(5.4, 5.0, 10, 2.0), L=(-1.6, 1.4, 0, None), ball=(6.4, 16.0), cpitch=0.36, croll=0.2)
+    d.lateral(f0=0.0, f3=0.3, f5=2.0, f6=1.2, f8=0.2, f10=0.0)
+    for f in range(9, 22): stance(d, f, ball=(6.4, 16.0 + 1.8 * (f - 8)))
+    for f in (4, 5, 6, 7): d.arms(f, (0.9, 1.0, 1.3, 0.8), (0.3, 0.9, 0.9, 0.6))
     d.m.events = {'strike': 6}
     return d.build()
 
@@ -107,16 +111,18 @@ def df04():
 @move('DF05', 'Block Lane')
 def df05():
     d = Dr(22, speed=0.0); hidden(d)
-    # slides across to the shooter's line and makes himself wide: legs apart, arms spread, chest square, braced
-    for f in range(0, 5): stance(d, f, sw=math.sin(f * 1.4), hyaw=0.5)
-    for f in range(5, 10):
-        u = (f - 5) / 4.0
-        d.at(f, R=(3.0 + 0.6 * u, 1.0, 0, None if f % 2 else 1.6), L=(-3.0 - 0.6 * u, 0.0, 0, None), pz=22.2 - 0.6 * u, cpitch=0.2, hpitch=0.2, croll=0.2 * (1 - u))
-        d.arms(f, (0.9, 1.2, 1.3, 1.0), (0.9, 1.2, 1.3, 1.0))
-    for f in range(10, 22):
-        d.at(f, R=(3.6, 1.0, 0, None), L=(-3.6, 0.0, 0, None), pz=21.6 + 0.2 * math.sin(f), cpitch=0.16, hpitch=0.2)
-        d.arms(f, (1.1, 1.35, 1.5, 1.2), (1.1, 1.35, 1.5, 1.2))
-    d.lateral(f4=0.0, f6=1.4, f9=0.0)
+    # shuffles across to the shooter's line, drops low and squares up: chest to the ball, hands up in front of the body
+    for f in range(0, 4): stance(d, f, sw=math.sin(f * 1.4), hyaw=0.5)
+    for f in range(4, 11):
+        ph = 2 * PI * (f - 4) / 3.0; a = max(0.0, math.sin(ph)); b = max(0.0, -math.sin(ph)); u = min(1.0, (f - 4) / 5.0)
+        d.at(f, R=(3.0 + 0.6 * u, 1.0 + 1.0 * a, 0, 2.0 + 3.0 * a) if a > 0.05 else (3.0 + 0.6 * u, 1.0, 0, None), L=(-3.0 - 0.6 * u, 0.0 + 1.0 * b, 0, 2.0 + 3.0 * b) if b > 0.05 else (-3.0 - 0.6 * u, 0.0, 0, None),
+             pz=22.0 - 1.2 * u, cpitch=0.25 + 0.25 * u, hpitch=0.2, croll=0.12 * math.sin(ph))
+        d.arms(f, (0.7, 0.6, 1.5, 0.5), (0.7, 0.6, 1.5, 0.5))
+    for f in range(11, 22):
+        sw = math.sin(f * 0.5)
+        d.at(f, R=(3.6, 1.0, 0, None), L=(-3.6, 0.0, 0, None), pz=20.8 + 0.25 * sw, cpitch=0.5, hpitch=0.25, croll=0.04 * sw)
+        d.arms(f, (0.85, 0.8, 2.0, 0.6), (0.85, 0.8, 2.0, 0.6))                                                  # braced, elbows out and hands up: making himself big
+    d.lateral(f0=0.0, f4=0.0, f6=1.5, f10=0.0)
     return d.build()
 
 
@@ -171,9 +177,11 @@ def df09():
 @move('DF10', 'Jockey')
 def df10():
     d = Dr(24, speed=-1.0); hidden(d)
-    shuffle(d, 0, 23, per=4, low=0.8)                                                           # side-on, low, small busy steps, giving ground
+    shuffle(d, 0, 23, per=4, low=1.2)                                                           # side-on, low, small busy steps, giving ground
     d.speed(f0=-1.2, f23=-1.2)
-    for f in range(24): d.m.k(f, hyaw=-0.4, pyaw=0.5, cyaw=0.3); d.arms(f, (0.9, 1.1, 1.3, 0.8), (0.9, 1.1, 1.3, 0.8))
+    for f in range(24):
+        sw = math.sin(f * 1.6); d.m.k(f, hyaw=-0.4, pyaw=0.55, cyaw=0.35, cpitch=0.42)
+        d.arms(f, (1.0 + 0.15 * sw, 0.55, 1.5, 0.35), (0.5 - 0.15 * sw, 0.6, 1.2, 0.5))                           # lead hand forward to show the ball carrier, other arm back for balance
     return d.build()
 
 
@@ -296,12 +304,14 @@ def df19():
 @move('DF20', 'Zonal Cover')
 def df20():
     d = Dr(28, speed=0.0); hidden(d)
+    # scans the zone, drifts a few steps one way then the other, and points to hand a runner on
     for f in range(28):
-        sw = math.sin(f * 0.45)
-        stance(d, f, hyaw=0.9 * math.sin(f * 0.32), hpitch=0.1, sw=sw)                                              # scanning left and right, weight shifting
-        d.m.k(f, R_ax=2.8 + 0.5 * sw, L_ax=-2.8 + 0.5 * sw if False else -2.8)
-        d.arms(f, (0.8 + 0.2 * sw, 1.0, 1.2, 0.7), (0.8 - 0.2 * sw, 1.0, 1.2, 0.7))
-    d.lateral(f0=0.0)
+        sw = math.sin(f * 0.45); ph = 2 * PI * f / 4.0; a = max(0.0, math.sin(ph)); b = max(0.0, -math.sin(ph))
+        d.at(f, R=(2.8, 0.8, 0, 2.0 + 2.0 * a) if a > 0.05 else (2.8, 0.8, 0, None), L=(-2.8, -0.6, 0, 2.0 + 2.0 * b) if b > 0.05 else (-2.8, -0.6, 0, None),
+             pz=21.8 + 0.2 * sw, cpitch=0.3, hpitch=0.1, hyaw=0.9 * math.sin(f * 0.32), croll=0.05 * sw)
+        d.arms(f, (0.65 + 0.15 * sw, 0.4, 1.6, 0.3), (0.65 - 0.15 * sw, 0.4, 1.6, 0.3))
+    for f in range(11, 17): d.arms(f, (1.55, 0.35, 1.55, 0.15), (0.8, 0.8, 1.3, 0.55))                           # a point: "yours"
+    d.lateral(f0=0.0, f3=0.7, f9=0.7, f12=0.0, f15=0.0, f17=-0.7, f24=-0.7, f27=0.0)
     return d.build()
 
 
@@ -421,10 +431,11 @@ def df29():
 @move('DF30', 'Clean Sheet Wall')
 def df30():
     d = Dr(24, speed=0.0); hidden(d)
+    # a braced wall: low and square, hands up guarding the face, a flinch each time the ball is blocked
     for f in range(24):
-        sw = math.sin(f * 0.5)
-        d.at(f, R=(3.4, 0.6, 0, None), L=(-3.4, -0.4, 0, None), pz=22.2 + 0.25 * sw, cpitch=0.12, hpitch=0.1)
-        d.arms(f, (1.7, 0.9, 2.6, 0.3), (1.7, 0.9, 2.6, 0.3))                                                          # arms raised and braced: a wall
+        fl = max(0.0, math.sin(math.pi * ((f - 5) % 9) / 3.0)) if (f - 5) % 9 < 3 else 0.0              # flinch at f5, f14, f23
+        d.at(f, R=(3.4 + 0.3 * fl, 0.6, 0, None), L=(-3.4 - 0.3 * fl, -0.4, 0, None), pz=21.8 - 1.0 * fl + 0.25 * math.sin(f * 0.5), cpitch=0.3 + 0.35 * fl, hpitch=0.1 + 0.2 * fl, hyaw=0.45 * fl)
+        d.arms(f, (0.85 + 0.15 * fl, 0.5, 2.0 + 0.3 * fl, 0.4 - 0.1 * fl), (0.85 + 0.15 * fl, 0.5, 2.0 + 0.3 * fl, 0.4 - 0.1 * fl))        # hands up guarding the face
     return d.build()
 
 
@@ -450,9 +461,11 @@ def df32():
 @move('DF33', 'Trap the Winger')
 def df33():
     d = Dr(24, speed=-0.6); hidden(d)
-    shuffle(d, 0, 23, per=4, low=0.6)
+    shuffle(d, 0, 23, per=4, low=0.9)
     d.lateral(f0=0.8, f23=0.8); d.speed(f0=-0.8, f23=-0.8)
-    for f in range(24): d.m.k(f, pyaw=-0.7, cyaw=-0.6, hyaw=0.5); d.arms(f, (1.5, 1.2, 1.5, 1.0), (0.5, 0.8, 1.2, 0.6))   # angled to show him the touchline, arm out as a wall
+    for f in range(24):
+        sw = math.sin(f * 1.6); d.m.k(f, pyaw=-0.7, cyaw=-0.6, hyaw=0.5, cpitch=0.35)
+        d.arms(f, (1.3, 0.5, 1.6, 0.2 + 0.1 * sw), (0.4, 0.6, 1.2, 0.4))                       # forward arm bent low across the winger's path, the other back
     return d.build()
 
 
