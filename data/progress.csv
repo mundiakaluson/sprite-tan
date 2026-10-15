@@ -50,3 +50,4 @@ Game,"Match camera shows the whole pitch width; lob by right-button drag with sn
 Game,"HUD in pixel art: generator (hud/hudlib.py), PixelPanel / Label / Button nodes, strip + panels + rings",doing,"needs Export to game (HUD art step); untested in Godot; next: tool HUD tab, icons, banners"
 Game,"Formation AI for F02-F10 from tactico.pro (shared AiShapedFormation + one numbers file each)",doing,"untested in Godot; tune per formation in the inspector"
 Game,"AI interaction layer: cover for defenders who step out, striker finds space when a midfielder presses, player traits (roamer / Zionel Pessi)",doing,"untested in Godot; tune in AiProfile > Interact"
+Game,"Formations can be added from the Godot inspector (FormationLayout in MatchSettings > Custom Formations)",doing,"untested in Godot; example 3-4-2-1 included"

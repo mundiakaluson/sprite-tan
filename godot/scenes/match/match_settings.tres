@@ -1,8 +1,10 @@
-[gd_resource type="Resource" script_class="MatchSettings" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="MatchSettings" load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/match/match_settings.gd" id="1"]
 [ext_resource type="Resource" path="res://scenes/ai/profile_default.tres" id="2"]
 [ext_resource type="Script" path="res://scripts/players/kit_colors.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/ai/formation_layout.gd" id="4"]
+[ext_resource type="Resource" path="res://scenes/ai/layouts/example_3421.tres" id="5"]
 
 [sub_resource type="Resource" id="kit_home"]
 script = ExtResource("3")
@@ -43,6 +45,7 @@ glove = Color(0.9098, 0.9412, 0.2353, 1)
 
 [resource]
 script = ExtResource("1")
+custom_formations = Array[ExtResource("4")]([ExtResource("5")])
 home_ai = ExtResource("2")
 away_ai = ExtResource("2")
 home_kit = SubResource("kit_home")

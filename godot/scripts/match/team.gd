@@ -17,9 +17,15 @@ func build(formation: String, used: Dictionary, rng: RandomNumberGenerator) -> v
 	formation_id = formation
 	players.clear()
 	var slots: Array = [{"role": "GK", "x": 50.0, "y": 4.0, "style": ""}]
-	for s in Data.table("formation_slots"):
-		if s["formation"] == formation:
-			slots.append({"role": s["role"], "x": Data.num(s["x"], 50.0), "y": Data.num(s["y"], 50.0), "style": s.get("style", "")})
+	var lay := MatchSettings.layout(formation)
+	if lay != null:
+		for sl in lay.slots:
+			if sl != null: slots.append({"role": sl.role, "x": sl.x, "y": sl.y, "style": sl.style})
+		if lay.slots.size() != 10: push_warning("Formation %s has %d slots, it needs 10 outfield players" % [lay.layout_name, lay.slots.size()])
+	else:
+		for s in Data.table("formation_slots"):
+			if s["formation"] == formation:
+				slots.append({"role": s["role"], "x": Data.num(s["x"], 50.0), "y": Data.num(s["y"], 50.0), "style": s.get("style", "")})
 	var pool := Data.table("players")
 	for s in slots:
 		var cands: Array = []

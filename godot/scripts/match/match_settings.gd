@@ -12,6 +12,11 @@ static var current: MatchSettings
 ## formation by name (pick from the list; names come from data/formations.csv)
 @export var home_formation := "4-4-2"
 @export var away_formation := "4-3-3"
+## formations you make here (add an element, New FormationLayout: name, family, ten slots). They appear in the two lists above
+@export var custom_formations: Array[FormationLayout] = []:
+	set(v):
+		custom_formations = v
+		notify_property_list_changed()
 ## the colours each team plays in (KitColors: open it, change the colours or use Load Preset to copy a kit from data/kits.csv)
 @export var home_kit: KitColors
 @export var away_kit: KitColors
@@ -187,13 +192,24 @@ func _validate_property(property: Dictionary) -> void:
 		_: return
 	var names: Array = []
 	for r in Data.table(table): names.append(str(r.get(col, "")))
+	for l in custom_formations:
+		if l != null: names.append(l.layout_name)
 	if names.is_empty(): return
 	property.hint = PROPERTY_HINT_ENUM
 	property.hint_string = ",".join(names)
 
 ## formation id (F01) for a name ("4-4-2") or an id
 static func formation_id(name_or_id: String) -> String:
+	var l := layout(name_or_id)
+	if l != null: return l.id
 	for r in Data.table("formations"):
 		if r["name"] == name_or_id or r["id"] == name_or_id: return r["id"]
 	return "F01"
 
+
+## a custom formation (made in Custom Formations) by name or id, or null
+static func layout(name_or_id: String) -> FormationLayout:
+	if current == null: return null
+	for l in current.custom_formations:
+		if l != null and (l.layout_name == name_or_id or l.id == name_or_id): return l
+	return null

@@ -38,6 +38,8 @@ extends Resource
 func formation_for(id: String) -> AiFormation:
 	for x in formations:
 		if x != null and id in x.formation_ids: return x
+	var lay := MatchSettings.layout(id)          # a formation made in the inspector (MatchSettings > Custom Formations)
+	if lay != null: return lay.play_for()
 	return null
 
 func stance_for(id: String) -> TeamStance:

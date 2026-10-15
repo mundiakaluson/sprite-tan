@@ -38,7 +38,8 @@ func setup(g: MatchGame, t: Team) -> void:
 	other = g.away if t == g.home else g.home
 	dir = t.dir
 	formation_id = t.formation_id
-	var row := Data.row("formations", formation_id)
+	var lay := MatchSettings.layout(formation_id)
+	var row: Dictionary = lay.row() if lay != null else Data.row("formations", formation_id)
 	family = str(row.get("family", "FOUR_BACK"))
 	var fam := {}
 	for r in Data.table("formation_families"):
