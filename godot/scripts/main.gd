@@ -1,5 +1,5 @@
 extends Control
-## Debug view: proves the export loads. Shows the export info, a recoloured player running, a skill card, a player card and a pack wrapper.
+## Debug view: proves the export loads. Shows the export info, a recoloured player running, a live-built player card and tooltip, a skill card and a pack wrapper.
 ## SPACE opens the first live shop pack and prints the pull. Left/Right turn the player. Replace this with the real game.
 
 var rng := RandomNumberGenerator.new()
@@ -18,7 +18,8 @@ func _ready() -> void:
 	var pid: String = Data.table("players")[0]["id"]
 	player = PlayerSprite.new(); player.position = Vector2(80, 200); player.scale = Vector2(4, 4); add_child(player)
 	player.setup(pid); player.play("run"); player.face(8)
-	_show(Data.tex("players/%s.png" % pid), Vector2(200, 80), 2)
+	var pc := PlayerCard.new(); pc.position = Vector2(200, 80); pc.scale = Vector2(2, 2); add_child(pc); pc.show_player(Data.row("players", pid))
+	var tip := PlayerTip.new(); tip.position = Vector2(200, 280); tip.scale = Vector2(2, 2); add_child(tip); tip.show_player(Data.row("players", pid))
 	var cid: String = Data.table("cards")[0]["id"]
 	_show(Data.tex("cards/%s.png" % cid), Vector2(360, 80), 2)
 	var shop := PackLib.shop()

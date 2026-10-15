@@ -4,12 +4,14 @@
 The manager tool's big EXPORT button calls run() on a worker thread. Pure PIL / numpy, no Tk windows are opened here.
 
 What lands where (godot/ is the Godot 4 project; assets/ and data/ are generated and git-ignored, shaders/ is tracked):
-  data/             every data/*.csv and *.json (not progress), looks_index.csv, players_cards_index.csv, export_manifest.json
+  data/             every data/*.csv and *.json (not progress), looks_index.csv, card_rules.json, export_manifest.json
   assets/sprites/   *_uv_sheet.png (12-ish frames across, 32 directions down, 40x40 cells), animations.json, skin_*.png
   assets/hair/      hair layer sheets
   assets/looks/     one 96x24 skin atlas per player (the shader recolours the sprite with it)
   assets/cards/     skill card faces (64x90) and tooltips
-  assets/players/   player card faces, tooltips and shimmer strips for the special (foil) players
+  assets/faces/     one small head-and-shoulders image per player; the card itself is assembled in the game
+  assets/card/      shared card layers: bg_/top_ per rarity, foil_ strips (36 frames) per foil style
+  assets/font/      the 3x5 pixel font (atlas + chars.txt); data/card_rules.json has the layout numbers
   assets/packs/     pack wrappers drawn from data/packs.csv and the card backs per tier
   shaders/          uv_skin.gdshader"""
 import os, sys, json, shutil, time, csv, subprocess
@@ -87,18 +89,28 @@ def step_cards(c):
 
 
 def step_players(c):
-    import playercard
+    """player cards are modular: shared layers per rarity / foil style, one small face per player, text and stats drawn in the game from the CSV"""
+    import playercard as PC, foil
     from PIL import Image
-    T = _tables(); rows = T.table('players').rows; N = 36; idx = ['id,face,tooltip,special,shimmer_strip,shimmer_frames']; sp = 0
+    import cardlib
+    T = _tables(); rows = T.table('players').rows; N = 36; steps = len(rows) + 5 + 5 + 3 + 1; n = 0
+    for r in PC.RC:
+        PC.bg_layer(r).save(c.path('assets', 'card', f'bg_{r.lower()}.png')); PC.top_layer(r).save(c.path('assets', 'card', f'top_{r.lower()}.png')); n += 10 // len(PC.RC); c.tick(n, steps)
+    for st in foil.STYLE_BY_RARITY.values():
+        sh = Image.new('RGBA', (64 * N, 90))
+        for k in range(N): sh.paste(PC.bg_layer([q for q, v in foil.STYLE_BY_RARITY.items() if v == st][0], st, k / N), (64 * k, 0))
+        sh.save(c.path('assets', 'card', f'foil_{st}.png')); n += 1; c.tick(n, steps)
+    # pixel font atlas: 4x6 cells, 16 per row; chars.txt lists them in order
+    chars = ''.join(sorted(cardlib.G.keys())); W = 16; fa = Image.new('RGBA', (W * 4, ((len(chars) + W - 1) // W) * 6), (0, 0, 0, 0))
+    for i, ch in enumerate(chars):
+        cell = Image.new('RGBA', (4, 6), (0, 0, 0, 0)); cardlib.draw_text(cell, 0, 0, ch, (255, 255, 255, 255)); fa.paste(cell, ((i % W) * 4, (i // W) * 6))
+    fa.save(c.path('assets', 'font', 'pixel.png')); open(c.path('assets', 'font', 'chars.txt'), 'w', encoding='utf-8').write(chars)
+    rules = dict(card_size=[64, 90], out_stats=PC.OUT_STATS, gk_stats=PC.GK_STATS, rating_w=PC.RATING_W, rarity_colours={k: {kk: list(vv) for kk, vv in v.items()} for k, v in PC.RC.items()},
+                 stat_colour=list(PC.STAT_COL), foil_by_rarity=foil.STYLE_BY_RARITY, foil_frames=N, ink=list(cardlib.INK), panel=list(cardlib.PANEL), foil_shimmer=foil.SHIM, face_offset=[11, 21], font_cell=[4, 6], font_columns=W)
+    json.dump(rules, open(c.path('data', 'card_rules.json'), 'w'), indent=1)
     for i, r in enumerate(rows):
-        pid = r['id']; special = str(r.get('special', '0')) == '1'
-        playercard.card(r, special=None).save(c.path('assets', 'players', f'{pid}.png')); playercard.popup(r).save(c.path('assets', 'players', f'{pid}_tip.png')); strip = ''
-        if special:
-            fr = [playercard.card(r, t=k / N) for k in range(N)]; sh = Image.new('RGBA', (64 * N, 90)); [sh.paste(f, (64 * k, 0)) for k, f in enumerate(fr)]
-            sh.save(c.path('assets', 'players', f'{pid}_shimmer.png')); strip = f'players/{pid}_shimmer.png'; sp += 1
-        idx.append(f"{pid},players/{pid}.png,players/{pid}_tip.png,{1 if special else 0},{strip},{N if special else 0}"); c.tick(i + 1, len(rows))
-    open(c.path('data', 'players_cards_index.csv'), 'w', newline='').write('\n'.join(idx) + '\n')
-    c.counts['player cards'] = len(rows); c.counts['shimmer strips'] = sp; c.log(f'drew {len(rows)} player cards ({sp} with a {N}-frame shimmer strip)')
+        PC.face_layer(r).save(c.path('assets', 'faces', f"{r['id']}.png")); c.tick(n + i + 1, steps)
+    c.counts['player faces'] = len(rows); c.log(f'wrote {len(rows)} player faces, {len(PC.RC)} rarity layers x2, {len(foil.STYLE_BY_RARITY)} foil strips, the pixel font and card_rules.json')
 
 
 def step_packs(c):

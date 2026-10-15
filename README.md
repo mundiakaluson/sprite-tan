@@ -75,7 +75,7 @@ Tabs:
 - **Packs**: pack list with state colours (live / upcoming / expired / hidden), Definition, Odds + guarantee + pity (live total, dry-spell slider), Pools, Look (tier, foil, silhouette, tilt shimmer), Simulator, Opening preview with Skip.
 - **Other tables**: looks palette, styles, families. **Checks**: validates every CSV. **Build**: buttons for the self-test, the body-sheet rebuild (`gen_uv.py`) and the hair-layer rebuild (`export_hair.py`), with a live log and a Stop button. **Sprite import**: recolour any PNG sheet.
 
-**EXPORT TO GAME** (big green button, top right of every tab): offers to save unsaved edits, then writes data, sprite sheets, hair layers, player look atlases, skill and player cards (with shimmer strips), pack wrappers and card backs into `godot/` with a progress window. Command line: `python tool/export_game.py [data sprites hair looks cards players packs]`. Takes about 30 seconds.
+**EXPORT TO GAME** (button in the tab strip, top right): offers to save unsaved edits, then writes data, sprite sheets, hair layers, player look atlases, skill cards, and the shared player-card layers + one face per player (the game draws the card text and stats from the CSV), pack wrappers and card backs into `godot/` with a progress window. Command line: `python tool/export_game.py [data sprites hair looks cards players packs]`. Takes about 30 seconds.
 
 Everything is plain CSV in `data/`, so Excel works side by side: edits made in Excel appear in the tool automatically (unless you have
 unsaved edits there), and the tool writes a `.bak` copy before each save. Close the file in Excel before saving from the tool.

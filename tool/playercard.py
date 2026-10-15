@@ -63,7 +63,8 @@ def _spark(d, x, y, col, big=False):
         for k in ((2, 0), (-2, 0), (0, 2), (0, -2)): d.point((x + k[0], y + k[1]), col)
 
 
-def card(p, kit=None, state='ready', special=None, t=0.0):
+def card(p, kit=None, state='ready', special=None, t=0.0, parts='all'):
+    """parts='all' is the full card; 'bg' = background (+ the animated frame for foil cards) with no face, no fade and no text (the shared layer the game exports)"""
     r = RC.get(p.get('rarity'), RC['COMMON']); legend = p.get('rarity') == 'LEGEND'
     if special is None: special = foil.STYLE_BY_RARITY.get(p.get('rarity')) if str(p.get('special', '0')) in ('1', 'True', 'true') else None
     if special is True: special = foil.STYLE_BY_RARITY.get(p.get('rarity'), 'galaxy')
@@ -79,12 +80,14 @@ def card(p, kit=None, state='ready', special=None, t=0.0):
                 if dd < 30: c = _mix(c, r['main'], 0.38 * (1 - dd / 30) ** 1.5)
                 if (x - y // 2) % 9 == 0 and 14 < y < 60: c = _mix(c, r['light'], 0.05)   # faint diagonal streaks
                 px[x, y] = c + (255,)
+    if parts == 'bg' and not special: return im
     # head and shoulders, fading into the dark at the bottom
     fc = face(p, kit)
     if special:   # shoulders fade out instead of darkening the whole card
         a = np.array(fc); k = np.clip(1 - (np.arange(a.shape[0]) - 27) / 11.0, 0, 1); a[..., 3] = (a[..., 3] * k[:, None]).astype(np.uint8); fc = Image.fromarray(a, 'RGBA')
-    im.alpha_composite(fc, (11, 21))
+    if parts == 'all': im.alpha_composite(fc, (11, 21))
     for y in range(46, 61 if not special else 46):
+        if parts == 'bg': break
         tt = (y - 46) / 14
         for x in range(CW):
             c = px[x, y]; px[x, y] = _mix(c[:3], tuple(int(v * 0.3) for v in c[:3]) if special else _mix(r['dark'], base, 0.8), min(1, tt * tt * 1.15)) + (255,)
@@ -108,6 +111,7 @@ def card(p, kit=None, state='ready', special=None, t=0.0):
             d.point((ix, iy), tuple(int(v * 0.55 + 255 * 0.45 * lit) for v in col) + (255,))
             if lit > 0.3: d.point((x, y), tuple(int(v * (1 - lit * 0.7) + 255 * lit * 0.7) for v in col) + (255,))
         for (x, y) in ((2, 2), (CW - 3, 2), (2, CH - 3), (CW - 3, CH - 3)): _spark(d, x, y, (255, 255, 255, 255))
+    if parts == 'bg': return im
     # top left: rating (big) and role; top right: rarity
     _text2(im, 5, 5, str(p.get('rating', '')), (255, 255, 255, 255))
     role = p.get('role', ''); draw_text(im, 5, 18, role, r['light'] + (255,))
@@ -145,4 +149,33 @@ def popup(p, w=148):
         draw_text(im, 6, y, k, (170, 176, 208, 255)); draw_text(im, 30, y, str(v), STAT_COL + (255,))
         d.rectangle([44, y + 1, w - 8, y + 3], fill=(48, 48, 70, 255)); d.rectangle([44, y + 1, 44 + int((w - 52) * v / 100), y + 3], fill=STAT_COL + (255,)); y += 7
     y += 3; draw_text(im, 6, y, 'PLAYS ' + (p.get('roles') or p.get('role', '')).replace('|', ' '), (235, 238, 250, 255))
+    return im
+
+
+# ---------------------------------------------------------------------------------------------- shared layers for the game
+def face_layer(p, special=None):
+    """the one per-player image: head and shoulders (2x). Foil cards get the fade-out at the bottom baked in."""
+    if special is None: special = str(p.get('special', '0')) in ('1', 'True', 'true')
+    fc = face(p)
+    if special:
+        a = np.array(fc); k = np.clip(1 - (np.arange(a.shape[0]) - 27) / 11.0, 0, 1); a[..., 3] = (a[..., 3] * k[:, None]).astype(np.uint8); fc = Image.fromarray(a, 'RGBA')
+    return fc
+
+
+def bg_layer(rarity, special=None, t=0.0):
+    """shared background for a rarity (special = foil style name for the animated version)"""
+    return card(dict(rarity=rarity, role='', name='', rating=''), special=special, t=t, parts='bg')
+
+
+def top_layer(rarity):
+    """shared overlay for plain cards, drawn over the face: the dark fade at the bottom of the portrait plus the chamfered outline"""
+    r = RC[rarity]; base = (12, 13, 20); im = Image.new('RGBA', (CW, CH), (0, 0, 0, 0)); px = im.load(); col = _mix(r['dark'], base, 0.8)
+    for y in range(46, 61):
+        tt = (y - 46) / 14; a = int(round(255 * min(1, tt * tt * 1.15)))
+        for x in range(CW): px[x, y] = col + (a,)
+    d = ImageDraw.Draw(im); edge = r['light'] if rarity == 'LEGEND' else r['main']
+    for x in range(2, CW - 2): d.point((x, 0), edge + (255,)); d.point((x, CH - 1), edge + (255,))
+    for y in range(2, CH - 2): d.point((0, y), edge + (255,)); d.point((CW - 1, y), edge + (255,))
+    for (x, y) in ((1, 1), (CW - 2, 1), (1, CH - 2), (CW - 2, CH - 2)): d.point((x, y), edge + (255,))
+    for (x, y) in ((0, 0), (CW - 1, 0), (0, CH - 1), (CW - 1, CH - 1)): d.point((x, y), (0, 0, 0, 0))
     return im

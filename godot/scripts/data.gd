@@ -6,6 +6,7 @@ var tables := {}      # name -> Array[Dictionary]
 var by_id := {}       # name -> { id -> row }
 var manifest := {}
 var anims := {}       # animations.json
+var rules := {}       # card_rules.json (layout numbers for player cards)
 var ok := false
 
 func _ready() -> void:
@@ -28,6 +29,7 @@ func reload() -> void:
 			by_id[tname] = idx
 	manifest = _read_json("res://data/export_manifest.json")
 	anims = _read_json("res://assets/sprites/animations.json")
+	rules = _read_json("res://data/card_rules.json")
 	ok = tables.has("players")
 
 func _read_csv(path: String) -> Array:
