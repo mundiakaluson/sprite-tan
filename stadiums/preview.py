@@ -71,7 +71,7 @@ def draw_goal(canvas, cam, net, side, row=None, alpha=None):
     """the goal frame and net (net = goallib.Net, side -1 = own goal on the left, +1 = right). Posts and bar sway with net.posts."""
     d = ImageDraw.Draw(canvas, 'RGBA'); g = net.g; x0 = side * L / 2; P = net.p
     ncol = tuple(int(g['net_color'][i:i + 2], 16) for i in (1, 3, 5)); pcol = tuple(int(g['post_color'][i:i + 2], 16) for i in (1, 3, 5))
-    na = int(SL.num(g.get('net_alpha'), 200) if alpha is None else alpha)
+    na = int(net.alpha if alpha is None else alpha)
     W3 = lambda p: (x0 + side * p[0], p[1], p[2])
     pts = [W3(p) for p in P]; sc = cam.project(np.array(pts)); sx, sy, sz = sc
     for a, b in net.edges:
@@ -112,7 +112,8 @@ def render(row, cam=None, size=(960, 540), nets=None, cache=None, ball=None, goa
                 line3(d, cam, (tx, 0, tz), (tx, 32, tz), (60, 64, 74, 255), 3); line3(d, cam, (tx - 3.5, 33.5, tz), (tx + 3.5, 33.5, tz), (255, 247, 210, 255), 7)
     if goals:
         gs = GL.style(row.get('goal', 'G01'))
-        nets = nets or {-1: GL.Net(gs), 1: GL.Net(gs)}
+        wr = row.get('net_wear', ''); wear = float(wr) if str(wr).strip() != '' else None
+        nets = nets or {-1: GL.Net(gs, wear), 1: GL.Net(gs, wear)}
         for side in (-1, 1): draw_goal(canvas, cam, nets[side], side)
     if ball is not None:
         bx, by, bz = ball; px, py, pz = cam.pt((bx, by, bz)); gx, gy, _ = cam.pt((bx, 0, bz)); r = max(2, cam.f * GL.BALL_R / pz)

@@ -15,6 +15,7 @@ signal hit_frame(part: String, point: Vector3)
 @export var override_stiffness := -1.0      ## < 0 = use the style
 @export var override_drag := -1.0
 @export var override_post_sway := -1.0
+@export var wear_override := -1.0            ## 0-100 net wear; < 0 = use the style (a stadium can have older nets)
 @export var ball_radius := GoalNet.BALL_R
 
 var net := GoalNet.new()
@@ -39,9 +40,9 @@ func rebuild() -> void:
 	if override_stiffness >= 0.0: style["stiffness"] = str(override_stiffness)
 	if override_drag >= 0.0: style["drag"] = str(override_drag)
 	if override_post_sway >= 0.0: style["post_sway"] = str(override_post_sway)
-	net = GoalNet.new(); net.setup(style)
+	net = GoalNet.new(); net.setup(style, wear_override)
 	var pc := Color.html(str(style.get("post_color", "#f6f6f2"))); var nc := Color.html(str(style.get("net_color", "#f0f4f0")))
-	nc.a = float(str(style.get("net_alpha", "200"))) / 255.0
+	nc.a = net.alpha / 255.0
 	_left = _post(Vector3(0, net.h / 2.0, -net.hw), Vector3(net.pr * 2, net.h, net.pr * 2), pc)
 	_right = _post(Vector3(0, net.h / 2.0, net.hw), Vector3(net.pr * 2, net.h, net.pr * 2), pc)
 	_bar = _post(Vector3(0, net.h, 0), Vector3(net.pr * 2, net.pr * 2, net.hw * 2 + net.pr * 2), pc)

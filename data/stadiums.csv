@@ -1,4 +1,4 @@
-id,name,time,grass_a,grass_b,mow,worn,stand,stand_trim,seat,board,crowd,crowd_colors,roof,towers,light,goal,capacity,note,cam_height,cam_back,look_z,fov
-ST01,Old Ground,day,#3f7d3c,#4a8c44,stripes,35,#8a4a3a,#c9b28a,#b8c0c8,#d9c07a,55,#c8372d;#f2f2f2;#2d4fa8;#e8c33a,0,1,0.0,G01,18000,"classic brick terraces, striped pitch, small floodlight towers",26,16,-4,34
-ST02,City Bowl,night,#2f6b3a,#397c44,checker,15,#2c3a5c,#8fa4d4,#4b6fb8,#7ad0ff,85,#ffffff;#58a6ff;#1f3a7a;#c9d8ff,1,1,1.0,G02,45000,"big floodlit bowl, checkerboard pitch, dense crowd",30,18,-5,34
-ST03,Seaside Park,dusk,#4b8a3a,#5a9a44,diagonal,60,#6b7f5a,#d8d0a0,#a8b890,#e87b4a,30,#e8e0c0;#d4543a;#3a8a7a;#f0b84a,0,0,0.0,G03,8000,"open low terraces and hedges, worn pitch, golden hour",22,14,-3,38
+id,name,time,grass_a,grass_b,mow,worn,stand,stand_trim,seat,board,crowd,crowd_colors,roof,towers,light,goal,net_wear,capacity,note,cam_height,cam_back,look_z,fov
+ST01,Old Ground,day,#3f7d3c,#4a8c44,stripes,35,#8a4a3a,#c9b28a,#b8c0c8,#d9c07a,55,#c8372d;#f2f2f2;#2d4fa8;#e8c33a,0,1,0.0,G01,25,18000,"classic brick terraces, striped pitch, small floodlight towers",26,16,-4,34
+ST02,City Bowl,night,#2f6b3a,#397c44,checker,15,#2c3a5c,#8fa4d4,#4b6fb8,#7ad0ff,85,#ffffff;#58a6ff;#1f3a7a;#c9d8ff,1,1,1.0,G02,0,45000,"big floodlit bowl, checkerboard pitch, dense crowd",30,18,-5,34
+ST03,Seaside Park,dusk,#4b8a3a,#5a9a44,diagonal,60,#6b7f5a,#d8d0a0,#a8b890,#e87b4a,30,#e8e0c0;#d4543a;#3a8a7a;#f0b84a,0,0,0.0,G03,,8000,"open low terraces and hedges, worn pitch, golden hour",22,14,-3,38

@@ -9,7 +9,7 @@ if ST_DIR not in sys.path: sys.path.insert(0, ST_DIR)
 import stadiumlib as SL, goallib as GL, preview as PV
 
 SLIDERS = [('stiffness', 'Net stiffness', 0.05, 1.0, 0.01), ('damping', 'Net damping', 0.0, 0.1, 0.002), ('gravity', 'Net sag / gravity', 0, 20, 0.5), ('drag', 'Net drag on ball', 0, 30, 0.5),
-           ('post_sway', 'Post stiffness', 5, 300, 1), ('post_damp', 'Post damping', 0, 20, 0.2), ('bounce', 'Frame bounce', 0, 1, 0.05)]
+           ('post_sway', 'Post stiffness', 5, 300, 1), ('post_damp', 'Post damping', 0, 20, 0.2), ('bounce', 'Frame bounce', 0, 1, 0.05), ('stretch', 'Stretch (0 hard, 1 soft)', 0, 1, 0.01), ('wear', 'Wear % (0 new)', 0, 100, 1)]
 GEOM = [('width', 'Width m', 3, 9, 0.02), ('height', 'Height m', 1.5, 3, 0.02), ('depth', 'Depth top m', 0.5, 4, 0.05), ('depth_low', 'Depth ground m', 0.5, 4, 0.05), ('mesh', 'Net cell m', 0.2, 0.7, 0.01)]
 VIEWS = ['Front side', 'Behind the goal', 'TV camera']
 X0 = SL.LEN / 2
@@ -18,7 +18,7 @@ X0 = SL.LEN / 2
 def new_goal(t):
     n = 1
     while any(r['id'] == f'G{n:02d}' for r in t.rows): n += 1
-    return dict(id=f'G{n:02d}', name='New goal', width='7.32', height='2.44', depth='2.0', depth_low='2.0', mesh='0.35', post_radius='0.06', post_color='#f6f6f2', net_color='#f0f4f0', net_alpha='200',
+    return dict(id=f'G{n:02d}', name='New goal', width='7.32', height='2.44', depth='2.0', depth_low='2.0', mesh='0.35', post_radius='0.06', post_color='#f6f6f2', net_color='#f0f4f0', net_alpha='200', stretch='0.2', wear='0',
                 stiffness='0.55', damping='0.015', gravity='6.0', drag='7.0', post_sway='60', post_damp='4.0', bounce='0.55', note='')
 
 
@@ -90,7 +90,7 @@ class GoalSimTab(ttk.Frame):
     def table_changed(self):
         r = self.row()
         if not r or not self.net: return
-        geo = tuple(r.get(k) for k in ('width', 'height', 'depth', 'depth_low', 'mesh'))
+        geo = tuple(r.get(k) for k in ('width', 'height', 'depth', 'depth_low', 'mesh', 'wear'))
         if geo != getattr(self, '_geo', None): self.build_net()
         else:
             for n in self.nets.values(): n.apply(r)
@@ -99,7 +99,7 @@ class GoalSimTab(ttk.Frame):
     def build_net(self):
         r = self.row()
         if not r: return
-        self._geo = tuple(r.get(k) for k in ('width', 'height', 'depth', 'depth_low', 'mesh')); self.net = GL.Net(r); self.nets = {1: self.net, -1: GL.Net(r)}; self.ball = None; self.trail = []; self.info = ''
+        self._geo = tuple(r.get(k) for k in ('width', 'height', 'depth', 'depth_low', 'mesh', 'wear')); self.net = GL.Net(r); self.nets = {1: self.net, -1: GL.Net(r)}; self.ball = None; self.trail = []; self.info = ''
 
     def reset(self): self.build_net()
 

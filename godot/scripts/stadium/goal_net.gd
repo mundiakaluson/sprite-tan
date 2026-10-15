@@ -31,7 +31,7 @@ var grav := 6.0
 var drag := 6.0
 var pr := 0.06
 var bounce := 0.55
-const NET_A := 1100.0         # how hard the net wall pushes the ball back (m/s^2 per metre of penetration, times stiffness)
+const NET_A := 1100.0         # how hard the net wall pushes the ball back (m/s^2 per metre of penetration, times style stiffness; see apply())
 const NET_C := 22.0           # the net soaks up the ball's speed while it is touching (1/s)
 const BALL_R := 0.17          # game ball radius (a real ball is 0.11 m; a bit bigger reads better on screen)
 var p := PackedVector3Array()
@@ -50,14 +50,25 @@ static func _f(g: Dictionary, key: String, d: float) -> float:
 	var v = g.get(key, "")
 	return float(v) if str(v) != "" else d
 
-func setup(g: Dictionary) -> void:
+var wall_a := 600.0
+var wall_c := 22.0
+var alpha := 200.0
+var droop := 0.0
+var wear_override := -1.0
+
+func setup(g: Dictionary, wear := -1.0) -> void:
+	wear_override = wear
 	hw = _f(g, "width", 7.32) / 2.0; h = _f(g, "height", 2.44); dep = _f(g, "depth", 2.0); dep_low = _f(g, "depth_low", dep); mesh = maxf(0.1, _f(g, "mesh", 0.35)); pr = _f(g, "post_radius", 0.06)
 	apply(g)
 	_build()
 
 ## new physics numbers without rebuilding the mesh
 func apply(g: Dictionary) -> void:
-	stiff = _f(g, "stiffness", 0.5); damp = _f(g, "damping", 0.02); grav = _f(g, "gravity", 6.0); drag = _f(g, "drag", 6.0); bounce = _f(g, "bounce", 0.55)
+	var w := (_f(g, "wear", 0.0) if wear_override < 0.0 else wear_override) / 100.0       # 0 new .. 1 worn out
+	var st := _f(g, "stretch", 0.2)                                                       # 0 hard .. 1 soft
+	stiff = _f(g, "stiffness", 0.5) * (1.0 - 0.45 * w) * (1.0 - 0.5 * st); grav = _f(g, "gravity", 6.0) * (1.0 + 1.5 * w); damp = _f(g, "damping", 0.02) * (1.0 - 0.4 * w)
+	wall_a = NET_A * _f(g, "stiffness", 0.5) * (1.0 - 0.5 * w) / (1.0 + 10.0 * st); wall_c = NET_C * (1.0 - 0.6 * st); alpha = _f(g, "net_alpha", 200.0) * (1.0 - 0.35 * w); droop = 0.2 * w
+	drag = _f(g, "drag", 6.0); bounce = _f(g, "bounce", 0.55)
 	var k := _f(g, "post_sway", 50.0); var c := _f(g, "post_damp", 3.5)
 	left.k = k; left.c = c; right.k = k; right.c = c; bar.k = k * 1.3; bar.c = c
 
@@ -86,9 +97,14 @@ func _build() -> void:
 			for j in range(nv + 1):
 				if i < nu: _edge(edge_set, idx[Vector2i(i, j)], idx[Vector2i(i + 1, j)])
 				if j < nv: _edge(edge_set, idx[Vector2i(i, j)], idx[Vector2i(i, j + 1)])
-	p = PackedVector3Array(pts); prev = p.duplicate(); home = p.duplicate()
+	p = PackedVector3Array(pts)
 	pinned.resize(p.size())
 	for i in p.size(): pinned[i] = 1 if (p[i].x < 0.001 or p[i].y < 0.001 or (absf(p[i].y - h) < 0.001 and absf(p[i].x - dep) < 0.001)) else 0   # front frame, ground, rear top bar
+	if droop > 0.0:                                                                         # a worn net hangs lower in the middle
+		for i in p.size():
+			if pinned[i] == 0:
+				var q := p[i]; q.y -= droop * (1.0 - pow(q.z / hw, 2.0)) * clampf(q.y / h, 0.0, 1.0); p[i] = q
+	prev = p.duplicate(); home = p.duplicate()
 	edges.clear(); rest.clear()
 	for k in edge_set.keys():
 		var a: int = k >> 20; var b: int = k & 0xFFFFF
@@ -130,8 +146,8 @@ func step(dt: float, has_ball := false, bp := Vector3.ZERO, bv := Vector3.ZERO, 
 			hits.append(["net", bp])
 		# inside the goal the net is a soft wall (back, roof, sides): the ball cannot pass through it, the mesh bulges to show it
 		if bp.x > 0.0 and absf(bp.z) < hw + br and bp.y < h:
-			var aa := NET_A * stiff
-			var damp_k := 1.0 - minf(0.9, NET_C * dt)
+			var aa := wall_a
+			var damp_k := 1.0 - minf(0.9, wall_c * dt)
 			var dd := bp.x + br - (dep_low + (dep - dep_low) * clampf(bp.y / h, 0.0, 1.0))
 			if dd > 0.0:
 				newv.x -= aa * dd * dt; newv *= damp_k; hits.append(["net", bp])

@@ -31,6 +31,7 @@
  ],
  "light": 1.0,
  "goal": "G02",
+ "net_wear": 0.0,
  "cam": {
   "height": 30.0,
   "back": 18.0,

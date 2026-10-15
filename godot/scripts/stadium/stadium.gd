@@ -182,6 +182,7 @@ func rebuild() -> void:
 
 func _goal(side: float) -> void:      # side -1 = own goal (left), +1 = opponent goal (right). Goal's local +x points outward.
 	var g := Goal.new()
+	g.wear_override = float(layout.get("net_wear", -1.0))
 	g.style_id = String(layout.get("goal", "G01"))
 	g.position = Vector3(side * L / 2.0, 0, 0)
 	if side < 0.0: g.rotation.y = PI

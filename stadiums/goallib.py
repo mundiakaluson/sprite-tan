@@ -23,6 +23,14 @@ def style(gid, rows=None):
     return (rows or load())[0]
 
 
+def feel(g, wear=None):
+    """the numbers the simulation really uses, from the goal row. wear = 0-100 overrides the style's own wear (a stadium can have older nets).
+    stretch 0-1: how much the net gives (0 = hard, new, taut; 1 = soft, stretches a lot). wear 0-100: how worn out it is (looser, sags, flaps longer, fainter)."""
+    w = (f(g, 'wear', 0.0) if wear is None or wear < 0 else float(wear)) / 100.0; st = f(g, 'stretch', 0.2)
+    return dict(wear=w, stiff=f(g, 'stiffness', 0.5) * (1 - 0.45 * w) * (1 - 0.5 * st), grav=f(g, 'gravity', 6.0) * (1 + 1.5 * w), damp=f(g, 'damping', 0.02) * (1 - 0.4 * w),
+                wall_a=NET_A * f(g, 'stiffness', 0.5) * (1 - 0.5 * w) / (1 + 10 * st), wall_c=NET_C * (1 - 0.6 * st), alpha=f(g, 'net_alpha', 200) * (1 - 0.35 * w), droop=0.2 * w)
+
+
 def f(r, k, d=0.0):
     try: return float(r.get(k))
     except (TypeError, ValueError): return d
@@ -34,7 +42,7 @@ def check(rows):
         if r['id'] in ids: out.append(('error', r['id'], 'duplicate id'))
         ids.add(r['id'])
         for k, lo, hi in (('width', 1, 12), ('height', 1, 4), ('depth', 0.3, 5), ('depth_low', 0.3, 5), ('mesh', 0.1, 1), ('post_radius', 0.02, 0.2), ('stiffness', 0.05, 1), ('damping', 0, 0.2),
-                          ('gravity', 0, 20), ('drag', 0, 30), ('post_sway', 5, 400), ('post_damp', 0, 30), ('bounce', 0, 1), ('net_alpha', 0, 255)):
+                          ('gravity', 0, 20), ('drag', 0, 30), ('post_sway', 5, 400), ('post_damp', 0, 30), ('bounce', 0, 1), ('net_alpha', 0, 255), ('stretch', 0, 1), ('wear', 0, 100)):
             if not lo <= f(r, k, -1) <= hi: out.append(('error', r['id'], f'{k} must be {lo} to {hi}'))
         for k in ('post_color', 'net_color'):
             s = r.get(k, '')
@@ -52,20 +60,22 @@ class Wobble:
 
 
 class Net:
-    def __init__(self, g):
-        self.g = g; self.hw = f(g, 'width', 7.32) / 2; self.h = f(g, 'height', 2.44); self.dep = f(g, 'depth', 2.0); self.dep_low = f(g, 'depth_low', self.dep)
-        self.mesh = max(0.1, f(g, 'mesh', 0.35)); self.stiff = f(g, 'stiffness', 0.5); self.damp = f(g, 'damping', 0.02); self.grav = f(g, 'gravity', 6.0); self.drag = f(g, 'drag', 6.0)
+    def __init__(self, g, wear=None):
+        self.g = g; self.wear = wear; self.hw = f(g, 'width', 7.32) / 2; self.h = f(g, 'height', 2.44); self.dep = f(g, 'depth', 2.0); self.dep_low = f(g, 'depth_low', self.dep)
+        self.mesh = max(0.1, f(g, 'mesh', 0.35)); self.drag = f(g, 'drag', 6.0)
         self.pr = f(g, 'post_radius', 0.06); self.bounce = f(g, 'bounce', 0.55)
-        self.build(); self.t = 0.0
         k, c = f(g, 'post_sway', 50), f(g, 'post_damp', 3.5)
         self.posts = dict(left=Wobble(k, c), right=Wobble(k, c), bar=Wobble(k * 1.3, c))
+        self.apply(g, build=True); self.build(); self.t = 0.0
         self.touching = False
 
-    def apply(self, g):
-        """take new physics numbers from the row without rebuilding the mesh (geometry changes need a new Net)"""
-        self.g = g; self.stiff = f(g, 'stiffness', 0.5); self.damp = f(g, 'damping', 0.02); self.grav = f(g, 'gravity', 6.0); self.drag = f(g, 'drag', 6.0); self.bounce = f(g, 'bounce', 0.55)
+    def apply(self, g, build=False):
+        """take new physics numbers from the row without rebuilding the mesh (geometry or wear changes need a new Net)"""
+        self.g = g; e = feel(g, self.wear); self.eff = e; self.stiff, self.damp, self.grav, self.wall_a, self.wall_c, self.alpha, self.droop = e['stiff'], e['damp'], e['grav'], e['wall_a'], e['wall_c'], e['alpha'], e['droop']
+        self.drag = f(g, 'drag', 6.0); self.bounce = f(g, 'bounce', 0.55)
         k, c = f(g, 'post_sway', 50), f(g, 'post_damp', 3.5)
-        for n, w in self.posts.items(): w.k, w.c = k * (1.3 if n == 'bar' else 1.0), c
+        if not build:
+            for n, w in self.posts.items(): w.k, w.c = k * (1.3 if n == 'bar' else 1.0), c
 
     # ---- mesh
     def build(self):
@@ -88,7 +98,10 @@ class Net:
         panel((0, h, -hw), (0, h, hw), (d, h, hw), (d, h, -hw))                          # roof
         panel((0, 0, -hw), (0, h, -hw), (d, h, -hw), (dl, 0, -hw))                       # side (z = -hw)
         panel((0, 0, hw), (0, h, hw), (d, h, hw), (dl, 0, hw))                           # side (z = +hw)
-        self.p = np.array(P, float); self.prev = self.p.copy(); self.home = self.p.copy()
+        self.p = np.array(P, float); self.pin = (self.p[:, 0] < 1e-3) | (self.p[:, 1] < 1e-3) | ((np.abs(self.p[:, 1] - h) < 1e-3) & (np.abs(self.p[:, 0] - d) < 1e-3))
+        if self.droop > 0:                                                                  # a worn net hangs lower in the middle
+            self.p[:, 1] -= np.where(self.pin, 0.0, self.droop * (1 - (self.p[:, 2] / hw) ** 2) * np.clip(self.p[:, 1] / h, 0, 1))
+        self.prev = self.p.copy(); self.home = self.p.copy()
         self.edges = np.array(sorted(edges), int); self.rest = np.linalg.norm(self.p[self.edges[:, 0]] - self.p[self.edges[:, 1]], axis=1)
         self.pin = (self.p[:, 0] < 1e-3) | (self.p[:, 1] < 1e-3) | ((np.abs(self.p[:, 1] - h) < 1e-3) & (np.abs(self.p[:, 0] - d) < 1e-3))   # front frame, ground, rear top bar
 
@@ -111,7 +124,7 @@ class Net:
                 newv = newv * float(np.exp(-self.drag * dt * min(10, int(near.sum())) / 3.0)); hits.append(('net', bp))
             # inside the goal the net is a soft wall (back, roof, sides): the ball cannot pass through it, the mesh bulges to show it
             if 0.0 < bp[0] and abs(bp[2]) < self.hw + br and bp[1] < self.h:
-                A = NET_A * self.stiff; C = NET_C; dd = bp[0] + br - (self.dep_low + (self.dep - self.dep_low) * min(1.0, max(0.0, bp[1] / self.h)))
+                A = self.wall_a; C = self.wall_c; dd = bp[0] + br - (self.dep_low + (self.dep - self.dep_low) * min(1.0, max(0.0, bp[1] / self.h)))
                 if dd > 0: newv[0] -= A * dd * dt; newv *= (1 - min(0.9, C * dt)); hits.append(('net', bp))
                 dd = abs(bp[2]) + br - self.hw; sg = 1.0 if bp[2] > 0 else -1.0
                 if dd > 0: newv[2] -= sg * A * dd * dt; newv *= (1 - min(0.9, C * dt)); hits.append(('net', bp))

@@ -142,7 +142,7 @@ def render_net():
 def layout(row):
     return dict(id=row['id'], name=row['name'], time=row['time'], ppm=PPM, apron=APR, pitch_m=[LEN, WID], texture=[TW, TH], sky=SKY[row['time']],
                 towers=str(row.get('towers', '0')) == '1', roof=str(row.get('roof', '0')) == '1', stand=list(hexrgb(row['stand'])), trim=list(hexrgb(row['stand_trim'])),
-                light=num(row.get('light')), goal=row.get('goal', 'G01'), cam=dict(height=num(row.get('cam_height'), 26), back=num(row.get('cam_back'), 16), look_z=num(row.get('look_z'), -4), fov=num(row.get('fov'), 34)), capacity=int(num(row.get('capacity'))),
+                light=num(row.get('light')), goal=row.get('goal', 'G01'), net_wear=(num(row.get('net_wear')) if str(row.get('net_wear', '')).strip() != '' else -1), cam=dict(height=num(row.get('cam_height'), 26), back=num(row.get('cam_back'), 16), look_z=num(row.get('look_z'), -4), fov=num(row.get('fov'), 34)), capacity=int(num(row.get('capacity'))),
                 view='TV side-on, perspective camera behind the near touchline; pitch x along (own goal at -x), z across (far touchline at -z)')
 
 

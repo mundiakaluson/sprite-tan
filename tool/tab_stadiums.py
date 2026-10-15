@@ -18,7 +18,7 @@ def new_stadium(t):
     while any(r['id'] == f'ST{n:02d}' for r in t.rows): n += 1
     r = {c: '' for c in t.cols}
     r.update(id=f'ST{n:02d}', name='New stadium', time='day', grass_a='#3f7d3c', grass_b='#4a8c44', mow='stripes', worn='20', stand='#6a4a3a', stand_trim='#c9b28a', seat='#b8c0c8', board='#d9c07a',
-             crowd='60', crowd_colors='#c8372d;#f2f2f2;#2d4fa8;#e8c33a', roof='0', towers='0', light='1.0', goal='G01', capacity='20000', cam_height='26', cam_back='16', look_z='-4', fov='34')
+             crowd='60', crowd_colors='#c8372d;#f2f2f2;#2d4fa8;#e8c33a', roof='0', towers='0', light='1.0', goal='G01', capacity='20000', net_wear='', cam_height='26', cam_back='16', look_z='-4', fov='34')
     return r
 
 

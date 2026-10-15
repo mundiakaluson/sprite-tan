@@ -31,6 +31,7 @@
  ],
  "light": 0.0,
  "goal": "G01",
+ "net_wear": 25.0,
  "cam": {
   "height": 26.0,
   "back": 16.0,
