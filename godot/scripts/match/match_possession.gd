@@ -86,7 +86,7 @@ func _loose(_dt: float) -> void:
 ## The kick animation, then the ball state does the kick (Ball.play_action: Pass / Through / Lob / Shot, numbers in data/ball_actions.csv).
 ## `over` may replace style / speed / noise. `receiver` is who the pass is meant for (he runs onto it and controls it more easily).
 func kick_action(f: Footballer, action: String, to: Vector2, to_vel := Vector2.ZERO, over := {}, receiver: Footballer = null) -> void:
-	g.motion.act(f, "kick", 0.35, func(): launch(f, action, to, to_vel, over, receiver))
+	g.kicking.kick(f, action, to, to_vel, over, receiver)
 
 func launch(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: Dictionary, receiver: Footballer = null) -> void:
 	if g.carrier != f: return

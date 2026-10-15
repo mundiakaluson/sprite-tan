@@ -64,6 +64,29 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 ## the first touch kills this fraction of his speed (a trap), and he is slowed for a moment
 @export_range(0.0, 1.0) var control_cushion := 0.35
 
+@export_group("Kick turn and stumble")
+## he turns to face the target first when it is more than this many degrees away from where he faces, at this speed (degrees per second); the kick starts when he is within `pivot_done_deg`, or after `pivot_max` s
+@export var pivot_min_deg := 30.0
+@export var pivot_deg_per_s := 520.0
+@export var pivot_done_deg := 14.0
+@export var pivot_max := 0.6
+## an opponent closer than this (m) is pressing him (full pressure at his shoulder)
+@export var pressure_radius := 3.0
+## chance a pass is scuffed = base + (60 - PAS) * per_pas + pressure * pressure_k + (kicked before turning) * misaligned_k; a scuffed pass gets this much aim error (metres)
+@export var scuff_base := 0.05
+@export var scuff_per_pas := 0.004
+@export var scuff_pressure := 0.3
+@export var scuff_misaligned := 0.25
+@export var scuff_noise := 8.0
+## after a scuffed pass he falls (when pressed) with this chance, else stumbles; a clean pass under pressure still makes him stumble a bit with this chance
+@export_range(0.0, 1.0) var fall_chance := 0.4
+@export_range(0.0, 1.0) var stumble_pressed := 0.25
+## he staggers on at this speed (m/s) in the way he faces
+@export var stumble_drift := 1.5
+@export var clips_stumble_light := PackedStringArray(["base_stumble_fwd_s", "base_stumble_side_s", "base_stumble_back_s"])
+@export var clips_stumble_medium := PackedStringArray(["base_stumble_fwd_m", "base_stumble_side_m", "base_stumble_back_m"])
+@export var clips_fall := PackedStringArray(["base_fall"])
+
 @export_group("Possession")
 ## how close the ball must be to a player's feet to be picked up
 @export var pickup_reach := 0.9

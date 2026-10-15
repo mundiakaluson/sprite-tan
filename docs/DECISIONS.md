@@ -176,3 +176,5 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - Ball touch + keeper saves: smaller ball, eased first touch, animated keeper dives with clip lists and mirror (match_keeper.gd). Untested.
 - Camera pans across the pitch with the ball (Stadium pan_far / pan_speed): ball far side -> camera slides up, near side -> bottom line back in view.
 - Camera moved to scripts/camera/camera_rig.gd (CameraRig): orbit around the followed point (yaw/pitch/distance), all in the inspector; MatchSettings camera group removed.
+- Kicks pivot to face the target first; scuffed or pressed passes make the passer stumble or fall (match_kicking.gd). Untested.
+- AI behaviours: drop-in decision scripts (AiBehaviour) listed in AiProfile > Behaviours, tried before a role's own cases; example jockey.

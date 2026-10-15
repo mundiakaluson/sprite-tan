@@ -32,7 +32,7 @@ func update(dt: float) -> void:
 				var cb := f.pending
 				f.pending = Callable()
 				cb.call()
-		var want := f.want if (f.lock <= 0.0 and playing) else Vector2.ZERO
+		var want := f.want if (f.lock <= 0.0 and playing and f.aim_done.is_null()) else Vector2.ZERO
 		var rate := s.accel if want.length() > f.vel.length() - 0.1 else s.brake
 		var before := f.pos
 		f.vel = f.vel.move_toward(want, rate * dt)
@@ -40,7 +40,7 @@ func update(dt: float) -> void:
 		f.pos.x = clampf(f.pos.x, -MatchGame.HALF_L - 3.0, MatchGame.HALF_L + 3.0)
 		f.pos.y = clampf(f.pos.y, -MatchGame.HALF_W - 2.0, MatchGame.HALF_W + 2.0)
 		if g.carrier == f: f.carried += before.distance_to(f.pos)
-		if f.vel.length() > 0.5:
+		if f.vel.length() > 0.5 and f.aim_done.is_null():
 			f.face = f.face.lerp(f.vel.normalized(), clampf(dt * s.turn_rate, 0.0, 1.0)).normalized()
 		f.want = Vector2.ZERO
 	for i in g.all.size():

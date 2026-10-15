@@ -31,6 +31,11 @@ extends Resource
 ## team interaction: cover for a defender who steps out, the striker looking for space when a midfielder presses, player traits (roamer)
 @export var interact: AiInteract
 
+@export_group("Behaviours")
+## extra decisions, one small script each (scripts/ai/behaviours/, copy ai_jockey.gd): tried in this order for every matching player, after the formation file and before the role's own cases.
+## A new behaviour = a script extending AiBehaviour + a .tres in scenes/ai/behaviours/ + one entry here
+@export var behaviours: Array[AiBehaviour] = []
+
 @export_group("Formations")
 ## team play per formation (4-4-2 here: banks, press triggers, who drops, overlaps). A role follows its formation's file first, then its own AI.
 @export var formations: Array[AiFormation] = []
