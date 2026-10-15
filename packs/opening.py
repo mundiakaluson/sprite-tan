@@ -55,28 +55,10 @@ def face(item, t=1.0):
 
 
 def card_back(rar, style=None):
-    """pack-style card back: tinted (foil for the high tiers) field, double frame, football crest"""
-    c = RC[rar]; W, H = 64, 90; im = Image.new('RGBA', (W, H), (0, 0, 0, 255)); px = im.load()
-    if style:
-        bg = np.array(foil.background(style, 0.9).astype(float))[:H, :W] * 0.42; bg = np.pad(bg, ((0, max(0, H - bg.shape[0])), (0, 0), (0, 0)), mode='edge')[:H]
-    for y in range(H):
-        for x in range(W):
-            g = 0.5 + 0.5 * y / H
-            base = tuple(int(v * 0.30 * (1.15 - 0.5 * abs(x - 32) / 32) * g + 9) for v in c['dark'])
-            col = tuple(int(v) for v in bg[y, x]) if style else base
-            if (x + y) % 8 == 0 or (x - y) % 8 == 0: col = tuple(min(255, int(v * 1.25) + 6) for v in col)
-            px[x, y] = col + (255,)
-    d = ImageDraw.Draw(im); m = c['main'] + (255,); lt = c['light'] + (255,); dk = c['dark'] + (255,)
-    d.rectangle([0, 0, W - 1, H - 1], outline=m); d.rectangle([2, 2, W - 3, H - 3], outline=dk); d.rectangle([4, 4, W - 5, H - 5], outline=m)
-    for (x, y) in ((4, 4), (W - 5, 4), (4, H - 5), (W - 5, H - 5)): d.rectangle([x - 1, y - 1, x + 1, y + 1], fill=lt)
-    cx, cy = 32, 45
-    d.ellipse([cx - 15, cy - 15, cx + 15, cy + 15], fill=(10, 11, 18, 255), outline=m); d.ellipse([cx - 12, cy - 12, cx + 12, cy + 12], outline=dk)
-    d.polygon([(cx, cy - 6), (cx + 6, cy - 2), (cx + 4, cy + 5), (cx - 4, cy + 5), (cx - 6, cy - 2)], fill=lt)           # ball: centre patch + seams
-    for (x, y) in ((cx, cy - 6), (cx + 6, cy - 2), (cx + 4, cy + 5), (cx - 4, cy + 5), (cx - 6, cy - 2)):
-        a_ = math.atan2(y - cy, x - cx); d.line([(x, y), (cx + math.cos(a_) * 13, cy + math.sin(a_) * 13)], fill=m)
-    d.line([(10, 16), (54, 16)], fill=dk); d.line([(10, H - 17), (54, H - 17)], fill=dk)
-    for k in range(3): d.point((26 + k * 6, 11), lt); d.point((26 + k * 6, H - 12), lt)
-    for (x, y) in ((0, 0), (W - 1, 0), (0, H - 1), (W - 1, H - 1)): im.putpixel((x, y), (0, 0, 0, 0))
+    """blank back: dark field, one border in the tier colour"""
+    c = RC[rar]; im = Image.new('RGBA', (64, 90), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, 63, 89], fill=(12, 13, 20, 255), outline=c['main'] + (255,))
+    for (x, y) in ((0, 0), (63, 0), (0, 89), (63, 89)): im.putpixel((x, y), (0, 0, 0, 0))
     return im
 
 
