@@ -18,3 +18,8 @@ Tool,Pack-odds simulator,todo,
 Tool,Palette-swap shader for indexed export,todo,
 Tool,Test pass on a clean machine,todo,
 Game,Godot skeleton loading the CSVs,todo,waiting for your go
+Animation,Skill card animations: SHOT 30 (done, baked, no hair),done,Cards tab: Play move
+Animation,Skill card animations: PASS 25 + 3 air-pass variants (done, baked),done,
+Animation,"Base animations: idle, walk, jog, tired run, sprint, jump, fall, get-up, directional stumble, stun, pain/limp",todo,decided in docs/DECISIONS.md; awaiting go
+Animation,Skill card animations: DRIBBLE 29 (Hold Up Play animation removed; done, baked; mist effect is game-side),done,
+Animation,Skill card animations: DEFEND 35 done (moves_defend.py); SUPPORT 30 done (auras + arm/head overlays on the current state) / KEEPER 25 done (moves_keeper.py) / TITAN 25 done (25 cinematic scenes, titan/scenes.py),in progress,checkpoint per category
