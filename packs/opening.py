@@ -54,15 +54,29 @@ def face(item, t=1.0):
     return E.card_face(r['id'], 1)
 
 
-def card_back(rar):
-    c = RC[rar]; im = Image.new('RGBA', (64, 90), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-    d.rectangle([0, 0, 63, 89], fill=(12, 13, 20, 255)); d.rectangle([1, 1, 62, 88], outline=c['main'] + (255,)); d.rectangle([3, 3, 60, 86], outline=c['dark'] + (255,))
-    for y in range(5, 85):
-        for x in range(5, 59):
-            if (x + y) % 10 == 0 or (x - y) % 10 == 0: d.point((x, y), tuple(int(v * 0.5) for v in c['dark']) + (255,))
-    d.polygon([(32, 28), (44, 45), (32, 62), (20, 45)], outline=c['main'] + (255,)); d.polygon([(32, 34), (39, 45), (32, 56), (25, 45)], fill=c['dark'] + (255,))
-    for (x, y) in ((5, 5), (58, 5), (5, 84), (58, 84)): d.point((x, y), c['light'] + (255,))
-    for (x, y) in ((0, 0), (63, 0), (0, 89), (63, 89)): im.putpixel((x, y), (0, 0, 0, 0))
+def card_back(rar, style=None):
+    """pack-style card back: tinted (foil for the high tiers) field, double frame, football crest"""
+    c = RC[rar]; W, H = 64, 90; im = Image.new('RGBA', (W, H), (0, 0, 0, 255)); px = im.load()
+    if style:
+        bg = np.array(foil.background(style, 0.9).astype(float))[:H, :W] * 0.42; bg = np.pad(bg, ((0, max(0, H - bg.shape[0])), (0, 0), (0, 0)), mode='edge')[:H]
+    for y in range(H):
+        for x in range(W):
+            g = 0.5 + 0.5 * y / H
+            base = tuple(int(v * 0.30 * (1.15 - 0.5 * abs(x - 32) / 32) * g + 9) for v in c['dark'])
+            col = tuple(int(v) for v in bg[y, x]) if style else base
+            if (x + y) % 8 == 0 or (x - y) % 8 == 0: col = tuple(min(255, int(v * 1.25) + 6) for v in col)
+            px[x, y] = col + (255,)
+    d = ImageDraw.Draw(im); m = c['main'] + (255,); lt = c['light'] + (255,); dk = c['dark'] + (255,)
+    d.rectangle([0, 0, W - 1, H - 1], outline=m); d.rectangle([2, 2, W - 3, H - 3], outline=dk); d.rectangle([4, 4, W - 5, H - 5], outline=m)
+    for (x, y) in ((4, 4), (W - 5, 4), (4, H - 5), (W - 5, H - 5)): d.rectangle([x - 1, y - 1, x + 1, y + 1], fill=lt)
+    cx, cy = 32, 45
+    d.ellipse([cx - 15, cy - 15, cx + 15, cy + 15], fill=(10, 11, 18, 255), outline=m); d.ellipse([cx - 12, cy - 12, cx + 12, cy + 12], outline=dk)
+    d.polygon([(cx, cy - 6), (cx + 6, cy - 2), (cx + 4, cy + 5), (cx - 4, cy + 5), (cx - 6, cy - 2)], fill=lt)           # ball: centre patch + seams
+    for (x, y) in ((cx, cy - 6), (cx + 6, cy - 2), (cx + 4, cy + 5), (cx - 4, cy + 5), (cx - 6, cy - 2)):
+        a_ = math.atan2(y - cy, x - cx); d.line([(x, y), (cx + math.cos(a_) * 13, cy + math.sin(a_) * 13)], fill=m)
+    d.line([(10, 16), (54, 16)], fill=dk); d.line([(10, H - 17), (54, H - 17)], fill=dk)
+    for k in range(3): d.point((26 + k * 6, 11), lt); d.point((26 + k * 6, H - 12), lt)
+    for (x, y) in ((0, 0), (W - 1, 0), (0, H - 1), (W - 1, H - 1)): im.putpixel((x, y), (0, 0, 0, 0))
     return im
 
 
@@ -127,10 +141,10 @@ class Scene:
     def __init__(s, pack, seed=1, best=None):
         s.pack = pack; s.od = D.odds()[pack]; s.pull = roll(pack, seed, best); s.n = len(s.pull); s.seed = seed
         s.art = D.foil_bag(pack, s.od); s.top = max(RARS.index(x['rarity']) for x in s.pull); s.topc = ACC[RARS[s.top]]
-        s.backs = {r: card_back(r) for r in RARS}; s.fcache = {}
+        s.backs = {r: card_back(r, D.LOOK[pack][1] if D.LOOK[pack][0] == r else None) for r in RARS}; s.fcache = {}
         s.styleCol = ACC[RARS[RARS.index(D.LOOK[pack][0])]] if D.LOOK[pack][0] in RARS else (200, 200, 220)
         # timeline
-        s.T_float = 0; s.T_charge = 30; s.T_tear = 64; s.T_out = 76; s.T_rev = 106; t = s.T_rev; s.rev = []
+        s.T_punch = 90; s.T_float = 0; s.T_charge = 30; s.T_tear = 64; s.T_out = 76; s.T_rev = 106; t = s.T_rev; s.rev = []
         for it in s.pull:
             r = it['rarity']; dur = TENS[r] + 6 + HOLD[r] + 8; s.rev.append((t, t + TENS[r], t + TENS[r] + 6, t + dur - 8, t + dur)); t += dur
         s.T_sum = t; s.N = t + 40
@@ -204,16 +218,27 @@ def frame(s, i):
             glow(arr, CX, CY, 150, 160, acc, 0.5 * math.sin(math.pi * clamp(u * 0.9 + 0.1)))
             dust(s, cv, art, CX + ox, CY + oy, sc, f, DUR, acc)
 
+    ag = i - s.T_punch                                                                       # the hit that ends the dust: stack slams in
+    if 0 <= ag < 22:
+        glow(arr, CX, CY, 200, 200, acc, 0.4 * math.exp(-ag / 5.0))
+        if ag < 3: flash = (1 - ag / 3) * 0.4; flash_col = tuple(int(v * 0.35 + 165) for v in acc)
+        shake = max(shake, 9 * math.exp(-ag / 4.0))
+        R = random.Random(77)
+        for q in range(90):
+            a_ = R.uniform(0, 6.283); sp = R.uniform(3, 11); life = R.randint(10, 24)
+            if ag > life: continue
+            x = CX + math.cos(a_) * sp * ag * 1.15; y = CY + math.sin(a_) * sp * ag * 0.9 + 0.05 * ag * ag; c = (255, 255, 255) if q % 3 == 0 else acc
+            od.rectangle([x - 1, y - 1, x + 1, y + 1], fill=c + (int(255 * (1 - ag / life)),))
     # ---------------------------------------------------------------- cards burst out and stack
     k_out = range(s.n)
     for k in reversed(k_out):
-        t0 = s.T_tear + 16 + k * 2; sr = s.rev[k]
+        t0 = s.T_punch; sr = s.rev[k]
         if i < t0: continue
         if i >= sr[4] - 8 or i < t0: continue                                               # already collected / not out yet (collected ones are drawn below)
-        u = smooth((i - t0) / 16.0); fly_y = lerp(CY + 10, CY, u)
+        u = clamp((i - t0) / 5.0); u = 1 - (1 - u) ** 3; fly_y = CY + 4 * (1 - u)
         if i < sr[0]:                                                                        # waiting in the stack, top card = next to reveal
             x = CX + k * 1.2 - (s.n - 1) * 0.6; y = fly_y + k * 1.2 - (s.n - 1) * 0.6 + 0.8 * math.sin(i * 0.2 + k)
-            put(cv, s.backs[RARS[RARS.index(D.LOOK[s.pack][0])] if D.LOOK[s.pack][0] in RARS else 'COMMON'], x, y, 2.0 * lerp(0.85, 1.0, u), rot=0.0, alpha=u)
+            put(cv, s.backs[RARS[RARS.index(D.LOOK[s.pack][0])] if D.LOOK[s.pack][0] in RARS else 'COMMON'], x, y, 2.0 * lerp(1.4, 1.0, u), rot=0.0, alpha=clamp((i - t0) / 2.0 + 0.2))
     # ---------------------------------------------------------------- reveals
     rev_k = next((k for k, r in enumerate(s.rev) if r[0] <= i < r[4]), None)
     dim = 0.0
