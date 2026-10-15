@@ -58,7 +58,7 @@ def button(S, state):
     return im
 
 
-def strip(S, w=960, h=120):
+def strip(S, w=1280, h=140):
     """the HUD strip under the pitch: the card's dark field with a faint diagonal weave, lighter at the top, a frame-coloured line on top"""
     im = Image.new('RGBA', (w, h)); px = im.load()
     for y in range(h):

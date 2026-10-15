@@ -162,7 +162,7 @@ func _physics_process(dt: float) -> void:
 	hud.set_controlled(selected.display_name() if selected != null else "")
 	hud.set_cooldowns(cards.cooldown)
 
-## F11 toggles full screen (the 960 x 540 view scales to fit; scale_mode "fractional" in project.godot, so any window size fills as much as it can)
+## F11 toggles full screen (the 1280 x 720 view scales to fit; scale_mode "fractional" in project.godot, so any window size fills as much as it can)
 func _unhandled_key_input(event: InputEvent) -> void:
 	var k := event as InputEventKey
 	if k != null and k.pressed and not k.echo and k.keycode == KEY_F11:

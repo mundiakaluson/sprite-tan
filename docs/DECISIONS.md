@@ -165,3 +165,4 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 
 
 - Score bug: design A (top-left, home/away/clock boxes, RANKED/UNRANKED tag). Ranked = gold frames + corner studs + division and stakes line; unranked = steel. MatchSettings group Scoreboard. Full screen: stretch scale_mode fractional, F11 toggles.
+- Game view is now 1280x720 (pitch SubViewport 1280x580, HUD strip 1280x140 below) so the camera can zoom on the players and the HUD still fits.

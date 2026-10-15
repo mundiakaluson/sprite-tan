@@ -3,7 +3,7 @@ extends CanvasLayer
 ## Match HUD. It is a real scene (scenes/match/match_hud.tscn, instanced in match.tscn) so you can open it, select any node and move / restyle it in the editor:
 ## Score, Who (selected player), Orders (the four order buttons, named Order_<id>), CommandBox (the current command), Message (GOAL!, KICK OFF), Controls (help text),
 ## Hand (the skill cards are added here), TeamTitle / TeamGrid (the stance buttons are added here), Overlay (rings and aim lines over the pitch). This script only fills them in.
-## The pitch has its own area (the top 420 px of the 960 x 540 game viewport, a SubViewport in match.tscn); the strip below it is the HUD, so nothing covers the play.
+## The pitch has its own area (the top 580 px of the 1280 x 720 game viewport, a SubViewport in match.tscn); the strip below it is the HUD, so nothing covers the play.
 ## No pop-ups: orders are buttons in the strip. Cards are the real SkillCard faces; the number on a card is its cooldown in seconds.
 
 signal menu_chosen(id: String)          ## an order button was pressed ("through", "run", "press", "tackle")
@@ -17,7 +17,7 @@ signal team_command(id: String)         ## a team command button was pressed
 ## size of the TEAM stance buttons
 @export var team_button_size := Vector2(64, 18)
 
-const PITCH_H := 420.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
+const PITCH_H := 580.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
 ## colour of each command kind in the command box and on the highlighted players
 const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), "lob": Color(1.0, 0.9, 0.3), "shoot": Color(1.0, 0.4, 0.35), "run": Color(0.5, 1.0, 0.5),
 	"press": Color(1.0, 0.65, 0.3), "tackle": Color(1.0, 0.65, 0.3), "card": Color(0.8, 0.6, 1.0), "team": Color(0.6, 0.75, 1.0)}
