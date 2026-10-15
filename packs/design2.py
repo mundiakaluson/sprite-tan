@@ -1,5 +1,5 @@
 """Pack wrappers in the player-card language: dark body with a glow, thin chamfered frame in the rarity colour, aurora / galaxy / rainbow foil on the rare tiers,
-a hidden-player silhouette, big count top left, tier top right, name plate with thin lines, three small stats along the bottom (taken from data/pack_odds.csv).
+a hidden-player silhouette, big count top left, tier top right, name plate with thin lines, cost along the bottom (taken from data/pack_odds.csv).
 Run:  python packs/design2.py  -> export/packs/design2_foil.png, design2_sleeve.png"""
 import os, sys, math, csv
 import numpy as np
@@ -79,11 +79,10 @@ def foil_bag(pk, od):
     nm = pk.upper().replace(' PACK', ''); ww = text_w(nm)
     draw_text(b, (BW - ww) // 2, 63, nm, (255, 255, 255, 255)); draw_text(b, (BW - text_w('PACK')) // 2, 70, 'PACK', r['light'] + (255,))
     d.line([(5, 66), (BW // 2 - ww // 2 - 3, 66)], fill=r['dark'] + (255,)); d.line([(BW // 2 + ww // 2 + 3, 66), (BW - 6, 66)], fill=r['dark'] + (255,))
-    rare = float(od['rare']) + float(od['epic']) + float(od['legend']); cols = [('RARE+', f'{rare:g}%'), ('COST', od['price'])]
+    rare = float(od['rare']) + float(od['epic']) + float(od['legend']); cols = [('COST', od['price'])]
     for ci, (kk, v) in enumerate(cols):
-        x0 = 4 + ci * 29; cxm = x0 + 14
+        cxm = BW // 2
         draw_text(b, cxm - text_w(kk) // 2, 77, kk, (140, 146, 176, 255)); draw_text(b, cxm - text_w(v) // 2, 83, v, (255, 255, 255, 255))
-        if ci: d.line([(x0 - 1, 77), (x0 - 1, 87)], fill=r['dark'] + (255,))
     out = Image.new('RGBA', (W, H), (0, 0, 0, 0)); out.alpha_composite(b, (0, BY)); d = ImageDraw.Draw(out)
     metal = _mix(r['dark'], (120, 126, 150), 0.45) if not legend else _mix(r['dark'], (255, 220, 150), 0.5); hi = _mix(metal, (255, 255, 255), 0.35)
     for (y0, y1, top) in ((0, BY - 1, True), (BY + BH, H - 1, False)):             # crimped ends: fine vertical ridges and a serrated cut
