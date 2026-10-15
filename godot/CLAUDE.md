@@ -118,3 +118,6 @@ MatchSettings > Match > Custom Formations: add an element, New FormationLayout (
 
 ## Kicks turn first, and can stumble
 `scripts/match/match_kicking.gd` (MatchKicking, `g.kicking`): `MatchPossession.kick_action` hands every kick to it. If the target is more than `pivot_min_deg` away from where he faces, he pivots (ball stays at his feet, `Footballer.aim` / `aim_done`) and then plays the kick clip. At the strike frame a pass can be scuffed (more aim error; chance from PAS, nearest opponent, kicking before the turn is done) and he stumbles / falls after it (clips in MatchSettings > Kick turn and stumble). AI and human kicks both use it; card kicks (match_cards) still kick instantly. Untested in Godot.
+
+## AI behaviours (add a decision without touching the roles)
+`scripts/ai/behaviours/ai_behaviour.gd` (AiBehaviour, a Resource): override `wants(f, c, role) -> bool` (when) and `act(f, c, role, dt) -> AiIntent` (what); exports `enabled`, `roles` (empty = all), `when` (situation flags: Receiving / With ball / Support / Loose / Defending). Save a .tres in `scenes/ai/behaviours/` and add it to AiProfile > Behaviours. `AiRole.think` tries that list top to bottom after the formation file and before the role's five cases; the first `wants()` yes wins. Example: `ai_jockey.gd` (disabled in `jockey.tres`; tick Enabled to try it). Untested in Godot.

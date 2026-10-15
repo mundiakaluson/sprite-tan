@@ -71,6 +71,12 @@ func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 	if fx != null:
 		var o := fx.think(f, c, self, dt)
 		if o != null: return o
+	if c.profile != null and not c.profile.behaviours.is_empty():
+		var sit := AiBehaviour.situation_of(f, c)
+		for b in c.profile.behaviours:
+			if b != null and b.applies(f, sit) and b.wants(f, c, self):
+				var o2 := b.act(f, c, self, dt)
+				if o2 != null: return o2
 	if c.game.pass_target == f and c.carrier == null: return _receive(f, c)
 	if c.carrier == f: return _with_ball(f, c, dt)
 	if c.has_ball: return _support(f, c)
