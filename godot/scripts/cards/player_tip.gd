@@ -1,9 +1,23 @@
+@tool
 class_name PlayerTip
 extends Control
 ## Hover tooltip with every stat, drawn live from the row (no image per player).
 
+@export var player_id := "PL242":
+	set(v):
+		player_id = v
+		_load_preview()
+
 var p := {}
 const W := 148
+
+func _ready() -> void:
+	_load_preview()
+
+func _load_preview() -> void:
+	if not is_inside_tree() and not Engine.is_editor_hint(): return
+	if not Data.ok: Data.reload()
+	if Data.ok and player_id != "": show_player(Data.row("players", player_id))
 
 func show_player(row: Dictionary) -> void:
 	p = row

@@ -6,7 +6,7 @@ static var _atlas: Texture2D
 static var _chars := ""
 
 static func _load() -> void:
-	if _atlas != null: return
+	if _atlas != null and _chars != "": return
 	_atlas = Data.tex("font/pixel.png")
 	var p := "res://assets/font/chars.txt"
 	if FileAccess.file_exists(p): _chars = FileAccess.get_file_as_string(p)

@@ -1,8 +1,15 @@
+@tool
 class_name PlayerCard
 extends Control
 ## A player card built live: shared layers (background, outline), the player's small face, and text/stats drawn from the CSV row.
 ## One face image per player is the only per-player art. Change a stat in players.csv and the card is right with no re-export.
 ## usage: var c := PlayerCard.new(); add_child(c); c.show_player(Data.row("players", "PL242")); c.scale = Vector2(3, 3)
+
+## which player to show in the editor (and as the default in game). In game call show_player(row) instead.
+@export var player_id := "PL242":
+	set(v):
+		player_id = v
+		_load_preview()
 
 var p := {}
 var _fx := 0.0
@@ -11,6 +18,15 @@ func _init() -> void:
 	custom_minimum_size = Vector2(64, 90)
 	size = Vector2(64, 90)
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+func _ready() -> void:
+	_load_preview()
+
+func _load_preview() -> void:
+	if not is_inside_tree() and not Engine.is_editor_hint(): return
+	if not Data.ok: Data.reload()
+	if Data.ok and player_id != "": show_player(Data.row("players", player_id))
+	else: queue_redraw()
 
 func show_player(row: Dictionary) -> void:
 	p = row
@@ -55,7 +71,11 @@ static func surname(nm: String) -> String:
 	return w[w.size() - 1].to_upper()
 
 func _draw() -> void:
-	if p.is_empty() or Data.rules.is_empty(): return
+	if p.is_empty() or Data.rules.is_empty():
+		draw_rect(Rect2(0, 0, 64, 90), Color(0.1, 0.1, 0.16))
+		draw_string(ThemeDB.fallback_font, Vector2(6, 46), "no data", HORIZONTAL_ALIGNMENT_LEFT, 52, 10, Color.WHITE)
+		draw_string(ThemeDB.fallback_font, Vector2(6, 58), "press Export", HORIZONTAL_ALIGNMENT_LEFT, 56, 8, Color(0.7, 0.7, 0.8))
+		return
 	var rar: String = p.get("rarity", "COMMON")
 	var rc: Dictionary = Data.rules["rarity_colours"][rar]
 	var main := col(rc["main"]); var dark := col(rc["dark"]); var light := col(rc["light"])

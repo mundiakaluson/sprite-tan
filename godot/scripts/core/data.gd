@@ -1,3 +1,4 @@
+@tool
 extends Node
 ## Autoload "Data": loads every CSV the tool exported into res://data/ and the export manifest.
 ## Tables are Arrays of Dictionaries (all values Strings, like the CSV). Use num()/inum() to convert.
