@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AiProfile" load_steps=20 format=3]
+[gd_resource type="Resource" script_class="AiProfile" load_steps=38 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/ai_profile.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ai/roles/ai_gk.gd" id="2"]
@@ -14,10 +14,55 @@
 [ext_resource type="Script" path="res://scripts/ai/formations/ai_formation.gd" id="11"]
 
 [ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="12"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_433.gd" id="20"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_4231.gd" id="21"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_4141.gd" id="22"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_4321.gd" id="23"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_41212.gd" id="24"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_352.gd" id="25"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_343.gd" id="26"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_532.gd" id="27"]
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_541.gd" id="28"]
 
 [sub_resource type="Resource" id="f442"]
 script = ExtResource("10")
 formation_ids = PackedStringArray("F01")
+
+[sub_resource type="Resource" id="ff02"]
+script = ExtResource("20")
+formation_ids = PackedStringArray("F02")
+
+[sub_resource type="Resource" id="ff03"]
+script = ExtResource("21")
+formation_ids = PackedStringArray("F03")
+
+[sub_resource type="Resource" id="ff04"]
+script = ExtResource("22")
+formation_ids = PackedStringArray("F04")
+
+[sub_resource type="Resource" id="ff05"]
+script = ExtResource("23")
+formation_ids = PackedStringArray("F05")
+
+[sub_resource type="Resource" id="ff06"]
+script = ExtResource("24")
+formation_ids = PackedStringArray("F06")
+
+[sub_resource type="Resource" id="ff07"]
+script = ExtResource("25")
+formation_ids = PackedStringArray("F07")
+
+[sub_resource type="Resource" id="ff08"]
+script = ExtResource("26")
+formation_ids = PackedStringArray("F08")
+
+[sub_resource type="Resource" id="ff09"]
+script = ExtResource("27")
+formation_ids = PackedStringArray("F09")
+
+[sub_resource type="Resource" id="ff10"]
+script = ExtResource("28")
+formation_ids = PackedStringArray("F10")
 
 [sub_resource type="Resource" id="gk"]
 script = ExtResource("2")
@@ -116,5 +161,5 @@ central_midfielder = SubResource("cm")
 attacking_midfielder = SubResource("cam")
 winger = SubResource("wing")
 striker = SubResource("st")
-formations = Array[ExtResource("11")]([SubResource("f442")])
+formations = Array[ExtResource("11")]([SubResource("f442"), SubResource("ff02"), SubResource("ff03"), SubResource("ff04"), SubResource("ff05"), SubResource("ff06"), SubResource("ff07"), SubResource("ff08"), SubResource("ff09"), SubResource("ff10")])
 stances = Array[ExtResource("12")]([SubResource("stance_auto"), SubResource("stance_press_high"), SubResource("stance_mid_block"), SubResource("stance_park_bus"), SubResource("stance_push_up"), SubResource("stance_counter")])
