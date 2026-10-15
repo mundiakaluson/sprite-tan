@@ -58,11 +58,11 @@ func table(tname: String) -> Array:
 func row(tname: String, id: String) -> Dictionary:
 	return by_id.get(tname, {}).get(id, {})
 
-static func num(v, d := 0.0) -> float:
+func num(v, d := 0.0) -> float:
 	var s := str(v).strip_edges()
 	return s.to_float() if s.is_valid_float() else d
 
-static func inum(v, d := 0) -> int:
+func inum(v, d := 0) -> int:
 	var s := str(v).strip_edges()
 	return int(s.to_float()) if s.is_valid_float() else d
 

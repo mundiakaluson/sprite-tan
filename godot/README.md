@@ -24,6 +24,9 @@ Godot 4.2+. Nothing in here has been run yet (the project was written without Go
 | `assets/pitches/` | not generated: hand-made pitch art, tracked in git |
 | `shaders/` | `uv_skin.gdshader` |
 
+## Folders
+Scenes mirror scripts: `scenes/<feature>/` next to `scripts/<feature>/` (`scenes/players/player.tscn`, `scenes/cards/player_card.tscn`, `scenes/debug/main.tscn`). New scene = new or existing feature folder, never the scenes root. Run scene: `scenes/debug/main.tscn`.
+
 ## Scripts (one folder per feature)
 | folder | what |
 |---|---|
