@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/match/match_game.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/stadium/stadium.tscn" id="2"]
-[ext_resource type="Script" path="res://scripts/match/match_hud.gd" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/match/match_hud.tscn" id="3"]
 [ext_resource type="Script" path="res://scripts/match/match_controls.gd" id="4"]
 [ext_resource type="Resource" path="res://scenes/match/match_settings.tres" id="5"]
 
@@ -22,8 +22,7 @@ render_target_update_mode = 4
 
 [node name="Stadium" parent="View/Viewport" instance=ExtResource("2")]
 
-[node name="Hud" type="CanvasLayer" parent="."]
-script = ExtResource("3")
+[node name="Hud" parent="." instance=ExtResource("3")]
 
 [node name="Controls" type="Node" parent="."]
 script = ExtResource("4")

@@ -1,45 +1,45 @@
 class_name MatchHud
 extends CanvasLayer
-## Match HUD (built in code, so the scene stays one node). The pitch has its own area (the top 420 px of the 960 x 540 game viewport, a SubViewport in match.tscn);
-## the HUD lives in the strip below it so nothing covers the play: score / clock / selected player / hint on the left, the hand of skill cards in the middle,
-## the controls on the right. No pop-ups: the order buttons live in the strip (they light up for the selected player). Only short messages (GOAL!, KICK OFF),
-## the selection ring and the aim lines are drawn over the pitch.
-## Cards are the real SkillCard faces; the number on a card is its cooldown in seconds.
+## Match HUD. It is a real scene (scenes/match/match_hud.tscn, instanced in match.tscn) so you can open it, select any node and move / restyle it in the editor:
+## Score, Who (selected player), Orders (the four order buttons, named Order_<id>), CommandBox (the current command), Message (GOAL!, KICK OFF), Controls (help text),
+## Hand (the skill cards are added here), TeamTitle / TeamGrid (the stance buttons are added here), Overlay (rings and aim lines over the pitch). This script only fills them in.
+## The pitch has its own area (the top 420 px of the 960 x 540 game viewport, a SubViewport in match.tscn); the strip below it is the HUD, so nothing covers the play.
+## No pop-ups: orders are buttons in the strip. Cards are the real SkillCard faces; the number on a card is its cooldown in seconds.
 
 signal menu_chosen(id: String)          ## an order button was pressed ("through", "run", "press", "tackle")
 signal card_pressed(index: int)         ## a card in the hand was clicked
+signal team_command(id: String)         ## a team command button was pressed
 
 ## size of the cards in the hand (1 = the full 64 x 90 card)
 @export_range(0.4, 1.0) var card_scale := 0.75
 ## size of the hover tooltip (the card's tooltip image x this)
 @export_range(1.0, 4.0) var tooltip_scale := 1.5
-
-signal team_command(id: String)         ## a team command button was pressed
+## size of the TEAM stance buttons
+@export var team_button_size := Vector2(64, 20)
 
 const PITCH_H := 420.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
-const CONTROLS := "MOUSE\ndouble click mate: pass\nright click: lob\ndrag from ball carrier: shoot\ndrag from player: run\nclick player: orders\nEsc: cancel\n\nPAD\nstick pointer, Cross click\nSquare lob, hold Triangle drag\nCircle cancel"
 ## colour of each command kind in the command box and on the highlighted players
 const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), "lob": Color(1.0, 0.9, 0.3), "shoot": Color(1.0, 0.4, 0.35), "run": Color(0.5, 1.0, 0.5),
 	"press": Color(1.0, 0.65, 0.3), "tackle": Color(1.0, 0.65, 0.3), "card": Color(0.8, 0.6, 1.0), "team": Color(0.6, 0.75, 1.0)}
-const ORDERS := ["through", "run", "press", "tackle"]
 
-var _score: Label
-var _msg: Label
+@onready var _score: Label = %Score
+@onready var _who: Label = %Who
+@onready var _msg: Label = %Message
+@onready var _hand: HBoxContainer = %Hand
+@onready var _team_grid: GridContainer = %TeamGrid
+@onready var _team_note: Label = %TeamNote
+@onready var _cmd_title: Label = %CommandTitle
+@onready var _hint: Label = %CommandNote
+@onready var _overlay: HudOverlay = %Overlay
+@onready var _orders: Container = %Orders
+
 var _hint_base := ""
 var _order_buttons := {}
-var _who: Label
-var _hand: HBoxContainer
-var _team_grid: GridContainer
-var _team_note: Label
 var _cards: Array[SkillCard] = []
-var _hint: Label
-var _cmd_title: Label
-var _cmd_box: Panel
 var command: MatchCommand
 var _team_buttons := {}
 var snap_node: Node2D
 var snap_kind := ""
-var _overlay: Control
 var selected_node: Node2D
 var drag_from := Vector2.ZERO
 var drag_to := Vector2.ZERO
@@ -51,105 +51,17 @@ var _msg_t := 0.0
 var _toast_t := 0.0
 
 func _ready() -> void:
-	var root := Control.new()
-	root.size = Vector2(960, 540)
-	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(root)
-	_overlay = _Overlay.new()
 	_overlay.hud = self
-	_overlay.size = Vector2(960, PITCH_H)
-	_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(_overlay)
-	# the strip under the pitch
-	var strip := ColorRect.new()
-	strip.color = Color(0.07, 0.08, 0.12)
-	strip.position = Vector2(0, PITCH_H)
-	strip.size = Vector2(960, 540.0 - PITCH_H)
-	strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(strip)
-	var line := ColorRect.new()
-	line.color = Color(0.3, 0.32, 0.4)
-	line.position = Vector2(0, PITCH_H)
-	line.size = Vector2(960, 2)
-	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(line)
-	_score = _label(root, 18)
-	_score.position = Vector2(10, PITCH_H + 3)
-	_who = _label(root, 11)
-	_who.position = Vector2(10, PITCH_H + 26)
-	var grid := GridContainer.new()
-	grid.columns = 2
-	grid.position = Vector2(10, PITCH_H + 44)
-	grid.add_theme_constant_override("h_separation", 4)
-	grid.add_theme_constant_override("v_separation", 4)
-	grid.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(grid)
-	for id in ORDERS:
-		var b := Button.new()
-		b.text = String(id).to_upper()
-		b.custom_minimum_size = Vector2(92, 18)
-		b.add_theme_font_size_override("font_size", 9)
-		b.disabled = true
-		b.focus_mode = Control.FOCUS_NONE
-		var order_id: String = id
-		b.pressed.connect(func(): menu_chosen.emit(order_id))
-		grid.add_child(b)
-		_order_buttons[id] = b
-	# current command box: the one thing you are doing now (pass / through / shoot / run / card / team stance)
-	_cmd_box = Panel.new()
-	_cmd_box.position = Vector2(10, PITCH_H + 86)
-	_cmd_box.size = Vector2(192, 31)
-	_cmd_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.1, 0.11, 0.17)
-	sb.border_color = Color(0.3, 0.32, 0.4)
-	sb.set_border_width_all(1)
-	_cmd_box.add_theme_stylebox_override("panel", sb)
-	root.add_child(_cmd_box)
-	_cmd_title = _label(_cmd_box, 11)
-	_cmd_title.position = Vector2(5, 0)
-	_hint = _label(_cmd_box, 8)
-	_hint.position = Vector2(5, 17)
-	_hint.custom_minimum_size = Vector2(182, 0)
-	_hint.modulate = Color(1, 1, 1, 0.8)
+	_msg.text = ""
+	# the order buttons are the children of Orders named Order_<id>
+	for b in _orders.get_children():
+		var button := b as Button
+		if button == null: continue
+		var id := String(button.name).trim_prefix("Order_")
+		button.disabled = true
+		button.pressed.connect(func(): menu_chosen.emit(id))
+		_order_buttons[id] = button
 	_show_command()
-	_msg = _label(root, 30)
-	_msg.position = Vector2(180, 150)
-	_msg.custom_minimum_size = Vector2(600, 0)
-	_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var controls := _label(root, 8)
-	controls.position = Vector2(790, PITCH_H + 4)
-	controls.text = CONTROLS
-	controls.modulate = Color(1, 1, 1, 0.75)
-	_hand = HBoxContainer.new()
-	_hand.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_hand.add_theme_constant_override("separation", 4)
-	_hand.position = Vector2(208, PITCH_H + 12)
-	root.add_child(_hand)
-	# team commands (orders for the whole side): the room is here, the commands come next
-	var team_x := 208.0 + 8.0 * 64.0 * card_scale + 7.0 * 4.0 + 14.0
-	var team_title := _label(root, 9)
-	team_title.text = "TEAM"
-	team_title.position = Vector2(team_x, PITCH_H + 4)
-	_team_grid = GridContainer.new()
-	_team_grid.columns = 2
-	_team_grid.position = Vector2(team_x, PITCH_H + 20)
-	_team_grid.add_theme_constant_override("h_separation", 4)
-	_team_grid.add_theme_constant_override("v_separation", 4)
-	_team_grid.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(_team_grid)
-	_team_note = _label(root, 8)
-	_team_note.text = "no commands yet"
-	_team_note.position = Vector2(team_x, PITCH_H + 22)
-	_team_note.modulate = Color(1, 1, 1, 0.5)
-
-func _label(parent: Node, size: int) -> Label:
-	var l := Label.new()
-	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_outline_color", Color.BLACK)
-	l.add_theme_constant_override("outline_size", 4)
-	parent.add_child(l)
-	return l
 
 func _process(dt: float) -> void:
 	if _msg_t > 0.0:
@@ -209,7 +121,7 @@ func set_team_commands(commands: Array) -> void:
 	for cmd in commands:
 		var b := Button.new()
 		b.text = String(cmd["label"])
-		b.custom_minimum_size = Vector2(64, 20)
+		b.custom_minimum_size = team_button_size
 		b.add_theme_font_size_override("font_size", 8)
 		b.focus_mode = Control.FOCUS_NONE
 		b.toggle_mode = true
@@ -275,44 +187,6 @@ func clear_drag() -> void:
 func set_aim(on: bool, to: Vector2) -> void:
 	aiming = on
 	aim_to = to
-
-class _Overlay extends Control:
-	var hud
-
-	func _process(_dt: float) -> void:
-		queue_redraw()
-
-	func _ring(n: Node2D, col: Color, radius: float, text: String) -> void:
-		var sc := n.scale.x
-		draw_set_transform(n.position, 0.0, Vector2(1.0, 0.45))
-		draw_arc(Vector2.ZERO, radius * sc, 0.0, TAU, 32, col, 2.0)
-		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-		if text != "": draw_string(ThemeDB.fallback_font, n.position + Vector2(-9.0, -30.0 * sc), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 9, col)
-
-	func _draw() -> void:
-		if hud == null: return
-		var n: Node2D = hud.selected_node
-		if n != null and is_instance_valid(n):
-			var sc := n.scale.x
-			draw_set_transform(n.position, 0.0, Vector2(1.0, 0.45))
-			draw_arc(Vector2.ZERO, 12.0 * sc, 0.0, TAU, 32, Color(1.0, 0.9, 0.2), 2.0)
-			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-			if hud.aiming:
-				draw_line(n.position, hud.aim_to, Color(1.0, 0.9, 0.3, 0.8), 1.5)
-				draw_circle(hud.aim_to, 4.0, Color(1.0, 0.9, 0.3, 0.9))
-		var cmd: MatchCommand = hud.command
-		if cmd != null and cmd.target != null and cmd.target.node != null:
-			_ring(cmd.target.node, MatchHud.KIND_COLORS.get(cmd.kind, Color.WHITE), 15.0, "RUN" if cmd.kind == "through" else "")
-		if hud.snap_node != null and is_instance_valid(hud.snap_node):
-			_ring(hud.snap_node, MatchHud.KIND_COLORS.get(hud.snap_kind, Color.WHITE), 17.0, "RUN" if hud.snap_kind == "through" else "")
-		if hud.dragging:
-			var d: Vector2 = hud.drag_to - hud.drag_from
-			var col := Color(1.0, 0.35, 0.3, 0.95) if hud.drag_shot else Color(1, 1, 1, 0.95)
-			draw_line(hud.drag_from, hud.drag_to, col, 2.0)
-			if d.length() > 6.0:
-				var u := d.normalized()
-				var side := Vector2(-u.y, u.x)
-				draw_colored_polygon(PackedVector2Array([hud.drag_to, hud.drag_to - u * 9.0 + side * 5.0, hud.drag_to - u * 9.0 - side * 5.0]), col)
 
 func card_used(i: int) -> void:
 	if i < _cards.size(): _cards[i].play("use")

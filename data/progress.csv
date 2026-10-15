@@ -45,3 +45,4 @@ Game,"AI formation file: 4-4-2 (F01) banks, press triggers, overlaps, striker pa
 Game,"Team kits and formation drop-downs in MatchSettings (kit atlas per player per kit)",doing,"needs Export to game again; untested in Godot"
 Game,"Kit colours live in the shader (KitColors resource per team, key-colour atlases) instead of per-kit images",doing,"needs Export to game again; untested in Godot"
 Game,"Team stances (TEAM buttons, auto rules) + current-command box + snapping pass / through drag",doing,"untested in Godot; scripts/ai/team_stance.gd, match_command.gd"
+Game,"HUD as an editable scene (match_hud.tscn) instead of built in code",doing,"untested in Godot"
