@@ -168,3 +168,4 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - Game view is now 1280x720 (pitch SubViewport 1280x580, HUD strip 1280x140 below) so the camera can zoom on the players and the HUD still fits.
 - Layout is adaptive: stretch canvas_items + aspect expand; pitch view fills the window above a 140 px HUD strip, HUD nodes are anchored (orders left, hand centre, team/command right). Strip art tiles.
 - HUD text/buttons bumped (order buttons 124x30, stance buttons 90x26, text scale 2); camera look_z 15.5, fov 36.
+- Manager tool: tab strip wraps onto new rows (tool/wraptabs.py replaces the Notebook in app.py).

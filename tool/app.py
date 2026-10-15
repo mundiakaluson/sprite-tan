@@ -12,12 +12,14 @@ def main():
     root = tk.Tk(); root.title(tables.project() + ' - manager tool'); root.geometry('1360x820')
     try: ttk.Style().theme_use('clam')
     except tk.TclError: pass
-    nb = ttk.Notebook(root); nb.pack(fill='both', expand=True)
-    exp_btn = ttk.Button(root, text='Export to game')   # sits in the tab strip, top right, same look as the other buttons
-    exp_btn.place(relx=1.0, x=-6, y=2, anchor='ne')
-    ref_btn = ttk.Button(root, text='Refresh dashboard', command=lambda: getattr(built.get('Dashboard'), 'refresh', lambda: None)())
-    ref_btn.place(relx=1.0, x=-124, y=2, anchor='ne')
+    from wraptabs import WrapTabs
+    top = ttk.Frame(root); top.pack(fill='x')       # tab buttons wrap onto new rows on the left, the two buttons stay top right
+    btns = ttk.Frame(top); btns.pack(side='right', anchor='n', padx=6, pady=2)
+    exp_btn = ttk.Button(btns, text='Export to game'); exp_btn.pack(side='right')
+    ref_btn = ttk.Button(btns, text='Refresh dashboard', command=lambda: getattr(built.get('Dashboard'), 'refresh', lambda: None)()); ref_btn.pack(side='right', padx=(0, 4))
+    nb = WrapTabs(root, bar_parent=top); nb.bar.pack(side='left', fill='x', expand=True)
     status = ttk.Label(root, text='Edits are written to data/*.csv when you press Save. Files changed in Excel reload automatically.', anchor='w'); status.pack(fill='x')
+    nb.pack(fill='both', expand=True, before=status)
     from tab_dashboard import DashboardTab
     from tab_players import PlayersTab
     from tab_cards import CardsTab
