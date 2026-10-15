@@ -38,6 +38,7 @@ var _cam_x := 0.0
 var _actors := {}                       ## Node2D -> pitch position (Vector2)
 var _mats := {}
 var goals: Array[Goal] = []
+var _balls: Array[Ball] = []
 
 func _ready() -> void:
 	rebuild()
@@ -75,10 +76,36 @@ func _project(n: Node2D) -> void:
 	n.scale = Vector2.ONE * (absf(foot.y - head.y) / sprite_height_px)
 	n.z_index = clampi(int(foot.y), -4000, 4000)
 
+## put a Ball in the stadium: it is projected like the players and its physics is wired to the goal nets
+func add_ball(b: Ball) -> void:
+	if b.get_parent() != actors:
+		if b.get_parent() != null: b.get_parent().remove_child(b)
+		actors.add_child(b)
+	_balls.append(b)
+	b.collider = ball_update
+	_project_ball(b)
+
+func _project_ball(b: Ball) -> void:
+	var w := b.world_pos()
+	if camera.is_position_behind(w):
+		b.visible = false
+		return
+	b.visible = true
+	var p := camera.unproject_position(w)
+	var g := camera.unproject_position(Vector3(w.x, 0.0, w.z))
+	var edge := camera.unproject_position(w + camera.global_transform.basis.x * b.radius())
+	var s := maxf(0.2, absf(edge.x - p.x) * 2.0 / Ball.SPRITE_DIAMETER)
+	b.position = p
+	b.scale = Vector2.ONE * s
+	b.place_shadow(g - p, w.y)
+	b.z_index = clampi(int(g.y) + 1, -4000, 4000)
+
 func _process(dt: float) -> void:
 	if Engine.is_editor_hint(): return
 	_cam_x = lerpf(_cam_x, clampf(world_pos(focus).x, -limit_x, limit_x), clampf(follow_speed * dt, 0.0, 1.0))
 	_update_camera()
+	for b in _balls:
+		if is_instance_valid(b): _project_ball(b)
 	for n in _actors.keys():
 		if is_instance_valid(n): _project(n)
 		else: _actors.erase(n)

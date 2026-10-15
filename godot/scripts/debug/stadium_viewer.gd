@@ -6,9 +6,9 @@ extends Node
 @onready var info: Label = $Hud/Info
 var ids := ["ST01", "ST02", "ST03"]
 var idx := 0
-var ball: MeshInstance3D
-var ball_vel := Vector3.ZERO
-var ball_live := false
+var ball: Ball
+var ball_ids: Array = []
+var ball_idx := 0
 
 func _ready() -> void:
 	if not Data.ok:
@@ -19,31 +19,25 @@ func _ready() -> void:
 	for i in mini(spots.size(), rows.size()):
 		var p := Player.create(); stadium.add_actor(p, spots[i]); p.setup(rows[i])
 		p.face_vector(Vector2(1, 0))
-	ball = MeshInstance3D.new(); var sm := SphereMesh.new(); sm.radius = GoalNet.BALL_R; sm.height = GoalNet.BALL_R * 2.0; ball.mesh = sm
-	var bm := StandardMaterial3D.new(); bm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED; ball.material_override = bm
-	stadium.add_child(ball); ball.visible = false
+	for r in Data.table("balls"): ball_ids.append(r["id"])
+	ball = Ball.create(ball_ids[0] if not ball_ids.is_empty() else "B01"); stadium.add_ball(ball)
 	_label()
 
 func shoot() -> void:
 	var goal_x := Stadium.L / 2.0
-	ball.position = Vector3(goal_x - 16.0, GoalNet.BALL_R, randf_range(-6.0, 6.0)); ball.visible = true
+	var from := Vector3(goal_x - 22.0, 0.3, randf_range(-6.0, 6.0))
 	var target := Vector3(goal_x, randf_range(0.3, 2.3), randf_range(-3.4, 3.4))
-	var t := (target.x - ball.position.x) / 24.0
-	ball_vel = Vector3(24.0, (target.y - ball.position.y + 0.5 * 9.81 * t * t) / t, (target.z - ball.position.z) / t)
-	ball_live = true
+	ball.launch(from, target - from + Vector3(0, 1.2, 0), 28.0, Vector3(0, randf_range(-30.0, 30.0), randf_range(0.0, 25.0)), randf() * 100.0)
 	stadium.focus = Vector2(50, 85)
 
-func _physics_process(dt: float) -> void:
-	if not ball_live: return
-	ball_vel.y -= 9.81 * dt
-	ball.position += ball_vel * dt
-	if ball.position.y < GoalNet.BALL_R and ball_vel.y < 0.0:
-		ball.position.y = GoalNet.BALL_R; ball_vel.y *= -0.6; ball_vel.x *= 0.92; ball_vel.z *= 0.92
-	ball_vel = stadium.ball_update(ball.position, ball_vel)
-	if absf(ball.position.x) > 70.0 or ball_vel.length() < 0.2: ball_live = false
+func next_ball() -> void:
+	if ball_ids.is_empty(): return
+	ball_idx = (ball_idx + 1) % ball_ids.size()
+	ball.ball_id = ball_ids[ball_idx]
+	_label()
 
 func _label() -> void:
-	info.text = "%s   A/D = camera   1 2 3 = stadium   B = shoot at the goal" % stadium.stadium_id
+	info.text = "%s   ball %s   A/D = camera   1 2 3 = stadium   B = shoot   N = next ball" % [stadium.stadium_id, ball.ball_id if ball != null else "-"]
 
 func _process(dt: float) -> void:
 	var move := Input.get_axis(&"ui_left", &"ui_right")
@@ -56,5 +50,6 @@ func _unhandled_key_input(ev: InputEvent) -> void:
 	if n >= 0:
 		stadium.stadium_id = ids[n]; _label()
 	elif k == KEY_B: shoot()
+	elif k == KEY_N: next_ball()
 	elif k == KEY_A: stadium.focus.y = clampf(stadium.focus.y - 6.0, 0.0, 100.0)
 	elif k == KEY_D: stadium.focus.y = clampf(stadium.focus.y + 6.0, 0.0, 100.0)

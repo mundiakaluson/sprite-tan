@@ -31,3 +31,6 @@ Game,"Stadiums + pitches + goals (3 to start)",done,"data/stadiums.csv, stadiums
 Tool,"Stadiums tab + Goal simulator tab (live perspective preview, goal feel tuning)",done,"tab_stadiums.py, tab_goalsim.py, stadiums/preview.py"
 Game,"Godot: modular goals with spring-mesh net + swinging posts (goal.gd, goal_net.gd)",doing,untested in Godot
 Game,"Replay camera shots (orbit, crane, push-in) from recorded play",todo,needs the match view
+Tool,"Ball studio tab (physics, textures, trajectory lab)",done,"tab_balls.py, balls/balllib.py, data/balls.csv"
+Game,"Godot ball: physics + roll sprite + stadium projection (ball.gd, ball_physics.gd)",doing,untested in Godot
+Game,"Players kick / control the ball using ball power + touch",todo,needs the match view

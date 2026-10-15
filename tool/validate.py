@@ -128,6 +128,12 @@ def run():
         for r in tables.table('stadiums').rows:
             if r.get('goal') not in gids: add('error', 'stadiums', r['id'], f"goal {r.get('goal')} is not in goals.csv")
     except (OSError, KeyError, ImportError): pass
+    try:
+        bd = os.path.join(tables.ROOT, 'balls')
+        if bd not in sys.path: sys.path.insert(0, bd)
+        import balllib as BL
+        for sev, rid, msg in BL.check(tables.table('balls').rows): add(sev, 'balls', rid, msg)
+    except (OSError, KeyError, ImportError): pass
     import re
     for r in tables.table('kits').rows:
         for c in ('jersey', 'trim', 'shorts', 'shorts_trim', 'stripe', 'socks', 'sock_trim', 'boots', 'accent'):
