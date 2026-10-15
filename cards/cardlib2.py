@@ -93,7 +93,7 @@ def card(c, art, state='ready', t=0.0):
     for y in range(61, CHD):
         if not titan:
             for x in range(CWD): px[x, y] = _mix(_mix(pal['dark'], base, 0.8), base, (y - 61) / 29) + (255,)
-    im.alpha_composite(art, (4, 17)); d = ImageDraw.Draw(im)
+    im.alpha_composite(art, (4, 19)); d = ImageDraw.Draw(im)
     edge = r['light'] if legend else r['main']
     for x in range(2, CWD - 2): d.point((x, 0), edge + (255,)); d.point((x, CHD - 1), edge + (255,))
     for y in range(2, CHD - 2): d.point((0, y), edge + (255,)); d.point((CWD - 1, y), edge + (255,))

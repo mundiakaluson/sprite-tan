@@ -80,3 +80,4 @@ The old titan/titan_zap.py and titan_demo.py are kept as the original reference.
 ## SKILL CARD FACE v2 (decided)
 Skill cards now use the player-card language (cards/cardlib2.py `card`; old face kept as `card_old`): dark field with a glow in the CATEGORY colour, thin frame in the RARITY colour,
 big slot number top left with the category under it, rarity top right, plain name with side lines, three stats (HIT / RISK / CD) with no boxes and thin bars. Titan cards use the galaxy foil and a foil frame.
+Emblems: no mini footballers (decided). Emblems are ball, direction arrows, stars and icons only; the old figure calls are switched off (emblem2.FIGURES) and recipes.fit() drops the ground line, centres and doubles what is left. Some may need a proper redraw later.

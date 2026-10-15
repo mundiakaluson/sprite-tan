@@ -25,7 +25,9 @@ def gk(a, pal, x, y, pose='stand', f=1): person(a, x, y, pal['main'], pose, f, k
 def lt(pal): return tuple(pal['light'])
 def line(a, pts, col, w=1): ImageDraw.Draw(a).line(pts, fill=tuple(col[:3]) + ((col[3],) if len(col) > 3 else (255,)), width=w)
 def sp(a, x, y, s=1): sparkle(ImageDraw.Draw(a), x, y, (255, 240, 160, 255), s)
-def gnd(a, pal, y=33): ground(a, y, pal)
+SKIP_GROUND = [False]
+def gnd(a, pal, y=33):
+    if not SKIP_GROUND[0]: ground(a, y, pal)
 
 
 # ====================================================================== PASS
@@ -1052,5 +1054,26 @@ def _(pal):
     a = new(); clock(a, 12, 12, 6, 0.3); clock(a, 30, 24, 7, 0.6); clock(a, 46, 10, 5, 0.9); line(a, [(18, 18), (22, 14), (24, 26)], (255, 240, 120), 2); bolt(a, 38, 18, 1.0); sp(a, 6, 30, 2); sp(a, 50, 28, 2); return a
 
 
+def fit(a, big=2):
+    """cards that used to show mini footballers: drop the ground line, centre what is left and double it when it is small, so the emblem reads at a glance"""
+    import numpy as np
+    bb = a.getbbox()
+    if not bb: return a
+    w, h = bb[2] - bb[0], bb[3] - bb[1]; crop = a.crop(bb); k = max(1, min(big, 50 // max(1, w), 26 // max(1, h)))
+    if k > 1: crop = crop.resize((w * k, h * k), Image.NEAREST)
+    out = Image.new('RGBA', a.size, (0, 0, 0, 0)); out.alpha_composite(crop, ((a.width - crop.width) // 2, min(a.height - crop.height, max(0, 22 - crop.height // 2)))); return out
+
+
 def install(emb):
     emb.update(EMB2)
+    import emblem2 as _e2
+    def wrap(fn):
+        def g(pal):
+            _e2.COUNT[0] = 0; a = fn(pal)
+            if _e2.COUNT[0] == 0: return a
+            SKIP_GROUND[0] = True
+            try: _e2.COUNT[0] = 0; a = fn(pal)
+            finally: SKIP_GROUND[0] = False
+            return fit(a)
+        return g
+    for k in list(emb): emb[k] = wrap(emb[k])

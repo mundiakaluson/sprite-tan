@@ -30,8 +30,14 @@ def lay_fig(a, m):
     res = Image.fromarray(out, 'RGBA'); res.alpha_composite(Image.fromarray(arr, 'RGBA')); a.alpha_composite(res)
 
 
+COUNT = [0]
+FIGURES = False        # mini footballers are switched off on the emblems (decided): ball, arrows, stars, icons only
+
+
 def person(a, x, y, shirt, pose='stand', f=1, opp=False, keeper=False, hair=(52, 36, 28)):
     """footballer, feet at (x, y), about 16 px tall. f=+1 faces right, -1 faces left. Colour = shirt (rgb)."""
+    COUNT[0] += 1
+    if not FIGURES: return
     m = Image.new('RGBA', (W_, H_), (0, 0, 0, 0)); d = ImageDraw.Draw(m)
     sh = (GREY_SHIRT if opp else tuple(shirt)) + (255,); sho = (60, 64, 100, 255) if opp else SHORTS
     X = lambda dx: x + f * dx
