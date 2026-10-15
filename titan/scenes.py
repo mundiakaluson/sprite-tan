@@ -988,7 +988,7 @@ def render_all(ids=None, outdir=None):
     import time
     out = {}
     for cid in (ids or sorted(SCENES)):
-        t = time.time(); name, frames = render(cid, outdir); sheet_png(frames, f'/tmp/tt_{cid}.png'); out[cid] = name
+        t = time.time(); name, frames = render(cid, outdir); sheet_png(frames, os.path.join(__import__('tempfile').gettempdir(), f'tt_{cid}.png')); out[cid] = name
         print(cid, name, len(frames), f'{time.time() - t:.1f}s', flush=True)
     return out
 

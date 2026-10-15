@@ -19,7 +19,17 @@ OUT = os.path.join(ROOT, 'sprites', 'out_uv')
 META = json.load(open(os.path.join(OUT, 'animations.json')))['animations']
 SK = {n: U.make_skin(U.SKINS[n]) for n in ('home', 'away', 'keeper', 'third')}
 _sheets = {}; _spr = {}
-FONT = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', 11)
+def _font(size=11):
+    """a bold monospace font that exists on this machine (Linux / Windows / macOS), else Pillow's built-in one"""
+    for f in ('/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', 'DejaVuSansMono-Bold.ttf', 'C:/Windows/Fonts/consolab.ttf', 'C:/Windows/Fonts/lucon.ttf',
+              'C:/Windows/Fonts/cour.ttf', '/System/Library/Fonts/Menlo.ttc', '/System/Library/Fonts/Monaco.ttf', '/Library/Fonts/Courier New Bold.ttf'):
+        try: return ImageFont.truetype(f, size)
+        except OSError: pass
+    try: return ImageFont.load_default(size)
+    except TypeError: return ImageFont.load_default()
+
+
+FONT = _font(11)
 GOAL_X = 330; GOAL_Y0, GOAL_Y1 = 90, 150
 
 
