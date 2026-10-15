@@ -21,13 +21,18 @@ func _init(game: MatchGame) -> void:
 func update(dt: float) -> void:
 	for t in g.teams:
 		_phase(ctx[t])
+	for t in g.teams:
+		ctx[t].tick(dt)
+		profiles[t].interact.compute(ctx[t])
 	for f in g.all:
 		if f.lock > 0.0: continue
 		if not f.order.is_empty() and not f.is_keeper():
 			g.orders.follow(f, dt)
 			continue
 		var role: AiRole = profiles[f.team].role_for(f.role)
-		_apply(f, role.think(f, ctx[f.team], dt), ctx[f.team])
+		var intent := role.think(f, ctx[f.team], dt)
+		profiles[f.team].interact.post(f, intent, ctx[f.team])
+		_apply(f, intent, ctx[f.team])
 
 ## the stance a team plays right now: the HUD's choice, or for "auto" the profile's rules (protect a lead late, press when behind)
 func _stance(c: AiContext) -> TeamStance:
@@ -57,7 +62,7 @@ func _phase(c: AiContext) -> void:
 	c.presser = null
 	var bd := 1e9
 	for f in t.players:
-		if f.is_keeper() or f.lock > 0.0: continue
+		if f.is_keeper() or f.lock > 0.0 or profiles[t].interact.exempt_press(f): continue
 		var d := f.pos.distance_to(tgt)
 		if d < bd:
 			bd = d

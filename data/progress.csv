@@ -49,3 +49,4 @@ Game,"HUD as an editable scene (match_hud.tscn) instead of built in code",doing,
 Game,"Match camera shows the whole pitch width; lob by right-button drag with snapping; help text replaced by the command box",doing,"untested in Godot"
 Game,"HUD in pixel art: generator (hud/hudlib.py), PixelPanel / Label / Button nodes, strip + panels + rings",doing,"needs Export to game (HUD art step); untested in Godot; next: tool HUD tab, icons, banners"
 Game,"Formation AI for F02-F10 from tactico.pro (shared AiShapedFormation + one numbers file each)",doing,"untested in Godot; tune per formation in the inspector"
+Game,"AI interaction layer: cover for defenders who step out, striker finds space when a midfielder presses, player traits (roamer / Zionel Pessi)",doing,"untested in Godot; tune in AiProfile > Interact"

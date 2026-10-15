@@ -23,6 +23,11 @@ var presser: Footballer         ## the team mate closing the ball down when we d
 var formation_id := ""
 var family := ""                ## FOUR_BACK / THREE_BACK / FIVE_BACK
 var stance: TeamStance = TeamStance.new()
+var cover := {}                 ## Footballer -> where he covers a team mate who stepped out (set by AiInteract.compute)
+var pushers: Array = []         ## team mates who stepped out of the line / are pressing
+var push_y := 0.0               ## average z of the pushers
+var outlet: Footballer          ## our presser, when his press should send the striker looking for space
+var poss_time := 0.0            ## seconds since this team won the ball (0 while it does not have it)
 var base_form := {}             ## the formation's own numbers, before the stance
 var form := {}                  ## formations.csv numbers, family defaults filled in: line_height, width, compactness, press, overlap, directness, counter, risk
 
@@ -48,6 +53,10 @@ func setup(g: MatchGame, t: Team) -> void:
 func set_stance(st: TeamStance) -> void:
 	stance = st
 	for k in base_form: form[k] = clampf(float(base_form[k]) + st.delta(k), 0.0, 1.0)
+
+## once per frame: how long this team has had the ball
+func tick(dt: float) -> void:
+	poss_time = poss_time + dt if has_ball else 0.0
 
 func refresh() -> void:
 	carrier = game.carrier

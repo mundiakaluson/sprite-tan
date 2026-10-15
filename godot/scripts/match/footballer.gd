@@ -22,6 +22,7 @@ var carried := 0.0              ## metres he has carried the ball since he got i
 var clip := ""
 var pending := Callable()       ## runs when the animation reaches its strike point
 var pending_t := 0.0
+var ai := {}                    ## memory of the AI interaction layer (space target, ...)
 var order := {}                 ## an order from the human: {kind: "run" / "press", target, t}; empty = play by himself
 
 func stat(key: String, d := 60) -> int:

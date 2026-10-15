@@ -27,6 +27,10 @@ extends Resource
 @export var press_deficit := 1
 @export var press_stance := "press_high"
 
+@export_group("Interact")
+## team interaction: cover for a defender who steps out, the striker looking for space when a midfielder presses, player traits (roamer)
+@export var interact: AiInteract
+
 @export_group("Formations")
 ## team play per formation (4-4-2 here: banks, press triggers, who drops, overlaps). A role follows its formation's file first, then its own AI.
 @export var formations: Array[AiFormation] = []
@@ -55,6 +59,8 @@ func fill() -> AiProfile:
 		var x := Ai442.new()
 		x.formation_ids = PackedStringArray(["F01"])
 		formations.append(x)
+	if interact == null: interact = AiInteract.new()
+	interact.fill()
 	if goalkeeper == null: goalkeeper = AiGk.new()
 	if centre_back == null: centre_back = AiCb.new()
 	if fullback == null: fullback = AiFullback.new()

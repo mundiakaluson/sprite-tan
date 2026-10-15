@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AiProfile" load_steps=38 format=3]
+[gd_resource type="Resource" script_class="AiProfile" load_steps=42 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/ai_profile.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ai/roles/ai_gk.gd" id="2"]
@@ -14,6 +14,8 @@
 [ext_resource type="Script" path="res://scripts/ai/formations/ai_formation.gd" id="11"]
 
 [ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="12"]
+[ext_resource type="Script" path="res://scripts/ai/ai_interact.gd" id="40"]
+[ext_resource type="Script" path="res://scripts/ai/ai_trait.gd" id="41"]
 [ext_resource type="Script" path="res://scripts/ai/formations/ai_433.gd" id="20"]
 [ext_resource type="Script" path="res://scripts/ai/formations/ai_4231.gd" id="21"]
 [ext_resource type="Script" path="res://scripts/ai/formations/ai_4141.gd" id="22"]
@@ -63,6 +65,15 @@ formation_ids = PackedStringArray("F09")
 [sub_resource type="Resource" id="ff10"]
 script = ExtResource("28")
 formation_ids = PackedStringArray("F10")
+
+[sub_resource type="Resource" id="trait_roamer"]
+script = ExtResource("41")
+id = "roamer"
+label = "ROAMER"
+
+[sub_resource type="Resource" id="interact"]
+script = ExtResource("40")
+traits = Array[ExtResource("41")]([SubResource("trait_roamer")])
 
 [sub_resource type="Resource" id="gk"]
 script = ExtResource("2")
@@ -153,6 +164,7 @@ push_scale = 0.8
 
 [resource]
 script = ExtResource("1")
+interact = SubResource("interact")
 goalkeeper = SubResource("gk")
 centre_back = SubResource("cb")
 fullback = SubResource("fb")
