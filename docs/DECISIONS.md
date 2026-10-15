@@ -111,6 +111,6 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 
 ## Stadiums and pitches
 - data/stadiums.csv (3 to start: ST01 Old Ground day, ST02 City Bowl night, ST03 Seaside Park dusk). Generator stadiums/stadiumlib.py, export step `stadiums` writes godot/assets/pitches/<id>/ (tracked).
-- Pitch vertical on screen, own goal at the bottom; 105x68 m at 14 px/m, depth squashed 2:1. Backdrop 1252x1075 (stands, crowd, boards, lights) is larger than the viewport; the match camera scrolls over it.
-- Goals are two layers (far: net behind posts; near: net in front, drawn over players). Godot: scenes/stadium/stadium.tscn with stadium_id and pitch_to_screen().
+- Pitch horizontal, TV side-on view, own goal on the left; 105x68 m at 12 px/m, depth squashed 2:1. Backdrop 1600x708 (stands, crowd, boards, lights) is larger than the viewport; the match camera scrolls over it.
+- Goals are side-on, two layers (back: behind players; front: near post and net over players; right goal = flipped left). Godot: scenes/stadium/stadium.tscn with stadium_id and pitch_to_screen().
 - Player scene: select the root to get a Facing slider (0-31) for previewing directions.

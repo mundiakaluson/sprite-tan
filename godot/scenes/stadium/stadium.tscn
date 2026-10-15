@@ -8,14 +8,21 @@ script = ExtResource("1")
 [node name="Backdrop" type="Sprite2D" parent="."]
 centered = false
 
-[node name="GoalFar" type="Sprite2D" parent="."]
+[node name="GoalBackL" type="Sprite2D" parent="."]
+centered = false
+
+[node name="GoalBackR" type="Sprite2D" parent="."]
 centered = false
 
 [node name="Actors" type="Node2D" parent="."]
 y_sort_enabled = true
 
-[node name="GoalNear" type="Sprite2D" parent="."]
+[node name="GoalFrontL" type="Sprite2D" parent="."]
 centered = false
-z_index = 5
+
+[node name="GoalFrontR" type="Sprite2D" parent="."]
+centered = false
 
 [node name="Flags" type="Node2D" parent="."]
+
+[node name="Camera" type="Camera2D" parent="."]

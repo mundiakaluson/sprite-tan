@@ -1,6 +1,6 @@
 """Stadium art generated from data/stadiums.csv: backdrop (pitch with markings + boards + stands + crowd + floodlights), goals, corner flag, thumbnail, layout.json.
-Pitch orientation (decided): VERTICAL on screen, own goal at the bottom, attack upward, matching the formation coordinates (x 0-100 left to right, y 0-100 own goal to opponent goal).
-Camera: ground is squashed 2:1 vertically (like the Titan scenes). 14 px per metre across the pitch, so a 68 m wide pitch is 952 px wide.
+Pitch orientation (decided): HORIZONTAL, TV / broadcast side-on view. Own goal on the left, attack to the right. Pitch coords x 0-100 (touchline, 0 = top of the screen = the attacker's left)
+and y 0-100 (own goal to opponent goal). Camera: the ground is squashed 2:1 vertically. 12 px per metre: the pitch is 1260 px long and 408 px deep; the match camera scrolls along it.
     python stadiums/stadiumlib.py [out_dir]     writes every stadium + a contact sheet
 Nothing here needs Tk. The export step (tool/export_game.py) calls render_all() into godot/assets/pitches/<id>/."""
 import os, sys, csv, math, json, random
@@ -9,11 +9,11 @@ from PIL import Image, ImageDraw
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 DATA = os.path.join(ROOT, 'data')
-S = 14.0                    # pixels per metre across the pitch
+S = 12.0                    # pixels per metre across the pitch
 SQ = 0.5                    # ground depth squash (screen y per ground metre = S * SQ)
-LEN, WID = 105.0, 68.0      # pitch in metres (a = along, 0 = own goal at the bottom; b = across, 0 = left)
-MX_L, MX_R, MX_T, MX_B = 150, 150, 230, 110
-PW, PH = int(round(WID * S)), int(round(LEN * S * SQ))
+LEN, WID = 105.0, 68.0      # pitch in metres (a = along, 0 = own goal on the left; b = across, 0 = top touchline)
+MX_L, MX_R, MX_T, MX_B = 170, 170, 200, 100
+PW, PH = int(round(LEN * S)), int(round(WID * S * SQ))
 CW, CH = MX_L + PW + MX_R, MX_T + PH + MX_B
 APRON = 4.0                 # metres of grass outside the lines before the boards
 LINE = (232, 238, 226)
@@ -21,7 +21,7 @@ LINE = (232, 238, 226)
 
 def P(a, b):
     """ground metres (a along from own goal, b across from the left) -> canvas pixels"""
-    return (MX_L + b * S, MX_T + (LEN - a) * S * SQ)
+    return (MX_L + a * S, MX_T + b * S * SQ)
 
 
 def load():
@@ -46,7 +46,7 @@ def grass_rect():
 def draw_grass(img, row, rng):
     x0, y0, x1, y1 = grass_rect(); ga, gb = hexrgb(row['grass_a']), hexrgb(row['grass_b'])
     yy, xx = np.mgrid[y0:y1, x0:x1]
-    b = (xx - MX_L) / S; a = (MX_T + PH - yy) / (S * SQ); band = 5.25; mow = row['mow']
+    a = (xx - MX_L) / S; b = (yy - MX_T) / (S * SQ); band = 5.25; mow = row['mow']
     if mow == 'checker': k = (np.floor(a / band) + np.floor(b / band)) % 2
     elif mow == 'diagonal': k = np.floor((a + b) / band) % 2
     elif mow == 'rings': k = np.floor(np.hypot(a - LEN / 2, b - WID / 2) / band) % 2
@@ -191,44 +191,52 @@ def render_backdrop(row, seed=1):
 
 
 # ------------------------------------------------------------------------------------------------ goals and flag
-def _net(d, x0, x1, ytop, ybot, col=(236, 240, 236)):
-    for x in range(int(x0), int(x1) + 1, 5): d.line([(x, ytop), (x, ybot)], fill=col + (70,))
-    for y in range(int(ytop), int(ybot) + 1, 5): d.line([(x0, y), (x1, y)], fill=col + (70,))
+def _net(d, pts, col=(236, 240, 236), a=70, step=5):
+    """a net grid over the quad pts (4 corners, in order)"""
+    (x0, y0), (x1, y1), (x2, y2), (x3, y3) = pts
+    for k in range(0, step + 1):
+        t = k / step
+        d.line([(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t), (x3 + (x2 - x3) * t, y3 + (y2 - y3) * t)], fill=col + (a,))
+        d.line([(x0 + (x3 - x0) * t, y0 + (y3 - y0) * t), (x1 + (x2 - x1) * t, y1 + (y2 - y1) * t)], fill=col + (a,))
 
 
-def goal_far():
-    """the goal at the far end, seen from the front (net behind the posts). Origin: centre of the goal line = (W/2, BASE)."""
-    W, H, BASE = 150, 90, 70; hw = 3.66 * S; h = 2.44 * S; dep = 2.0 * S * SQ; im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); cx = W / 2
-    l, r = cx - hw, cx + hw; ln, rn = l + 8, r - 8
-    d.ellipse([l - 4, BASE - dep - 3, r + 4, BASE + 5], fill=(0, 0, 0, 40))
-    d.polygon([(l, BASE - h), (r, BASE - h), (rn, BASE - dep - h + 4), (ln, BASE - dep - h + 4)], fill=(236, 240, 236, 38))        # roof net
-    d.polygon([(l, BASE), (l, BASE - h), (ln, BASE - dep - h + 4), (ln, BASE - dep)], fill=(236, 240, 236, 30))                  # side nets
-    d.polygon([(r, BASE), (r, BASE - h), (rn, BASE - dep - h + 4), (rn, BASE - dep)], fill=(236, 240, 236, 30))
-    _net(d, ln, rn, BASE - dep - h + 4, BASE - dep)                                                                              # back net
-    for (xa, xb) in ((l, ln), (r, rn)):
-        d.line([(xa, BASE), (xb, BASE - dep)], fill=(236, 240, 236, 70)); d.line([(xa, BASE - h), (xb, BASE - dep - h + 4)], fill=(236, 240, 236, 90))
-    d.rectangle([ln - 1, BASE - dep - h + 3, rn + 1, BASE - dep - h + 4], fill=(210, 216, 210, 255))
-    d.rectangle([l - 1, BASE - h, l + 1, BASE], fill=(250, 250, 250, 255)); d.rectangle([r - 1, BASE - h, r + 1, BASE], fill=(250, 250, 250, 255))   # posts
-    d.rectangle([l - 1, BASE - h - 1, r + 1, BASE - h + 1], fill=(250, 250, 250, 255))                                               # crossbar
-    d.line([(l - 1, BASE + 2), (l + 1, BASE + 2)], fill=(0, 0, 0, 60)); d.line([(r - 1, BASE + 2), (r + 1, BASE + 2)], fill=(0, 0, 0, 60))
-    return im, (W // 2, BASE)
+GW, GH, GOX, GOY = 64, 104, 54, 62         # goal image size and the origin (goal line, centre of the mouth, on the ground)
+HALF = 3.66 * S * SQ                       # half the goal mouth in screen y (ground squash)
+GHT = 2.44 * S                             # crossbar height
+GDEP = 2.0 * S * 0.8                       # net depth along the pitch (goes outside the end line, to the left)
 
 
-def goal_near():
-    """the goal at the near end, seen from behind (net in front of the posts). Origin: centre of the goal line."""
-    W, H, BASE = 150, 100, 36; hw = 3.66 * S; h = 2.44 * S; dep = 2.0 * S * SQ; im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); cx = W / 2
-    l, r = cx - hw, cx + hw; ln, rn = l + 8, r - 8
-    d.ellipse([l - 4, BASE - 3, r + 4, BASE + dep + 6], fill=(0, 0, 0, 40))
-    d.rectangle([l - 1, BASE - h, l + 1, BASE], fill=(250, 250, 250, 255)); d.rectangle([r - 1, BASE - h, r + 1, BASE], fill=(250, 250, 250, 255))
-    d.rectangle([l - 1, BASE - h - 1, r + 1, BASE - h + 1], fill=(250, 250, 250, 255))
-    yb = BASE + dep; yt = BASE + dep - h + 2
-    d.polygon([(l, BASE - h), (r, BASE - h), (rn, yt), (ln, yt)], fill=(236, 240, 236, 34))
-    _net(d, ln, rn, yt, yb)
-    for (xa, xb) in ((l, ln), (r, rn)):
-        d.line([(xa, BASE), (xb, yb)], fill=(236, 240, 236, 110)); d.line([(xa, BASE - h), (xb, yt)], fill=(236, 240, 236, 110))
-        d.rectangle([xb - 1, yt, xb + 1, yb], fill=(236, 240, 236, 255))
-    d.rectangle([ln, yt - 1, rn, yt + 1], fill=(236, 240, 236, 255))
-    return im, (W // 2, BASE)
+def _goal_pts():
+    fb, nb = GOY - HALF, GOY + HALF         # far / near post base y
+    gx, bx = GOX, GOX - GDEP
+    return fb, nb, gx, bx
+
+
+def goal_back():
+    """the LEFT goal seen from the side, the layer behind the players: shadow, back net, roof, far side net, far post. The right goal is this flipped in Godot."""
+    im = Image.new('RGBA', (GW, GH), (0, 0, 0, 0)); d = ImageDraw.Draw(im); fb, nb, gx, bx = _goal_pts(); W = (250, 250, 250, 255)
+    d.polygon([(gx + 2, fb + 2), (gx + 2, nb + 3), (bx - 3, nb + 3), (bx - 3, fb + 2)], fill=(0, 0, 0, 38))                          # shadow on the grass
+    d.polygon([(bx, fb - GHT), (bx, nb), (bx, nb - GHT), (bx, fb)], fill=(236, 240, 236, 26))
+    _net(d, [(bx, fb - GHT), (bx, nb - GHT), (bx, nb), (bx, fb)], a=0)
+    for k in range(0, 8):                                                                                                               # back net: a vertical plane seen edge on, drawn as a strip
+        y = fb - GHT + (nb - (fb - GHT)) * k / 7; d.line([(bx - 1, y), (bx + 1, y)], fill=(236, 240, 236, 80))
+    d.line([(bx, fb - GHT), (bx, nb)], fill=(236, 240, 236, 110))
+    _net(d, [(gx, fb - GHT), (gx, nb - GHT), (bx, nb - GHT), (bx, fb - GHT)], a=70)                                                   # roof net
+    _net(d, [(gx, fb), (gx, fb - GHT), (bx, fb - GHT), (bx, fb)], a=70)                                                               # far side net
+    d.line([(bx, fb), (bx, fb - GHT)], fill=(210, 216, 210, 255)); d.line([(bx, fb - GHT), (gx, fb - GHT)], fill=(210, 216, 210, 255))
+    d.rectangle([gx - 1, fb - GHT, gx, fb], fill=W)                                                                                     # far post
+    return im, (GOX, GOY)
+
+
+def goal_front():
+    """the layer in front of the players: near side net, near post, crossbar"""
+    im = Image.new('RGBA', (GW, GH), (0, 0, 0, 0)); d = ImageDraw.Draw(im); fb, nb, gx, bx = _goal_pts(); W = (250, 250, 250, 255)
+    _net(d, [(gx, nb), (gx, nb - GHT), (bx, nb - GHT), (bx, nb)], a=95)
+    d.line([(bx, nb), (bx, nb - GHT)], fill=(236, 240, 236, 255)); d.line([(bx, nb - GHT), (gx, nb - GHT)], fill=(236, 240, 236, 255))
+    d.line([(gx - 1, fb - GHT), (gx - 1, nb - GHT)], fill=W, width=2)                                                                   # crossbar, far post to near post
+    d.rectangle([gx - 1, nb - GHT, gx, nb], fill=W)                                                                                     # near post
+    d.rectangle([gx - 2, nb, gx + 1, nb + 1], fill=(0, 0, 0, 70))
+    return im, (GOX, GOY)
 
 
 def corner_flag():
@@ -239,9 +247,9 @@ def corner_flag():
 
 # ------------------------------------------------------------------------------------------------ output
 def layout(row):
-    gf, of = goal_far()[1], goal_near()[1]; fl = corner_flag()[1]
+    go = goal_back()[1]; fl = corner_flag()[1]
     return dict(id=row['id'], name=row['name'], time=row['time'], px_per_m=S, squash=SQ, pitch_m=[LEN, WID], canvas=[CW, CH], pitch_origin=[MX_L, MX_T], pitch_size=[PW, PH],
-                orientation='vertical (own goal at the bottom)', goal_far=dict(pos=list(P(LEN, WID / 2)), origin=list(gf)), goal_near=dict(pos=list(P(0, WID / 2)), origin=list(of)),
+                orientation='horizontal TV view (own goal on the left)', goal_left=dict(pos=list(P(0, WID / 2)), origin=list(go)), goal_right=dict(pos=list(P(LEN, WID / 2)), origin=list(go), flip=True),
                 flag=dict(origin=list(fl), corners=[list(P(0, 0)), list(P(0, WID)), list(P(LEN, 0)), list(P(LEN, WID))]), capacity=int(num(row.get('capacity'))))
 
 
@@ -250,7 +258,7 @@ def render_all(out_dir, log=print, tick=None):
     for i, row in enumerate(rows):
         d = os.path.join(out_dir, row['id']); os.makedirs(d, exist_ok=True); bd = render_backdrop(row)
         bd.save(os.path.join(d, 'backdrop.png')); bd.resize((CW // 6, CH // 6), Image.NEAREST).save(os.path.join(d, 'thumb.png'))
-        goal_far()[0].save(os.path.join(d, 'goal_far.png')); goal_near()[0].save(os.path.join(d, 'goal_near.png')); corner_flag()[0].save(os.path.join(d, 'corner_flag.png'))
+        goal_back()[0].save(os.path.join(d, 'goal_back.png')); goal_front()[0].save(os.path.join(d, 'goal_front.png')); corner_flag()[0].save(os.path.join(d, 'corner_flag.png'))
         json.dump(layout(row), open(os.path.join(d, 'layout.json'), 'w'), indent=1)
         log(f"  {row['id']} {row['name']}: {CW}x{CH}")
         if tick: tick(i + 1, len(rows))

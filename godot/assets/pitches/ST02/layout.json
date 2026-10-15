@@ -2,44 +2,45 @@
  "id": "ST02",
  "name": "City Bowl",
  "time": "night",
- "px_per_m": 14.0,
+ "px_per_m": 12.0,
  "squash": 0.5,
  "pitch_m": [
   105.0,
   68.0
  ],
  "canvas": [
-  1252,
-  1075
+  1600,
+  708
  ],
  "pitch_origin": [
-  150,
-  230
+  170,
+  200
  ],
  "pitch_size": [
-  952,
-  735
+  1260,
+  408
  ],
- "orientation": "vertical (own goal at the bottom)",
- "goal_far": {
+ "orientation": "horizontal TV view (own goal on the left)",
+ "goal_left": {
   "pos": [
-   626.0,
-   230.0
+   170.0,
+   404.0
   ],
   "origin": [
-   75,
-   70
+   54,
+   62
   ]
  },
- "goal_near": {
+ "goal_right": {
   "pos": [
-   626.0,
-   965.0
+   1430.0,
+   404.0
   ],
   "origin": [
-   75,
-   36
-  ]
+   54,
+   62
+  ],
+  "flip": true
  },
  "flag": {
   "origin": [
@@ -48,20 +49,20 @@
   ],
   "corners": [
    [
-    150.0,
-    965.0
+    170.0,
+    200.0
    ],
    [
-    1102.0,
-    965.0
+    170.0,
+    608.0
    ],
    [
-    150.0,
-    230.0
+    1430.0,
+    200.0
    ],
    [
-    1102.0,
-    230.0
+    1430.0,
+    608.0
    ]
   ]
  },
