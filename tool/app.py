@@ -15,6 +15,8 @@ def main():
     nb = ttk.Notebook(root); nb.pack(fill='both', expand=True)
     exp_btn = ttk.Button(root, text='Export to game')   # sits in the tab strip, top right, same look as the other buttons
     exp_btn.place(relx=1.0, x=-6, y=2, anchor='ne')
+    ref_btn = ttk.Button(root, text='Refresh dashboard', command=lambda: getattr(built.get('Dashboard'), 'refresh', lambda: None)())
+    ref_btn.place(relx=1.0, x=-124, y=2, anchor='ne')
     status = ttk.Label(root, text='Edits are written to data/*.csv when you press Save. Files changed in Excel reload automatically.', anchor='w'); status.pack(fill='x')
     from tab_dashboard import DashboardTab
     from tab_players import PlayersTab
