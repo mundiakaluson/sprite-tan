@@ -89,6 +89,7 @@ func _ready() -> void:
 	brain = AiBrain.new(self)
 	cards.deal()
 	hud.bind_command(command)
+	hud.set_team_colors(home.color, away.color)
 	hud.set_team_commands(brain.stance_list(home))
 	hud.set_team_active(home.stance_id)
 	hud.team_command.connect(_on_team_command)

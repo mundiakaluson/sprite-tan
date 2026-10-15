@@ -10,30 +10,35 @@ signal menu_chosen(id: String)          ## an order button was pressed ("through
 signal card_pressed(index: int)         ## a card in the hand was clicked
 signal team_command(id: String)         ## a team command button was pressed
 
-## size of the cards in the hand (1 = the full 64 x 90 card)
-@export_range(0.4, 1.0) var card_scale := 0.75
+## size of the cards in the hand (1 = the full 64 x 90 card, pixel for pixel; keep it 1 unless you want blurry pixels)
+@export_range(0.5, 1.0, 0.25) var card_scale := 1.0
 ## size of the hover tooltip (the card's tooltip image x this)
-@export_range(1.0, 4.0) var tooltip_scale := 1.5
+@export_range(1.0, 4.0, 1.0) var tooltip_scale := 2.0
 ## size of the TEAM stance buttons
-@export var team_button_size := Vector2(64, 20)
+@export var team_button_size := Vector2(64, 18)
 
 const PITCH_H := 420.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
 ## colour of each command kind in the command box and on the highlighted players
 const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), "lob": Color(1.0, 0.9, 0.3), "shoot": Color(1.0, 0.4, 0.35), "run": Color(0.5, 1.0, 0.5),
 	"press": Color(1.0, 0.65, 0.3), "tackle": Color(1.0, 0.65, 0.3), "card": Color(0.8, 0.6, 1.0), "team": Color(0.6, 0.75, 1.0)}
 
-@onready var _score: Label = %Score
-@onready var _who: Label = %Who
-@onready var _msg: Label = %Message
+@onready var _score: PixelLabel = %Score
+@onready var _clock: PixelLabel = %Clock
+@onready var _who: PixelLabel = %Who
+@onready var _msg: PixelLabel = %Message
+@onready var _score_panel: PixelPanel = %ScorePanel
+@onready var _team_panel: PixelPanel = %TeamPanel
+@onready var _cmd_panel: PixelPanel = %CommandPanel
 @onready var _hand: HBoxContainer = %Hand
 @onready var _team_grid: GridContainer = %TeamGrid
-@onready var _team_note: Label = %TeamNote
-@onready var _cmd_title: Label = %CommandTitle
-@onready var _hint: Label = %CommandNote
+@onready var _team_note: PixelLabel = %TeamNote
+@onready var _cmd_title: PixelLabel = %CommandTitle
+@onready var _hint: PixelLabel = %CommandNote
 @onready var _overlay: HudOverlay = %Overlay
 @onready var _orders: Container = %Orders
 
 var _hint_base := ""
+var _team_accent := PixelUi.STEEL
 var _order_buttons := {}
 var _cards: Array[SkillCard] = []
 var command: MatchCommand
@@ -55,7 +60,7 @@ func _ready() -> void:
 	_msg.text = ""
 	# the order buttons are the children of Orders named Order_<id>
 	for b in _orders.get_children():
-		var button := b as Button
+		var button := b as PixelButton
 		if button == null: continue
 		var id := String(button.name).trim_prefix("Order_")
 		button.disabled = true
@@ -72,7 +77,8 @@ func _process(dt: float) -> void:
 		if _toast_t <= 0.0: _show_command()
 
 func set_score(h: int, a: int, minute: int) -> void:
-	if _score != null: _score.text = "HOME %d - %d AWAY   %d'" % [h, a, minute]
+	if _score != null: _score.text = "HOME %d - %d AWAY" % [h, a]
+	if _clock != null: _clock.text = "%d'" % minute
 
 func set_controlled(who: String) -> void:
 	if _who != null: _who.text = who
@@ -119,17 +125,23 @@ func set_team_commands(commands: Array) -> void:
 	_team_buttons.clear()
 	_team_note.visible = commands.is_empty()
 	for cmd in commands:
-		var b := Button.new()
+		var b := PixelButton.new()
 		b.text = String(cmd["label"])
 		b.custom_minimum_size = team_button_size
-		b.add_theme_font_size_override("font_size", 8)
-		b.focus_mode = Control.FOCUS_NONE
+		b.accent = _team_accent
 		b.toggle_mode = true
 		b.tooltip_text = String(cmd.get("note", ""))
 		var id := String(cmd["id"])
 		b.pressed.connect(func(): team_command.emit(id))
 		_team_grid.add_child(b)
 		_team_buttons[id] = b
+
+## the home team's colour tints the score and team panels and the lit stance button
+func set_team_colors(home: Color, _away: Color) -> void:
+	_team_accent = home
+	_score_panel.accent = home
+	_team_panel.accent = home
+	for k in _team_buttons: _team_buttons[k].accent = home
 
 ## light the button of the stance in force
 func set_team_active(id: String) -> void:
@@ -156,6 +168,7 @@ func _show_command() -> void:
 	if command == null or command.kind == "":
 		_cmd_title.text = "COMMAND: -"
 		_cmd_title.modulate = Color(1, 1, 1, 0.5)
+		_cmd_panel.accent = PixelUi.STEEL
 		if _toast_t <= 0.0: _hint.text = _hint_base
 		return
 	var t := command.text
@@ -163,6 +176,7 @@ func _show_command() -> void:
 	elif command.who != null and command.kind in ["run", "press", "tackle", "card"]: t += "  " + command.who.display_name()
 	_cmd_title.text = t
 	_cmd_title.modulate = KIND_COLORS.get(command.kind, Color.WHITE)
+	_cmd_panel.accent = KIND_COLORS.get(command.kind, PixelUi.STEEL)
 	if _toast_t <= 0.0: _hint.text = command.note if command.note != "" else _hint_base
 
 ## the team mate a drag is snapping to (ringed on the pitch; a through ball marks him as the runner)

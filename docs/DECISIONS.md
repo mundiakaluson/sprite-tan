@@ -158,3 +158,8 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 ## Team stances and the current command (decided)
 - Teams live under their formation: the formation file organises, presses and blocks. TEAM buttons (auto, press high, mid block, park bus, push up, counter) are stances that lean the formation's numbers; `auto` follows the formation and switches by minute and score. Details in godot/CLAUDE.md.
 - Drag from the ball carrier: snap to the nearest mate = pass, dragged further = through ball (runner ringed), into the goal area = shot. A small HUD box shows the current command (pass / through / shoot / run / card / team) from one state store (MatchCommand) that every action writes to.
+
+## HUD art (decided)
+- The HUD is complete pixel art in the card language, 1:1 on the 960x540 screen (no fractional scaling: cards in the hand at their real 64x90). Panels and buttons are dark-field frames with cut corners tinted by an accent (team kit colour, command kind colour); text is the cards' 3x5 pixel font.
+- Generated, not hand-painted: hud/hudlib.py + data/hud_style.csv, exported to assets/ui by the HUD art step; Godot side = PixelPanel / PixelLabel / PixelButton / PixelImage in scripts/ui. Next: HUD tab in the tool to preview, icons for the orders and stances, the GOAL / KICK OFF banners, the pitch-side score bug.
+

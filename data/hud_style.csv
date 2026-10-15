@@ -1,0 +1,12 @@
+key,value,note
+base,#0c0d14,"panel / strip field (the card's dark field)"
+field_hi,#14161f,"lighter field, top of the strip, hovered buttons"
+inner,#1c1e2e,"1 px inner edge just inside a frame"
+frame,#d6dae8,"frame pixels are near white and tinted in the game by the accent colour (team kit, category colour, ...)"
+frame_dim,#464a5e,"frame of a disabled button"
+text,#ffffff,"normal text"
+text_dim,#8c92b0,"labels, notes (the card's grey)"
+text_off,#5a5e74,"disabled text"
+good,#6ed68c,"HIT bars / good"
+risk,#ec6058,"RISK bars / bad"
+time,#78b0fa,"cooldown bars / info"

@@ -1,15 +1,11 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/match/match_hud.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/match/hud_overlay.gd" id="2"]
-
-[sub_resource type="StyleBoxFlat" id="box"]
-bg_color = Color(0.1, 0.11, 0.17, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.3, 0.32, 0.4, 1)
+[ext_resource type="Script" path="res://scripts/ui/pixel_panel.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_label.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_button.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_image.gd" id="6"]
 
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1")
@@ -21,174 +17,185 @@ offset_right = 960.0
 offset_bottom = 540.0
 mouse_filter = 2
 
+[node name="Strip" type="Control" parent="Root"]
+offset_left = 0.0
+offset_top = 420.0
+offset_right = 960.0
+offset_bottom = 540.0
+script = ExtResource("6")
+
 [node name="Overlay" type="Control" parent="Root"]
 unique_name_in_owner = true
-layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
 offset_right = 960.0
 offset_bottom = 420.0
 mouse_filter = 2
 script = ExtResource("2")
 
-[node name="Strip" type="ColorRect" parent="Root"]
-layout_mode = 0
-offset_top = 420.0
-offset_right = 960.0
-offset_bottom = 540.0
-mouse_filter = 2
-color = Color(0.07, 0.08, 0.12, 1)
-
-[node name="StripLine" type="ColorRect" parent="Root"]
-layout_mode = 0
-offset_top = 420.0
-offset_right = 960.0
-offset_bottom = 422.0
-mouse_filter = 2
-color = Color(0.3, 0.32, 0.4, 1)
-
-[node name="Score" type="Label" parent="Root"]
+[node name="ScorePanel" type="Control" parent="Root"]
 unique_name_in_owner = true
-offset_left = 10.0
-offset_top = 423.0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 18
-text = "HOME 0 - 0 AWAY   0'"
+offset_left = 4.0
+offset_top = 424.0
+offset_right = 196.0
+offset_bottom = 452.0
+script = ExtResource("3")
 
-[node name="Who" type="Label" parent="Root"]
+[node name="Score" type="Control" parent="Root/ScorePanel"]
 unique_name_in_owner = true
-offset_left = 10.0
-offset_top = 446.0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 11
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 128.0
+offset_bottom = 20.0
+text = "HOME 0 - 0 AWAY"
+text_scale = 2
+script = ExtResource("4")
+
+[node name="Clock" type="Control" parent="Root/ScorePanel"]
+unique_name_in_owner = true
+offset_left = 130.0
+offset_top = 11.0
+offset_right = 186.0
+offset_bottom = 17.0
+text = "0'"
+color = Color(0.55, 0.57, 0.69, 1)
+align = 2
+script = ExtResource("4")
+
+[node name="Who" type="Control" parent="Root"]
+unique_name_in_owner = true
+offset_left = 8.0
+offset_top = 456.0
+offset_right = 194.0
+offset_bottom = 462.0
+text = ""
+script = ExtResource("4")
 
 [node name="Orders" type="GridContainer" parent="Root"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 10.0
-offset_top = 464.0
-offset_right = 198.0
-offset_bottom = 504.0
+offset_left = 4.0
+offset_top = 466.0
+offset_right = 196.0
+offset_bottom = 510.0
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 columns = 2
 
-[node name="Order_through" type="Button" parent="Root/Orders"]
-custom_minimum_size = Vector2(92, 18)
+[node name="Order_through" type="Control" parent="Root/Orders"]
+custom_minimum_size = Vector2(94, 20)
 layout_mode = 2
-focus_mode = 0
-theme_override_font_sizes/font_size = 9
-disabled = true
 text = "THROUGH"
-
-[node name="Order_run" type="Button" parent="Root/Orders"]
-custom_minimum_size = Vector2(92, 18)
-layout_mode = 2
-focus_mode = 0
-theme_override_font_sizes/font_size = 9
 disabled = true
+script = ExtResource("5")
+
+[node name="Order_run" type="Control" parent="Root/Orders"]
+custom_minimum_size = Vector2(94, 20)
+layout_mode = 2
 text = "RUN"
-
-[node name="Order_press" type="Button" parent="Root/Orders"]
-custom_minimum_size = Vector2(92, 18)
-layout_mode = 2
-focus_mode = 0
-theme_override_font_sizes/font_size = 9
 disabled = true
+script = ExtResource("5")
+
+[node name="Order_press" type="Control" parent="Root/Orders"]
+custom_minimum_size = Vector2(94, 20)
+layout_mode = 2
 text = "PRESS"
-
-[node name="Order_tackle" type="Button" parent="Root/Orders"]
-custom_minimum_size = Vector2(92, 18)
-layout_mode = 2
-focus_mode = 0
-theme_override_font_sizes/font_size = 9
 disabled = true
+script = ExtResource("5")
+
+[node name="Order_tackle" type="Control" parent="Root/Orders"]
+custom_minimum_size = Vector2(94, 20)
+layout_mode = 2
 text = "TACKLE"
+disabled = true
+script = ExtResource("5")
 
-[node name="CommandBox" type="Panel" parent="Root"]
-layout_mode = 0
-offset_left = 782.0
-offset_top = 428.0
-offset_right = 952.0
-offset_bottom = 532.0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("box")
-
-[node name="CommandTitle" type="Label" parent="Root/CommandBox"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 7.0
-offset_top = 4.0
-offset_right = 164.0
-offset_bottom = 40.0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 13
-text = "COMMAND: -"
-autowrap_mode = 3
-
-[node name="CommandNote" type="Label" parent="Root/CommandBox"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 7.0
-offset_top = 44.0
-offset_right = 164.0
-offset_bottom = 100.0
-modulate = Color(1, 1, 1, 0.8)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 9
-autowrap_mode = 3
-
-[node name="Message" type="Label" parent="Root"]
-unique_name_in_owner = true
-offset_left = 180.0
-offset_top = 150.0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 30
-offset_right = 780.0
-offset_bottom = 200.0
-horizontal_alignment = 1
+[node name="HandPanel" type="Control" parent="Root"]
+offset_left = 200.0
+offset_top = 424.0
+offset_right = 739.0
+offset_bottom = 524.0
+script = ExtResource("3")
 
 [node name="Hand" type="HBoxContainer" parent="Root"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 208.0
-offset_top = 432.0
-offset_right = 592.0
-offset_bottom = 500.0
+offset_left = 205.0
+offset_top = 429.0
+offset_right = 738.0
+offset_bottom = 519.0
 mouse_filter = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
 
-[node name="TeamTitle" type="Label" parent="Root"]
+[node name="TeamPanel" type="Control" parent="Root"]
 unique_name_in_owner = true
-offset_left = 634.0
+offset_left = 742.0
 offset_top = 424.0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 9
-text = "TEAM"
+offset_right = 956.0
+offset_bottom = 486.0
+script = ExtResource("3")
 
-[node name="TeamGrid" type="GridContainer" parent="Root"]
+[node name="TeamTitle" type="Control" parent="Root/TeamPanel"]
+offset_left = 8.0
+offset_top = 5.0
+offset_right = 48.0
+offset_bottom = 11.0
+text = "TEAM"
+color = Color(0.55, 0.57, 0.69, 1)
+script = ExtResource("4")
+
+[node name="TeamGrid" type="GridContainer" parent="Root/TeamPanel"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 634.0
-offset_top = 440.0
-offset_right = 770.0
-offset_bottom = 530.0
+offset_left = 6.0
+offset_top = 16.0
+offset_right = 208.0
+offset_bottom = 58.0
 mouse_filter = 2
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
-columns = 2
+columns = 3
 
-[node name="TeamNote" type="Label" parent="Root"]
+[node name="TeamNote" type="Control" parent="Root/TeamPanel"]
 unique_name_in_owner = true
-offset_left = 634.0
-offset_top = 442.0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 8
-text = "no commands yet"
-modulate = Color(1, 1, 1, 0.5)
+offset_left = 8.0
+offset_top = 24.0
+offset_right = 158.0
+offset_bottom = 30.0
+text = "NO COMMANDS YET"
+color = Color(0.35, 0.37, 0.45, 1)
+script = ExtResource("4")
 
+[node name="CommandPanel" type="Control" parent="Root"]
+unique_name_in_owner = true
+offset_left = 742.0
+offset_top = 490.0
+offset_right = 956.0
+offset_bottom = 536.0
+script = ExtResource("3")
+
+[node name="CommandTitle" type="Control" parent="Root/CommandPanel"]
+unique_name_in_owner = true
+offset_left = 8.0
+offset_top = 6.0
+offset_right = 206.0
+offset_bottom = 12.0
+text = "COMMAND: -"
+script = ExtResource("4")
+
+[node name="CommandNote" type="Control" parent="Root/CommandPanel"]
+unique_name_in_owner = true
+offset_left = 8.0
+offset_top = 17.0
+offset_right = 206.0
+offset_bottom = 43.0
+wrap = true
+color = Color(0.55, 0.57, 0.69, 1)
+script = ExtResource("4")
+
+[node name="Message" type="Control" parent="Root"]
+unique_name_in_owner = true
+offset_left = 180.0
+offset_top = 150.0
+offset_right = 780.0
+offset_bottom = 174.0
+text_scale = 4
+align = 1
+script = ExtResource("4")
