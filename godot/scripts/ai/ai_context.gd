@@ -112,9 +112,14 @@ func pressure(pos: Vector2) -> float:
 	var o := nearest_opponent(pos)
 	return o.pos.distance_to(pos) if o != null else 99.0
 
-func lane_blocked(a: Vector2, b: Vector2, width := 2.2) -> bool:
+## an opponent in the way of the lane a -> b. One standing on the passer (closer than skip_start to a along the lane) is pressure, not a block, and one on the receiver
+## (closer than skip_end to b) is the receiver's marker: both show in the "open" score instead. Without this every pass of a pressed carrier counted as blocked.
+func lane_blocked(a: Vector2, b: Vector2, width := 2.2, skip_start := 2.5, skip_end := 1.5) -> bool:
 	for o in other.players:
-		if Geometry2D.get_closest_point_to_segment(o.pos, a, b).distance_to(o.pos) < width: return true
+		var p := Geometry2D.get_closest_point_to_segment(o.pos, a, b)
+		if p.distance_to(o.pos) >= width: continue
+		if p.distance_to(a) < skip_start or p.distance_to(b) < skip_end: continue
+		return true
 	return false
 
 ## every team mate as a pass option: {mate, dist, forward (metres gained towards goal), open (distance to his nearest opponent), blocked}
