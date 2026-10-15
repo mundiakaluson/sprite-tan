@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Ai352" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_352.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+formation_ids = PackedStringArray("F07")
+gap_back_mid = 11.0
+gap_mid_st = 15.0
+one_goes_one_stays = true
+wingback_ahead = 14.0
+sweeper_depth = 3.0
+holder_drop = 4.0

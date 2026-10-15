@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TeamStance" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+id = "mid_block"
+label = "MID BLOCK"
+note = "Two compact banks, press on triggers"
+d_line_height = -0.05
+d_compactness = 0.1

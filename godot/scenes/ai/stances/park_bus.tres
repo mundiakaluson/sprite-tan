@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TeamStance" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+id = "park_bus"
+label = "PARK BUS"
+note = "Drop deep, stay narrow, do not chase"
+d_line_height = -0.35
+d_press = -0.4
+d_compactness = 0.25
+d_width = -0.15
+d_counter = 0.2
+block_shift = -14.0
+push_scale = 0.4
+press_never = true

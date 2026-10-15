@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="TeamStance" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+id = "counter"
+label = "COUNTER"
+note = "Sit back, win it, go long and quick"
+d_line_height = -0.15
+d_counter = 0.3
+d_directness = 0.3
+d_press = -0.15
+block_shift = -6.0
+push_scale = 0.8

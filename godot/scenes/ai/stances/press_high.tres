@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="TeamStance" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+id = "press_high"
+label = "PRESS HIGH"
+note = "Squeeze them high up the pitch"
+d_press = 0.35
+d_line_height = 0.2
+d_compactness = 0.1
+block_shift = 8.0
+push_scale = 1.2
+press_always = true

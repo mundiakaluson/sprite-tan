@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Ai41212" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/formations/ai_41212.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+formation_ids = PackedStringArray("F06")
+mid_narrow = 0.8
+between_lines = 0.4
+one_goes_one_stays = false
+trigger_fullback = false
+build_push = 12.0
+overlap_ahead = 10.0
+holder_drop = 4.0
+pocket_depth = 12.0

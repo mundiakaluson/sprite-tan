@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TeamStance" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+id = "push_up"
+label = "PUSH UP"
+note = "Everyone forward, full backs overlap"
+d_line_height = 0.25
+d_overlap = 0.25
+d_risk = 0.15
+block_shift = 6.0
+push_scale = 1.5

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="AiInteract" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/ai_interact.gd" id="script"]
+[ext_resource type="Resource" path="res://scenes/ai/traits/roamer.tres" id="r_trait_roamer"]
+[ext_resource type="Script" path="res://scripts/ai/ai_trait.gd" id="t_41"]
+
+[resource]
+script = ExtResource("script")
+traits = Array[ExtResource("t_41")]([ExtResource("r_trait_roamer")])

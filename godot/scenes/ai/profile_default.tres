@@ -1,247 +1,44 @@
-[gd_resource type="Resource" script_class="AiProfile" load_steps=42 format=3]
+[gd_resource type="Resource" script_class="AiProfile" load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/ai_profile.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/ai/roles/ai_gk.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/ai/roles/ai_cb.gd" id="3"]
-[ext_resource type="Script" path="res://scripts/ai/roles/ai_fullback.gd" id="4"]
-[ext_resource type="Script" path="res://scripts/ai/roles/ai_cdm.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/ai/roles/ai_cm.gd" id="6"]
-[ext_resource type="Script" path="res://scripts/ai/roles/ai_cam.gd" id="7"]
-[ext_resource type="Script" path="res://scripts/ai/roles/ai_winger.gd" id="8"]
-[ext_resource type="Script" path="res://scripts/ai/roles/ai_st.gd" id="9"]
-
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_442.gd" id="10"]
 [ext_resource type="Script" path="res://scripts/ai/formations/ai_formation.gd" id="11"]
-
 [ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="12"]
-[ext_resource type="Script" path="res://scripts/ai/ai_interact.gd" id="40"]
-[ext_resource type="Script" path="res://scripts/ai/ai_trait.gd" id="41"]
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_433.gd" id="20"]
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_4231.gd" id="21"]
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_4141.gd" id="22"]
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_4321.gd" id="23"]
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_41212.gd" id="24"]
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_352.gd" id="25"]
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_343.gd" id="26"]
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_532.gd" id="27"]
-[ext_resource type="Script" path="res://scripts/ai/formations/ai_541.gd" id="28"]
-
-[sub_resource type="Resource" id="f442"]
-script = ExtResource("10")
-formation_ids = PackedStringArray("F01")
-
-[sub_resource type="Resource" id="ff02"]
-script = ExtResource("20")
-formation_ids = PackedStringArray("F02")
-back_trail = 22.0
-back_max = 14.0
-back_min = -30.0
-gap_mid_st = 15.0
-wide_forward_line = 2
-block_depth = 0.6
-one_goes_one_stays = true
-holder_drop = 4.0
-
-[sub_resource type="Resource" id="ff03"]
-script = ExtResource("21")
-formation_ids = PackedStringArray("F03")
-wide_forward_line = 1
-between_lines = 0.35
-mid_narrow = 0.9
-holder_drop = 2.0
-gap_mid_st = 14.0
-one_goes_one_stays = true
-
-[sub_resource type="Resource" id="ff04"]
-script = ExtResource("22")
-formation_ids = PackedStringArray("F04")
-holder_drop = 8.0
-holder_contains = true
-gap_back_mid = 14.0
-gap_mid_st = 16.0
-wide_forward_line = 1
-one_goes_one_stays = true
-build_push = 10.0
-
-[sub_resource type="Resource" id="ff05"]
-script = ExtResource("23")
-formation_ids = PackedStringArray("F05")
-mid_narrow = 0.85
-between_lines = 0.5
-one_goes_one_stays = true
-build_push = 12.0
-pocket_depth = 10.0
-holder_drop = 4.0
-
-[sub_resource type="Resource" id="ff06"]
-script = ExtResource("24")
-formation_ids = PackedStringArray("F06")
-mid_narrow = 0.8
-between_lines = 0.4
-one_goes_one_stays = false
-trigger_fullback = false
-build_push = 12.0
-overlap_ahead = 10.0
-holder_drop = 4.0
-pocket_depth = 12.0
-
-[sub_resource type="Resource" id="ff07"]
-script = ExtResource("25")
-formation_ids = PackedStringArray("F07")
-gap_back_mid = 11.0
-gap_mid_st = 15.0
-one_goes_one_stays = true
-wingback_ahead = 14.0
-sweeper_depth = 3.0
-holder_drop = 4.0
-
-[sub_resource type="Resource" id="ff08"]
-script = ExtResource("26")
-formation_ids = PackedStringArray("F08")
-wide_forward_line = 1
-one_goes_one_stays = false
-gap_back_mid = 12.0
-gap_mid_st = 16.0
-wingback_ahead = 16.0
-sweeper_depth = 3.0
-block_depth = 0.5
-
-[sub_resource type="Resource" id="ff09"]
-script = ExtResource("27")
-formation_ids = PackedStringArray("F09")
-gap_back_mid = 11.0
-gap_mid_st = 22.0
-one_goes_one_stays = true
-wingback_ahead = 8.0
-sweeper_depth = 3.0
-block_depth = 0.4
-holder_drop = 3.0
-back_trail = 30.0
-
-[sub_resource type="Resource" id="ff10"]
-script = ExtResource("28")
-formation_ids = PackedStringArray("F10")
-back_trail = 18.0
-back_min = -36.0
-back_max = -6.0
-gap_back_mid = 12.0
-gap_mid_st = 18.0
-block_depth = 0.35
-trigger_fullback = false
-trigger_back_pass = false
-trigger_facing_own_goal = false
-one_goes_one_stays = false
-wingback_ahead = 12.0
-sweeper_depth = 3.0
-wide_forward_line = 1
-width_z = 26.0
-
-[sub_resource type="Resource" id="trait_roamer"]
-script = ExtResource("41")
-id = "roamer"
-label = "ROAMER"
-
-[sub_resource type="Resource" id="interact"]
-script = ExtResource("40")
-traits = Array[ExtResource("41")]([SubResource("trait_roamer")])
-
-[sub_resource type="Resource" id="gk"]
-script = ExtResource("2")
-
-[sub_resource type="Resource" id="cb"]
-script = ExtResource("3")
-
-[sub_resource type="Resource" id="fb"]
-script = ExtResource("4")
-
-[sub_resource type="Resource" id="cdm"]
-script = ExtResource("5")
-
-[sub_resource type="Resource" id="cm"]
-script = ExtResource("6")
-
-[sub_resource type="Resource" id="cam"]
-script = ExtResource("7")
-
-[sub_resource type="Resource" id="wing"]
-script = ExtResource("8")
-
-[sub_resource type="Resource" id="st"]
-script = ExtResource("9")
-
-[sub_resource type="Resource" id="stance_auto"]
-script = ExtResource("12")
-id = "auto"
-label = "AUTO"
-note = "Play the formation as designed"
-
-[sub_resource type="Resource" id="stance_press_high"]
-script = ExtResource("12")
-id = "press_high"
-label = "PRESS HIGH"
-note = "Squeeze them high up the pitch"
-d_press = 0.35
-d_line_height = 0.2
-d_compactness = 0.1
-block_shift = 8.0
-push_scale = 1.2
-press_always = true
-
-[sub_resource type="Resource" id="stance_mid_block"]
-script = ExtResource("12")
-id = "mid_block"
-label = "MID BLOCK"
-note = "Two compact banks, press on triggers"
-d_line_height = -0.05
-d_compactness = 0.1
-
-[sub_resource type="Resource" id="stance_park_bus"]
-script = ExtResource("12")
-id = "park_bus"
-label = "PARK BUS"
-note = "Drop deep, stay narrow, do not chase"
-d_line_height = -0.35
-d_press = -0.4
-d_compactness = 0.25
-d_width = -0.15
-d_counter = 0.2
-block_shift = -14.0
-push_scale = 0.4
-press_never = true
-
-[sub_resource type="Resource" id="stance_push_up"]
-script = ExtResource("12")
-id = "push_up"
-label = "PUSH UP"
-note = "Everyone forward, full backs overlap"
-d_line_height = 0.25
-d_overlap = 0.25
-d_risk = 0.15
-block_shift = 6.0
-push_scale = 1.5
-
-[sub_resource type="Resource" id="stance_counter"]
-script = ExtResource("12")
-id = "counter"
-label = "COUNTER"
-note = "Sit back, win it, go long and quick"
-d_line_height = -0.15
-d_counter = 0.3
-d_directness = 0.3
-d_press = -0.15
-block_shift = -6.0
-push_scale = 0.8
+[ext_resource type="Resource" path="res://scenes/ai/roles/attacking_midfielder.tres" id="r_cam"]
+[ext_resource type="Resource" path="res://scenes/ai/roles/centre_back.tres" id="r_cb"]
+[ext_resource type="Resource" path="res://scenes/ai/roles/holding_midfielder.tres" id="r_cdm"]
+[ext_resource type="Resource" path="res://scenes/ai/roles/central_midfielder.tres" id="r_cm"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f01_442.tres" id="r_f442"]
+[ext_resource type="Resource" path="res://scenes/ai/roles/fullback.tres" id="r_fb"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f02.tres" id="r_ff02"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f03.tres" id="r_ff03"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f04.tres" id="r_ff04"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f05.tres" id="r_ff05"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f06.tres" id="r_ff06"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f07.tres" id="r_ff07"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f08.tres" id="r_ff08"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f09.tres" id="r_ff09"]
+[ext_resource type="Resource" path="res://scenes/ai/formations/f10.tres" id="r_ff10"]
+[ext_resource type="Resource" path="res://scenes/ai/roles/goalkeeper.tres" id="r_gk"]
+[ext_resource type="Resource" path="res://scenes/ai/interact.tres" id="r_interact"]
+[ext_resource type="Resource" path="res://scenes/ai/roles/striker.tres" id="r_st"]
+[ext_resource type="Resource" path="res://scenes/ai/stances/auto.tres" id="r_stance_auto"]
+[ext_resource type="Resource" path="res://scenes/ai/stances/counter.tres" id="r_stance_counter"]
+[ext_resource type="Resource" path="res://scenes/ai/stances/mid_block.tres" id="r_stance_mid_block"]
+[ext_resource type="Resource" path="res://scenes/ai/stances/park_bus.tres" id="r_stance_park_bus"]
+[ext_resource type="Resource" path="res://scenes/ai/stances/press_high.tres" id="r_stance_press_high"]
+[ext_resource type="Resource" path="res://scenes/ai/stances/push_up.tres" id="r_stance_push_up"]
+[ext_resource type="Resource" path="res://scenes/ai/roles/winger.tres" id="r_wing"]
 
 [resource]
 script = ExtResource("1")
-interact = SubResource("interact")
-goalkeeper = SubResource("gk")
-centre_back = SubResource("cb")
-fullback = SubResource("fb")
-holding_midfielder = SubResource("cdm")
-central_midfielder = SubResource("cm")
-attacking_midfielder = SubResource("cam")
-winger = SubResource("wing")
-striker = SubResource("st")
-formations = Array[ExtResource("11")]([SubResource("f442"), SubResource("ff02"), SubResource("ff03"), SubResource("ff04"), SubResource("ff05"), SubResource("ff06"), SubResource("ff07"), SubResource("ff08"), SubResource("ff09"), SubResource("ff10")])
-stances = Array[ExtResource("12")]([SubResource("stance_auto"), SubResource("stance_press_high"), SubResource("stance_mid_block"), SubResource("stance_park_bus"), SubResource("stance_push_up"), SubResource("stance_counter")])
+interact = ExtResource("r_interact")
+goalkeeper = ExtResource("r_gk")
+centre_back = ExtResource("r_cb")
+fullback = ExtResource("r_fb")
+holding_midfielder = ExtResource("r_cdm")
+central_midfielder = ExtResource("r_cm")
+attacking_midfielder = ExtResource("r_cam")
+winger = ExtResource("r_wing")
+striker = ExtResource("r_st")
+formations = Array[ExtResource("11")]([ExtResource("r_f442"), ExtResource("r_ff02"), ExtResource("r_ff03"), ExtResource("r_ff04"), ExtResource("r_ff05"), ExtResource("r_ff06"), ExtResource("r_ff07"), ExtResource("r_ff08"), ExtResource("r_ff09"), ExtResource("r_ff10")])
+stances = Array[ExtResource("12")]([ExtResource("r_stance_auto"), ExtResource("r_stance_press_high"), ExtResource("r_stance_mid_block"), ExtResource("r_stance_park_bus"), ExtResource("r_stance_push_up"), ExtResource("r_stance_counter")])
