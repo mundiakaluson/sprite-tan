@@ -16,6 +16,17 @@ extends Resource
 
 
 ## fills every empty slot with that role's defaults (so a half-made profile still plays)
+@export_group("Stances")
+## team commands (HUD TEAM buttons): each one nudges the formation. "auto" must exist
+@export var stances: Array[TeamStance] = []
+## "auto" switches stance by itself: protect a lead late on, press when behind
+@export var park_after_minute := 80.0
+@export var park_lead := 1
+@export var park_stance := "park_bus"
+@export var press_after_minute := 60.0
+@export var press_deficit := 1
+@export var press_stance := "press_high"
+
 @export_group("Formations")
 ## team play per formation (4-4-2 here: banks, press triggers, who drops, overlaps). A role follows its formation's file first, then its own AI.
 @export var formations: Array[AiFormation] = []
@@ -25,7 +36,21 @@ func formation_for(id: String) -> AiFormation:
 		if x != null and id in x.formation_ids: return x
 	return null
 
+func stance_for(id: String) -> TeamStance:
+	for s in stances:
+		if s != null and s.id == id: return s
+	for s in stances:
+		if s != null and s.id == "auto": return s
+	return stances[0]
+
+## what "auto" turns into: minute (0-90) and goal difference (ours minus theirs)
+func auto_stance_id(minute: float, diff: int) -> String:
+	if diff >= park_lead and minute >= park_after_minute: return park_stance
+	if diff <= -press_deficit and minute >= press_after_minute: return press_stance
+	return "auto"
+
 func fill() -> AiProfile:
+	if stances.is_empty(): stances = TeamStance.defaults()
 	if formations.is_empty():
 		var x := Ai442.new()
 		x.formation_ids = PackedStringArray(["F01"])

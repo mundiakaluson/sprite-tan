@@ -29,7 +29,21 @@ func update(dt: float) -> void:
 		var role: AiRole = profiles[f.team].role_for(f.role)
 		_apply(f, role.think(f, ctx[f.team], dt), ctx[f.team])
 
+## the stance a team plays right now: the HUD's choice, or for "auto" the profile's rules (protect a lead late, press when behind)
+func _stance(c: AiContext) -> TeamStance:
+	var p: AiProfile = profiles[c.team]
+	var id := c.team.stance_id
+	if id == "auto": id = p.auto_stance_id(g.clock / 60.0, c.team.score - c.other.score)
+	return p.stance_for(id)
+
+## the TEAM buttons of a side: [{id, label, note}]
+func stance_list(t: Team) -> Array:
+	var out: Array = []
+	for s in profiles[t].stances: out.append({"id": s.id, "label": s.label, "note": s.note})
+	return out
+
 func _phase(c: AiContext) -> void:
+	c.set_stance(_stance(c))
 	c.refresh()
 	var t := c.team
 	var depth := c.depth(c.ball)

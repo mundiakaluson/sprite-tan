@@ -18,6 +18,9 @@ signal team_command(id: String)         ## a team command button was pressed
 
 const PITCH_H := 420.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
 const CONTROLS := "MOUSE\ndouble click mate: pass\nright click: lob\ndrag from ball carrier: shoot\ndrag from player: run\nclick player: orders\nEsc: cancel\n\nPAD\nstick pointer, Cross click\nSquare lob, hold Triangle drag\nCircle cancel"
+## colour of each command kind in the command box and on the highlighted players
+const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), "lob": Color(1.0, 0.9, 0.3), "shoot": Color(1.0, 0.4, 0.35), "run": Color(0.5, 1.0, 0.5),
+	"press": Color(1.0, 0.65, 0.3), "tackle": Color(1.0, 0.65, 0.3), "card": Color(0.8, 0.6, 1.0), "team": Color(0.6, 0.75, 1.0)}
 const ORDERS := ["through", "run", "press", "tackle"]
 
 var _score: Label
@@ -30,6 +33,12 @@ var _team_grid: GridContainer
 var _team_note: Label
 var _cards: Array[SkillCard] = []
 var _hint: Label
+var _cmd_title: Label
+var _cmd_box: Panel
+var command: MatchCommand
+var _team_buttons := {}
+var snap_node: Node2D
+var snap_kind := ""
 var _overlay: Control
 var selected_node: Node2D
 var drag_from := Vector2.ZERO
@@ -70,7 +79,7 @@ func _ready() -> void:
 	_who.position = Vector2(10, PITCH_H + 26)
 	var grid := GridContainer.new()
 	grid.columns = 2
-	grid.position = Vector2(10, PITCH_H + 46)
+	grid.position = Vector2(10, PITCH_H + 44)
 	grid.add_theme_constant_override("h_separation", 4)
 	grid.add_theme_constant_override("v_separation", 4)
 	grid.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -78,18 +87,32 @@ func _ready() -> void:
 	for id in ORDERS:
 		var b := Button.new()
 		b.text = String(id).to_upper()
-		b.custom_minimum_size = Vector2(92, 22)
-		b.add_theme_font_size_override("font_size", 10)
+		b.custom_minimum_size = Vector2(92, 18)
+		b.add_theme_font_size_override("font_size", 9)
 		b.disabled = true
 		b.focus_mode = Control.FOCUS_NONE
 		var order_id: String = id
 		b.pressed.connect(func(): menu_chosen.emit(order_id))
 		grid.add_child(b)
 		_order_buttons[id] = b
-	_hint = _label(root, 9)
-	_hint.position = Vector2(10, PITCH_H + 98)
-	_hint.custom_minimum_size = Vector2(190, 0)
-	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	# current command box: the one thing you are doing now (pass / through / shoot / run / card / team stance)
+	_cmd_box = Panel.new()
+	_cmd_box.position = Vector2(10, PITCH_H + 86)
+	_cmd_box.size = Vector2(192, 31)
+	_cmd_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.1, 0.11, 0.17)
+	sb.border_color = Color(0.3, 0.32, 0.4)
+	sb.set_border_width_all(1)
+	_cmd_box.add_theme_stylebox_override("panel", sb)
+	root.add_child(_cmd_box)
+	_cmd_title = _label(_cmd_box, 11)
+	_cmd_title.position = Vector2(5, 0)
+	_hint = _label(_cmd_box, 8)
+	_hint.position = Vector2(5, 17)
+	_hint.custom_minimum_size = Vector2(182, 0)
+	_hint.modulate = Color(1, 1, 1, 0.8)
+	_show_command()
 	_msg = _label(root, 30)
 	_msg.position = Vector2(180, 150)
 	_msg.custom_minimum_size = Vector2(600, 0)
@@ -134,7 +157,7 @@ func _process(dt: float) -> void:
 		if _msg_t <= 0.0: _msg.text = ""
 	if _toast_t > 0.0:
 		_toast_t -= dt
-		if _toast_t <= 0.0: _hint.text = _hint_base
+		if _toast_t <= 0.0: _show_command()
 
 func set_score(h: int, a: int, minute: int) -> void:
 	if _score != null: _score.text = "HOME %d - %d AWAY   %d'" % [h, a, minute]
@@ -181,6 +204,7 @@ func set_cooldowns(cd: Dictionary) -> void:
 ## the team command buttons: [{"id": "press_high", "label": "PRESS HIGH"}, ...]. Pressing one emits team_command(id). An empty list shows "no commands yet".
 func set_team_commands(commands: Array) -> void:
 	for c in _team_grid.get_children(): c.queue_free()
+	_team_buttons.clear()
 	_team_note.visible = commands.is_empty()
 	for cmd in commands:
 		var b := Button.new()
@@ -188,9 +212,16 @@ func set_team_commands(commands: Array) -> void:
 		b.custom_minimum_size = Vector2(64, 20)
 		b.add_theme_font_size_override("font_size", 8)
 		b.focus_mode = Control.FOCUS_NONE
+		b.toggle_mode = true
+		b.tooltip_text = String(cmd.get("note", ""))
 		var id := String(cmd["id"])
 		b.pressed.connect(func(): team_command.emit(id))
 		_team_grid.add_child(b)
+		_team_buttons[id] = b
+
+## light the button of the stance in force
+func set_team_active(id: String) -> void:
+	for k in _team_buttons: _team_buttons[k].set_pressed_no_signal(k == id)
 
 # ---- orders: menu, hint, selection ring, drag and aim lines
 ## light up the order buttons that make sense for the selected player (an empty list greys them all)
@@ -200,7 +231,32 @@ func set_orders(options: Array) -> void:
 
 func set_hint(text: String) -> void:
 	_hint_base = text
-	if _hint != null and _toast_t <= 0.0: _hint.text = text
+	_show_command()
+
+## the HUD box follows this store (MatchCommand); it can be any other command source
+func bind_command(cmd: MatchCommand) -> void:
+	command = cmd
+	cmd.changed.connect(_show_command)
+	_show_command()
+
+func _show_command() -> void:
+	if _cmd_title == null: return
+	if command == null or command.kind == "":
+		_cmd_title.text = "COMMAND: -"
+		_cmd_title.modulate = Color(1, 1, 1, 0.5)
+		if _toast_t <= 0.0: _hint.text = _hint_base
+		return
+	var t := command.text
+	if command.target != null: t += "  >  " + command.target.display_name()
+	elif command.who != null and command.kind in ["run", "press", "tackle", "card"]: t += "  " + command.who.display_name()
+	_cmd_title.text = t
+	_cmd_title.modulate = KIND_COLORS.get(command.kind, Color.WHITE)
+	if _toast_t <= 0.0: _hint.text = command.note if command.note != "" else _hint_base
+
+## the team mate a drag is snapping to (ringed on the pitch; a through ball marks him as the runner)
+func set_snap(n: Node2D, kind: String) -> void:
+	snap_node = n
+	snap_kind = kind
 
 func set_selected(n: Node2D) -> void:
 	selected_node = n
@@ -213,6 +269,8 @@ func set_drag(from: Vector2, to: Vector2, shot := false) -> void:
 
 func clear_drag() -> void:
 	dragging = false
+	snap_node = null
+	snap_kind = ""
 
 func set_aim(on: bool, to: Vector2) -> void:
 	aiming = on
@@ -223,6 +281,13 @@ class _Overlay extends Control:
 
 	func _process(_dt: float) -> void:
 		queue_redraw()
+
+	func _ring(n: Node2D, col: Color, radius: float, text: String) -> void:
+		var sc := n.scale.x
+		draw_set_transform(n.position, 0.0, Vector2(1.0, 0.45))
+		draw_arc(Vector2.ZERO, radius * sc, 0.0, TAU, 32, col, 2.0)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		if text != "": draw_string(ThemeDB.fallback_font, n.position + Vector2(-9.0, -30.0 * sc), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 9, col)
 
 	func _draw() -> void:
 		if hud == null: return
@@ -235,6 +300,11 @@ class _Overlay extends Control:
 			if hud.aiming:
 				draw_line(n.position, hud.aim_to, Color(1.0, 0.9, 0.3, 0.8), 1.5)
 				draw_circle(hud.aim_to, 4.0, Color(1.0, 0.9, 0.3, 0.9))
+		var cmd: MatchCommand = hud.command
+		if cmd != null and cmd.target != null and cmd.target.node != null:
+			_ring(cmd.target.node, MatchHud.KIND_COLORS.get(cmd.kind, Color.WHITE), 15.0, "RUN" if cmd.kind == "through" else "")
+		if hud.snap_node != null and is_instance_valid(hud.snap_node):
+			_ring(hud.snap_node, MatchHud.KIND_COLORS.get(hud.snap_kind, Color.WHITE), 17.0, "RUN" if hud.snap_kind == "through" else "")
 		if hud.dragging:
 			var d: Vector2 = hud.drag_to - hud.drag_from
 			var col := Color(1.0, 0.35, 0.3, 0.95) if hud.drag_shot else Color(1, 1, 1, 0.95)

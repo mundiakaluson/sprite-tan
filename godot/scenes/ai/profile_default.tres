@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AiProfile" load_steps=12 format=3]
+[gd_resource type="Resource" script_class="AiProfile" load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/ai/ai_profile.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ai/roles/ai_gk.gd" id="2"]
@@ -12,6 +12,8 @@
 
 [ext_resource type="Script" path="res://scripts/ai/formations/ai_442.gd" id="10"]
 [ext_resource type="Script" path="res://scripts/ai/formations/ai_formation.gd" id="11"]
+
+[ext_resource type="Script" path="res://scripts/ai/team_stance.gd" id="12"]
 
 [sub_resource type="Resource" id="f442"]
 script = ExtResource("10")
@@ -41,6 +43,69 @@ script = ExtResource("8")
 [sub_resource type="Resource" id="st"]
 script = ExtResource("9")
 
+[sub_resource type="Resource" id="stance_auto"]
+script = ExtResource("12")
+id = "auto"
+label = "AUTO"
+note = "Play the formation as designed"
+
+[sub_resource type="Resource" id="stance_press_high"]
+script = ExtResource("12")
+id = "press_high"
+label = "PRESS HIGH"
+note = "Squeeze them high up the pitch"
+d_press = 0.35
+d_line_height = 0.2
+d_compactness = 0.1
+block_shift = 8.0
+push_scale = 1.2
+press_always = true
+
+[sub_resource type="Resource" id="stance_mid_block"]
+script = ExtResource("12")
+id = "mid_block"
+label = "MID BLOCK"
+note = "Two compact banks, press on triggers"
+d_line_height = -0.05
+d_compactness = 0.1
+
+[sub_resource type="Resource" id="stance_park_bus"]
+script = ExtResource("12")
+id = "park_bus"
+label = "PARK BUS"
+note = "Drop deep, stay narrow, do not chase"
+d_line_height = -0.35
+d_press = -0.4
+d_compactness = 0.25
+d_width = -0.15
+d_counter = 0.2
+block_shift = -14.0
+push_scale = 0.4
+press_never = true
+
+[sub_resource type="Resource" id="stance_push_up"]
+script = ExtResource("12")
+id = "push_up"
+label = "PUSH UP"
+note = "Everyone forward, full backs overlap"
+d_line_height = 0.25
+d_overlap = 0.25
+d_risk = 0.15
+block_shift = 6.0
+push_scale = 1.5
+
+[sub_resource type="Resource" id="stance_counter"]
+script = ExtResource("12")
+id = "counter"
+label = "COUNTER"
+note = "Sit back, win it, go long and quick"
+d_line_height = -0.15
+d_counter = 0.3
+d_directness = 0.3
+d_press = -0.15
+block_shift = -6.0
+push_scale = 0.8
+
 [resource]
 script = ExtResource("1")
 goalkeeper = SubResource("gk")
@@ -52,3 +117,4 @@ attacking_midfielder = SubResource("cam")
 winger = SubResource("wing")
 striker = SubResource("st")
 formations = Array[ExtResource("11")]([SubResource("f442")])
+stances = Array[ExtResource("12")]([SubResource("stance_auto"), SubResource("stance_press_high"), SubResource("stance_mid_block"), SubResource("stance_park_bus"), SubResource("stance_push_up"), SubResource("stance_counter")])

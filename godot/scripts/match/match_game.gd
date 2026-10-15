@@ -43,6 +43,7 @@ var rules: MatchRules
 var orders: MatchOrders
 var cards: MatchCards
 var brain: AiBrain
+var command := MatchCommand.new()   ## what the human is doing right now (shown in the HUD box)
 var _next_kick: Team
 var _slow := false
 
@@ -79,10 +80,21 @@ func _ready() -> void:
 	cards = MatchCards.new(self)
 	brain = AiBrain.new(self)
 	cards.deal()
+	hud.bind_command(command)
+	hud.set_team_commands(brain.stance_list(home))
+	hud.set_team_active(home.stance_id)
+	hud.team_command.connect(_on_team_command)
 	controls.setup(self, hud)
 	hud.card_pressed.connect(cards.play)
 	hud.set_hand(cards.hand)
 	_start(home)
+
+## a TEAM button: the home side plays that stance from now on
+func _on_team_command(id: String) -> void:
+	home.stance_id = id
+	hud.set_team_active(id)
+	for s in brain.stance_list(home):
+		if s["id"] == id: command.show("team", String(s["label"]), null, null, String(s["note"]), settings.command_hold)
 
 func _start(kicking: Team) -> void:
 	_slow = false
@@ -133,6 +145,7 @@ func _physics_process(dt: float) -> void:
 	poss.update(dt)
 	if phase == Phase.PLAY: rules.check()
 	cards.tick(dt)
+	command.tick(dt)
 	var bp := ball.phys.pos
 	stadium.focus = stadium.pitch_pos(Vector3(bp.x, 0.0, bp.z))
 	hud.set_score(home.score, away.score, int(clock / 60.0))

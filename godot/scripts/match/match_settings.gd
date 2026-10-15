@@ -102,6 +102,8 @@ static var current: MatchSettings
 @export_range(0.05, 1.0) var aim_slowmo := 0.3
 ## seconds of cooldown per cooldown number in cards.csv
 @export var cooldown_scale := 1.5
+## seconds the current-command box keeps showing an order after it is given
+@export var command_hold := 2.0
 
 @export_group("Order timing")
 ## seconds a Run / Press / Tackle order lasts before the player goes back to his own play

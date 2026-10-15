@@ -14,15 +14,18 @@ func menu_for(f: Footballer) -> Array:
 
 ## a run: he goes there by himself (the carrier dribbles there), then the AI takes over again
 func run(f: Footballer, spot: Vector2) -> void:
+	_run_order(f, spot)
+	g.command.show("run", "RUN", f, null, "", g.settings.command_hold)
+
+func _run_order(f: Footballer, spot: Vector2) -> void:
 	spot.x = clampf(spot.x, -MatchGame.HALF_L + 1.0, MatchGame.HALF_L - 1.0)
 	spot.y = clampf(spot.y, -MatchGame.HALF_W + 1.0, MatchGame.HALF_W - 1.0)
 	f.order = {"kind": "run", "target": spot, "t": g.settings.run_order_time}
-	g.hud.toast("%s: run" % f.display_name())
 
 ## chase the ball (or its carrier) for a few seconds
 func press(f: Footballer) -> void:
 	f.order = {"kind": "press", "t": g.settings.press_order_time}
-	g.hud.toast("%s: press" % f.display_name())
+	g.command.show("press", "PRESS", f, null, "", g.settings.command_hold)
 
 func tackle(f: Footballer) -> void:
 	if g.carrier == null or g.carrier.team == f.team:
@@ -30,8 +33,9 @@ func tackle(f: Footballer) -> void:
 		return
 	if f.pos.distance_to(g.carrier.pos) > 3.0:
 		f.order = {"kind": "press", "t": g.settings.tackle_order_time}
-		g.hud.toast("Too far: closing down")
+		g.command.show("tackle", "CLOSING DOWN", f, null, "too far to tackle", g.settings.command_hold)
 		return
+	g.command.show("tackle", "TACKLE", f, g.carrier, "", g.settings.command_hold)
 	g.poss.try_tackle(f)
 
 ## shoot at a spot of the grass (the drag from the ball carrier)
@@ -39,6 +43,7 @@ func shoot_at(f: Footballer, spot: Vector2) -> void:
 	if g.carrier != f: return
 	var over := {}
 	if g.rng.randf() < g.settings.through_curve_chance: over["style"] = "K02"
+	g.command.show("shoot", "SHOOT", f, null, "", g.settings.command_hold)
 	g.poss.kick_action(f, "shot", spot, Vector2.ZERO, over)
 
 ## kind = "pass" / "through" / "lob". To a team mate (the ball leads him; a through ball also sends him running) or to a spot.
@@ -51,9 +56,11 @@ func pass_to(f: Footballer, kind: String, mate: Footballer, spot: Vector2) -> vo
 		var vel := Vector2.ZERO
 		if action == "through":
 			vel = Vector2(f.team.dir * g.settings.through_run_speed, 0.0)
-			run(mate, mate.pos + vel * g.settings.through_lead)
+			_run_order(mate, mate.pos + vel * g.settings.through_lead)
+		g.command.show(action, action.to_upper(), f, mate, "%s runs onto it" % mate.display_name() if action == "through" else "", g.settings.command_hold)
 		g.poss.kick_action(f, action, mate.pos, mate.vel if vel == Vector2.ZERO else vel, {}, mate)
 	elif spot != Vector2.INF:
+		g.command.show(action, action.to_upper() + " (SPACE)", f, null, "", g.settings.command_hold)
 		g.poss.kick_action(f, action, spot)
 
 ## called by the AI brain for a player with an order

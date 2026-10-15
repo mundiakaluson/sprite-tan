@@ -3,7 +3,9 @@ extends Node
 ## Mouse and controller orders. One flow for both, because the controller just drives the mouse pointer.
 ##   Double click a team mate        -> the ball carrier passes to him.
 ##   Right click (a mate or a spot)  -> lob there.
-##   Drag from the ball carrier      -> shoot: time slows a little while you drag so you can line it up; let go to hit it where the arrow points.
+##   Drag from the ball carrier      -> the drag snaps to the nearest team mate to the pointer: let go = PASS. Drag further than `through_pull` = THROUGH BALL (the
+##                                      snapped mate is ringed as the runner). Drag into the goal area (`shoot_zone_x` / `shoot_zone_z`) = SHOOT. Elsewhere on the grass = pass to space.
+##                                      Time slows a little while you drag so you can line it up. The HUD command box shows which of these you are about to do.
 ##   Drag from any other player      -> he runs there by himself (a run); the AI takes over when he arrives.
 ##   Click a player                  -> his order buttons light up in the HUD strip (Through / Run with the ball; Run / Press / Tackle without). Then click a team mate or a spot.
 ##   Esc / Circle cancels. Click a skill card with a player selected to play it with him.
@@ -15,6 +17,14 @@ extends Node
 @export var drag_threshold := 8.0       ## pixels the pointer must move with the button down before it counts as a drag
 @export var pick_radius := 20.0         ## how close to a player's body a click counts as on him
 @export var double_click_ms := 350
+@export_group("Drag from the ball carrier")
+## the drag snaps to the nearest team mate when the pointer is within this many pixels of him
+@export var snap_radius := 60.0
+## dragging further than this (pixels from the carrier) turns a pass into a through ball
+@export var through_pull := 170.0
+## the shoot zone: inside this many metres of the goal line and this many metres either side of the goal centre
+@export var shoot_zone_x := 12.0
+@export var shoot_zone_z := 12.0
 
 enum Mode { IDLE, MENU, AIMING }
 
@@ -50,8 +60,19 @@ func _process(dt: float) -> void:
 		_set_selected(_down)
 		_shot_drag = game.carrier == _down
 		game.set_slowmo(_shot_drag)
-		if _shot_drag: hud.set_hint("Line up the shot, let go to shoot")
-	if _dragging: hud.set_drag(_down.node.position, p, _shot_drag)
+		if _shot_drag: hud.set_hint("Drag to a mate: pass. Further: through ball. Into the goal area: shoot")
+	if _dragging:
+		if _shot_drag:
+			var plan := _plan(p)
+			var mate: Footballer = plan["mate"]
+			var end := p
+			if mate != null: end = mate.node.position + Vector2(0.0, -13.0 * mate.node.scale.y)
+			hud.set_drag(_down.node.position, end, plan["kind"] == "shoot")
+			hud.set_snap(mate.node if mate != null else null, plan["kind"])
+			_show_plan(plan)
+		else:
+			hud.set_drag(_down.node.position, p, false)
+			game.command.show("run", "RUN", _down, null, "let go: he runs there by himself")
 	hud.set_aim(mode == Mode.AIMING, p)
 
 func _input(ev: InputEvent) -> void:
@@ -109,10 +130,17 @@ func _release(p: Vector2) -> void:
 		_down = null
 		return
 	if _down != null and _dragging:
-		var spot := _ground(p)
-		if spot != Vector2.INF:
-			if _shot_drag: game.orders.shoot_at(_down, spot)
-			else: game.orders.run(_down, spot)
+		if _shot_drag:
+			var plan := _plan(p)
+			match plan["kind"]:
+				"shoot": game.orders.shoot_at(_down, plan["spot"])
+				"pass", "through": game.orders.pass_to(_down, plan["kind"], plan["mate"], Vector2.INF)
+				"space": game.orders.pass_to(_down, "pass", null, plan["spot"])
+				_: game.command.clear()
+		else:
+			var spot := _ground(p)
+			if spot != Vector2.INF: game.orders.run(_down, spot)
+			else: game.command.clear()
 		clear()
 	elif mode == Mode.AIMING and selected != null:
 		_confirm_aim(p)
@@ -127,6 +155,39 @@ func _release(p: Vector2) -> void:
 	_shot_drag = false
 	game.set_slowmo(false)
 	hud.clear_drag()
+
+## what letting go of the drag would do now: {kind: pass / through / shoot / space / none, mate, spot}
+func _plan(p: Vector2) -> Dictionary:
+	var carrier := _down
+	var spot := _ground(p)
+	if spot != Vector2.INF and spot.x * game.home.dir > MatchGame.HALF_L - shoot_zone_x and absf(spot.y) < shoot_zone_z:
+		return {"kind": "shoot", "mate": null, "spot": spot}
+	var mate := _nearest_mate(p, carrier)
+	if mate != null:
+		var pull := p.distance_to(carrier.node.position)
+		return {"kind": "through" if pull > through_pull else "pass", "mate": mate, "spot": Vector2.INF}
+	if spot != Vector2.INF: return {"kind": "space", "mate": null, "spot": spot}
+	return {"kind": "none", "mate": null, "spot": Vector2.INF}
+
+func _nearest_mate(p: Vector2, not_him: Footballer) -> Footballer:
+	var best: Footballer = null
+	var bd := snap_radius
+	for f in game.home.players:
+		if f == not_him or not f.node.visible: continue
+		var d := (f.node.position + Vector2(0.0, -13.0 * f.node.scale.y)).distance_to(p)
+		if d < bd:
+			bd = d
+			best = f
+	return best
+
+func _show_plan(plan: Dictionary) -> void:
+	var c := game.command
+	match plan["kind"]:
+		"pass": c.show("pass", "PASS", _down, plan["mate"], "let go to pass. Drag further for a through ball")
+		"through": c.show("through", "THROUGH", _down, plan["mate"], "let go: through ball, he runs onto it")
+		"shoot": c.show("shoot", "SHOOT", _down, null, "let go to shoot where the line ends")
+		"space": c.show("pass", "PASS (SPACE)", _down, null, "let go to play it into space")
+		_: c.show("pass", "PASS", _down, null, "drag onto the pitch")
 
 func _lob(p: Vector2) -> void:
 	var lober := game.carrier
@@ -180,7 +241,7 @@ func _on_menu(id: String) -> void:
 	else:
 		order = id
 		mode = Mode.AIMING
-		hud.set_hint("Through ball: click a team mate or a spot" if id == "through" else "Run: click where to run")
+		game.command.show(id, id.to_upper(), selected, null, "click a team mate or a spot" if id == "through" else "click where to run")
 
 func _confirm_aim(p: Vector2) -> void:
 	var mate := _pick(p)
@@ -207,3 +268,4 @@ func clear() -> void:
 		hud.set_orders([])
 		hud.clear_drag()
 		hud.set_hint("")
+		if game.command.is_live(): game.command.clear()

@@ -154,3 +154,7 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 ## Pitch map and HUD room (decided)
 - The pitch map is data (data/pitch_zones.csv areas, data/pitch_spots.csv points) read by a static PitchMap class, in the team's frame (x across from the team's left, y from own goal to opponent goal, percent) like the formation slots, so one file serves both teams. AiContext exposes it (spot / zone / in_zone / zones_at) to every role; it is deliberately not inherited, so rules, HUD and tools can use it too.
 - HUD: cards at 75% and the tooltip at 1.5x (exports on the Hud node), with a TEAM area reserved next to the hand for team commands (set_team_commands, signal team_command). The commands themselves are still to be decided.
+
+## Team stances and the current command (decided)
+- Teams live under their formation: the formation file organises, presses and blocks. TEAM buttons (auto, press high, mid block, park bus, push up, counter) are stances that lean the formation's numbers; `auto` follows the formation and switches by minute and score. Details in godot/CLAUDE.md.
+- Drag from the ball carrier: snap to the nearest mate = pass, dragged further = through ball (runner ringed), into the goal area = shot. A small HUD box shows the current command (pass / through / shoot / run / card / team) from one state store (MatchCommand) that every action writes to.

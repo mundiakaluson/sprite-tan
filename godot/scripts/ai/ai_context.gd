@@ -22,6 +22,8 @@ var ball_vel := Vector2.ZERO
 var presser: Footballer         ## the team mate closing the ball down when we do not have it
 var formation_id := ""
 var family := ""                ## FOUR_BACK / THREE_BACK / FIVE_BACK
+var stance: TeamStance = TeamStance.new()
+var base_form := {}             ## the formation's own numbers, before the stance
 var form := {}                  ## formations.csv numbers, family defaults filled in: line_height, width, compactness, press, overlap, directness, counter, risk
 
 func setup(g: MatchGame, t: Team) -> void:
@@ -39,7 +41,13 @@ func setup(g: MatchGame, t: Team) -> void:
 	for k in ["line_height", "width", "compactness", "press", "overlap", "directness", "counter", "risk"]:
 		var v := str(row.get(k, ""))
 		if v == "": v = str(fam.get(k, "0.5"))
-		form[k] = v.to_float()
+		base_form[k] = v.to_float()
+		form[k] = base_form[k]
+
+## lean the formation numbers by the team's stance (called every frame by the brain)
+func set_stance(st: TeamStance) -> void:
+	stance = st
+	for k in base_form: form[k] = clampf(float(base_form[k]) + st.delta(k), 0.0, 1.0)
 
 func refresh() -> void:
 	carrier = game.carrier

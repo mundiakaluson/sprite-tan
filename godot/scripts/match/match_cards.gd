@@ -48,6 +48,7 @@ func play(i: int) -> void:
 	if ok:
 		cooldown[id] = Data.num(c["cd"], 3.0) * g.settings.cooldown_scale
 		g.hud.card_used(i)
+		g.command.show("card", String(c["name"]).to_upper(), f, null, String(c["cat"]), g.settings.command_hold)
 
 func _clip(f: Footballer, c: Dictionary, fallback: String) -> String:
 	var s := ""

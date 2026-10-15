@@ -98,7 +98,7 @@ func _last_defender_t(c: AiContext) -> float:
 	return best
 
 func _block_x(c: AiContext, line: int, trail: float) -> float:
-	var back := clampf(_ball_t(c) - trail, back_min, back_max)
+	var back := clampf(clampf(_ball_t(c) - trail, back_min, back_max) + c.stance.block_shift, -45.0, 40.0)
 	var x := back
 	if line >= 1: x = minf(back + gap_back_mid, _ball_t(c) + ahead_of_ball)
 	if line >= 2: x = minf(back + gap_back_mid + gap_mid_st, _ball_t(c) + ahead_of_ball)
@@ -190,9 +190,9 @@ func _attack_st(f: Footballer, c: AiContext, spot: Vector2) -> Vector2:
 # ---------------------------------------------------------------- they have the ball
 func _defend(f: Footballer, c: AiContext, role: AiRole) -> AiIntent:
 	var carrier := c.carrier
-	var triggered := _pressing_trigger(c)
+	var triggered := _pressing_trigger(c) or c.stance.press_always
 	if c.presser == f:
-		if triggered or c.depth(carrier.pos) <= block_depth: return null          # normal close-down by the role
+		if not c.stance.press_never and (triggered or c.depth(carrier.pos) <= block_depth): return null          # normal close-down by the role
 		var spot := carrier.pos + (c.own_goal() - carrier.pos).normalized() * contain_distance
 		return _go(c, spot, c.s.jog_factor)
 	if triggered and f.role == "ST":

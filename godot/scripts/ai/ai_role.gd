@@ -19,6 +19,8 @@ extends Resource
 @export_group("Pressing and marking")
 ## when closing the ball down he stands this far goal-side of the carrier
 @export var press_goal_side := 1.0
+## containing (stance without pressing): stand this far goal-side of the carrier and jog
+@export var contain_distance := 6.0
 ## marking an attacker: stand this far goal-side of him, and blend this much towards him (1 = right on him)
 @export var mark_goal_side := 2.0
 @export_range(0.0, 1.0) var mark_blend := 0.6
@@ -95,7 +97,7 @@ func home_spot(f: Footballer, c: AiContext) -> Vector2:
 	var st := AiContext.style_row(f.style)
 	var along := Data.num(st.get(key + "_dy"), 0.0) / 100.0 * Stadium.L * c.dir
 	var across := Data.num(st.get(key + "_dx"), 0.0) / 100.0 * Stadium.W * c.dir
-	var spot := f.slot + Vector2(along + c.dir * push * push_weight * (0.5 + c.f("line_height")), across)
+	var spot := f.slot + Vector2(along + c.dir * push * c.stance.push_scale * push_weight * (0.5 + c.f("line_height")), across)
 	spot.y *= c.f("width") / 0.6
 	spot.y += (c.ball.y - spot.y) * s.shift_to_ball * c.f("compactness")
 	spot.x += (c.ball.x - spot.x) * ball_follow_x
@@ -114,6 +116,7 @@ func _support(f: Footballer, c: AiContext) -> AiIntent:
 func _defend(f: Footballer, c: AiContext) -> AiIntent:
 	if c.presser == f:
 		var carrier := c.carrier
+		if c.stance.press_never: return _go(c, carrier.pos + (c.own_goal() - carrier.pos).normalized() * contain_distance, c.s.jog_factor)
 		var goal_side := carrier.pos + (c.own_goal() - carrier.pos).normalized() * press_goal_side
 		var far := f.pos.distance_to(carrier.pos) > c.s.press_distance * (0.5 + c.f("press"))
 		return _go(c, goal_side, c.s.jog_factor if far else c.s.sprint_factor)
