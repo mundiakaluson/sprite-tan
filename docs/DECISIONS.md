@@ -57,3 +57,7 @@ The Cards tab plays the scene in place of the move panel for TT cards (tool/tita
 The old titan/titan_zap.py and titan_demo.py are kept as the original reference.
 
 - SUPPORT effects (tool/aurafx.py): one distinct, punchy effect per card (cast burst, then sustained effect, fade, rest) drawn on a 72x72 stage around the player; data/support_auras.csv `shape` = effect key. Still an aura over the player's current state; no on-screen text.
+- Player variables on cards (cards.csv, blank when not used; first-pass values, tweak in the Cards tab). The animation supplies the body, these numbers tell the game how to drive it:
+  move_mult (ground speed x PAC during the card, 1 = normal, 0 = planted), anim_rate (playback speed, shorter or longer commitment), travel (scale on root travel, e.g. slide length),
+  reach (boot / hand zone size 0-10), steer (how much the player can change direction mid-card 0-10), lock (seconds committed before acting again).
+  For SUPPORT buffs only move_mult is set (SP02 1.3, SP18 1.25, SP25 1.1, SP30 1.6) and applies while the buff lasts. Stats scale them the way they scale the ball variables.

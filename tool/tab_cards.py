@@ -102,21 +102,24 @@ class CardsTab(ttk.Frame):
         self.sel_lbl = ttk.Label(ef, text='nothing selected', foreground='#8a90a0'); self.sel_lbl.grid(row=0, column=0, columnspan=2, sticky='w')
         fields = (('name', 'entry', None), ('cat', 'combo', CARD_CATS), ('rarity', 'combo', RARITY), ('timing', 'combo', TIMING), ('kind', 'combo', KIND), ('stats', 'entry', None),
                   ('slots', 'spin', (1, 12)), ('succ', 'spin', (1, 100)), ('risk', 'spin', (0, 100)), ('cd', 'spin', (0, 99)),
-                  ('ball_speed', 'spin', (0, 10)), ('ball_arc', 'spin', (0, 10)), ('ball_curve', 'spin', (-5, 5)))
-        lab = dict(cat='category', succ='success', cd='cooldown', ball_speed='ball speed', ball_arc='ball arc', ball_curve='ball curve')
+                  ('ball_speed', 'spin', (0, 10)), ('ball_arc', 'spin', (0, 10)), ('ball_curve', 'spin', (-5, 5)),
+                  ('move_mult', 'fspin', (0, 3)), ('anim_rate', 'fspin', (0.4, 2)), ('travel', 'fspin', (0, 2)), ('reach', 'fspin', (0, 10)), ('steer', 'fspin', (0, 10)), ('lock', 'fspin', (0, 10)))
+        lab = dict(move_mult='move speed x', anim_rate='anim rate x', travel='travel x', reach='reach', steer='steer', lock='lock (s)', cat='category', succ='success', cd='cooldown', ball_speed='ball speed', ball_arc='ball arc', ball_curve='ball curve')
         for n, (k, kind, arg) in enumerate(fields, 1):
             ttk.Label(ef, text=lab.get(k, k)).grid(row=n, column=0, sticky='w')
             if kind == 'combo':
                 w = ttk.Combobox(ef, values=arg, state='readonly', width=14); w.bind('<<ComboboxSelected>>', lambda e, k=k, w=w: self.put(k, w.get()))
             elif kind == 'entry':
                 w = ttk.Entry(ef, width=17); w.bind('<Return>', lambda e, k=k, w=w: self.put(k, w.get())); w.bind('<FocusOut>', lambda e, k=k, w=w: self.put(k, w.get()))
+            elif kind == 'fspin':
+                w = ttk.Spinbox(ef, from_=arg[0], to=arg[1], increment=0.1, width=6, command=lambda k=k: self.put_float(k)); w.bind('<Return>', lambda e, k=k: self.put_float(k)); w.bind('<FocusOut>', lambda e, k=k: self.put_float(k))
             else:
                 w = ttk.Spinbox(ef, from_=arg[0], to=arg[1], width=6, command=lambda k=k: self.put_num(k)); w.bind('<Return>', lambda e, k=k: self.put_num(k)); w.bind('<FocusOut>', lambda e, k=k: self.put_num(k))
             w.grid(row=n, column=1, sticky='w', pady=1); self.w[k] = w
         ttk.Label(ef, text='description').grid(row=len(fields) + 1, column=0, sticky='nw')
         self.desc_w = tk.Text(ef, width=17, height=5, wrap='word', font=('TkDefaultFont', 9)); self.desc_w.grid(row=len(fields) + 1, column=1, sticky='w', pady=1)
         self.desc_w.bind('<FocusOut>', lambda e: self.put('description', self.desc_w.get('1.0', 'end').strip()))
-        self.rng = dict((k, a) for k, _, a in fields if _ == 'spin')
+        self.rng = dict((k, a) for k, _, a in fields if _ in ('spin', 'fspin'))
 
     def apply_sort(self):
         col = dict(self.SORTS)[self.sortv.get()]; self.grid.sort_col = col; self.grid.sort_rev = bool(self.desc.get()); self.grid.fill()
@@ -145,6 +148,14 @@ class CardsTab(ttk.Frame):
         v = to_int(self.w[k].get()); lo, hi = self.rng[k]
         if v is None: self.load_form(); return
         self.put(k, str(max(lo, min(hi, v))))
+
+    def put_float(self, k):
+        if self.loading: return
+        t = self.w[k].get().strip(); lo, hi = self.rng[k]
+        if t == '': self.put(k, ''); return
+        try: v = max(lo, min(hi, float(t)))
+        except ValueError: self.load_form(); return
+        self.put(k, '%g' % round(v, 2))
 
     def load_form(self):
         ix = self.idxs(); self.loading = True

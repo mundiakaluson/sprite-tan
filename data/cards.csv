@@ -1,201 +1,201 @@
-id,name,cat,rarity,slots,succ,risk,cd,timing,kind,stats,description,ball_speed,ball_arc,ball_curve
-SH01,Side Foot Place,SHOT,COMMON,1,88,5,3,ENGAGEMENT,ACTION,SHO,Calm accurate placement. Low power.,4,0,0
-SH02,Instep Drive,SHOT,COMMON,1,74,15,4,ENGAGEMENT,ACTION,SHO+PHY,Hard low drive through the line.,7,0,0
-SH03,Finesse Curler,SHOT,UNCOMMON,2,62,20,7,ENGAGEMENT,ACTION,SHO+PAS,Curls round the keeper to the far post.,5,3,-2
-SH04,Trivela Bender,SHOT,UNCOMMON,2,58,22,8,ENGAGEMENT,ACTION,SHO+PAS,Outside boot. Swerves late and wide.,6,0,1
-SH05,Chip Lob,SHOT,RARE,2,55,28,8,ENGAGEMENT,ACTION,SHO+DRI,Floats over a keeper who is off his line.,3,2,0
-SH06,Knuckleball,SHOT,EPIC,3,48,30,12,ENGAGEMENT,ACTION,SHO+PHY,No spin. Dips and wobbles late.,6,0,0
-SH07,Power Blast,SHOT,UNCOMMON,2,60,25,8,ENGAGEMENT,ACTION,SHO+PHY,Maximum pace. Hard to hold.,9,0,0
-SH08,Volley,SHOT,RARE,2,52,25,8,ENGAGEMENT,ACTION,SHO+DRI,First time strike on a falling ball.,7,0,0
-SH09,Half Volley,SHOT,UNCOMMON,2,56,22,8,ENGAGEMENT,ACTION,SHO+DRI,Strikes just after the bounce.,7,0,0
-SH10,Diving Header,SHOT,RARE,2,50,30,9,ENGAGEMENT,ACTION,SHO+PHY,Flying header at low balls.,7,0,1
-SH11,Glancing Header,SHOT,COMMON,1,64,12,5,ENGAGEMENT,ACTION,SHO+PHY,Deflects a cross toward the far post.,5,0,-3
-SH12,Power Header,SHOT,COMMON,2,58,18,7,ENGAGEMENT,ACTION,SHO+PHY,Wins the aerial duel and attacks it.,8,0,0
-SH13,Rabona Strike,SHOT,EPIC,3,46,32,13,ENGAGEMENT,ACTION,SHO+DRI,Trailing leg wraps behind. Hard to read.,6,0,0
-SH14,Toe Poke,SHOT,COMMON,1,66,20,4,ENGAGEMENT,ACTION,SHO,No backswing. Very hard to read.,6,0,0
-SH15,Outside Flick,SHOT,UNCOMMON,2,54,22,7,ENGAGEMENT,ACTION,SHO+DRI,Quick flick with the outside foot.,6,0,1
-SH16,Low Skimmer,SHOT,COMMON,1,72,12,4,ENGAGEMENT,ACTION,SHO,Skids along the turf under a jump.,8,0,0
-SH17,Far Post Bender,SHOT,UNCOMMON,2,57,20,8,ENGAGEMENT,ACTION,SHO+PAS,Aims for the far corner.,6,0,1
-SH18,Near Post Lash,SHOT,UNCOMMON,2,60,22,7,ENGAGEMENT,ACTION,SHO,Fires across the keeper's body.,7,0,-1
-SH19,Dipping Drive,SHOT,UNCOMMON,2,55,24,8,ENGAGEMENT,ACTION,SHO+PAS,Rises then dips over the wall.,7,0,0
-SH20,Rising Drive,SHOT,UNCOMMON,2,54,24,7,ENGAGEMENT,ACTION,SHO+PAS,Starts low and lifts late over the keeper.,7,1,0
-SH21,Lofted Finesse,SHOT,RARE,3,48,26,10,ENGAGEMENT,ACTION,SHO+PAS,Soft curled lob into the top corner.,5,1,1
-SH22,Rocket Long Shot,SHOT,RARE,2,38,18,10,ENGAGEMENT,ACTION,SHO+PHY,From distance. Rarely lands.,10,0,0
-SH23,Snap Shot,SHOT,COMMON,1,68,18,3,ENGAGEMENT,ACTION,SHO,Quick release in tight space.,6,0,0
-SH24,One Touch Finish,SHOT,COMMON,1,70,15,4,ENGAGEMENT,ACTION,SHO,Strikes straight off the pass.,6,0,-1
-SH25,Cut Inside Shot,SHOT,UNCOMMON,2,56,20,7,ENGAGEMENT,ACTION,SHO,Shifts onto the stronger foot first.,7,0,0
-SH26,Shot Fake,SHOT,COMMON,1,80,10,6,ENGAGEMENT,ACTION,SHO+DRI,Freezes the defender or keeper.,,,
-SH27,Cross Shot,SHOT,COMMON,2,60,18,6,ENGAGEMENT,ACTION,SHO+PAS,Low driven shot across goal.,8,0,-1
-SH28,Composure Finish,SHOT,COMMON,2,62,15,8,ENGAGEMENT,ACTION,SHO,Ignores pressure for this shot.,5,0,0
-SH29,Lob Volley,SHOT,EPIC,3,44,30,11,ENGAGEMENT,ACTION,SHO+DRI,Volleys over the keeper from the air.,4,2,0
-SH30,Backheel Shot,SHOT,RARE,2,45,28,9,ENGAGEMENT,ACTION,SHO+DRI,Backheel flick on goal. A surprise.,2,0,0
-PS01,Through Ball,PASS,COMMON,1,68,18,2,ENGAGEMENT,ACTION,PAS,Slips the ball between defenders into the runner's path.,4,0,1
-PS02,Lofted Through,PASS,UNCOMMON,2,60,20,3,ENGAGEMENT,ACTION,PAS,Floats the ball over the back line for a runner.,4,2,1
-PS03,Driven Pass,PASS,COMMON,1,78,12,1,ENGAGEMENT,ACTION,PAS,Hard flat pass. Hard to intercept and harder to control.,8,0,0
-PS04,One Two,PASS,UNCOMMON,2,66,18,3,ENGAGEMENT,ACTION,PAS,Passes and darts into space for the instant return.,4,0,1
-PS05,Backheel Pass,PASS,RARE,2,58,22,3,ENGAGEMENT,ACTION,PAS,Surprise pass behind the standing foot.,2,0,0
-PS06,No Look Pass,PASS,RARE,2,55,20,4,ENGAGEMENT,ACTION,PAS,Disguises the target so defenders read it late.,4,0,-3
-PS07,Cross,PASS,COMMON,1,64,16,2,ENGAGEMENT,ACTION,PAS+SHO,Whips the ball into the box from wide.,4,2,-3
-PS08,Driven Cross,PASS,UNCOMMON,2,56,20,3,ENGAGEMENT,ACTION,PAS+SHO,Low fast cross to the near post.,7,0,-4
-PS09,Cutback,PASS,UNCOMMON,2,62,18,3,ENGAGEMENT,ACTION,PAS,Pulls the ball back from the byline to a runner.,2,0,-4
-PS10,Switch Play,PASS,COMMON,1,72,12,2,ENGAGEMENT,ACTION,PAS,Long diagonal to the far flank.,5,3,-3
-PS11,Rabona Cross,PASS,EPIC,3,44,32,5,ENGAGEMENT,ACTION,PAS+SHO,Crosses with the trailing leg. Hard to read.,5,2,2
-PS12,Outside Foot Pass,PASS,COMMON,1,70,15,2,ENGAGEMENT,ACTION,PAS,Bends a pass round a defender with the outside of the boot.,4,0,-1
-PS13,Chipped Pass,PASS,UNCOMMON,2,62,18,3,ENGAGEMENT,ACTION,PAS,Lifts the ball over a defender's reach.,3,2,1
-PS14,Pass and Move,PASS,COMMON,1,74,14,2,ENGAGEMENT,ACTION,PAS,Plays the ball and starts a run in one move.,4,0,1
-PS15,Killer Ball,PASS,EPIC,3,46,28,5,ENGAGEMENT,ACTION,PAS,A defence-splitting pass. Huge reward if it works.,7,0,0
-PS16,Square Ball,PASS,COMMON,1,86,6,1,ENGAGEMENT,ACTION,PAS,Safe sideways pass that keeps possession.,3,0,-5
-PS17,Return Pass,PASS,COMMON,1,80,8,1,ENGAGEMENT,ACTION,PAS,Gives it straight back to the passer.,5,0,0
-PS18,Long Ball Forward,PASS,UNCOMMON,1,60,16,2,ENGAGEMENT,ACTION,PAS+PHY,Sends it long into the channel for the striker.,6,3,0
-PS19,Corner Delivery,PASS,RARE,2,58,18,4,ENGAGEMENT,ACTION,PAS+SHO,Whipped corner into the danger area.,4,3,-2
-PS20,Short Corner,PASS,COMMON,1,76,10,3,ENGAGEMENT,ACTION,PAS+SHO,Plays the corner short to a teammate.,3,0,-3
-PS21,Free Kick Cross,PASS,RARE,2,56,20,4,ENGAGEMENT,ACTION,PAS+SHO,Floated free kick into the box.,4,2,-1
-PS22,Quick Free Kick,PASS,UNCOMMON,1,70,14,4,ENGAGEMENT,ACTION,PAS,Takes it before the defence is set.,6,0,1
-PS23,Lay Off,PASS,COMMON,1,82,8,1,ENGAGEMENT,ACTION,PAS,Cushions a pass back for a shooter.,1,0,0
-PS24,Flick On,PASS,RARE,2,54,22,3,ENGAGEMENT,ACTION,PAS+PHY,Glances it on with a header or heel.,3,1,1
-PS25,Reverse Pass,PASS,RARE,3,48,28,5,ENGAGEMENT,ACTION,PAS,Plays it the opposite way to the run.,3,0,-4
-DR01,Step Over,DRIBBLE,COMMON,1,74,14,4,ENGAGEMENT,ACTION,DRI+PAC,Sells the defender the wrong way.,,,
-DR02,Drag Back,DRIBBLE,COMMON,1,72,14,4,ENGAGEMENT,ACTION,DRI,Pulls the ball back under the sole and turns.,,,
-DR03,Roulette,DRIBBLE,RARE,2,62,20,7,ENGAGEMENT,ACTION,DRI,Spins round the ball past the defender.,,,
-DR04,Nutmeg,DRIBBLE,EPIC,3,38,34,11,ENGAGEMENT,ACTION,DRI,Passes the ball through the defender's legs.,,,
-DR05,Body Feint,DRIBBLE,COMMON,1,78,10,3,ENGAGEMENT,ACTION,DRI,Drops a shoulder to unbalance the marker.,,,
-DR06,Sombrero Flick,DRIBBLE,EPIC,3,40,30,12,ENGAGEMENT,ACTION,DRI,Flicks the ball over the head of the defender.,,,
-DR07,La Croqueta,DRIBBLE,UNCOMMON,2,66,18,6,ENGAGEMENT,ACTION,DRI,Quick touch from foot to foot to slip past.,,,
-DR08,Elastico,DRIBBLE,RARE,2,60,22,8,ENGAGEMENT,ACTION,DRI,Flicks the ball out then in. Leaves the defender behind.,,,
-DR09,Cruyff Turn,DRIBBLE,UNCOMMON,1,70,14,5,ENGAGEMENT,ACTION,DRI,Drags the ball behind the standing leg and turns away.,,,
-DR10,Fake Shot Turn,DRIBBLE,UNCOMMON,2,68,16,6,ENGAGEMENT,ACTION,DRI+SHO,Pretends to shoot then drives away.,,,
-DR11,Ball Roll,DRIBBLE,COMMON,1,76,10,3,ENGAGEMENT,ACTION,DRI,Rolls the ball sideways under the sole.,,,
-DR12,Shoulder Shield,DRIBBLE,COMMON,1,70,14,4,ENGAGEMENT,ACTION,PHY+DRI,Protects the ball with the body.,,,
-DR13,Hold Up Play,DRIBBLE,UNCOMMON,2,74,10,6,ENGAGEMENT,ACTION,PHY+DRI,Receives with a back to goal and holds it.,,,
-DR14,Chop Cut,DRIBBLE,COMMON,1,74,12,4,ENGAGEMENT,ACTION,DRI,Cuts the ball across the body.,,,
-DR15,Stepover Chain,DRIBBLE,UNCOMMON,2,62,18,7,ENGAGEMENT,ACTION,DRI,Two step overs and a burst.,,,
-DR16,Heel Flick,DRIBBLE,RARE,2,58,22,7,ENGAGEMENT,ACTION,DRI,Back-heels the ball past the closing defender.,,,
-DR17,Drive Through,DRIBBLE,UNCOMMON,1,66,20,4,ENGAGEMENT,ACTION,PAC+DRI,Powers straight through with the ball.,,,
-DR18,Skill Combo,DRIBBLE,RARE,2,60,20,8,ENGAGEMENT,ACTION,DRI,Chains two moves for an exit that is hard to read.,,,
-DR19,Fake Pass,DRIBBLE,COMMON,1,76,10,4,ENGAGEMENT,ACTION,DRI+PAS,Dummies a pass to draw the defender out.,,,
-DR20,Quick Touch,DRIBBLE,COMMON,1,82,8,3,ENGAGEMENT,ACTION,DRI,Short controlled touch past pressure.,,,
-DR21,Spin Away,DRIBBLE,UNCOMMON,2,64,18,6,ENGAGEMENT,ACTION,DRI,Turns on the spot away from the tackle.,,,
-DR22,Trap and Turn,DRIBBLE,COMMON,1,78,10,3,ENGAGEMENT,ACTION,DRI,Controls and spins in a single touch.,,,
-DR23,Slalom,DRIBBLE,RARE,3,48,26,10,ENGAGEMENT,ACTION,DRI,Weaves between two defenders.,,,
-DR24,Burst of Pace,DRIBBLE,UNCOMMON,2,68,18,7,ENGAGEMENT,ACTION,PAC+DRI,Accelerates past a defender at once.,,,
-DR25,Wall Run,DRIBBLE,RARE,2,62,20,7,ENGAGEMENT,ACTION,PAC+DRI,Dribbles along the touchline.,,,
-DR26,Rainbow Flick,DRIBBLE,EPIC,3,40,32,12,ENGAGEMENT,ACTION,DRI,Flicks the ball over the defender from behind.,,,
-DR27,Outside Hook,DRIBBLE,COMMON,1,72,14,4,ENGAGEMENT,ACTION,DRI,Hooks the ball away from the tackle.,,,
-DR28,Pull Push,DRIBBLE,UNCOMMON,2,66,18,6,ENGAGEMENT,ACTION,DRI,Drags it back then pushes it away.,,,
-DR29,Dummy Run,DRIBBLE,COMMON,1,74,10,4,ENGAGEMENT,ACTION,DRI,Lets the ball run through the legs to a teammate.,,,
-DR30,Showboat Spin,DRIBBLE,RARE,3,50,26,13,ENGAGEMENT,ACTION,DRI,Spectacular spin that disrupts the defender.,,,
-SP01,Tiger Legs,SUPPORT,UNCOMMON,2,90,5,10,ANYTIME,BUFF,,For 3s your next dribble card gains success and a special move.,,,
-SP02,Leap Sprint,SUPPORT,UNCOMMON,2,86,8,8,ANYTIME,BUFF,,Bounds forward in a surge. Adds pace for 4s.,,,
-SP03,Muscle Up,SUPPORT,UNCOMMON,2,90,5,10,ANYTIME,BUFF,,For 3s your next challenge wins the shoulder charge.,,,
-SP04,Sharp Boots,SUPPORT,COMMON,1,88,4,8,ANYTIME,BUFF,,For 3s your next shot card gains success.,,,
-SP05,Radar Vision,SUPPORT,COMMON,1,90,4,8,ANYTIME,BUFF,,For 3s your next pass card gains success.,,,
-SP06,Calm Head,SUPPORT,COMMON,1,90,3,8,ANYTIME,BUFF,,For 3s your next card ignores pressure.,,,
-SP07,Second Wind,SUPPORT,UNCOMMON,2,88,5,13,ANYTIME,ACTION,,Restores stamina to the selected player.,,,
-SP08,Hot Streak,SUPPORT,RARE,3,80,10,17,ANYTIME,ACTION,,"After a success, your next card has a shorter cooldown.",,,
-SP09,Cooldown Pulse,SUPPORT,RARE,3,85,8,19,ANYTIME,BUFF,,Reduces the cooldown of your cards for 5s.,,,
-SP10,Reset Button,SUPPORT,RARE,2,80,10,17,ANYTIME,ACTION,,Instantly resets one card's cooldown.,,,
-SP11,Overdrive,SUPPORT,EPIC,3,78,12,21,ANYTIME,ACTION,,Doubles the length of your buff windows.,,,
-SP12,Focus Chain,SUPPORT,UNCOMMON,2,86,6,12,ANYTIME,ACTION,,Extends your active buff by 2s.,,,
-SP13,Stamina Boost,SUPPORT,COMMON,1,90,3,9,ANYTIME,BUFF,,Slows stamina drain for 6s.,,,
-SP14,Steady Hands,SUPPORT,COMMON,1,88,4,8,ANYTIME,BUFF,,For 3s your next keeper or defend card gains success.,,,
-SP15,Chest Out,SUPPORT,COMMON,1,90,3,8,ANYTIME,BUFF,,For 3s the player resists being knocked off the ball.,,,
-SP16,Cold Blood,SUPPORT,UNCOMMON,2,84,8,13,ANYTIME,BUFF,,A failed card adds no extra cooldown for 6s.,,,
-SP17,Rhythm,SUPPORT,COMMON,1,88,4,8,ANYTIME,BUFF,,For 3s your next dribble and pass flow into each other.,,,
-SP18,Pace Surge,SUPPORT,COMMON,1,88,4,7,ANYTIME,BUFF,,Raises top speed for 3s.,,,
-SP19,Wide Open,SUPPORT,UNCOMMON,2,82,8,11,ANYTIME,ACTION,,Draws a defender away from your runner.,,,
-SP20,Rally the Team,SUPPORT,RARE,2,80,10,17,ANYTIME,BUFF,,Boosts team morale for 9s.,,,
-SP21,Captain's Orders,SUPPORT,RARE,3,84,8,19,ANYTIME,BUFF,,Orders two teammates to hold a role for 6s.,,,
-SP22,Warm Up,SUPPORT,COMMON,1,92,2,8,ANYTIME,ACTION,,The next card you play has a shorter cooldown.,,,
-SP23,Muscle Memory,SUPPORT,UNCOMMON,2,86,6,12,ANYTIME,ACTION,,A repeated card does not lose success.,,,
-SP24,Sixth Sense,SUPPORT,RARE,2,82,8,13,ANYTIME,ACTION,,Reveals the opponent's primed player.,,,
-SP25,Fresh Legs,SUPPORT,RARE,2,88,5,15,ANYTIME,ACTION,,Restores a tired player's pace.,,,
-SP26,Decoy Run,SUPPORT,COMMON,1,80,8,8,ANYTIME,ACTION,,A teammate pulls defenders away.,,,
-SP27,Two Touch,SUPPORT,COMMON,1,90,3,7,ANYTIME,BUFF,,For 3s your next pass or shot needs only two touches.,,,
-SP28,Battle Ready,SUPPORT,UNCOMMON,2,86,6,11,ANYTIME,BUFF,,For 3s your next tackle card gains success.,,,
-SP29,Clean Slate,SUPPORT,UNCOMMON,2,82,6,12,ANYTIME,BUFF,,For 3s your next card carries no risk.,,,
-SP30,Warp Boots,SUPPORT,EPIC,3,76,14,21,ANYTIME,ACTION,,A short burst of pace at no stamina cost.,,,
-DF01,Stand Tackle,DEFEND,COMMON,1,90,8,3,ENGAGEMENT,ACTION,DEF,Holds position and takes the ball cleanly.,,,
-DF02,Slide Tackle,DEFEND,EPIC,2,94,97,6,ENGAGEMENT,ACTION,DEF+PAC,Wins the ball but leaves you on the floor if it fails.,,,
-DF03,Poke Tackle,DEFEND,COMMON,1,66,14,3,ENGAGEMENT,ACTION,DEF,Pokes the ball away without committing.,,,
-DF04,Intercept Lane,DEFEND,COMMON,1,70,12,4,ENGAGEMENT,ACTION,DEF,Steps into the passing lane to cut it out.,,,
-DF05,Block Lane,DEFEND,COMMON,1,72,10,4,ENGAGEMENT,ACTION,DEF,Covers the shooting lane to block.,,,
-DF06,Tactical Foul,DEFEND,RARE,2,85,30,9,ENGAGEMENT,ACTION,DEF+PHY,Stops the play with a foul. Risks a booking.,,,
-DF07,Recovery Sprint,DEFEND,COMMON,1,76,10,6,ANYTIME,ACTION,DEF+PAC,Chases back at full pace.,,,
-DF08,Double Team,DEFEND,UNCOMMON,2,70,16,8,ENGAGEMENT,ACTION,DEF+PHY,A second defender closes in. Winning odds rise.,,,
-DF09,Offside Trap,DEFEND,RARE,2,64,28,11,ANYTIME,ACTION,DEF,The line steps up together.,,,
-DF10,Jockey,DEFEND,COMMON,1,82,8,3,ANYTIME,ACTION,DEF,Backs off and shadows the dribbler.,,,
-DF11,Press Trigger,DEFEND,UNCOMMON,2,72,16,7,ANYTIME,ACTION,DEF+PAC,Closes the ball carrier down at once.,,,
-DF12,Shirt Tug,DEFEND,UNCOMMON,1,68,24,6,ENGAGEMENT,ACTION,DEF+PHY,Slows a runner. Risks a foul.,,,
-DF13,Shoulder Charge,DEFEND,UNCOMMON,2,66,18,6,ENGAGEMENT,ACTION,DEF+PHY,Barges the carrier off the ball.,,,
-DF14,Clear the Lines,DEFEND,COMMON,1,88,6,4,ENGAGEMENT,ACTION,DEF+PHY,Hoofs it clear.,,,
-DF15,Last Ditch Block,DEFEND,RARE,2,60,20,8,ENGAGEMENT,ACTION,DEF+PHY,Throws the body in front of the shot.,,,
-DF16,Header Clear,DEFEND,COMMON,1,82,8,4,ENGAGEMENT,ACTION,PHY+DEF,Heads a cross away.,,,
-DF17,Cut Out Cross,DEFEND,UNCOMMON,1,70,12,5,ENGAGEMENT,ACTION,DEF,Moves to cut the cross off.,,,
-DF18,Snuff Out,DEFEND,UNCOMMON,2,72,16,7,ENGAGEMENT,ACTION,DEF,Smothers the dribbler before the touch.,,,
-DF19,Shadow Marking,DEFEND,COMMON,1,84,6,4,ANYTIME,ACTION,DEF,Sticks tight to a runner.,,,
-DF20,Zonal Cover,DEFEND,COMMON,1,86,6,5,ANYTIME,ACTION,DEF,Covers a zone and picks up arrivals.,,,
-DF21,Drop Deep,DEFEND,COMMON,1,90,4,5,ANYTIME,ACTION,DEF+PAC,Drops the line to stop a through ball.,,,
-DF22,Step Up,DEFEND,COMMON,1,74,12,5,ANYTIME,ACTION,DEF,Pushes the line up as one.,,,
-DF23,Ball Hawk,DEFEND,RARE,2,66,18,8,ENGAGEMENT,ACTION,DEF,Reads the next pass and leaps in.,,,
-DF24,Body Block,DEFEND,COMMON,1,76,10,4,ENGAGEMENT,ACTION,DEF+PHY,Shields the carrier from passing.,,,
-DF25,Shadow Press,DEFEND,UNCOMMON,2,70,14,7,ANYTIME,ACTION,DEF,Cuts the passing options of the ball carrier.,,,
-DF26,Rotate Cover,DEFEND,UNCOMMON,2,72,12,6,ANYTIME,ACTION,DEF,Swaps with a teammate to cover the space.,,,
-DF27,Poacher's Guard,DEFEND,UNCOMMON,2,70,14,7,ANYTIME,ACTION,DEF,Tracks the nearest striker.,,,
-DF28,Rescue Tackle,DEFEND,RARE,2,70,20,8,ENGAGEMENT,ACTION,DEF,A desperate stretch to win it back.,,,
-DF29,Sweep,DEFEND,EPIC,3,56,28,11,ENGAGEMENT,ACTION,DEF+PAC,Charges out of the line to clean up.,,,
-DF30,Clean Sheet Wall,DEFEND,RARE,3,64,14,15,ANYTIME,ACTION,DEF,The defence blocks everything for 4s.,,,
-DF31,Fox in the Box,DEFEND,UNCOMMON,2,74,12,8,ANYTIME,ACTION,DEF,Pins a striker in the box.,,,
-DF32,Backheel Clear,DEFEND,RARE,2,58,22,6,ENGAGEMENT,ACTION,DEF+PHY,Flicks it clear off the line.,,,
-DF33,Trap the Winger,DEFEND,UNCOMMON,2,70,16,8,ANYTIME,ACTION,DEF,Forces the winger inside.,,,
-DF34,Tight Squeeze,DEFEND,RARE,2,68,18,8,ANYTIME,ACTION,DEF,Squeezes space for a dribbler.,,,
-DF35,Crunching Block,DEFEND,EPIC,3,62,28,12,ENGAGEMENT,ACTION,DEF+PHY,A heavy block that might hurt.,,,
-GK01,Set Stance,KEEPER,COMMON,1,90,3,3,ANYTIME,ACTION,POS,Gets balanced and ready for the save.,,,
-GK02,Reach Dive,KEEPER,UNCOMMON,2,68,18,6,ENGAGEMENT,ACTION,REF,Stretches to the corner for a curler.,,,
-GK03,Smother,KEEPER,RARE,2,72,24,8,ENGAGEMENT,ACTION,HAN+POS,Rushes out to close the angle.,,,
-GK04,Punch Clear,KEEPER,COMMON,1,78,12,5,ENGAGEMENT,ACTION,HAN,Punches the cross away.,,,
-GK05,Claim Cross,KEEPER,RARE,2,70,20,7,ENGAGEMENT,ACTION,HAN+POS,Claims the cross high.,,,
-GK06,Sweeper Rush,KEEPER,EPIC,3,60,30,11,ENGAGEMENT,ACTION,POS+PAC,Sprints out to clear the through ball.,,,
-GK07,Quick Throw,KEEPER,COMMON,1,86,8,3,ENGAGEMENT,ACTION,PAS,Throws it out to start an attack.,,,
-GK08,Big Hands,KEEPER,UNCOMMON,2,76,18,8,ENGAGEMENT,ACTION,HAN,Holds the ball instead of parrying it.,,,
-GK09,Low Dive,KEEPER,COMMON,1,72,12,4,ENGAGEMENT,ACTION,REF,Gets down fast to a low shot.,,,
-GK10,High Palm,KEEPER,RARE,2,66,20,7,ENGAGEMENT,ACTION,REF,Tips it over the bar.,,,
-GK11,Backpedal,KEEPER,UNCOMMON,1,64,18,5,ENGAGEMENT,ACTION,POS,Retreats to cover the chip.,,,
-GK12,Starfish,KEEPER,RARE,2,62,22,8,ENGAGEMENT,ACTION,REF+POS,Spreads big in a one on one.,,,
-GK13,Parry Stance,KEEPER,UNCOMMON,1,74,12,5,ANYTIME,ACTION,POS,Positions to parry rather than catch.,,,
-GK14,Kick Save,KEEPER,EPIC,3,52,30,11,ENGAGEMENT,ACTION,REF,Sticks out a leg for a close range save.,,,
-GK15,Command the Line,KEEPER,COMMON,1,86,4,3,ANYTIME,ACTION,POS,Pushes the defence up from behind.,,,
-GK16,Long Kick,KEEPER,COMMON,1,70,12,4,ENGAGEMENT,ACTION,PAS+PHY,Kicks long to the striker.,,,
-GK17,Roll Out,KEEPER,COMMON,1,90,4,3,ENGAGEMENT,ACTION,PAS,Rolls it short to a defender.,,,
-GK18,Throw Long,KEEPER,UNCOMMON,2,68,14,6,ENGAGEMENT,ACTION,PAS+PHY,Hurls it to the winger.,,,
-GK19,Read the Run,KEEPER,UNCOMMON,2,70,14,8,ANYTIME,ACTION,POS,Anticipates the through ball.,,,
-GK20,Cat Reflexes,KEEPER,RARE,3,58,20,13,ENGAGEMENT,ACTION,REF,A reflex save to a close shot.,,,
-GK21,Dominate Box,KEEPER,UNCOMMON,2,72,16,8,ANYTIME,ACTION,HAN+POS,Takes charge of the box on a corner.,,,
-GK22,Near Post Guard,KEEPER,COMMON,1,76,10,4,ANYTIME,ACTION,POS,Covers the near post.,,,
-GK23,Far Post Reach,KEEPER,UNCOMMON,2,66,18,6,ANYTIME,ACTION,POS,Moves to cover the far post.,,,
-GK24,Fingertip Save,KEEPER,RARE,3,56,24,12,ENGAGEMENT,ACTION,REF,Gets a fingertip to a curler.,,,
-GK25,Rebound Clear,KEEPER,COMMON,1,80,8,4,ENGAGEMENT,ACTION,HAN,Pushes the loose ball away from danger.,,,
-TT01,Zip Zap,TITAN,EPIC,6,88,10,60,ENGAGEMENT,ACTION,PAC+DRI,Teleports past three defenders in a burst of lightning.,,,
-TT02,Gravity Cannon,TITAN,EPIC,6,82,22,60,ENGAGEMENT,ACTION,SHO+PHY,The ball crushes under its own weight. Pace no keeper can hold.,,,
-TT03,Eagle's Eye,TITAN,EPIC,5,95,2,75,ANYTIME,ACTION,,See every card the opponent holds for 6s.,,,
-TT04,Triple Weave,TITAN,EPIC,6,80,14,65,ENGAGEMENT,ACTION,DRI+PAS,Dribbles past three defenders in slow motion.,,,
-TT05,Bicycle Kick,TITAN,EPIC,5,56,28,60,ENGAGEMENT,ACTION,SHO+DRI,A spectacular overhead strike.,,,
-TT06,Time Stop,TITAN,LEGEND,8,90,6,90,ANYTIME,ACTION,,Freezes the pitch for 3s while you plan.,,,
-TT07,Rocket Legs,TITAN,EPIC,5,86,10,65,ANYTIME,ACTION,SHO+PAC,A massive sprint that outpaces everyone.,,,
-TT08,Iron Wall,TITAN,LEGEND,6,84,8,70,ANYTIME,ACTION,DEF+PHY,Your defence becomes unbreakable for 4s.,,,
-TT09,Phantom Pass,TITAN,EPIC,5,78,16,65,ENGAGEMENT,ACTION,PAS,A pass that cannot be intercepted.,,,
-TT10,Hundred Yard Strike,TITAN,LEGEND,6,60,24,70,ENGAGEMENT,ACTION,SHO+PAS,A shot from anywhere that swerves round everything.,,,
-TT11,Dragon Header,TITAN,EPIC,5,68,22,65,ENGAGEMENT,ACTION,SHO+PHY,A header with power no keeper can stop.,,,
-TT12,Steel Goalkeeper,TITAN,LEGEND,6,82,10,75,ANYTIME,ACTION,REF+HAN,Your keeper saves anything for 4s.,,,
-TT13,Earthquake Tackle,TITAN,EPIC,5,76,20,65,ENGAGEMENT,ACTION,DEF+PHY,A tackle that shakes the ground and floors nearby players.,,,
-TT14,Wind Walk,TITAN,EPIC,5,82,12,60,ENGAGEMENT,ACTION,PAC+DRI,A dribble that cannot be tackled for 4s.,,,
-TT15,Meteor Shot,TITAN,LEGEND,6,64,24,70,ENGAGEMENT,ACTION,SHO+PHY,A shot that dips late and burns the keeper.,,,
-TT16,Chain Lightning,TITAN,EPIC,5,80,12,65,ENGAGEMENT,ACTION,PAS+DRI,Passes jump between three teammates in an instant.,,,
-TT17,Black Hole,TITAN,LEGEND,6,74,18,75,ENGAGEMENT,ACTION,DEF+PHY,Pulls nearby defenders toward you.,,,
-TT18,Mirror Match,TITAN,EPIC,5,70,14,65,ENGAGEMENT,ACTION,DRI+DEF,Copies the opponent's last card.,,,
-TT19,Second Heart,TITAN,LEGEND,5,90,6,80,ANYTIME,ACTION,,Restores all stamina to the team.,,,
-TT20,Titan Slide,TITAN,EPIC,5,78,24,65,ENGAGEMENT,ACTION,DEF+PAC,A slide that cannot miss but leaves you stranded.,,,
-TT21,Skyfall,TITAN,EPIC,6,62,26,70,ENGAGEMENT,ACTION,SHO+PHY,A lofted ball drops like a meteor from above.,,,
-TT22,Lock On,TITAN,EPIC,4,85,8,60,ANYTIME,ACTION,SHO+PAS,Your next shot cannot miss the target.,,,
-TT23,Dream Team,TITAN,LEGEND,7,80,10,90,ANYTIME,ACTION,,All teammates move in perfect sync for 5s.,,,
-TT24,Reality Bend,TITAN,LEGEND,7,72,20,90,ANYTIME,ACTION,,Rewinds your last play and tries again.,,,
-TT25,Chaos Control,TITAN,LEGEND,6,70,22,75,ANYTIME,ACTION,,Scrambles the opponent's cooldowns for 4s.,,,
+id,name,cat,rarity,slots,succ,risk,cd,timing,kind,stats,description,ball_speed,ball_arc,ball_curve,move_mult,anim_rate,travel,reach,steer,lock
+SH01,Side Foot Place,SHOT,COMMON,1,88,5,3,ENGAGEMENT,ACTION,SHO,Calm accurate placement. Low power.,4,0,0,0.3,1,0,5,2,0.7
+SH02,Instep Drive,SHOT,COMMON,1,74,15,4,ENGAGEMENT,ACTION,SHO+PHY,Hard low drive through the line.,7,0,0,0.3,1,0,5,2,0.8
+SH03,Finesse Curler,SHOT,UNCOMMON,2,62,20,7,ENGAGEMENT,ACTION,SHO+PAS,Curls round the keeper to the far post.,5,3,-2,0.3,0.9,0,5,2,0.8
+SH04,Trivela Bender,SHOT,UNCOMMON,2,58,22,8,ENGAGEMENT,ACTION,SHO+PAS,Outside boot. Swerves late and wide.,6,0,1,0.3,1,0,5,2,0.7
+SH05,Chip Lob,SHOT,RARE,2,55,28,8,ENGAGEMENT,ACTION,SHO+DRI,Floats over a keeper who is off his line.,3,2,0,0.3,1,0,5,2,0.7
+SH06,Knuckleball,SHOT,EPIC,3,48,30,12,ENGAGEMENT,ACTION,SHO+PHY,No spin. Dips and wobbles late.,6,0,0,0.3,1,0,5,2,0.7
+SH07,Power Blast,SHOT,UNCOMMON,2,60,25,8,ENGAGEMENT,ACTION,SHO+PHY,Maximum pace. Hard to hold.,9,0,0,0.3,0.9,0,5,1,1
+SH08,Volley,SHOT,RARE,2,52,25,8,ENGAGEMENT,ACTION,SHO+DRI,First time strike on a falling ball.,7,0,0,0.5,1,0,6,2,0.6
+SH09,Half Volley,SHOT,UNCOMMON,2,56,22,8,ENGAGEMENT,ACTION,SHO+DRI,Strikes just after the bounce.,7,0,0,0.5,1,0,6,2,0.6
+SH10,Diving Header,SHOT,RARE,2,50,30,9,ENGAGEMENT,ACTION,SHO+PHY,Flying header at low balls.,7,0,1,0.8,1,1,7,0,1
+SH11,Glancing Header,SHOT,COMMON,1,64,12,5,ENGAGEMENT,ACTION,SHO+PHY,Deflects a cross toward the far post.,5,0,-3,0.4,1,0,6,2,0.7
+SH12,Power Header,SHOT,COMMON,2,58,18,7,ENGAGEMENT,ACTION,SHO+PHY,Wins the aerial duel and attacks it.,8,0,0,0.4,1,0,6,2,0.9
+SH13,Rabona Strike,SHOT,EPIC,3,46,32,13,ENGAGEMENT,ACTION,SHO+DRI,Trailing leg wraps behind. Hard to read.,6,0,0,0.3,0.9,0,6,2,0.9
+SH14,Toe Poke,SHOT,COMMON,1,66,20,4,ENGAGEMENT,ACTION,SHO,No backswing. Very hard to read.,6,0,0,0.3,1.3,0,4,2,0.4
+SH15,Outside Flick,SHOT,UNCOMMON,2,54,22,7,ENGAGEMENT,ACTION,SHO+DRI,Quick flick with the outside foot.,6,0,1,0.3,1,0,5,2,0.7
+SH16,Low Skimmer,SHOT,COMMON,1,72,12,4,ENGAGEMENT,ACTION,SHO,Skids along the turf under a jump.,8,0,0,0.3,1,0,5,2,0.7
+SH17,Far Post Bender,SHOT,UNCOMMON,2,57,20,8,ENGAGEMENT,ACTION,SHO+PAS,Aims for the far corner.,6,0,1,0.3,1,0,5,2,0.7
+SH18,Near Post Lash,SHOT,UNCOMMON,2,60,22,7,ENGAGEMENT,ACTION,SHO,Fires across the keeper's body.,7,0,-1,0.3,1,0,5,2,0.7
+SH19,Dipping Drive,SHOT,UNCOMMON,2,55,24,8,ENGAGEMENT,ACTION,SHO+PAS,Rises then dips over the wall.,7,0,0,0.3,1,0,5,2,0.7
+SH20,Rising Drive,SHOT,UNCOMMON,2,54,24,7,ENGAGEMENT,ACTION,SHO+PAS,Starts low and lifts late over the keeper.,7,1,0,0.3,1,0,5,2,0.7
+SH21,Lofted Finesse,SHOT,RARE,3,48,26,10,ENGAGEMENT,ACTION,SHO+PAS,Soft curled lob into the top corner.,5,1,1,0.3,1,0,5,2,0.7
+SH22,Rocket Long Shot,SHOT,RARE,2,38,18,10,ENGAGEMENT,ACTION,SHO+PHY,From distance. Rarely lands.,10,0,0,0.3,0.85,0,5,1,1.1
+SH23,Snap Shot,SHOT,COMMON,1,68,18,3,ENGAGEMENT,ACTION,SHO,Quick release in tight space.,6,0,0,0.3,1.3,0,5,2,0.4
+SH24,One Touch Finish,SHOT,COMMON,1,70,15,4,ENGAGEMENT,ACTION,SHO,Strikes straight off the pass.,6,0,-1,0.8,1.2,0,5,4,0.4
+SH25,Cut Inside Shot,SHOT,UNCOMMON,2,56,20,7,ENGAGEMENT,ACTION,SHO,Shifts onto the stronger foot first.,7,0,0,0.9,1,0,5,6,0.7
+SH26,Shot Fake,SHOT,COMMON,1,80,10,6,ENGAGEMENT,ACTION,SHO+DRI,Freezes the defender or keeper.,,,,0.6,1.2,0,5,5,0.5
+SH27,Cross Shot,SHOT,COMMON,2,60,18,6,ENGAGEMENT,ACTION,SHO+PAS,Low driven shot across goal.,8,0,-1,0.3,1,0,5,2,0.7
+SH28,Composure Finish,SHOT,COMMON,2,62,15,8,ENGAGEMENT,ACTION,SHO,Ignores pressure for this shot.,5,0,0,0.3,0.85,0,5,2,0.9
+SH29,Lob Volley,SHOT,EPIC,3,44,30,11,ENGAGEMENT,ACTION,SHO+DRI,Volleys over the keeper from the air.,4,2,0,0.3,1,0,5,2,0.7
+SH30,Backheel Shot,SHOT,RARE,2,45,28,9,ENGAGEMENT,ACTION,SHO+DRI,Backheel flick on goal. A surprise.,2,0,0,0.3,1,0,4,2,0.5
+PS01,Through Ball,PASS,COMMON,1,68,18,2,ENGAGEMENT,ACTION,PAS,Slips the ball between defenders into the runner's path.,4,0,1,0.5,1,0,5,3,0.5
+PS02,Lofted Through,PASS,UNCOMMON,2,60,20,3,ENGAGEMENT,ACTION,PAS,Floats the ball over the back line for a runner.,4,2,1,0.5,1,0,5,3,0.5
+PS03,Driven Pass,PASS,COMMON,1,78,12,1,ENGAGEMENT,ACTION,PAS,Hard flat pass. Hard to intercept and harder to control.,8,0,0,0.5,1.1,0,5,3,0.5
+PS04,One Two,PASS,UNCOMMON,2,66,18,3,ENGAGEMENT,ACTION,PAS,Passes and darts into space for the instant return.,4,0,1,0.8,1,0,5,3,0.5
+PS05,Backheel Pass,PASS,RARE,2,58,22,3,ENGAGEMENT,ACTION,PAS,Surprise pass behind the standing foot.,2,0,0,0.5,1,0,5,3,0.5
+PS06,No Look Pass,PASS,RARE,2,55,20,4,ENGAGEMENT,ACTION,PAS,Disguises the target so defenders read it late.,4,0,-3,0.5,1,0,5,3,0.5
+PS07,Cross,PASS,COMMON,1,64,16,2,ENGAGEMENT,ACTION,PAS+SHO,Whips the ball into the box from wide.,4,2,-3,0.6,1,0,5,3,0.5
+PS08,Driven Cross,PASS,UNCOMMON,2,56,20,3,ENGAGEMENT,ACTION,PAS+SHO,Low fast cross to the near post.,7,0,-4,0.6,1,0,5,3,0.5
+PS09,Cutback,PASS,UNCOMMON,2,62,18,3,ENGAGEMENT,ACTION,PAS,Pulls the ball back from the byline to a runner.,2,0,-4,0.5,1,0,5,3,0.5
+PS10,Switch Play,PASS,COMMON,1,72,12,2,ENGAGEMENT,ACTION,PAS,Long diagonal to the far flank.,5,3,-3,0.2,1,0,5,3,0.8
+PS11,Rabona Cross,PASS,EPIC,3,44,32,5,ENGAGEMENT,ACTION,PAS+SHO,Crosses with the trailing leg. Hard to read.,5,2,2,0.3,0.9,0,5,3,0.8
+PS12,Outside Foot Pass,PASS,COMMON,1,70,15,2,ENGAGEMENT,ACTION,PAS,Bends a pass round a defender with the outside of the boot.,4,0,-1,0.5,1,0,5,3,0.5
+PS13,Chipped Pass,PASS,UNCOMMON,2,62,18,3,ENGAGEMENT,ACTION,PAS,Lifts the ball over a defender's reach.,3,2,1,0.5,1,0,5,3,0.5
+PS14,Pass and Move,PASS,COMMON,1,74,14,2,ENGAGEMENT,ACTION,PAS,Plays the ball and starts a run in one move.,4,0,1,1,1,0,5,5,0.5
+PS15,Killer Ball,PASS,EPIC,3,46,28,5,ENGAGEMENT,ACTION,PAS,A defence-splitting pass. Huge reward if it works.,7,0,0,0.5,1.1,0,5,3,0.5
+PS16,Square Ball,PASS,COMMON,1,86,6,1,ENGAGEMENT,ACTION,PAS,Safe sideways pass that keeps possession.,3,0,-5,0.5,1,0,5,3,0.5
+PS17,Return Pass,PASS,COMMON,1,80,8,1,ENGAGEMENT,ACTION,PAS,Gives it straight back to the passer.,5,0,0,0.5,1,0,5,3,0.5
+PS18,Long Ball Forward,PASS,UNCOMMON,1,60,16,2,ENGAGEMENT,ACTION,PAS+PHY,Sends it long into the channel for the striker.,6,3,0,0.2,0.9,0,5,3,0.8
+PS19,Corner Delivery,PASS,RARE,2,58,18,4,ENGAGEMENT,ACTION,PAS+SHO,Whipped corner into the danger area.,4,3,-2,0,1,0,5,3,0.8
+PS20,Short Corner,PASS,COMMON,1,76,10,3,ENGAGEMENT,ACTION,PAS+SHO,Plays the corner short to a teammate.,3,0,-3,0,1,0,5,3,0.5
+PS21,Free Kick Cross,PASS,RARE,2,56,20,4,ENGAGEMENT,ACTION,PAS+SHO,Floated free kick into the box.,4,2,-1,0.5,1,0,5,3,0.5
+PS22,Quick Free Kick,PASS,UNCOMMON,1,70,14,4,ENGAGEMENT,ACTION,PAS,Takes it before the defence is set.,6,0,1,0,1.3,0,5,3,0.3
+PS23,Lay Off,PASS,COMMON,1,82,8,1,ENGAGEMENT,ACTION,PAS,Cushions a pass back for a shooter.,1,0,0,0.6,1.3,0,5,3,0.3
+PS24,Flick On,PASS,RARE,2,54,22,3,ENGAGEMENT,ACTION,PAS+PHY,Glances it on with a header or heel.,3,1,1,0.6,1.1,0,5,3,0.4
+PS25,Reverse Pass,PASS,RARE,3,48,28,5,ENGAGEMENT,ACTION,PAS,Plays it the opposite way to the run.,3,0,-4,0.5,1,0,5,3,0.5
+DR01,Step Over,DRIBBLE,COMMON,1,74,14,4,ENGAGEMENT,ACTION,DRI+PAC,Sells the defender the wrong way.,,,,1,1,1,4,7,0.6
+DR02,Drag Back,DRIBBLE,COMMON,1,72,14,4,ENGAGEMENT,ACTION,DRI,Pulls the ball back under the sole and turns.,,,,0.5,1,1,4,7,0.6
+DR03,Roulette,DRIBBLE,RARE,2,62,20,7,ENGAGEMENT,ACTION,DRI,Spins round the ball past the defender.,,,,1,1,1,4,7,0.6
+DR04,Nutmeg,DRIBBLE,EPIC,3,38,34,11,ENGAGEMENT,ACTION,DRI,Passes the ball through the defender's legs.,,,,1,1,1,4,7,0.6
+DR05,Body Feint,DRIBBLE,COMMON,1,78,10,3,ENGAGEMENT,ACTION,DRI,Drops a shoulder to unbalance the marker.,,,,1,1,1,4,7,0.6
+DR06,Sombrero Flick,DRIBBLE,EPIC,3,40,30,12,ENGAGEMENT,ACTION,DRI,Flicks the ball over the head of the defender.,,,,1,1,1,4,7,0.8
+DR07,La Croqueta,DRIBBLE,UNCOMMON,2,66,18,6,ENGAGEMENT,ACTION,DRI,Quick touch from foot to foot to slip past.,,,,1,1,1,4,7,0.6
+DR08,Elastico,DRIBBLE,RARE,2,60,22,8,ENGAGEMENT,ACTION,DRI,Flicks the ball out then in. Leaves the defender behind.,,,,1,1,1,4,7,0.6
+DR09,Cruyff Turn,DRIBBLE,UNCOMMON,1,70,14,5,ENGAGEMENT,ACTION,DRI,Drags the ball behind the standing leg and turns away.,,,,0.7,1,1,4,8,0.6
+DR10,Fake Shot Turn,DRIBBLE,UNCOMMON,2,68,16,6,ENGAGEMENT,ACTION,DRI+SHO,Pretends to shoot then drives away.,,,,1,1,1,4,7,0.6
+DR11,Ball Roll,DRIBBLE,COMMON,1,76,10,3,ENGAGEMENT,ACTION,DRI,Rolls the ball sideways under the sole.,,,,1,1,1,4,7,0.6
+DR12,Shoulder Shield,DRIBBLE,COMMON,1,70,14,4,ENGAGEMENT,ACTION,PHY+DRI,Protects the ball with the body.,,,,0.5,1,1,4,3,0.9
+DR13,Hold Up Play,DRIBBLE,UNCOMMON,2,74,10,6,ENGAGEMENT,ACTION,PHY+DRI,Receives with a back to goal and holds it.,,,,0.2,1,1,4,2,1.2
+DR14,Chop Cut,DRIBBLE,COMMON,1,74,12,4,ENGAGEMENT,ACTION,DRI,Cuts the ball across the body.,,,,1,1,1,4,7,0.6
+DR15,Stepover Chain,DRIBBLE,UNCOMMON,2,62,18,7,ENGAGEMENT,ACTION,DRI,Two step overs and a burst.,,,,1,1.2,1,4,7,0.6
+DR16,Heel Flick,DRIBBLE,RARE,2,58,22,7,ENGAGEMENT,ACTION,DRI,Back-heels the ball past the closing defender.,,,,1,1,1,4,7,0.6
+DR17,Drive Through,DRIBBLE,UNCOMMON,1,66,20,4,ENGAGEMENT,ACTION,PAC+DRI,Powers straight through with the ball.,,,,1.2,1,1,4,7,0.6
+DR18,Skill Combo,DRIBBLE,RARE,2,60,20,8,ENGAGEMENT,ACTION,DRI,Chains two moves for an exit that is hard to read.,,,,1,1.1,1,4,7,1.2
+DR19,Fake Pass,DRIBBLE,COMMON,1,76,10,4,ENGAGEMENT,ACTION,DRI+PAS,Dummies a pass to draw the defender out.,,,,1,1,1,4,7,0.6
+DR20,Quick Touch,DRIBBLE,COMMON,1,82,8,3,ENGAGEMENT,ACTION,DRI,Short controlled touch past pressure.,,,,1.1,1.3,1,4,7,0.3
+DR21,Spin Away,DRIBBLE,UNCOMMON,2,64,18,6,ENGAGEMENT,ACTION,DRI,Turns on the spot away from the tackle.,,,,0.8,1,1,4,7,0.6
+DR22,Trap and Turn,DRIBBLE,COMMON,1,78,10,3,ENGAGEMENT,ACTION,DRI,Controls and spins in a single touch.,,,,1,1,1,4,7,0.6
+DR23,Slalom,DRIBBLE,RARE,3,48,26,10,ENGAGEMENT,ACTION,DRI,Weaves between two defenders.,,,,1,1,1,4,8,1.2
+DR24,Burst of Pace,DRIBBLE,UNCOMMON,2,68,18,7,ENGAGEMENT,ACTION,PAC+DRI,Accelerates past a defender at once.,,,,1.6,1,1,4,3,1
+DR25,Wall Run,DRIBBLE,RARE,2,62,20,7,ENGAGEMENT,ACTION,PAC+DRI,Dribbles along the touchline.,,,,1.3,1,1,4,5,0.6
+DR26,Rainbow Flick,DRIBBLE,EPIC,3,40,32,12,ENGAGEMENT,ACTION,DRI,Flicks the ball over the defender from behind.,,,,0.8,0.9,1,4,7,0.6
+DR27,Outside Hook,DRIBBLE,COMMON,1,72,14,4,ENGAGEMENT,ACTION,DRI,Hooks the ball away from the tackle.,,,,1,1,1,4,7,0.6
+DR28,Pull Push,DRIBBLE,UNCOMMON,2,66,18,6,ENGAGEMENT,ACTION,DRI,Drags it back then pushes it away.,,,,1,1,1,4,7,0.6
+DR29,Dummy Run,DRIBBLE,COMMON,1,74,10,4,ENGAGEMENT,ACTION,DRI,Lets the ball run through the legs to a teammate.,,,,1.3,1,1,4,4,0.6
+DR30,Showboat Spin,DRIBBLE,RARE,3,50,26,13,ENGAGEMENT,ACTION,DRI,Spectacular spin that disrupts the defender.,,,,0.5,0.85,1,4,7,1.2
+SP01,Tiger Legs,SUPPORT,UNCOMMON,2,90,5,10,ANYTIME,BUFF,,For 3s your next dribble card gains success and a special move.,,,,,,,,,
+SP02,Leap Sprint,SUPPORT,UNCOMMON,2,86,8,8,ANYTIME,BUFF,,Bounds forward in a surge. Adds pace for 4s.,,,,1.3,,,,,
+SP03,Muscle Up,SUPPORT,UNCOMMON,2,90,5,10,ANYTIME,BUFF,,For 3s your next challenge wins the shoulder charge.,,,,,,,,,
+SP04,Sharp Boots,SUPPORT,COMMON,1,88,4,8,ANYTIME,BUFF,,For 3s your next shot card gains success.,,,,,,,,,
+SP05,Radar Vision,SUPPORT,COMMON,1,90,4,8,ANYTIME,BUFF,,For 3s your next pass card gains success.,,,,,,,,,
+SP06,Calm Head,SUPPORT,COMMON,1,90,3,8,ANYTIME,BUFF,,For 3s your next card ignores pressure.,,,,,,,,,
+SP07,Second Wind,SUPPORT,UNCOMMON,2,88,5,13,ANYTIME,ACTION,,Restores stamina to the selected player.,,,,,,,,,
+SP08,Hot Streak,SUPPORT,RARE,3,80,10,17,ANYTIME,ACTION,,"After a success, your next card has a shorter cooldown.",,,,,,,,,
+SP09,Cooldown Pulse,SUPPORT,RARE,3,85,8,19,ANYTIME,BUFF,,Reduces the cooldown of your cards for 5s.,,,,,,,,,
+SP10,Reset Button,SUPPORT,RARE,2,80,10,17,ANYTIME,ACTION,,Instantly resets one card's cooldown.,,,,,,,,,
+SP11,Overdrive,SUPPORT,EPIC,3,78,12,21,ANYTIME,ACTION,,Doubles the length of your buff windows.,,,,,,,,,
+SP12,Focus Chain,SUPPORT,UNCOMMON,2,86,6,12,ANYTIME,ACTION,,Extends your active buff by 2s.,,,,,,,,,
+SP13,Stamina Boost,SUPPORT,COMMON,1,90,3,9,ANYTIME,BUFF,,Slows stamina drain for 6s.,,,,,,,,,
+SP14,Steady Hands,SUPPORT,COMMON,1,88,4,8,ANYTIME,BUFF,,For 3s your next keeper or defend card gains success.,,,,,,,,,
+SP15,Chest Out,SUPPORT,COMMON,1,90,3,8,ANYTIME,BUFF,,For 3s the player resists being knocked off the ball.,,,,,,,,,
+SP16,Cold Blood,SUPPORT,UNCOMMON,2,84,8,13,ANYTIME,BUFF,,A failed card adds no extra cooldown for 6s.,,,,,,,,,
+SP17,Rhythm,SUPPORT,COMMON,1,88,4,8,ANYTIME,BUFF,,For 3s your next dribble and pass flow into each other.,,,,,,,,,
+SP18,Pace Surge,SUPPORT,COMMON,1,88,4,7,ANYTIME,BUFF,,Raises top speed for 3s.,,,,1.25,,,,,
+SP19,Wide Open,SUPPORT,UNCOMMON,2,82,8,11,ANYTIME,ACTION,,Draws a defender away from your runner.,,,,,,,,,
+SP20,Rally the Team,SUPPORT,RARE,2,80,10,17,ANYTIME,BUFF,,Boosts team morale for 9s.,,,,,,,,,
+SP21,Captain's Orders,SUPPORT,RARE,3,84,8,19,ANYTIME,BUFF,,Orders two teammates to hold a role for 6s.,,,,,,,,,
+SP22,Warm Up,SUPPORT,COMMON,1,92,2,8,ANYTIME,ACTION,,The next card you play has a shorter cooldown.,,,,,,,,,
+SP23,Muscle Memory,SUPPORT,UNCOMMON,2,86,6,12,ANYTIME,ACTION,,A repeated card does not lose success.,,,,,,,,,
+SP24,Sixth Sense,SUPPORT,RARE,2,82,8,13,ANYTIME,ACTION,,Reveals the opponent's primed player.,,,,,,,,,
+SP25,Fresh Legs,SUPPORT,RARE,2,88,5,15,ANYTIME,ACTION,,Restores a tired player's pace.,,,,1.1,,,,,
+SP26,Decoy Run,SUPPORT,COMMON,1,80,8,8,ANYTIME,ACTION,,A teammate pulls defenders away.,,,,,,,,,
+SP27,Two Touch,SUPPORT,COMMON,1,90,3,7,ANYTIME,BUFF,,For 3s your next pass or shot needs only two touches.,,,,,,,,,
+SP28,Battle Ready,SUPPORT,UNCOMMON,2,86,6,11,ANYTIME,BUFF,,For 3s your next tackle card gains success.,,,,,,,,,
+SP29,Clean Slate,SUPPORT,UNCOMMON,2,82,6,12,ANYTIME,BUFF,,For 3s your next card carries no risk.,,,,,,,,,
+SP30,Warp Boots,SUPPORT,EPIC,3,76,14,21,ANYTIME,ACTION,,A short burst of pace at no stamina cost.,,,,1.6,,,,,
+DF01,Stand Tackle,DEFEND,COMMON,1,90,8,3,ENGAGEMENT,ACTION,DEF,Holds position and takes the ball cleanly.,,,,0.3,1,0.5,5,3,0.6
+DF02,Slide Tackle,DEFEND,EPIC,2,94,97,6,ENGAGEMENT,ACTION,DEF+PAC,Wins the ball but leaves you on the floor if it fails.,,,,1.2,1,1.4,6,0,1.2
+DF03,Poke Tackle,DEFEND,COMMON,1,66,14,3,ENGAGEMENT,ACTION,DEF,Pokes the ball away without committing.,,,,0.2,1.3,0.5,6,5,0.4
+DF04,Intercept Lane,DEFEND,COMMON,1,70,12,4,ENGAGEMENT,ACTION,DEF,Steps into the passing lane to cut it out.,,,,1.2,1,0.5,5,6,0.7
+DF05,Block Lane,DEFEND,COMMON,1,72,10,4,ENGAGEMENT,ACTION,DEF,Covers the shooting lane to block.,,,,0.6,1,0.5,5,5,0.7
+DF06,Tactical Foul,DEFEND,RARE,2,85,30,9,ENGAGEMENT,ACTION,DEF+PHY,Stops the play with a foul. Risks a booking.,,,,1,1,0.5,5,5,1
+DF07,Recovery Sprint,DEFEND,COMMON,1,76,10,6,ANYTIME,ACTION,DEF+PAC,Chases back at full pace.,,,,1.6,1,0.5,5,3,1.5
+DF08,Double Team,DEFEND,UNCOMMON,2,70,16,8,ENGAGEMENT,ACTION,DEF+PHY,A second defender closes in. Winning odds rise.,,,,1,1,0.5,5,5,0.7
+DF09,Offside Trap,DEFEND,RARE,2,64,28,11,ANYTIME,ACTION,DEF,The line steps up together.,,,,0.6,1,0.5,5,2,0.7
+DF10,Jockey,DEFEND,COMMON,1,82,8,3,ANYTIME,ACTION,DEF,Backs off and shadows the dribbler.,,,,0.7,1,0.5,5,9,1.5
+DF11,Press Trigger,DEFEND,UNCOMMON,2,72,16,7,ANYTIME,ACTION,DEF+PAC,Closes the ball carrier down at once.,,,,1.5,1,0.5,5,5,0.7
+DF12,Shirt Tug,DEFEND,UNCOMMON,1,68,24,6,ENGAGEMENT,ACTION,DEF+PHY,Slows a runner. Risks a foul.,,,,0.8,1,0.5,4,5,0.7
+DF13,Shoulder Charge,DEFEND,UNCOMMON,2,66,18,6,ENGAGEMENT,ACTION,DEF+PHY,Barges the carrier off the ball.,,,,1.1,1,0.8,4,5,0.8
+DF14,Clear the Lines,DEFEND,COMMON,1,88,6,4,ENGAGEMENT,ACTION,DEF+PHY,Hoofs it clear.,,,,0.3,1,0.5,5,5,0.7
+DF15,Last Ditch Block,DEFEND,RARE,2,60,20,8,ENGAGEMENT,ACTION,DEF+PHY,Throws the body in front of the shot.,,,,1.2,1,1.2,7,1,1
+DF16,Header Clear,DEFEND,COMMON,1,82,8,4,ENGAGEMENT,ACTION,PHY+DEF,Heads a cross away.,,,,0.3,1,0.5,6,5,0.7
+DF17,Cut Out Cross,DEFEND,UNCOMMON,1,70,12,5,ENGAGEMENT,ACTION,DEF,Moves to cut the cross off.,,,,1,1,0.5,6,5,0.7
+DF18,Snuff Out,DEFEND,UNCOMMON,2,72,16,7,ENGAGEMENT,ACTION,DEF,Smothers the dribbler before the touch.,,,,1.3,1,0.5,5,5,0.7
+DF19,Shadow Marking,DEFEND,COMMON,1,84,6,4,ANYTIME,ACTION,DEF,Sticks tight to a runner.,,,,0.9,1,0.5,5,9,2
+DF20,Zonal Cover,DEFEND,COMMON,1,86,6,5,ANYTIME,ACTION,DEF,Covers a zone and picks up arrivals.,,,,0.6,1,0.5,5,7,2
+DF21,Drop Deep,DEFEND,COMMON,1,90,4,5,ANYTIME,ACTION,DEF+PAC,Drops the line to stop a through ball.,,,,1.2,1,0.5,5,4,0.7
+DF22,Step Up,DEFEND,COMMON,1,74,12,5,ANYTIME,ACTION,DEF,Pushes the line up as one.,,,,1.2,1,0.5,5,4,0.7
+DF23,Ball Hawk,DEFEND,RARE,2,66,18,8,ENGAGEMENT,ACTION,DEF,Reads the next pass and leaps in.,,,,1.3,1,0.5,6,8,0.7
+DF24,Body Block,DEFEND,COMMON,1,76,10,4,ENGAGEMENT,ACTION,DEF+PHY,Shields the carrier from passing.,,,,0.5,1,0.5,4,3,0.8
+DF25,Shadow Press,DEFEND,UNCOMMON,2,70,14,7,ANYTIME,ACTION,DEF,Cuts the passing options of the ball carrier.,,,,1.1,1,0.5,5,8,1.5
+DF26,Rotate Cover,DEFEND,UNCOMMON,2,72,12,6,ANYTIME,ACTION,DEF,Swaps with a teammate to cover the space.,,,,1.1,1,0.5,5,6,0.7
+DF27,Poacher's Guard,DEFEND,UNCOMMON,2,70,14,7,ANYTIME,ACTION,DEF,Tracks the nearest striker.,,,,0.7,1,0.5,5,7,0.7
+DF28,Rescue Tackle,DEFEND,RARE,2,70,20,8,ENGAGEMENT,ACTION,DEF,A desperate stretch to win it back.,,,,1.5,1,1.3,6,1,1.2
+DF29,Sweep,DEFEND,EPIC,3,56,28,11,ENGAGEMENT,ACTION,DEF+PAC,Charges out of the line to clean up.,,,,1.2,1,1.2,6,5,0.7
+DF30,Clean Sheet Wall,DEFEND,RARE,3,64,14,15,ANYTIME,ACTION,DEF,The defence blocks everything for 4s.,,,,0.4,1,0.5,7,5,2
+DF31,Fox in the Box,DEFEND,UNCOMMON,2,74,12,8,ANYTIME,ACTION,DEF,Pins a striker in the box.,,,,0.9,1,0.5,5,5,0.7
+DF32,Backheel Clear,DEFEND,RARE,2,58,22,6,ENGAGEMENT,ACTION,DEF+PHY,Flicks it clear off the line.,,,,0.2,1,0.5,4,5,0.5
+DF33,Trap the Winger,DEFEND,UNCOMMON,2,70,16,8,ANYTIME,ACTION,DEF,Forces the winger inside.,,,,1,1,0.5,5,8,0.7
+DF34,Tight Squeeze,DEFEND,RARE,2,68,18,8,ANYTIME,ACTION,DEF,Squeezes space for a dribbler.,,,,0.7,1,0.5,4,6,0.7
+DF35,Crunching Block,DEFEND,EPIC,3,62,28,12,ENGAGEMENT,ACTION,DEF+PHY,A heavy block that might hurt.,,,,0.9,1,0.6,5,5,0.9
+GK01,Set Stance,KEEPER,COMMON,1,90,3,3,ANYTIME,ACTION,POS,Gets balanced and ready for the save.,,,,0.2,1,0,5,6,1.5
+GK02,Reach Dive,KEEPER,UNCOMMON,2,68,18,6,ENGAGEMENT,ACTION,REF,Stretches to the corner for a curler.,,,,0,1,1.2,8,0,1.3
+GK03,Smother,KEEPER,RARE,2,72,24,8,ENGAGEMENT,ACTION,HAN+POS,Rushes out to close the angle.,,,,1,1,1,6,1,1.1
+GK04,Punch Clear,KEEPER,COMMON,1,78,12,5,ENGAGEMENT,ACTION,HAN,Punches the cross away.,,,,0.3,1,1,8,1,0.9
+GK05,Claim Cross,KEEPER,RARE,2,70,20,7,ENGAGEMENT,ACTION,HAN+POS,Claims the cross high.,,,,0.8,1,1,9,1,1
+GK06,Sweeper Rush,KEEPER,EPIC,3,60,30,11,ENGAGEMENT,ACTION,POS+PAC,Sprints out to clear the through ball.,,,,1.5,1,1,7,3,0.9
+GK07,Quick Throw,KEEPER,COMMON,1,86,8,3,ENGAGEMENT,ACTION,PAS,Throws it out to start an attack.,,,,0,1.3,0,6,1,0.4
+GK08,Big Hands,KEEPER,UNCOMMON,2,76,18,8,ENGAGEMENT,ACTION,HAN,Holds the ball instead of parrying it.,,,,0.3,1,1,9,1,0.9
+GK09,Low Dive,KEEPER,COMMON,1,72,12,4,ENGAGEMENT,ACTION,REF,Gets down fast to a low shot.,,,,0,1,1,7,1,0.9
+GK10,High Palm,KEEPER,RARE,2,66,20,7,ENGAGEMENT,ACTION,REF,Tips it over the bar.,,,,0,1,1,9,1,0.9
+GK11,Backpedal,KEEPER,UNCOMMON,1,64,18,5,ENGAGEMENT,ACTION,POS,Retreats to cover the chip.,,,,0.7,1,0.5,6,6,0.8
+GK12,Starfish,KEEPER,RARE,2,62,22,8,ENGAGEMENT,ACTION,REF+POS,Spreads big in a one on one.,,,,0.5,1,0.4,8,1,0.9
+GK13,Parry Stance,KEEPER,UNCOMMON,1,74,12,5,ANYTIME,ACTION,POS,Positions to parry rather than catch.,,,,0.2,1,1,7,5,1.5
+GK14,Kick Save,KEEPER,EPIC,3,52,30,11,ENGAGEMENT,ACTION,REF,Sticks out a leg for a close range save.,,,,0.3,1.2,1,6,1,0.7
+GK15,Command the Line,KEEPER,COMMON,1,86,4,3,ANYTIME,ACTION,POS,Pushes the defence up from behind.,,,,0.5,1,0.3,6,6,1.5
+GK16,Long Kick,KEEPER,COMMON,1,70,12,4,ENGAGEMENT,ACTION,PAS+PHY,Kicks long to the striker.,,,,0,0.9,0,6,1,1
+GK17,Roll Out,KEEPER,COMMON,1,90,4,3,ENGAGEMENT,ACTION,PAS,Rolls it short to a defender.,,,,0,1.1,0,6,1,0.9
+GK18,Throw Long,KEEPER,UNCOMMON,2,68,14,6,ENGAGEMENT,ACTION,PAS+PHY,Hurls it to the winger.,,,,0,0.9,0,6,1,0.9
+GK19,Read the Run,KEEPER,UNCOMMON,2,70,14,8,ANYTIME,ACTION,POS,Anticipates the through ball.,,,,0.6,1,0.3,6,7,1.5
+GK20,Cat Reflexes,KEEPER,RARE,3,58,20,13,ENGAGEMENT,ACTION,REF,A reflex save to a close shot.,,,,0,1.4,1,7,1,0.7
+GK21,Dominate Box,KEEPER,UNCOMMON,2,72,16,8,ANYTIME,ACTION,HAN+POS,Takes charge of the box on a corner.,,,,0.6,1,0.5,9,5,0.9
+GK22,Near Post Guard,KEEPER,COMMON,1,76,10,4,ANYTIME,ACTION,POS,Covers the near post.,,,,0.3,1,1,6,5,0.9
+GK23,Far Post Reach,KEEPER,UNCOMMON,2,66,18,6,ANYTIME,ACTION,POS,Moves to cover the far post.,,,,0.3,1,1,8,3,0.9
+GK24,Fingertip Save,KEEPER,RARE,3,56,24,12,ENGAGEMENT,ACTION,REF,Gets a fingertip to a curler.,,,,0,1,1,9,1,1
+GK25,Rebound Clear,KEEPER,COMMON,1,80,8,4,ENGAGEMENT,ACTION,HAN,Pushes the loose ball away from danger.,,,,0.8,1,1,6,1,0.8
+TT01,Zip Zap,TITAN,EPIC,6,88,10,60,ENGAGEMENT,ACTION,PAC+DRI,Teleports past three defenders in a burst of lightning.,,,,2.5,1,1,6,6,3
+TT02,Gravity Cannon,TITAN,EPIC,6,82,22,60,ENGAGEMENT,ACTION,SHO+PHY,The ball crushes under its own weight. Pace no keeper can hold.,,,,0,1,1,8,5,2
+TT03,Eagle's Eye,TITAN,EPIC,5,95,2,75,ANYTIME,ACTION,,See every card the opponent holds for 6s.,,,,0.8,1,1,6,8,6
+TT04,Triple Weave,TITAN,EPIC,6,80,14,65,ENGAGEMENT,ACTION,DRI+PAS,Dribbles past three defenders in slow motion.,,,,0.9,0.6,1,6,9,4
+TT05,Bicycle Kick,TITAN,EPIC,5,56,28,60,ENGAGEMENT,ACTION,SHO+DRI,A spectacular overhead strike.,,,,0,1,0.5,8,5,1.5
+TT06,Time Stop,TITAN,LEGEND,8,90,6,90,ANYTIME,ACTION,,Freezes the pitch for 3s while you plan.,,,,2.5,1,1,6,9,4
+TT07,Rocket Legs,TITAN,EPIC,5,86,10,65,ANYTIME,ACTION,SHO+PAC,A massive sprint that outpaces everyone.,,,,1.8,1,1,6,5,5
+TT08,Iron Wall,TITAN,LEGEND,6,84,8,70,ANYTIME,ACTION,DEF+PHY,Your defence becomes unbreakable for 4s.,,,,0.6,1,1,8,5,5
+TT09,Phantom Pass,TITAN,EPIC,5,78,16,65,ENGAGEMENT,ACTION,PAS,A pass that cannot be intercepted.,,,,0.2,1,1,6,5,1.2
+TT10,Hundred Yard Strike,TITAN,LEGEND,6,60,24,70,ENGAGEMENT,ACTION,SHO+PAS,A shot from anywhere that swerves round everything.,,,,0,0.9,1,10,5,1.5
+TT11,Dragon Header,TITAN,EPIC,5,68,22,65,ENGAGEMENT,ACTION,SHO+PHY,A header with power no keeper can stop.,,,,0.4,1,1,9,5,1.2
+TT12,Steel Goalkeeper,TITAN,LEGEND,6,82,10,75,ANYTIME,ACTION,REF+HAN,Your keeper saves anything for 4s.,,,,0.6,1,1,10,6,5
+TT13,Earthquake Tackle,TITAN,EPIC,5,76,20,65,ENGAGEMENT,ACTION,DEF+PHY,A tackle that shakes the ground and floors nearby players.,,,,1,1,1,9,5,1.5
+TT14,Wind Walk,TITAN,EPIC,5,82,12,60,ENGAGEMENT,ACTION,PAC+DRI,A dribble that cannot be tackled for 4s.,,,,1.5,1,1,6,8,4
+TT15,Meteor Shot,TITAN,LEGEND,6,64,24,70,ENGAGEMENT,ACTION,SHO+PHY,A shot that dips late and burns the keeper.,,,,0,1,1,6,5,1.5
+TT16,Chain Lightning,TITAN,EPIC,5,80,12,65,ENGAGEMENT,ACTION,PAS+DRI,Passes jump between three teammates in an instant.,,,,0.3,1,1,6,5,2
+TT17,Black Hole,TITAN,LEGEND,6,74,18,75,ENGAGEMENT,ACTION,DEF+PHY,Pulls nearby defenders toward you.,,,,0,1,1,10,5,2.5
+TT18,Mirror Match,TITAN,EPIC,5,70,14,65,ENGAGEMENT,ACTION,DRI+DEF,Copies the opponent's last card.,,,,1,1,1,6,6,4
+TT19,Second Heart,TITAN,LEGEND,5,90,6,80,ANYTIME,ACTION,,Restores all stamina to the team.,,,,1,1,1,6,5,5
+TT20,Titan Slide,TITAN,EPIC,5,78,24,65,ENGAGEMENT,ACTION,DEF+PAC,A slide that cannot miss but leaves you stranded.,,,,1.4,1,1.8,9,1,1.5
+TT21,Skyfall,TITAN,EPIC,6,62,26,70,ENGAGEMENT,ACTION,SHO+PHY,A lofted ball drops like a meteor from above.,,,,0.3,1,1,10,5,2
+TT22,Lock On,TITAN,EPIC,4,85,8,60,ANYTIME,ACTION,SHO+PAS,Your next shot cannot miss the target.,,,,0.5,1,1,6,5,3
+TT23,Dream Team,TITAN,LEGEND,7,80,10,90,ANYTIME,ACTION,,All teammates move in perfect sync for 5s.,,,,1,1,1,6,5,5
+TT24,Reality Bend,TITAN,LEGEND,7,72,20,90,ANYTIME,ACTION,,Rewinds your last play and tries again.,,,,1,1,1,6,5,3
+TT25,Chaos Control,TITAN,LEGEND,6,70,22,75,ANYTIME,ACTION,,Scrambles the opponent's cooldowns for 4s.,,,,1,1,1,6,5,4
