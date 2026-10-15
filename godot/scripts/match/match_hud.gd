@@ -9,6 +9,13 @@ extends CanvasLayer
 signal menu_chosen(id: String)          ## an order button was pressed ("through", "run", "press", "tackle")
 signal card_pressed(index: int)         ## a card in the hand was clicked
 
+## size of the cards in the hand (1 = the full 64 x 90 card)
+@export_range(0.4, 1.0) var card_scale := 0.75
+## size of the hover tooltip (the card's tooltip image x this)
+@export_range(1.0, 4.0) var tooltip_scale := 1.5
+
+signal team_command(id: String)         ## a team command button was pressed
+
 const PITCH_H := 420.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
 const CONTROLS := "MOUSE\ndouble click mate: pass\nright click: lob\ndrag from ball carrier: shoot\ndrag from player: run\nclick player: orders\nEsc: cancel\n\nPAD\nstick pointer, Cross click\nSquare lob, hold Triangle drag\nCircle cancel"
 const ORDERS := ["through", "run", "press", "tackle"]
@@ -19,6 +26,8 @@ var _hint_base := ""
 var _order_buttons := {}
 var _who: Label
 var _hand: HBoxContainer
+var _team_grid: GridContainer
+var _team_note: Label
 var _cards: Array[SkillCard] = []
 var _hint: Label
 var _overlay: Control
@@ -86,14 +95,30 @@ func _ready() -> void:
 	_msg.custom_minimum_size = Vector2(600, 0)
 	_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var controls := _label(root, 8)
-	controls.position = Vector2(776, PITCH_H + 4)
+	controls.position = Vector2(790, PITCH_H + 4)
 	controls.text = CONTROLS
 	controls.modulate = Color(1, 1, 1, 0.75)
 	_hand = HBoxContainer.new()
 	_hand.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_hand.add_theme_constant_override("separation", 6)
+	_hand.add_theme_constant_override("separation", 4)
 	_hand.position = Vector2(208, PITCH_H + 12)
 	root.add_child(_hand)
+	# team commands (orders for the whole side): the room is here, the commands come next
+	var team_x := 208.0 + 8.0 * 64.0 * card_scale + 7.0 * 4.0 + 14.0
+	var team_title := _label(root, 9)
+	team_title.text = "TEAM"
+	team_title.position = Vector2(team_x, PITCH_H + 4)
+	_team_grid = GridContainer.new()
+	_team_grid.columns = 2
+	_team_grid.position = Vector2(team_x, PITCH_H + 20)
+	_team_grid.add_theme_constant_override("h_separation", 4)
+	_team_grid.add_theme_constant_override("v_separation", 4)
+	_team_grid.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(_team_grid)
+	_team_note = _label(root, 8)
+	_team_note.text = "no commands yet"
+	_team_note.position = Vector2(team_x, PITCH_H + 22)
+	_team_note.modulate = Color(1, 1, 1, 0.5)
 
 func _label(parent: Node, size: int) -> Label:
 	var l := Label.new()
@@ -132,9 +157,12 @@ func set_hand(rows: Array) -> void:
 	_cards.clear()
 	var i := 1
 	for r in rows:
-		var box := VBoxContainer.new()
+		var box := Control.new()
 		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.custom_minimum_size = Vector2(64, 90) * card_scale
 		var card := SkillCard.new_card(String(r["id"]))
+		card.scale = Vector2.ONE * card_scale
+		card.tooltip_scale = tooltip_scale
 		box.add_child(card)
 		_hand.add_child(box)
 		_cards.append(card)
@@ -149,6 +177,20 @@ func set_cooldowns(cd: Dictionary) -> void:
 		if _cards[i].cooldown_left != left:
 			_cards[i].cooldown_left = left
 			if left == 0: _cards[i].play("cooldown_end")
+
+## the team command buttons: [{"id": "press_high", "label": "PRESS HIGH"}, ...]. Pressing one emits team_command(id). An empty list shows "no commands yet".
+func set_team_commands(commands: Array) -> void:
+	for c in _team_grid.get_children(): c.queue_free()
+	_team_note.visible = commands.is_empty()
+	for cmd in commands:
+		var b := Button.new()
+		b.text = String(cmd["label"])
+		b.custom_minimum_size = Vector2(64, 20)
+		b.add_theme_font_size_override("font_size", 8)
+		b.focus_mode = Control.FOCUS_NONE
+		var id := String(cmd["id"])
+		b.pressed.connect(func(): team_command.emit(id))
+		_team_grid.add_child(b)
 
 # ---- orders: menu, hint, selection ring, drag and aim lines
 ## light up the order buttons that make sense for the selected player (an empty list greys them all)

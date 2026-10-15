@@ -19,6 +19,8 @@ const SCENE := "res://scenes/cards/skill_card.tscn"
 	set(v):
 		fx_scale = v
 		queue_redraw()
+## how big the hover tooltip is drawn (its image pixels x this)
+@export_range(1.0, 4.0) var tooltip_scale := 3.0
 ## cooldown turns left, drawn on the card while > 0
 @export var cooldown_left := 0:
 	set(v):
@@ -66,7 +68,7 @@ func _make_custom_tooltip(_for_text: String) -> Object:
 	var r := TextureRect.new()
 	r.texture = t
 	r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	r.custom_minimum_size = t.get_size() * 3
+	r.custom_minimum_size = t.get_size() * tooltip_scale
 	r.stretch_mode = TextureRect.STRETCH_SCALE
 	r.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	return r

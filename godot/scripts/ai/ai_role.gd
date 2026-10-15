@@ -6,6 +6,7 @@ extends RefCounted
 ##   _defend      the opponent has the ball      _loose     nobody has it             _receive   a pass is coming to him
 ## Formations: AiContext carries the formation id / family and its numbers (line height, width, compactness, press, overlap, directness, counter, risk, all 0..1) and
 ## the player's slot style (data/styles.csv). Use `match c.family:` / `match c.formation_id:` inside a role to react to the formation.
+## Where to stand: use the pitch map by name, e.g. _go(c, c.spot("left_half_space_high"), c.s.jog_factor), c.in_zone(f.pos, "opp_box"), c.zone("final_third_left") (data/pitch_zones.csv, pitch_spots.csv).
 ## Positions in the team shape come from home_spot(): slot + style offset for the phase + the team line + a slide towards the ball. Everything tweakable is in MatchSettings.
 
 ## how much of the team line's push he follows (0 = stays back, 1 = goes with it)

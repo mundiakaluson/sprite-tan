@@ -1,0 +1,22 @@
+id,name,x0,y0,x1,y1,note
+own_third,Own third,0,0,100,33.3,defensive third
+mid_third,Middle third,0,33.3,100,66.7,
+final_third,Final third,0,66.7,100,100,attacking third
+own_half,Own half,0,0,100,50,
+opp_half,Opponent half,0,50,100,100,
+left_wing,Left wing,0,0,20,100,the left touchline lane (the team faces the opponent goal)
+left_half_space,Left half space,20,0,35,100,between wing and centre
+centre,Centre,35,0,65,100,
+right_half_space,Right half space,65,0,80,100,
+right_wing,Right wing,80,0,100,100,
+own_box,Own penalty box,20.5,0,79.5,15.7,
+own_six,Own six-yard box,36,0,64,5.2,
+own_box_edge,Edge of own box,25,15.7,75,22,where the screen sits
+opp_box,Opponent penalty box,20.5,84.3,79.5,100,
+opp_six,Opponent six-yard box,36,94.8,64,100,
+opp_box_edge,Edge of opponent box,25,78,75,84.3,"shooting zone, cut-back target"
+centre_circle,Centre circle,36.5,41.3,63.5,58.7,
+own_third_left,"Own third, left",0,0,50,33.3,
+own_third_right,"Own third, right",50,0,100,33.3,
+final_third_left,"Final third, left",0,66.7,50,100,
+final_third_right,"Final third, right",50,66.7,100,100,

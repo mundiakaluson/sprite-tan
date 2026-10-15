@@ -46,6 +46,22 @@ func refresh() -> void:
 	ball_vel = Vector2(game.ball.phys.vel.x, game.ball.phys.vel.z)
 	has_ball = carrier != null and carrier.team == team
 
+# ---- the pitch map (data/pitch_zones.csv, pitch_spots.csv), seen from this team's side
+func spot(id: String) -> Vector2:
+	return PitchMap.spot(id, dir)
+
+func zone(id: String) -> Rect2:
+	return PitchMap.rect(id, dir)
+
+func zone_centre(id: String) -> Vector2:
+	return PitchMap.centre(id, dir)
+
+func in_zone(pos: Vector2, id: String) -> bool:
+	return PitchMap.contains(id, pos, dir)
+
+func zones_at(pos: Vector2) -> Array:
+	return PitchMap.zones_at(pos, dir)
+
 ## formation number (0..1), e.g. f("press")
 func f(key: String, d := 0.5) -> float:
 	return float(form.get(key, d))
