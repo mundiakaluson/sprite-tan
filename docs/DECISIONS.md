@@ -61,3 +61,8 @@ The old titan/titan_zap.py and titan_demo.py are kept as the original reference.
   move_mult (ground speed x PAC during the card, 1 = normal, 0 = planted), anim_rate (playback speed, shorter or longer commitment), travel (scale on root travel, e.g. slide length),
   reach (boot / hand zone size 0-10), steer (how much the player can change direction mid-card 0-10), lock (seconds committed before acting again).
   For SUPPORT buffs only move_mult is set (SP02 1.3, SP18 1.25, SP25 1.1, SP30 1.6) and applies while the buff lasts. Stats scale them the way they scale the ball variables.
+
+## BASE ANIMATIONS (decided, not built yet)
+- Set: idle, walk, jog, tired run, sprint (separate animations, no blended gait), jump (crouch / take-off / air / land), fall (forward / back / side), get-up (one for every fall), stumble (DIRECTIONAL, a few sizes), recover step, stun (for skills that stun), pain / limp state (after a heavy fall).
+- Strength: the game compares the hit (and the pressed player's speed) with PHY. Outcomes: held (shoulder rock only) / stumble / knocked off the ball (still standing) / fall. A strong player mostly shows "held", a weak one "fall". Chest Out lifts the outcome one level.
+- Build order proposed: idle, walk, jog, tired run -> stumble / knocked off / fall / get-up -> jump -> stun and pain / limp. Waiting for the user's go.
