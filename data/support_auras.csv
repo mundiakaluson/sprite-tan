@@ -1,31 +1,31 @@
 id,name,scope,color,shape,duration_s,overlay,side,note
-SP01,Tiger Legs,self,#ff9a2e,glow_legs,3,,,aura on the legs
-SP02,Leap Sprint,self,#ffd23e,glow,4,,,
-SP03,Muscle Up,self,#e5483b,glow,3,,,
-SP04,Sharp Boots,self,#ffd23e,glow_legs,3,,,
-SP05,Radar Vision,self,#3ec6ff,ring,3,scan,R,
-SP06,Calm Head,self,#8fd9ff,glow,3,,,
-SP07,Second Wind,self,#5be37d,pulse,1,,,restores stamina
-SP08,Hot Streak,self,#ff6a2e,glow,3,,,
-SP09,Cooldown Pulse,team,#3ec6ff,pulse,5,,,
-SP10,Reset Button,self,#c9b6ff,flash,1,,,
-SP11,Overdrive,team,#ff3ec6,pulse,6,,,
-SP12,Focus Chain,self,#c9b6ff,glow,2,,,
-SP13,Stamina Boost,self,#5be37d,glow,6,,,
-SP14,Steady Hands,self,#ffffff,glow,3,,,
-SP15,Chest Out,self,#ffd23e,ring,3,,,
-SP16,Cold Blood,self,#8fd9ff,ring,6,,,
-SP17,Rhythm,self,#ff3ec6,glow,3,,,
-SP18,Pace Surge,self,#3ec6ff,glow_legs,3,,,
-SP19,Wide Open,target,#ffffff,ring,3,point,R,runner
-SP20,Rally the Team,team,#ffd23e,pulse,9,fist,R,
-SP21,Captain's Orders,two,#ffd23e,ring,6,point,R,two teammates
-SP22,Warm Up,self,#ff9a2e,glow,2,,,
-SP23,Muscle Memory,self,#c9b6ff,glow,3,,,
-SP24,Sixth Sense,opponent,#ff3e3e,ring,3,raise,R,primed opponent
-SP25,Fresh Legs,self,#5be37d,glow_legs,3,,,
-SP26,Decoy Run,target,#ffffff,ring,3,point,L,runner
-SP27,Two Touch,self,#ffd23e,glow,3,,,
-SP28,Battle Ready,self,#e5483b,glow,3,,,
-SP29,Clean Slate,self,#ffffff,flash,3,,,
-SP30,Warp Boots,self,#3ec6ff,glow_legs,2,,,
+SP01,Tiger Legs,self,#ff9a2e,tiger,3,,,aura on the legs
+SP02,Leap Sprint,self,#ffd23e,leap,4,,,
+SP03,Muscle Up,self,#e5483b,muscle,3,,,
+SP04,Sharp Boots,self,#ffd23e,boots,3,,,
+SP05,Radar Vision,self,#3ec6ff,radar,3,scan,R,
+SP06,Calm Head,self,#8fd9ff,calm,3,,,
+SP07,Second Wind,self,#5be37d,wind,1,,,restores stamina
+SP08,Hot Streak,self,#ff6a2e,streak,3,,,
+SP09,Cooldown Pulse,team,#3ec6ff,clock,5,,,
+SP10,Reset Button,self,#c9b6ff,reset,1,,,
+SP11,Overdrive,team,#ff3ec6,overdrive,6,,,
+SP12,Focus Chain,self,#c9b6ff,chain,2,,,
+SP13,Stamina Boost,self,#5be37d,stamina,6,,,
+SP14,Steady Hands,self,#ffffff,hands,3,,,
+SP15,Chest Out,self,#ffd23e,shield,3,,,
+SP16,Cold Blood,self,#8fd9ff,frost,6,,,
+SP17,Rhythm,self,#ff3ec6,rhythm,3,,,
+SP18,Pace Surge,self,#3ec6ff,surge,3,,,
+SP19,Wide Open,target,#ffffff,beacon,3,point,R,runner
+SP20,Rally the Team,team,#ffd23e,rally,9,fist,R,
+SP21,Captain's Orders,two,#ffd23e,orders,6,point,R,two teammates
+SP22,Warm Up,self,#ff9a2e,warm,2,,,
+SP23,Muscle Memory,self,#c9b6ff,memory,3,,,
+SP24,Sixth Sense,opponent,#ff3e3e,sense,3,raise,R,primed opponent
+SP25,Fresh Legs,self,#5be37d,fresh,3,,,
+SP26,Decoy Run,target,#ffffff,decoy,3,point,L,runner
+SP27,Two Touch,self,#ffd23e,two_touch,3,,,
+SP28,Battle Ready,self,#e5483b,battle,3,,,
+SP29,Clean Slate,self,#ffffff,clean,3,,,
+SP30,Warp Boots,self,#3ec6ff,warp,2,,,

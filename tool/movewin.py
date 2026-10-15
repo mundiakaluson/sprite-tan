@@ -9,6 +9,7 @@ import gen_uv as U
 import custom_anims as C
 import moves as M
 import aura
+import aurafx
 import overlays
 
 KITS = ['home', 'away']
@@ -110,18 +111,20 @@ class MovePanel(ttk.Frame):
         ball = self.ball.get() and self.poses[self.f].get('bvis', 0) > 0.5
         under, gh, body, over = self.parts(self.f, d, ball, self.foot.get(), self.wq())
         ar = aura.row(self.card['id']) if self.card else None
-        bg = U.bg_pitch(U.CW, U.CH); bg.alpha_composite(under)
+        cell = Image.new('RGBA', (U.CW, U.CH), (0, 0, 0, 0)); cell.alpha_composite(under)
+        if gh is not None: cell.alpha_composite(gh)
+        cell.alpha_composite(body); cell.alpha_composite(over)
         if ar:
-            au, ao = aura.layers(ar, self.tc, U.CW, U.CH); bg.alpha_composite(au)
-            if ar['scope'] in ('target', 'two', 'opponent'): bg.alpha_composite(aura.marker(ar, self.tc, U.CW, U.CH, 33, 31))
-            if ar['scope'] == 'two': bg.alpha_composite(aura.marker(ar, self.tc, U.CW, U.CH, 7, 31))
-        if gh is not None: bg.alpha_composite(gh)
-        bg.alpha_composite(body); bg.alpha_composite(over)
-        if ar: bg.alpha_composite(ao)
-        self._img = ImageTk.PhotoImage(bg.resize((int(U.CW * self.S), int(U.CH * self.S)), Image.NEAREST))
+            au, ao = aurafx.layers(ar, self.tc)                                                  # support effects get a larger stage than the 40x40 sprite cell
+            bg = U.bg_pitch(aurafx.W, aurafx.H); bg.alpha_composite(au); bg.alpha_composite(cell, (aurafx.PAD, aurafx.PAD)); bg.alpha_composite(ao)
+        else:
+            bg = U.bg_pitch(U.CW, U.CH); bg.alpha_composite(cell)
+        wh = (int(bg.width * self.S), int(bg.height * self.S))
+        if (int(self.cv['width']), int(self.cv['height'])) != wh: self.cv.config(width=wh[0], height=wh[1])
+        self._img = ImageTk.PhotoImage(bg.resize((int(bg.width * self.S), int(bg.height * self.S)), Image.NEAREST))
         self.cv.create_image(0, 0, anchor='nw', image=self._img)
         self.cv.create_text(6, 6, anchor='nw', fill='white', text=f"{self.a['label']}  {self.f + 1}/{len(self.poses)}  angle {d}")
-        if ar: self.cv.create_text(6, int(U.CH * self.S) - 6, anchor='sw', fill=ar['color'], text=f"aura: {ar['scope']}, {ar['shape']}, {ar['duration_s']}s")
+        if ar: self.cv.create_text(6, wh[1] - 6, anchor='sw', fill=ar['color'], text=f"aura: {ar['scope']}, {ar['shape']}, {ar['duration_s']}s")
 
     def warm(self, gen):
         """pre-render the uncached frames of the current angle a few at a time, so playback never stalls on first view"""
