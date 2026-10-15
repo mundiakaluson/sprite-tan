@@ -39,6 +39,9 @@ Scenes mirror scripts: `scenes/<feature>/` next to `scripts/<feature>/` (`scenes
 
 Put new features in their own folder (for example `scripts/match/`, `scripts/ai/`, `scripts/ui/`), not in the scripts root.
 
+### Previewing in the editor
+Open `scenes/players/player.tscn`, select the `Sprite` node and use **Editor preview** in the inspector: `player_id`, `preview_clip` (dropdown of every baked clip, animated) and `preview_dir` (0-31). Cards: select the root node and set `player_id`. All of this needs an export first and does nothing in game.
+
 ### Player states (edit them in the inspector)
 `scenes/players/player.tscn` is the player: `Sprite` + `StateMachine`, and every state is a **child node of StateMachine**. The node's name is the state's name. The machine finds its children by itself; pick the start state in its `initial_state`.
 

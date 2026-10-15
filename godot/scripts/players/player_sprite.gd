@@ -1,3 +1,4 @@
+@tool
 class_name PlayerSprite
 extends Sprite2D
 ## One animated, recoloured player. Sheets are frames across x direction rows (32 dirs, 40x40 cells). The shader reads the
@@ -5,6 +6,23 @@ extends Sprite2D
 ## usage: var p := PlayerSprite.new(); add_child(p); p.setup("PL242"); p.play("run"); p.face(8)   # dir 8 = screen right, 16 = toward the camera
 
 const SHADER := preload("res://shaders/uv_skin.gdshader")
+@export_group("Editor preview")
+## player whose look is shown (in game the Player sets this itself)
+@export var player_id := "PL242":
+	set(v):
+		player_id = v
+		_preview()
+## any baked clip; the dropdown lists them all
+@export var preview_clip := "base_idle":
+	set(v):
+		preview_clip = v
+		_preview()
+@export_range(0, 31) var preview_dir := 16:
+	set(v):
+		preview_dir = v
+		_preview()
+@export_group("")
+
 var anim := "run"
 var dir := 16
 var fidx := 0
@@ -22,10 +40,30 @@ func _init() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	region_enabled = true
 
-func setup(player_id: String) -> void:
+func _validate_property(property: Dictionary) -> void:
+	if property.name == "preview_clip":
+		var names: Array = Data.anims.get("animations", {}).keys()
+		if names.is_empty(): return
+		names.sort()
+		property.hint = PROPERTY_HINT_ENUM
+		property.hint_string = ",".join(names)
+
+func _ready() -> void:
+	_preview()
+
+## editor only: show the chosen player doing the chosen clip so the scene is not blank
+func _preview() -> void:
+	if not Engine.is_editor_hint() or not is_inside_tree(): return
+	if not Data.ok: Data.reload()
+	if not Data.ok: return
+	setup(player_id)
+	play(preview_clip)
+	face(preview_dir)
+
+func setup(pid: String) -> void:
 	var m := ShaderMaterial.new()
 	m.shader = SHADER
-	var skin := Data.tex("looks/%s.png" % player_id)
+	var skin := Data.tex("looks/%s.png" % pid)
 	if skin != null: m.set_shader_parameter("skin", skin)
 	material = m
 	var o: Array = Data.anims.get("origin", [20, 30])
