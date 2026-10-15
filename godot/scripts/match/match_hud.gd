@@ -2,25 +2,25 @@ class_name MatchHud
 extends CanvasLayer
 ## Match HUD (built in code, so the scene stays one node). The pitch has its own area (the top 420 px of the 960 x 540 game viewport, a SubViewport in match.tscn);
 ## the HUD lives in the strip below it so nothing covers the play: score / clock / selected player / hint on the left, the hand of skill cards in the middle,
-## the controls on the right. Only short messages (GOAL!, KICK OFF), the order menu and the aim lines are drawn over the pitch.
+## the controls on the right. No pop-ups: the order buttons live in the strip (they light up for the selected player). Only short messages (GOAL!, KICK OFF),
+## the selection ring and the aim lines are drawn over the pitch.
 ## Cards are the real SkillCard faces; the number on a card is its cooldown in seconds.
 
-signal menu_chosen(id: String)          ## an order button was pressed ("pass", "through", "lob", "shoot", "run", "press", "tackle")
+signal menu_chosen(id: String)          ## an order button was pressed ("through", "run", "press", "tackle")
 signal card_pressed(index: int)         ## a card in the hand was clicked
 
 const PITCH_H := 420.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
 const CONTROLS := "MOUSE\ndouble click mate: pass\nright click: lob\ndrag from ball carrier: shoot\ndrag from player: run\nclick player: orders\nEsc: cancel\n\nPAD\nstick pointer, Cross click\nSquare lob, hold Triangle drag\nCircle cancel"
-const LABELS := {"through": "THROUGH", "run": "RUN", "press": "PRESS", "tackle": "TACKLE"}
+const ORDERS := ["through", "run", "press", "tackle"]
 
 var _score: Label
 var _msg: Label
-var _toast: Label
+var _hint_base := ""
+var _order_buttons := {}
 var _who: Label
 var _hand: HBoxContainer
 var _cards: Array[SkillCard] = []
 var _hint: Label
-var _menu: PanelContainer
-var _menu_box: VBoxContainer
 var _overlay: Control
 var selected_node: Node2D
 var drag_from := Vector2.ZERO
@@ -55,16 +55,30 @@ func _ready() -> void:
 	line.size = Vector2(960, 2)
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(line)
-	_score = _label(root, 20)
-	_score.position = Vector2(10, PITCH_H + 6)
-	_who = _label(root, 12)
-	_who.position = Vector2(10, PITCH_H + 38)
-	_toast = _label(root, 11)
-	_toast.position = Vector2(10, PITCH_H + 58)
-	_toast.custom_minimum_size = Vector2(190, 0)
-	_toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_hint = _label(root, 10)
-	_hint.position = Vector2(10, PITCH_H + 84)
+	_score = _label(root, 18)
+	_score.position = Vector2(10, PITCH_H + 3)
+	_who = _label(root, 11)
+	_who.position = Vector2(10, PITCH_H + 26)
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.position = Vector2(10, PITCH_H + 46)
+	grid.add_theme_constant_override("h_separation", 4)
+	grid.add_theme_constant_override("v_separation", 4)
+	grid.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(grid)
+	for id in ORDERS:
+		var b := Button.new()
+		b.text = String(id).to_upper()
+		b.custom_minimum_size = Vector2(92, 22)
+		b.add_theme_font_size_override("font_size", 10)
+		b.disabled = true
+		b.focus_mode = Control.FOCUS_NONE
+		var order_id: String = id
+		b.pressed.connect(func(): menu_chosen.emit(order_id))
+		grid.add_child(b)
+		_order_buttons[id] = b
+	_hint = _label(root, 9)
+	_hint.position = Vector2(10, PITCH_H + 98)
 	_hint.custom_minimum_size = Vector2(190, 0)
 	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_msg = _label(root, 30)
@@ -75,11 +89,6 @@ func _ready() -> void:
 	controls.position = Vector2(776, PITCH_H + 4)
 	controls.text = CONTROLS
 	controls.modulate = Color(1, 1, 1, 0.75)
-	_menu = PanelContainer.new()
-	_menu.visible = false
-	root.add_child(_menu)
-	_menu_box = VBoxContainer.new()
-	_menu.add_child(_menu_box)
 	_hand = HBoxContainer.new()
 	_hand.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hand.add_theme_constant_override("separation", 6)
@@ -100,7 +109,7 @@ func _process(dt: float) -> void:
 		if _msg_t <= 0.0: _msg.text = ""
 	if _toast_t > 0.0:
 		_toast_t -= dt
-		if _toast_t <= 0.0: _toast.text = ""
+		if _toast_t <= 0.0: _hint.text = _hint_base
 
 func set_score(h: int, a: int, minute: int) -> void:
 	if _score != null: _score.text = "HOME %d - %d AWAY   %d'" % [h, a, minute]
@@ -114,8 +123,8 @@ func message(text: String, seconds := 2.0) -> void:
 	_msg_t = seconds
 
 func toast(text: String, seconds := 1.6) -> void:
-	if _toast == null: return
-	_toast.text = text
+	if _hint == null: return
+	_hint.text = text
 	_toast_t = seconds
 
 func set_hand(rows: Array) -> void:
@@ -142,23 +151,14 @@ func set_cooldowns(cd: Dictionary) -> void:
 			if left == 0: _cards[i].play("cooldown_end")
 
 # ---- orders: menu, hint, selection ring, drag and aim lines
-func show_menu(anchor: Vector2, options: Array) -> void:
-	for c in _menu_box.get_children(): c.queue_free()
-	for o in options:
-		var b := Button.new()
-		b.text = String(LABELS.get(o, str(o)).to_upper())
-		var id := String(o)
-		b.pressed.connect(func(): menu_chosen.emit(id))
-		_menu_box.add_child(b)
-	_menu.visible = true
-	_menu.reset_size()
-	_menu.position = Vector2(clampf(anchor.x + 24.0, 4.0, 960.0 - 110.0), clampf(anchor.y - 70.0, 10.0, PITCH_H - 110.0))
-
-func hide_menu() -> void:
-	if _menu != null: _menu.visible = false
+## light up the order buttons that make sense for the selected player (an empty list greys them all)
+func set_orders(options: Array) -> void:
+	for id in _order_buttons:
+		_order_buttons[id].disabled = not (id in options)
 
 func set_hint(text: String) -> void:
-	if _hint != null: _hint.text = text
+	_hint_base = text
+	if _hint != null and _toast_t <= 0.0: _hint.text = text
 
 func set_selected(n: Node2D) -> void:
 	selected_node = n

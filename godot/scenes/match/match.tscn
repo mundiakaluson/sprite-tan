@@ -1,12 +1,14 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/match/match_game.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/stadium/stadium.tscn" id="2"]
 [ext_resource type="Script" path="res://scripts/match/match_hud.gd" id="3"]
 [ext_resource type="Script" path="res://scripts/match/match_controls.gd" id="4"]
+[ext_resource type="Resource" path="res://scenes/match/match_settings.tres" id="5"]
 
 [node name="Match" type="Node"]
 script = ExtResource("1")
+settings = ExtResource("5")
 
 [node name="View" type="SubViewportContainer" parent="."]
 offset_right = 960.0

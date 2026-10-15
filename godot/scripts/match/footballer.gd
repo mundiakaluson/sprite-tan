@@ -7,16 +7,18 @@ var row := {}
 var node: Player
 var team: Team
 var role := "CM"
+var style := ""                 ## formation style (data/styles.csv): fullback, wingback, anchor, poacher, ...
 var slot := Vector2.ZERO        ## home position (metres), already turned for the team's side
 var pos := Vector2.ZERO
 var vel := Vector2.ZERO
-var want := Vector2.ZERO        ## the velocity he is trying for this frame (AI or keyboard sets it)
+var want := Vector2.ZERO        ## the velocity he is trying for this frame (AI or an order sets it)
 var face := Vector2.RIGHT
 var no_touch := 0.0             ## seconds he cannot win the ball (just kicked it, just lost it)
 var lock := 0.0                 ## seconds committed to an animation (kick, skill, tackle)
 var shield := 0.0               ## seconds nobody can tackle him (dribble cards)
 var think := 0.0                ## AI decision timer
-var hold := 0.0                 ## seconds he has held the ball (the keeper)
+var hold := 0.0                 ## seconds he has held the ball
+var carried := 0.0              ## metres he has carried the ball since he got it
 var clip := ""
 var pending := Callable()       ## runs when the animation reaches its strike point
 var pending_t := 0.0
@@ -29,8 +31,9 @@ func is_keeper() -> bool:
 	return role == "GK"
 
 func top_speed() -> float:
-	if is_keeper(): return 5.5
-	return 5.2 + stat("PAC", 60) * 0.038
+	var s := MatchSettings.current if MatchSettings.current != null else MatchSettings.new()
+	if is_keeper(): return s.keeper_speed
+	return s.speed_base + stat("PAC", 60) * s.speed_per_pac
 
 func display_name() -> String:
 	return str(row.get("name", "?"))

@@ -14,10 +14,10 @@ var players: Array[Footballer] = []
 func build(formation: String, used: Dictionary, rng: RandomNumberGenerator) -> void:
 	formation_id = formation
 	players.clear()
-	var slots: Array = [{"role": "GK", "x": 50.0, "y": 4.0}]
+	var slots: Array = [{"role": "GK", "x": 50.0, "y": 4.0, "style": ""}]
 	for s in Data.table("formation_slots"):
 		if s["formation"] == formation:
-			slots.append({"role": s["role"], "x": Data.num(s["x"], 50.0), "y": Data.num(s["y"], 50.0)})
+			slots.append({"role": s["role"], "x": Data.num(s["x"], 50.0), "y": Data.num(s["y"], 50.0), "style": s.get("style", "")})
 	var pool := Data.table("players")
 	for s in slots:
 		var cands: Array = []
@@ -34,6 +34,7 @@ func build(formation: String, used: Dictionary, rng: RandomNumberGenerator) -> v
 		f.row = pick
 		f.team = self
 		f.role = String(s["role"])
+		f.style = String(s["style"])
 		var along: float = (float(s["y"]) / 100.0 - 0.5) * Stadium.L
 		var across: float = (float(s["x"]) / 100.0 - 0.5) * Stadium.W
 		f.slot = Vector2(along * dir, across * dir)

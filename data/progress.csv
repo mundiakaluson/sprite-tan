@@ -38,3 +38,4 @@ Tool,"Kick styles + ball spin preview (trivela, finesse, knuckle...)",done,"data
 Game,"Godot ball sprite from real 3D spin (shader) + Ball.kick styles",doing,untested in Godot
 Game,"Playable match scene: 11v11, ball, AI, goals, throw-ins / corners, clock, HUD, hand of 8 cards (shot / pass / dribble / defend)",doing,"scenes/match/match.tscn; untested in Godot; engagement slow-motion, support cards, keeper cards, Titans not built"
 Game,"Match controls: mouse / controller orders (menu, drag runs) and ball states (pass, through, lob, shot)",doing,"match_controls.gd, scripts/ball/states, data/ball_actions.csv; untested in Godot"
+Game,"Match refactor: thin MatchGame + modules, MatchSettings resource, AI brain + one file per role, build-up phases, HUD order buttons",doing,"untested in Godot; AI roles are first drafts to refine"

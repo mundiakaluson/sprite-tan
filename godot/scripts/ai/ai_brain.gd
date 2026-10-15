@@ -1,0 +1,63 @@
+class_name AiBrain
+extends RefCounted
+## Runs the AI for every player the human is not ordering: works out the team phase, picks the presser, asks the role's AiRole what each player wants
+## (an AiIntent) and applies it (movement, passes, shots). The roles live in scripts/ai/roles/, one file each; add a role by adding it to ROLES.
+
+enum Phase { BUILD_UP, PROGRESS, FINAL_THIRD, ORGANISE, PRESS, TRANSITION }
+
+var g: MatchGame
+var roles := {}
+var ctx := {}       ## Team -> AiContext
+
+func _init(game: MatchGame) -> void:
+	g = game
+	roles = {"GK": AiGk.new(), "CB": AiCb.new(), "LB": AiFullback.new(), "RB": AiFullback.new(), "CDM": AiCdm.new(), "CM": AiCm.new(),
+		"CAM": AiCam.new(), "LW": AiWinger.new(), "RW": AiWinger.new(), "ST": AiSt.new()}
+	for t in g.teams:
+		var c := AiContext.new()
+		c.setup(g, t)
+		ctx[t] = c
+
+func update(dt: float) -> void:
+	for t in g.teams:
+		_phase(ctx[t])
+	for f in g.all:
+		if f.lock > 0.0: continue
+		if not f.order.is_empty() and not f.is_keeper():
+			g.orders.follow(f, dt)
+			continue
+		var role: AiRole = roles.get(f.role, roles["CM"])
+		_apply(f, role.think(f, ctx[f.team], dt), ctx[f.team])
+
+func _phase(c: AiContext) -> void:
+	c.refresh()
+	var t := c.team
+	var depth := c.depth(c.ball)
+	if c.has_ball:
+		c.phase = Phase.BUILD_UP if depth < 0.5 - g.settings.third_line / Stadium.L else (Phase.FINAL_THIRD if depth > 0.5 + g.settings.third_line / Stadium.L else Phase.PROGRESS)
+		c.presser = null
+		return
+	c.phase = Phase.TRANSITION if c.carrier == null else (Phase.PRESS if depth > 0.5 and c.f("press") > 0.5 else Phase.ORGANISE)
+	# the nearest outfield player (to the carrier, or to the ball) closes down; the intended receiver of our own pass is never a presser
+	var tgt := c.carrier.pos if c.carrier != null else c.ball
+	c.presser = null
+	var bd := 1e9
+	for f in t.players:
+		if f.is_keeper() or f.lock > 0.0: continue
+		var d := f.pos.distance_to(tgt)
+		if d < bd:
+			bd = d
+			c.presser = f
+
+func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
+	var top := f.top_speed()
+	if i.move_to != Vector2.INF:
+		var to := i.move_to - f.pos
+		var d := to.length()
+		f.want = to / d * minf(top * i.speed, d * 2.0) if d > 0.4 else Vector2.ZERO
+	match i.action:
+		"pass", "through", "lob":
+			if i.target != null: g.poss.kick_action(f, i.action, i.target.pos, i.target.vel, {}, i.target)
+			elif i.aim != Vector2.INF: g.poss.kick_action(f, i.action, i.aim)
+		"shoot":
+			g.poss.kick_action(f, "shot", i.aim, Vector2.ZERO, {})

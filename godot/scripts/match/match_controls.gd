@@ -5,7 +5,7 @@ extends Node
 ##   Right click (a mate or a spot)  -> lob there.
 ##   Drag from the ball carrier      -> shoot: time slows a little while you drag so you can line it up; let go to hit it where the arrow points.
 ##   Drag from any other player      -> he runs there by himself (a run); the AI takes over when he arrives.
-##   Click a player                  -> his menu: Through / Run with the ball; Run / Press / Tackle without. Then click a team mate or a spot.
+##   Click a player                  -> his order buttons light up in the HUD strip (Through / Run with the ball; Run / Press / Tackle without). Then click a team mate or a spot.
 ##   Esc / Circle cancels. Click a skill card with a player selected to play it with him.
 ## Controller: left stick moves the pointer, Cross = click (twice = double click), Square = right click (lob), Triangle held = press and hold (drag), Circle = cancel.
 ## The stick moves the real mouse cursor and Cross / Triangle send real left-button events, so buttons, cards and the pitch react exactly like the mouse.
@@ -46,7 +46,7 @@ func _process(dt: float) -> void:
 	var p := vp.get_mouse_position()
 	if _down != null and not _dragging and p.distance_to(_down_pos) > drag_threshold:
 		_dragging = true
-		hud.hide_menu()
+		hud.set_orders([])
 		_set_selected(_down)
 		_shot_drag = game.carrier == _down
 		game.set_slowmo(_shot_drag)
@@ -100,7 +100,7 @@ func _press(p: Vector2) -> void:
 		_skip_release = true
 		var passer := game.carrier
 		if passer != null and passer.team == game.home and passer != _down:
-			game.order_pass(passer, "pass", _down, Vector2.INF)
+			game.orders.pass_to(passer, "pass", _down, Vector2.INF)
 		clear()
 
 func _release(p: Vector2) -> void:
@@ -111,8 +111,8 @@ func _release(p: Vector2) -> void:
 	if _down != null and _dragging:
 		var spot := _ground(p)
 		if spot != Vector2.INF:
-			if _shot_drag: game.order_shoot_at(_down, spot)
-			else: game.order_run(_down, spot)
+			if _shot_drag: game.orders.shoot_at(_down, spot)
+			else: game.orders.run(_down, spot)
 		clear()
 	elif mode == Mode.AIMING and selected != null:
 		_confirm_aim(p)
@@ -134,7 +134,7 @@ func _lob(p: Vector2) -> void:
 		hud.toast("Right click lobs: your team needs the ball")
 		return
 	var mate := _pick(p)
-	game.order_pass(lober, "lob", mate if mate != lober else null, _ground(p))
+	game.orders.pass_to(lober, "lob", mate if mate != lober else null, _ground(p))
 	clear()
 
 func _pick(p: Vector2) -> Footballer:
@@ -165,17 +165,17 @@ func _select(f: Footballer) -> void:
 	_set_selected(f)
 	mode = Mode.MENU
 	order = ""
-	hud.show_menu(f.node.position, game.menu_for(f))
-	hud.set_hint("%s: pick an order, or drag to a spot" % f.display_name())
+	hud.set_orders(game.orders.menu_for(f))
+	hud.set_hint("%s: pick an order below, or drag to a spot" % f.display_name())
 
 func _on_menu(id: String) -> void:
 	if selected == null: return
-	hud.hide_menu()
+	hud.set_orders([])
 	if id == "press":
-		game.order_press(selected)
+		game.orders.press(selected)
 		clear()
 	elif id == "tackle":
-		game.order_tackle(selected)
+		game.orders.tackle(selected)
 		clear()
 	else:
 		order = id
@@ -187,9 +187,9 @@ func _confirm_aim(p: Vector2) -> void:
 	var spot := _ground(p)
 	if mate == null and spot == Vector2.INF: return
 	if order == "run":
-		if spot != Vector2.INF: game.order_run(selected, spot)
+		if spot != Vector2.INF: game.orders.run(selected, spot)
 	else:
-		game.order_pass(selected, order, mate if mate != selected else null, spot)
+		game.orders.pass_to(selected, order, mate if mate != selected else null, spot)
 	clear()
 
 func clear() -> void:
@@ -204,6 +204,6 @@ func clear() -> void:
 		game.set_slowmo(false)
 	if hud != null:
 		hud.set_selected(null)
-		hud.hide_menu()
+		hud.set_orders([])
 		hud.clear_drag()
 		hud.set_hint("")

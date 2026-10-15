@@ -143,3 +143,8 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 ## Match gestures and layout (decided)
 - Double click a team mate = pass, right click = lob, drag from the ball carrier = shoot with time slowed to ~30% while you line it up, drag from anyone else = a run, click a player = a small menu (Through, Run, Press, Tackle). Controller: Cross click, Square lob, Triangle held drag, Circle cancel.
 - The HUD never covers the pitch: the pitch view is the top 420 px, the HUD strip (score, clock, selected player, hint, hand of 8 cards, controls) sits under it.
+
+## Match structure, build-up and AI (decided)
+- MatchGame is thin; settings are one resource (MatchSettings, inspector); possession, motion, rules, orders, cards are separate modules. No pop-ups in the match: order buttons live in the HUD strip.
+- Pace: players accelerate and turn like people (accel 7 m/s2, top speed from PAC), the carrier runs slower than a free player, the ball sits ahead of the feet. Build-up: the team has a phase (build-up, progress, final third / organise, press, transition); the carrier holds the ball a moment, then passes by score (forward gain, space, ideal length, blocked lanes, risk) and shoots only inside the shoot range with a clear lane; a pass receiver runs onto the ball. Shape = formation slot + styles.csv offsets for the phase + team line + slide to the ball, using the formation's numbers (line height, width, compactness, press, overlap, directness, counter, risk).
+- AI is one file per role (scripts/ai/roles) with formation-aware switch cases; the user refines them.
