@@ -1,7 +1,7 @@
 class_name AiShapedFormation
 extends AiFormation
 ## Shared team play of the formations after tactico.pro/formations/<name> (4-3-3, 4-2-3-1, 4-1-4-1, 4-3-2-1, diamond, 3-5-2, 3-4-3, 5-3-2, 5-4-1). One small file per formation
-## extends this and sets its numbers / flags in _init(); every number is an export so you can retune it in the inspector (AiProfile > Formations).
+## extends this and has no numbers of its own: each formation's numbers are set on its resource in scenes/ai/profile_default.tres (AiProfile > Formations), every one an export with a tooltip.
 ## The rules (all from the tactico pages):
 ##  Defending: the team stands in lines (back line, midfield line, front line) that trail the ball by fixed gaps and slide with it. Nobody presses without a trigger
 ##   (back pass to a CB / GK, ball to a full back on the touchline, receiver facing his own goal); on a trigger the presser closes down and the striker takes the passing lane back.
