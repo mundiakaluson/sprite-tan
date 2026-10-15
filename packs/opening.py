@@ -1,5 +1,5 @@
 """Pack opening scenes. Stateless: frame(scene, i) -> 480x270 image. One pull is rolled from data/pack_odds.csv (guarantee honoured), then:
-  float in + tilt shimmer -> charge (rarity glow leaks out) -> tear the top off -> cards burst out and stack -> reveal ONE AT A TIME (tension, flip, rarity burst)
+  float in + tilt shimmer -> charge (rarity glow leaks out) -> pack disintegrates to dust -> cards settle in a stack -> reveal ONE AT A TIME (tension, flip, rarity burst)
   -> cards collect along the bottom -> summary row.  Epic and legend pulls get longer, bigger reveals.
 Run:  python packs/opening.py [Pack Name] [seed] [best]   -> export/packs/open_<pack>.gif (+ contact sheet);  python packs/opening.py tilt -> export/packs/tilt.gif"""
 import os, sys, math, random, csv
@@ -112,9 +112,6 @@ def burst(ov, rar, age, cx, cy, seed):
     col = ACC[rar]; n = {'COMMON': 6, 'UNCOMMON': 12, 'RARE': 22, 'EPIC': 40, 'LEGEND': 80}[rar]; ring = {'COMMON': 16, 'UNCOMMON': 26, 'RARE': 44, 'EPIC': 80, 'LEGEND': 150}[rar]; d = ImageDraw.Draw(ov)
     if age < 0: return
     u = clamp(age / 14)
-    for q in range(2 if rar in ('EPIC', 'LEGEND') else 1):
-        uu = clamp((age - q * 4) / 14)
-        if 0 < uu < 1: d.ellipse([cx - ring * uu, cy - ring * uu * 0.9, cx + ring * uu, cy + ring * uu * 0.9], outline=col + (int(255 * (1 - uu)),), width=2 if rar != 'COMMON' else 1)
     rng = random.Random(seed)
     for k in range(n):
         ang = rng.uniform(0, 2 * math.pi); sp = rng.uniform(1.5, 5.5) * (1 + RARS.index(rar) * 0.35); life = rng.randint(16, 34)
@@ -123,12 +120,6 @@ def burst(ov, rar, age, cx, cy, seed):
         c = hsv(rng.random()) if rar == 'LEGEND' and k % 2 else (col if k % 3 else (255, 255, 255))
         s = 2 if rng.random() < 0.3 else 1
         d.rectangle([x - s, y - s, x + s, y + s], fill=c + (a,))
-    if rar in ('EPIC', 'LEGEND'):                                                           # rotating rays behind the card
-        m = 12 if rar == 'EPIC' else 18; L = 130 * clamp(age / 8) * (1 - 0.3 * clamp((age - 20) / 30))
-        for r_ in range(m):
-            a0 = r_ * 2 * math.pi / m + age * (0.03 if rar == 'EPIC' else 0.045); w = 0.07
-            c = hsv(r_ / m + age * 0.01) if rar == 'LEGEND' else col
-            d.polygon([(cx, cy), (cx + math.cos(a0 - w) * L * 1.5, cy + math.sin(a0 - w) * L * 1.5), (cx + math.cos(a0 + w) * L * 1.5, cy + math.sin(a0 + w) * L * 1.5)], fill=c + (int(70 * (1 - clamp(age / 90))),))
 
 
 # ---------------------------------------------------------------------------------------------------------------- the scene
@@ -158,6 +149,31 @@ def glare(img, pos, strength=70):
     a[..., :3] = np.clip(a[..., :3] + g, 0, 255); return Image.fromarray(a.astype(np.uint8), 'RGBA')
 
 
+def dust(s, cv, art, cx, cy, sc, f, DUR, acc):
+    """the pack disintegrates: pixels peel off in a noisy sweep, glow hot, then drift up and away as ash"""
+    if not hasattr(s, '_d'):
+        a = np.array(art); ys, xs = np.nonzero(a[..., 3] > 0); R = np.random.RandomState(7); n = len(ys)
+        tp = np.clip(0.55 * (xs / 64.0) * 0.6 + 0.55 * ((96 - ys) / 96.0) * 0.4 + 0.45 * R.rand(n), 0, 1)
+        s._d = dict(ys=ys, xs=xs, tp=tp * 0.75, vx=R.uniform(0.3, 3.2, n), vy=R.uniform(-3.0, 0.4, n), L=R.uniform(16, 36, n), j=R.uniform(-0.4, 0.4, n))
+    d = s._d; a = np.array(art); ys, xs = d['ys'], d['xs']; age = f - d['tp'] * DUR
+    keep = age < 0; img = a.copy(); rel = ~keep
+    img[ys[rel], xs[rel], 3] = 0
+    edge = keep & (age > -3)                                                                  # about to go: glows hot
+    for c in range(3): img[ys[edge], xs[edge], c] = np.clip(img[ys[edge], xs[edge], c].astype(int) // 2 + np.array(acc)[c] // 2 + 60, 0, 255)
+    put(cv, Image.fromarray(img, 'RGBA'), cx, cy, sc)
+    live = rel & (age < d['L']); ag = age[live]; L = d['L'][live]
+    px = cx + (xs[live] - 32) * sc + d['vx'][live] * ag + np.sin(ag * 0.5 + d['j'][live] * 9) * 1.2
+    py = cy + (ys[live] - 48) * sc + d['vy'][live] * ag - 0.035 * ag * ag
+    al = np.clip(1 - ag / L, 0, 1) ** 0.8; hot = np.clip(1 - ag / 6.0, 0, 1)[:, None] * 0.85
+    col = a[ys[live], xs[live], :3].astype(float) * (1 - hot) + (np.array(acc) * 0.4 + 150) * hot
+    P = np.zeros((VH, VW, 4), np.uint8)
+    for dx in (0, 1):
+        for dy in (0, 1):
+            X = np.round(px).astype(int) + dx; Y = np.round(py).astype(int) + dy; ok = (X >= 0) & (X < VW) & (Y >= 0) & (Y < VH)
+            P[Y[ok], X[ok], :3] = col[ok].astype(np.uint8); P[Y[ok], X[ok], 3] = (al[ok] * 255).astype(np.uint8)
+    cv.alpha_composite(Image.fromarray(P, 'RGBA'))
+
+
 def frame(s, i):
     rng = random.Random(i * 7 + 3); arr = background(); shake = 0.0; flash = 0.0; flash_col = (255, 255, 255)
     ov = Image.new('RGBA', (VW, VH), (0, 0, 0, 0)); od = ImageDraw.Draw(ov); under = Image.new('RGBA', (VW, VH), (0, 0, 0, 0)); ud = ImageDraw.Draw(under)
@@ -167,46 +183,37 @@ def frame(s, i):
     cv = Image.new('RGBA', (VW, VH), (0, 0, 0, 0))
     acc = s.topc
     # ---------------------------------------------------------------- pack phases
-    if i < s.T_out + 16:
-        pi = i
-        if pi < s.T_charge:                                                                  # float in, tilt shimmer
-            u = out_back(pi / 22.0); cy = lerp(VH + 120, CY, u); tilt = 0.45 * math.sin(pi * 0.2) * (1 - 0.3 * smooth((pi - 20) / 10)); sc = 2.0
-            pos = (0.5 + 0.5 * math.sin(pi * 0.2 + 0.4)) * 150 - 10; shk = 0
-        elif pi < s.T_tear:                                                                  # charge: shake, glow leaks out
-            u = (pi - s.T_charge) / (s.T_tear - s.T_charge); cy = CY; tilt = 0.1 * math.sin(pi * 1.1) * u; sc = 2.0 + 0.12 * u; pos = 200; shk = 1 + 5 * u * u
-            glow(arr, CX, CY, 150 * (0.5 + u), 150 * (0.5 + u), acc, 0.75 * u)
-            for k in range(int(10 * u) + 2):                                                  # light streaming in
-                r = random.Random(k * 5 + pi // 2); a_ = r.uniform(0, 6.28); dd = 150 - ((pi * 6 + k * 23) % 140); ud.line([(CX + math.cos(a_) * dd, CY + math.sin(a_) * dd * 0.8), (CX + math.cos(a_) * (dd - 10), CY + math.sin(a_) * (dd - 10) * 0.8)], fill=acc + (int(220 * u),))
+    DUR = 30
+    if i < s.T_tear + DUR + 14:
+        pi = i; shk = 0; tilt = 0.0; sc = 2.0; cy = CY; alpha = 1.0
+        if pi < s.T_charge:                                                                  # settle in (no bounce), slow tilt catching the light
+            u = smooth(pi / 20.0); cy = lerp(CY + 26, CY, u); alpha = u; tilt = 0.4 * math.sin(pi * 0.14) * (1 - 0.5 * smooth((pi - 18) / 12))
+            pos = (0.5 + 0.5 * math.sin(pi * 0.14 + 0.4)) * 150 - 10
+        elif pi < s.T_tear:                                                                  # charge: a tremble, light builds inside
+            u = (pi - s.T_charge) / (s.T_tear - s.T_charge); sc = 2.0 + 0.08 * u; pos = 200; shk = 0.4 + 2.6 * u * u
+            glow(arr, CX, CY, 130 * (0.5 + u), 150 * (0.5 + u), acc, 0.6 * u)
         else:
-            u = (pi - s.T_tear) / 12.0; cy = CY; tilt = 0; sc = 2.12; pos = 200; shk = 6 * (1 - clamp(u))
-        shake = max(shake, shk * 0.8 if pi >= s.T_charge else 0)
-        ox = rng.uniform(-1, 1) * (shk if pi >= s.T_charge else 0); oy = rng.uniform(-1, 1) * (shk if pi >= s.T_charge else 0)
+            pos = 200; sc = 2.08
+        shake = max(shake, shk * 0.6)
+        ox = rng.uniform(-1, 1) * shk; oy = rng.uniform(-1, 1) * shk
         art = glare(s.art, pos)
-        top_h = 10                                                                           # rows that tear off (crimp + a bit of body)
         if pi < s.T_tear:
-            put(cv, art, CX + ox, cy + oy, sc, wf=math.cos(tilt), k=0.18 * math.sin(tilt), alpha=1.0)
-        else:
-            u = clamp((pi - s.T_tear) / 12.0); u2 = smooth((pi - s.T_out) / 14.0)
-            body = art.crop((0, top_h, 64, 96)); bcy = cy + (top_h * sc) / 2 + 60 * u2
-            put(cv, body, CX + ox, bcy + oy, sc, alpha=1 - u2)
-            if pi < s.T_out + 16:                                                           # light spilling from the cut + the torn strip flying off
-                cut = cy - 96 * sc + top_h * sc
-                for q in range(3): ud.polygon([(CX - 56 * sc / 2, cut), (CX + 56 * sc / 2, cut), (CX + 140 * (q + 1) / 2, cut - 220), (CX - 140 * (q + 1) / 2, cut - 220)], fill=acc + (int(40 * (1 - u) * (1 if q == 0 else 0.6)),))
-                od.rectangle([CX - 62, cut - 2, CX + 62, cut + 1], fill=(255, 255, 255, int(255 * (1 - u2))))
-                strip = art.crop((0, 0, 64, top_h)); put(cv, strip, CX + 20 + 110 * u, cut - 10 - 90 * u + 150 * u * u, sc, rot=-0.15 - 4.5 * u, alpha=1 - u * u)
-            if pi < s.T_tear + 6: flash = (1 - (pi - s.T_tear) / 6) * 0.6; flash_col = tuple(int(v * 0.5 + 127) for v in acc)
+            put(cv, art, CX + ox, cy + oy, sc, wf=math.cos(tilt), k=0.18 * math.sin(tilt), alpha=alpha)
+        else:                                                                                # the pack turns to dust
+            f = pi - s.T_tear; u = f / DUR; shk = 2.5 * (1 - clamp(u)) ; ox = rng.uniform(-1, 1) * shk; oy = rng.uniform(-1, 1) * shk
+            glow(arr, CX, CY, 150, 160, acc, 0.5 * math.sin(math.pi * clamp(u * 0.9 + 0.1)))
+            dust(s, cv, art, CX + ox, CY + oy, sc, f, DUR, acc)
+
     # ---------------------------------------------------------------- cards burst out and stack
-    if s.T_tear + 4 <= i < s.T_rev + 0 or i >= s.T_rev:
-        pass
     k_out = range(s.n)
     for k in reversed(k_out):
-        if i < s.T_tear + 4: continue
-        t0 = s.T_tear + 4 + k * 3; sr = s.rev[k]
+        t0 = s.T_tear + 16 + k * 2; sr = s.rev[k]
+        if i < t0: continue
         if i >= sr[4] - 8 or i < t0: continue                                               # already collected / not out yet (collected ones are drawn below)
-        u = smooth((i - t0) / 18.0); fly_y = lerp(CY - 60, CY, u) - 70 * math.sin(math.pi * clamp((i - t0) / 18.0)); depth = k
+        u = smooth((i - t0) / 16.0); fly_y = lerp(CY + 10, CY, u)
         if i < sr[0]:                                                                        # waiting in the stack, top card = next to reveal
             x = CX + k * 1.2 - (s.n - 1) * 0.6; y = fly_y + k * 1.2 - (s.n - 1) * 0.6 + 0.8 * math.sin(i * 0.2 + k)
-            put(cv, s.backs[RARS[RARS.index(D.LOOK[s.pack][0])] if D.LOOK[s.pack][0] in RARS else 'COMMON'], x, y, 2.0 * lerp(0.6, 1.0, u), rot=lerp(0.12 * (k - 1.5), 0.0, u))
+            put(cv, s.backs[RARS[RARS.index(D.LOOK[s.pack][0])] if D.LOOK[s.pack][0] in RARS else 'COMMON'], x, y, 2.0 * lerp(0.85, 1.0, u), rot=0.0, alpha=u)
     # ---------------------------------------------------------------- reveals
     rev_k = next((k for k, r in enumerate(s.rev) if r[0] <= i < r[4]), None)
     dim = 0.0
