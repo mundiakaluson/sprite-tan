@@ -26,3 +26,4 @@ Animation,Skill card animations: DEFEND 35 done (moves_defend.py); SUPPORT 30 do
 Packs,"Pack system: definitions + pools + schedule + pity, Packs tab, wrapper art, opening animation (skippable), simulator",done,tables + Packs tab + wrapper art from data + opening with skip + simulator. Next: pity state in the save, shop UI, Godot port
 Tool,Global EXPORT TO GAME button + tool/export_game.py,done,writes godot/data and godot/assets
 Game,"Godot: player scene with AnimationPlayer (all sheets) + AnimationTree flow graph from animation_flow.csv",doing,untested in Godot
+Game,"Godot: card scenes with animations (done); port pack opening, Titan scenes and effects to Godot animations",doing,cards done; opening + titan + effects todo

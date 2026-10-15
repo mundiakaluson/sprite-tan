@@ -11,8 +11,19 @@ extends Control
 		player_id = v
 		_load_preview()
 
+## size multiplier used by the hover / appear / use animations (drawn around the card centre, so the node's own scale is yours to use)
+@export var fx_scale := 1.0:
+	set(v):
+		fx_scale = v
+		queue_redraw()
+
+## frame of the foil strip. Animated by the AnimationPlayer ("foil_shimmer"); only used by special (foil) players.
+@export var foil_frame := 0:
+	set(v):
+		foil_frame = v
+		queue_redraw()
+
 var p := {}
-var _fx := 0.0
 
 func _init() -> void:
 	custom_minimum_size = Vector2(64, 90)
@@ -35,10 +46,18 @@ func show_player(row: Dictionary) -> void:
 func is_special() -> bool:
 	return str(p.get("special", "0")) in ["1", "True", "true"] and Data.rules.get("foil_by_rarity", {}).has(p.get("rarity", ""))
 
-func _process(delta: float) -> void:
-	if is_special():
-		_fx = fposmod(_fx + delta / 3.0, 1.0)   # 3 second loop, the shimmer is the first part of it
-		queue_redraw()
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_MOUSE_ENTER: _play_if_ready("hover_in")
+	elif what == NOTIFICATION_MOUSE_EXIT: _play_if_ready("hover_out")
+
+func _play_if_ready(anim_name: String) -> void:
+	var ap := get_node_or_null("AnimationPlayer") as AnimationPlayer
+	if ap == null or Engine.is_editor_hint(): return
+	ap.play(anim_name)
+
+## play any animation of the card scene: "appear", "hover_in", "hover_out", "foil_shimmer"
+func play(anim_name: String) -> void:
+	_play_if_ready(anim_name)
 
 static func col(a) -> Color:
 	return Color8(int(a[0]), int(a[1]), int(a[2]))
@@ -71,6 +90,7 @@ static func surname(nm: String) -> String:
 	return w[w.size() - 1].to_upper()
 
 func _draw() -> void:
+	draw_set_transform(Vector2(32, 45) * (1.0 - fx_scale), 0.0, Vector2(fx_scale, fx_scale))
 	if p.is_empty() or Data.rules.is_empty():
 		draw_rect(Rect2(0, 0, 64, 90), Color(0.1, 0.1, 0.16))
 		draw_string(ThemeDB.fallback_font, Vector2(6, 46), "no data", HORIZONTAL_ALIGNMENT_LEFT, 52, 10, Color.WHITE)
@@ -86,9 +106,8 @@ func _draw() -> void:
 		var style: String = Data.rules["foil_by_rarity"][rar]
 		var strip := Data.tex("card/foil_%s.png" % style)
 		var n := int(Data.rules.get("foil_frames", 36))
-		var shim := float(Data.rules.get("foil_shimmer", 0.3))
-		# frame number inside the loop (the strip animates the shimmer in its first part, stills afterwards)
-		var f := int(_fx * n) % n
+		# the AnimationPlayer sets foil_frame (the strip holds the shimmer in its first part, then rests)
+		var f := clampi(foil_frame, 0, n - 1)
 		if strip != null: draw_texture_rect_region(strip, Rect2(0, 0, 64, 90), Rect2(f * 64, 0, 64, 90))
 	else:
 		var bg := Data.tex("card/bg_%s.png" % lower)

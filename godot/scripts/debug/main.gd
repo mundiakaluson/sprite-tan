@@ -24,7 +24,7 @@ func _ready() -> void:
 	var pc := PlayerCard.new(); pc.position = Vector2(200, 80); pc.scale = Vector2(2, 2); add_child(pc); pc.show_player(Data.row("players", pid))
 	var tip := PlayerTip.new(); tip.position = Vector2(200, 280); tip.scale = Vector2(2, 2); add_child(tip); tip.show_player(Data.row("players", pid))
 	var cid: String = Data.table("cards")[0]["id"]
-	_show(Data.tex("cards/%s.png" % cid), Vector2(360, 80), 2)
+	var sk := SkillCard.new_card(cid); sk.position = Vector2(360, 80); sk.scale = Vector2(2, 2); add_child(sk); sk.play("appear")
 	var shop := PackLib.shop()
 	if shop.size() > 0: _show(Data.tex("packs/%s.png" % shop[0]["id"]), Vector2(520, 60), 1)
 
