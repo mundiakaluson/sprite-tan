@@ -82,6 +82,11 @@ static var current: MatchSettings
 @export var press_distance := 20.0
 
 @export_group("AI")
+## per-role tuning for each side (scenes/ai/profile_default.tres); empty = role defaults. Give the two teams different profiles to try styles against each other
+@export var home_ai: AiProfile
+@export var away_ai: AiProfile
+## a team defending in the opponent half presses (phase PRESS) when the formation's press number is above this
+@export_range(0.0, 1.0) var press_line := 0.5
 @export_range(0.0, 1.0) var ai_level := 0.6
 ## seconds between the carrier's decisions
 @export var think_interval := 0.3
@@ -91,3 +96,53 @@ static var current: MatchSettings
 @export_range(0.05, 1.0) var aim_slowmo := 0.3
 ## seconds of cooldown per cooldown number in cards.csv
 @export var cooldown_scale := 1.5
+
+@export_group("Order timing")
+## seconds a Run / Press / Tackle order lasts before the player goes back to his own play
+@export var run_order_time := 9.0
+@export var press_order_time := 5.0
+@export var tackle_order_time := 3.0
+## a runner this close to his target has arrived (metres)
+@export var arrive_distance := 1.2
+## through ball: chance it curls (K02), and the runner is sent to where he will be this many seconds ahead at this speed
+@export_range(0.0, 1.0) var through_curve_chance := 0.12
+@export var through_lead := 1.5
+@export var through_run_speed := 7.0
+
+@export_group("Card effects")
+## success roll: the card's stat difference to 60 counts this much per point (percent)
+@export var stat_roll_k := 0.3
+## shot cards: ball speed = base + card ball_speed x per_point (x miss_speed when the roll fails); aim noise in degrees-ish: good, bad base, + card risk x risk_k
+@export var shot_base_speed := 14.0
+@export var shot_speed_per_point := 2.6
+@export_range(0.1, 1.0) var shot_miss_speed := 0.75
+@export var shot_good_noise := 1.5
+@export var shot_bad_noise := 8.0
+@export var shot_risk_noise := 0.6
+## pass cards: speed = distance x per_m + base, clamped (before the card's ball_speed bonus)
+@export var pass_speed_base := 6.0
+@export var pass_speed_per_m := 0.85
+@export var pass_speed_min := 9.0
+@export var pass_speed_max := 26.0
+## dribble cards: seconds nobody can tackle him, and the burst speed
+@export var dribble_shield := 1.3
+@export var dribble_burst := 7.0
+## tackle cards: dash speed, and reach = base + card reach x per_point
+@export var tackle_dash := 6.5
+@export var tackle_card_reach := 3.0
+@export var tackle_reach_per_point := 0.25
+
+@export_group("Goalkeeper and control")
+## a keeper catches a shot slower than base + HAN x per_han (m/s), otherwise he parries
+@export var save_speed_base := 14.0
+@export var save_speed_per_han := 0.25
+## keeper reach grows by REF x this
+@export var keeper_ref_reach := 0.012
+## ball heights a player / keeper can reach (metres)
+@export var reach_height := 1.3
+@export var keeper_reach_height := 2.5
+## the intended receiver of a pass gets this much more reach and control
+@export var receiver_reach_k := 1.25
+@export var receiver_control_k := 1.3
+## a ball too fast to control keeps this much of its speed after bouncing off the player
+@export_range(0.0, 1.0) var bounce_off := 0.45

@@ -48,11 +48,11 @@ func _loose(_dt: float) -> void:
 	for f in g.all:
 		if f.no_touch > 0.0: continue
 		var reach := s.pickup_reach
-		var max_h := 1.3
+		var max_h := s.reach_height
 		if f.is_keeper():
-			reach = s.keeper_reach + f.stat("REF", 60) * 0.012
-			max_h = 2.5
-		if f == g.pass_target: reach *= 1.25
+			reach = s.keeper_reach + f.stat("REF", 60) * s.keeper_ref_reach
+			max_h = s.keeper_reach_height
+		if f == g.pass_target: reach *= s.receiver_reach_k
 		if bp.y > max_h: continue
 		var d := f.pos.distance_to(b2) / reach
 		if d < bd:
@@ -60,18 +60,18 @@ func _loose(_dt: float) -> void:
 			best = f
 	if best == null: return
 	if best.is_keeper():
-		if speed <= 14.0 + best.stat("HAN", 60) * 0.25:
+		if speed <= s.save_speed_base + best.stat("HAN", 60) * s.save_speed_per_han:
 			take(best)
 		else:
 			b.phys.vel = Vector3(-b.phys.vel.x * 0.3, b.phys.vel.y * 0.5 + 2.0, b.phys.vel.z + g.rng.randf_range(-5.0, 5.0))
 			best.no_touch = 0.5
 			g.last_touch = best
 		return
-	var limit := (s.control_speed_base + best.stat("DRI", 60) * s.control_per_dri) * b.touch() * (1.3 if best == g.pass_target else 1.0)
+	var limit := (s.control_speed_base + best.stat("DRI", 60) * s.control_per_dri) * b.touch() * (s.receiver_control_k if best == g.pass_target else 1.0)
 	if speed <= limit:
 		take(best)
 	else:
-		b.phys.vel *= 0.45
+		b.phys.vel *= s.bounce_off
 		best.no_touch = 0.4
 		g.last_touch = best
 

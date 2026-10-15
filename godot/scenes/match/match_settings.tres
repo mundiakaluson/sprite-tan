@@ -1,6 +1,9 @@
-[gd_resource type="Resource" script_class="MatchSettings" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="MatchSettings" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/match/match_settings.gd" id="1"]
+[ext_resource type="Resource" path="res://scenes/ai/profile_default.tres" id="2"]
 
 [resource]
 script = ExtResource("1")
+home_ai = ExtResource("2")
+away_ai = ExtResource("2")

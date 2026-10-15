@@ -40,3 +40,4 @@ Game,"Playable match scene: 11v11, ball, AI, goals, throw-ins / corners, clock, 
 Game,"Match controls: mouse / controller orders (menu, drag runs) and ball states (pass, through, lob, shot)",doing,"match_controls.gd, scripts/ball/states, data/ball_actions.csv; untested in Godot"
 Game,"Match refactor: thin MatchGame + modules, MatchSettings resource, AI brain + one file per role, build-up phases, HUD order buttons",doing,"untested in Godot; AI roles are first drafts to refine"
 Game,"Pitch map (zones + spots) for the AI; smaller HUD cards / tooltip with a team command area",doing,"scripts/ai/pitch_map.gd, data/pitch_zones.csv, pitch_spots.csv; team commands not defined yet"
+Game,"Inspector pass: AI roles as Resources (AiProfile .tres per team), remaining match constants moved to MatchSettings",doing,"untested in Godot; scenes/ai/profile_default.tres"

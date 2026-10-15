@@ -1,18 +1,17 @@
 class_name AiBrain
 extends RefCounted
 ## Runs the AI for every player the human is not ordering: works out the team phase, picks the presser, asks the role's AiRole what each player wants
-## (an AiIntent) and applies it (movement, passes, shots). The roles live in scripts/ai/roles/, one file each; add a role by adding it to ROLES.
+## (an AiIntent) and applies it (movement, passes, shots). The roles are Resources (scripts/ai/roles/, one file each) collected in an AiProfile, so all their numbers are in the inspector; add a role by adding a field to AiProfile.
 
 enum Phase { BUILD_UP, PROGRESS, FINAL_THIRD, ORGANISE, PRESS, TRANSITION }
 
 var g: MatchGame
-var roles := {}
+var profiles := {}  ## Team -> AiProfile (MatchSettings > AI: home_ai / away_ai; a missing one uses the role defaults)
 var ctx := {}       ## Team -> AiContext
 
 func _init(game: MatchGame) -> void:
 	g = game
-	roles = {"GK": AiGk.new(), "CB": AiCb.new(), "LB": AiFullback.new(), "RB": AiFullback.new(), "CDM": AiCdm.new(), "CM": AiCm.new(),
-		"CAM": AiCam.new(), "LW": AiWinger.new(), "RW": AiWinger.new(), "ST": AiSt.new()}
+	profiles = {g.home: (g.settings.home_ai if g.settings.home_ai != null else AiProfile.new()).fill(), g.away: (g.settings.away_ai if g.settings.away_ai != null else AiProfile.new()).fill()}
 	for t in g.teams:
 		var c := AiContext.new()
 		c.setup(g, t)
@@ -26,7 +25,7 @@ func update(dt: float) -> void:
 		if not f.order.is_empty() and not f.is_keeper():
 			g.orders.follow(f, dt)
 			continue
-		var role: AiRole = roles.get(f.role, roles["CM"])
+		var role: AiRole = profiles[f.team].role_for(f.role)
 		_apply(f, role.think(f, ctx[f.team], dt), ctx[f.team])
 
 func _phase(c: AiContext) -> void:
@@ -37,7 +36,7 @@ func _phase(c: AiContext) -> void:
 		c.phase = Phase.BUILD_UP if depth < 0.5 - g.settings.third_line / Stadium.L else (Phase.FINAL_THIRD if depth > 0.5 + g.settings.third_line / Stadium.L else Phase.PROGRESS)
 		c.presser = null
 		return
-	c.phase = Phase.TRANSITION if c.carrier == null else (Phase.PRESS if depth > 0.5 and c.f("press") > 0.5 else Phase.ORGANISE)
+	c.phase = Phase.TRANSITION if c.carrier == null else (Phase.PRESS if depth > 0.5 and c.f("press") > g.settings.press_line else Phase.ORGANISE)
 	# the nearest outfield player (to the carrier, or to the ball) closes down; the intended receiver of our own pass is never a presser
 	var tgt := c.carrier.pos if c.carrier != null else c.ball
 	c.presser = null
