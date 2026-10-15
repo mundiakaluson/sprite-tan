@@ -36,8 +36,8 @@ static var current: MatchSettings
 @export var cam_height := 30.0
 @export var cam_back := 22.0
 ## the camera aims at this Z on the grass (0 = centre line, negative = towards the far touchline)
-@export var cam_look_z := 17.0
-@export_range(10.0, 90.0) var cam_fov := 41.0
+@export var cam_look_z := 15.5
+@export_range(10.0, 90.0) var cam_fov := 36.0
 ## how fast the camera follows the ball along the pitch
 @export var cam_follow_speed := 4.0
 

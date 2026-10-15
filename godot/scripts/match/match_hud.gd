@@ -15,7 +15,7 @@ signal team_command(id: String)         ## a team command button was pressed
 ## size of the hover tooltip (the card's tooltip image x this)
 @export_range(1.0, 4.0, 1.0) var tooltip_scale := 2.0
 ## size of the TEAM stance buttons
-@export var team_button_size := Vector2(64, 18)
+@export var team_button_size := Vector2(90, 26)
 
 const PITCH_H := 580.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
 ## colour of each command kind in the command box and on the highlighted players
@@ -141,6 +141,7 @@ func set_team_commands(commands: Array) -> void:
 		var b := PixelButton.new()
 		b.text = String(cmd["label"])
 		b.custom_minimum_size = team_button_size
+		b.text_scale = 2
 		b.accent = _team_accent
 		b.toggle_mode = true
 		b.tooltip_text = String(cmd.get("note", ""))
