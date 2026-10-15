@@ -24,6 +24,8 @@ const W := 68.0
 @export var use_layout_camera := true   ## take height / back / aim / fov from the stadium (data/stadiums.csv); untick to set them here
 @export var follow_speed := 4.0
 @export var limit_x := 38.0             ## the camera never goes further than this along the pitch
+@export var pan_far := 6.0              ## metres the camera slides towards the far touchline as the ball goes up the screen (the near line may drop out of view); 0 = no pan
+@export var pan_speed := 3.0            ## how quickly it pans
 @export_group("Players")
 @export var player_height_m := 1.8
 @export var sprite_height_px := 26.0    ## how tall a player sprite is in pixels at scale 1 (feet to top of head)
@@ -35,6 +37,7 @@ const W := 68.0
 var layout := {}
 var focus := Vector2(50, 50)            ## pitch position the camera looks at
 var _cam_x := 0.0
+var _cam_z := 0.0                       ## sideways pan (negative = towards the far touchline)
 var _actors := {}                       ## Node2D -> pitch position (Vector2)
 var _mats := {}
 var goals: Array[Goal] = []
@@ -131,6 +134,7 @@ func _project_ball(b: Ball) -> void:
 func _process(dt: float) -> void:
 	if Engine.is_editor_hint(): return
 	_cam_x = lerpf(_cam_x, clampf(world_pos(focus).x, -limit_x, limit_x), clampf(follow_speed * dt, 0.0, 1.0))
+	_cam_z = lerpf(_cam_z, _pan_target(), clampf(pan_speed * dt, 0.0, 1.0))
 	_update_camera()
 	for b in _balls:
 		if is_instance_valid(b): _project_ball(b)
@@ -140,11 +144,16 @@ func _process(dt: float) -> void:
 
 func _update_camera() -> void:
 	camera.fov = fov
-	camera.look_at_from_position(Vector3(_cam_x, cam_height, W / 2.0 + cam_back), Vector3(_cam_x, 0.0, look_z), Vector3.UP)
+	camera.look_at_from_position(Vector3(_cam_x, cam_height, W / 2.0 + cam_back + _cam_z), Vector3(_cam_x, 0.0, look_z + _cam_z), Vector3.UP)
+
+## ball on the near touchline -> 0 (bottom line in view), ball on the far touchline -> -pan_far
+func _pan_target() -> float:
+	return -pan_far * clampf((W / 2.0 - world_pos(focus).z) / W, 0.0, 1.0)
 
 ## snap the camera onto the focus without easing (after a restart, a kick-off, ...)
 func snap_camera() -> void:
 	_cam_x = clampf(world_pos(focus).x, -limit_x, limit_x)
+	_cam_z = _pan_target()
 	_update_camera()
 
 # ---- building
