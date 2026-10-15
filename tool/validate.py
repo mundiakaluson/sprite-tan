@@ -122,6 +122,11 @@ def run():
         if sd not in sys.path: sys.path.insert(0, sd)
         import stadiumlib as SL
         for sev, rid, msg in SL.check(tables.table('stadiums').rows): add(sev, 'stadiums', rid, msg)
+        import goallib as GL
+        for sev, rid, msg in GL.check(tables.table('goals').rows): add(sev, 'goals', rid, msg)
+        gids = {r['id'] for r in tables.table('goals').rows}
+        for r in tables.table('stadiums').rows:
+            if r.get('goal') not in gids: add('error', 'stadiums', r['id'], f"goal {r.get('goal')} is not in goals.csv")
     except (OSError, KeyError, ImportError): pass
     import re
     for r in tables.table('kits').rows:

@@ -1,0 +1,4 @@
+id,name,width,height,depth,depth_low,mesh,post_radius,post_color,net_color,net_alpha,stiffness,damping,gravity,drag,post_sway,post_damp,bounce,note
+G01,Classic box,7.32,2.44,2.0,2.0,0.35,0.06,#f6f6f2,#f0f4f0,200,0.55,0.015,6.0,7.0,60,4.0,0.55,"standard box net, firm"
+G02,Pro sloped,7.32,2.44,1.0,2.4,0.3,0.06,#f6f6f2,#ffffff,170,0.5,0.02,6.0,6.0,45,3.5,0.55,"sloped back like modern grounds, billows more"
+G03,Park rope net,7.32,2.44,2.4,2.4,0.45,0.07,#d8d8d0,#cfc8a8,230,0.3,0.03,8.0,4.0,35,2.5,0.5,"loose heavy rope net, slow to settle"

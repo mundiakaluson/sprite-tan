@@ -28,3 +28,6 @@ Tool,Global EXPORT TO GAME button + tool/export_game.py,done,writes godot/data a
 Game,"Godot: player scene with AnimationPlayer (all sheets) + AnimationTree flow graph from animation_flow.csv",doing,untested in Godot
 Game,"Godot: card scenes with animations (done); port pack opening, Titan scenes and effects to Godot animations",doing,cards done; opening + titan + effects todo
 Game,"Stadiums + pitches + goals (3 to start)",done,"data/stadiums.csv, stadiums/stadiumlib.py, godot stadium scene"
+Tool,"Stadiums tab + Goal simulator tab (live perspective preview, goal feel tuning)",done,"tab_stadiums.py, tab_goalsim.py, stadiums/preview.py"
+Game,"Godot: modular goals with spring-mesh net + swinging posts (goal.gd, goal_net.gd)",doing,untested in Godot
+Game,"Replay camera shots (orbit, crane, push-in) from recorded play",todo,needs the match view

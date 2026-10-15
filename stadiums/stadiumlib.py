@@ -1,6 +1,6 @@
 """Stadium art generated from data/stadiums.csv, for the 3D stadium scene in Godot (TV / broadcast camera with real perspective).
 Per stadium (godot/assets/pitches/<id>/): pitch.png (flat top-down ground texture: mowing, markings, wear, light baked in), stand.png (crowd rows, tiles sideways),
-boards.png (advertising strip), net.png (goal net), thumb.png, layout.json. The 3D parts (stands, goals, flags, towers) are built in Godot from these (scripts/stadium/stadium.gd).
+boards.png (advertising strip), thumb.png, layout.json. The 3D parts (stands, goals, flags, towers) are built in Godot from these (scripts/stadium/stadium.gd).
 Texture orientation: x = along the pitch (own goal on the left), y = across (top = the far touchline). 16 px per metre.
     python stadiums/stadiumlib.py [out_dir]     writes every stadium + a contact sheet"""
 import os, sys, csv, math, json
@@ -142,7 +142,7 @@ def render_net():
 def layout(row):
     return dict(id=row['id'], name=row['name'], time=row['time'], ppm=PPM, apron=APR, pitch_m=[LEN, WID], texture=[TW, TH], sky=SKY[row['time']],
                 towers=str(row.get('towers', '0')) == '1', roof=str(row.get('roof', '0')) == '1', stand=list(hexrgb(row['stand'])), trim=list(hexrgb(row['stand_trim'])),
-                light=num(row.get('light')), capacity=int(num(row.get('capacity'))),
+                light=num(row.get('light')), goal=row.get('goal', 'G01'), cam=dict(height=num(row.get('cam_height'), 26), back=num(row.get('cam_back'), 16), look_z=num(row.get('look_z'), -4), fov=num(row.get('fov'), 34)), capacity=int(num(row.get('capacity'))),
                 view='TV side-on, perspective camera behind the near touchline; pitch x along (own goal at -x), z across (far touchline at -z)')
 
 
@@ -156,7 +156,7 @@ def render_all(out_dir, log=print, tick=None):
     for i, row in enumerate(rows):
         d = os.path.join(out_dir, row['id']); os.makedirs(d, exist_ok=True); p = render_pitch(row)
         p.save(os.path.join(d, 'pitch.png')); p.resize((TW // 4, TH // 4), Image.NEAREST).save(os.path.join(d, 'thumb.png'))
-        render_stand(row).save(os.path.join(d, 'stand.png')); render_boards(row).save(os.path.join(d, 'boards.png')); render_net().save(os.path.join(d, 'net.png'))
+        render_stand(row).save(os.path.join(d, 'stand.png')); render_boards(row).save(os.path.join(d, 'boards.png'))
         json.dump(layout(row), open(os.path.join(d, 'layout.json'), 'w'), indent=1)
         log(f"  {row['id']} {row['name']}: pitch {TW}x{TH}")
         if tick: tick(i + 1, len(rows))

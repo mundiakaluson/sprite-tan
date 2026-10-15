@@ -21,6 +21,7 @@ const W := 68.0
 @export var cam_back := 16.0            ## metres behind the near touchline
 @export var look_z := -4.0              ## the camera aims at this Z on the grass (negative = towards the far touchline)
 @export_range(10.0, 90.0) var fov := 34.0
+@export var use_layout_camera := true   ## take height / back / aim / fov from the stadium (data/stadiums.csv); untick to set them here
 @export var follow_speed := 4.0
 @export var limit_x := 38.0             ## the camera never goes further than this along the pitch
 @export_group("Players")
@@ -36,6 +37,7 @@ var focus := Vector2(50, 50)            ## pitch position the camera looks at
 var _cam_x := 0.0
 var _actors := {}                       ## Node2D -> pitch position (Vector2)
 var _mats := {}
+var goals: Array[Goal] = []
 
 func _ready() -> void:
 	rebuild()
@@ -140,6 +142,8 @@ func rebuild() -> void:
 		push_warning("Stadium: no art for '%s' (run Export to game)" % stadium_id)
 		return
 	layout = l
+	if use_layout_camera and layout.has("cam"):
+		var cm = layout["cam"]; cam_height = cm["height"]; cam_back = cm["back"]; look_z = cm["look_z"]; fov = cm["fov"]
 	var sky := Color8(layout["sky"][0], layout["sky"][1], layout["sky"][2])
 	var env := Environment.new(); env.background_mode = Environment.BG_COLOR; env.background_color = sky
 	var we := WorldEnvironment.new(); we.environment = env; world.add_child(we)
@@ -167,8 +171,8 @@ func rebuild() -> void:
 	for s in [-1.0, 1.0]:
 		_quad(world, [Vector3(s * hx, 0, -hz), Vector3(s * hx, 0, hz), Vector3(s * hx, 1.0, hz), Vector3(s * hx, 1.0, -hz)], [Vector2(0, 1), Vector2(bd, 1), Vector2(bd, 0), Vector2(0, 0)], bm)
 	# goals and corner flags
-	var net := _mat(_tex(dir + "net.png"), Color.WHITE, true)
-	_goal(-1.0, net); _goal(1.0, net)
+	goals.clear()
+	_goal(-1.0); _goal(1.0)
 	for cx in [-L / 2.0, L / 2.0]:
 		for cz in [-W / 2.0, W / 2.0]: _flag(Vector3(cx, 0, cz))
 	if layout.get("towers", false):
@@ -176,15 +180,17 @@ func rebuild() -> void:
 			for tz in [-hz - 8.0, hz + 8.0]: _tower(Vector3(tx, 0, tz))
 	snap_camera()
 
-func _goal(side: float, net: Material) -> void:      # side -1 = own goal (left), +1 = opponent goal (right)
-	var x0 := side * L / 2.0; var d := 2.0 * side; var hw := 3.66; var h := 2.44; var white := Color(0.97, 0.97, 0.97)
-	for z in [-hw, hw]: _box(world, Vector3(0.12, h, 0.12), Vector3(x0, h / 2.0, z), white)
-	_box(world, Vector3(0.12, 0.12, hw * 2.0 + 0.12), Vector3(x0, h, 0), white)
-	var nx := 1.0 / 0.2
-	_quad(world, [Vector3(x0 + d, 0, -hw), Vector3(x0 + d, 0, hw), Vector3(x0 + d, h, hw), Vector3(x0 + d, h, -hw)], [Vector2(0, 0), Vector2(hw * 2 * nx, 0), Vector2(hw * 2 * nx, h * nx), Vector2(0, h * nx)], net)
-	_quad(world, [Vector3(x0, h, -hw), Vector3(x0, h, hw), Vector3(x0 + d, h, hw), Vector3(x0 + d, h, -hw)], [Vector2(0, 0), Vector2(hw * 2 * nx, 0), Vector2(hw * 2 * nx, 2 * nx), Vector2(0, 2 * nx)], net)
-	for z in [-hw, hw]:
-		_quad(world, [Vector3(x0, 0, z), Vector3(x0 + d, 0, z), Vector3(x0 + d, h, z), Vector3(x0, h, z)], [Vector2(0, 0), Vector2(2 * nx, 0), Vector2(2 * nx, h * nx), Vector2(0, h * nx)], net)
+func _goal(side: float) -> void:      # side -1 = own goal (left), +1 = opponent goal (right). Goal's local +x points outward.
+	var g := Goal.new()
+	g.style_id = String(layout.get("goal", "G01"))
+	g.position = Vector3(side * L / 2.0, 0, 0)
+	if side < 0.0: g.rotation.y = PI
+	world.add_child(g); goals.append(g)
+
+## the ball (world space) near a goal: returns its new velocity after the net and posts acted on it. Call once per physics frame.
+func ball_update(pos: Vector3, vel: Vector3, radius := 0.11) -> Vector3:
+	for g in goals: vel = g.ball_update(pos, vel, radius)
+	return vel
 
 func _flag(at: Vector3) -> void:
 	_box(world, Vector3(0.05, 1.5, 0.05), at + Vector3(0, 0.75, 0), Color(0.96, 0.96, 0.92))

@@ -115,3 +115,9 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - Goals are side-on, two layers (back: behind players; front: near post and net over players; right goal = flipped left). Godot: scenes/stadium/stadium.tscn with stadium_id and pitch_to_screen().
 - Player scene: select the root to get a Facing slider (0-31) for previewing directions.
 - Revised: the stadium is a 3D Godot scene (TV camera with real perspective, like FIFA/EA). Generator now outputs pitch.png (flat top-down, 16 px/m), stand.png, boards.png, net.png; stands, goals, flags and floodlights are built from simple 3D parts in stadium.gd. Players stay 2D sprites projected onto the screen (Stadium.add_actor). Debug scene: scenes/debug/stadium_viewer.tscn (A/D camera, 1-3 stadium).
+
+## Goals, stadium editor, camera (decided)
+- data/goals.csv: modular goal styles (size, net depth top/ground, mesh cell, colours, net stiffness / damping / sag / drag, post sway, bounce). stadiums.csv picks one (goal column) and stores the TV camera (cam_height, cam_back, look_z, fov).
+- Net = spring mesh (Verlet + links), front edge and ground pegged; ball pushes the points; posts and bar are damped springs. Same maths in stadiums/goallib.py (tool) and godot/scripts/stadium/goal_net.gd; Godot node: goal.gd (`ball_update(pos, vel)` returns the new ball velocity, signals hit_net / hit_frame). The Python Goal simulator tab is where the numbers get tuned.
+- Python tool: Stadiums tab (table + colours + crowd / worn / floodlight / camera sliders + live software-rendered TV preview) and Goal simulator tab (shoot at the goal, tune the feel, three views). stadiums/preview.py is the software renderer (same camera maths as Godot).
+- Camera: stadium is real 3D, so orbit / crane / push-in replay shots are possible. Plan: record positions every frame, replay through a camera path (data-driven shots). Not built yet (needs the match view).

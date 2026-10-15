@@ -30,6 +30,13 @@
   160
  ],
  "light": 0.0,
+ "goal": "G03",
+ "cam": {
+  "height": 22.0,
+  "back": 14.0,
+  "look_z": -3.0,
+  "fov": 38.0
+ },
  "capacity": 8000,
  "view": "TV side-on, perspective camera behind the near touchline; pitch x along (own goal at -x), z across (far touchline at -z)"
 }
