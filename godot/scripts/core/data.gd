@@ -15,6 +15,7 @@ static var rules: Dictionary = _json("res://data/card_rules.json")    # layout n
 static var ok: bool = tables.has("players")
 
 static func reload() -> void:
+	_tex_cache.clear()
 	tables = _load_tables()
 	by_id = _index(tables)
 	manifest = _json("res://data/export_manifest.json")
@@ -74,7 +75,24 @@ static func inum(v, d := 0) -> int:
 	var s := str(v).strip_edges()
 	return int(s.to_float()) if s.is_valid_float() else d
 
-## texture exported by the tool, e.g. Data.tex("cards/SH01.png") or Data.tex("sprites/run_uv_sheet.png")
+static var _tex_cache: Dictionary = {}
+
+## texture exported by the tool, e.g. Data.tex("cards/SH01.png") or Data.tex("sprites/run_uv_sheet.png").
+## Uses Godot's imported copy when it is valid; otherwise reads the PNG straight from disk (so a half-imported or not yet imported
+## export never shows as a white box). Returns null when the file does not exist.
 static func tex(rel: String) -> Texture2D:
+	if _tex_cache.has(rel): return _tex_cache[rel]
 	var p := "res://assets/" + rel
-	return load(p) as Texture2D if ResourceLoader.exists(p) else null
+	var t: Texture2D = null
+	if ResourceLoader.exists(p):
+		t = load(p) as Texture2D
+		if t != null and t.get_width() <= 0: t = null
+	if t == null and FileAccess.file_exists(p):
+		var img := Image.load_from_file(ProjectSettings.globalize_path(p))
+		if img != null and not img.is_empty(): t = ImageTexture.create_from_image(img)
+	if t != null: _tex_cache[rel] = t
+	return t
+
+## forget cached textures (call after a new export)
+static func clear_tex_cache() -> void:
+	_tex_cache.clear()
