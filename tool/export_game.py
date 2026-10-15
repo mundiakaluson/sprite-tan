@@ -188,7 +188,7 @@ def step_packs(c):
 def step_balls(c):
     import balllib as BL
     n = BL.render_all(c.path('assets', 'balls'), log=c.log, tick=c.tick); c.counts['balls'] = n
-    c.log(f'drew {n} ball texture sheets (physics numbers go with data/balls.csv)')
+    c.log(f'drew {n} ball panel maps (physics numbers go with data/balls.csv, spins with data/kick_styles.csv)')
 
 
 def step_stadiums(c):
@@ -205,7 +205,7 @@ def step_manifest(c):
 
 
 STEPS = [('data', 'CSV data', step_data), ('sprites', 'Player sprite sheets + skins', step_sprites), ('hair', 'Hair layers', step_hair), ('looks', 'Player look atlases', step_looks),
-         ('animations', 'Animation library + flow graph', step_animations), ('cards', 'Skill cards', step_cards), ('players', 'Player cards', step_players), ('packs', 'Pack wrappers + card backs', step_packs), ('stadiums', 'Pitches + stadiums', step_stadiums), ('balls', 'Ball textures', step_balls), ('manifest', 'Manifest', step_manifest)]
+         ('animations', 'Animation library + flow graph', step_animations), ('cards', 'Skill cards', step_cards), ('players', 'Player cards', step_players), ('packs', 'Pack wrappers + card backs', step_packs), ('stadiums', 'Pitches + stadiums', step_stadiums), ('balls', 'Ball panel maps', step_balls), ('manifest', 'Manifest', step_manifest)]
 
 
 def run(log=print, progress=None, only=None, out=None):

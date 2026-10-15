@@ -1,0 +1,9 @@
+id,name,speed,elev,azim,side,back,roll,power,error,note
+K01,Driven shot,30,7,0,0,-12,0,1.0,1.0,"instep drive, a touch of topspin"
+K02,Finesse curl,24,14,-4,34,10,0,0.85,1.5,"inside of the boot: side spin with a little backspin, the ball turns like a top"
+K03,Trivela,26,12,3,-32,6,28,0.9,2.5,"outside of the boot: spin axis tilted diagonally, bends away then back"
+K04,Knuckle,30,6,0,0,0,0,1.0,2.0,no spin: the sprite barely turns while the flight wobbles and changes direction sharply
+K05,Chip,16,36,0,0,45,0,0.6,1.5,backspin: lands soft and stops
+K06,Topspin dip,26,20,0,0,-45,0,0.9,2.0,topspin: drops fast
+K07,Ground pass,16,0,0,0,-45,0,0.5,1.0,rolls along the grass
+K08,Whipped cross,22,22,-6,-40,20,16,0.8,3.0,outside-foot swerve with backspin

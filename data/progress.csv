@@ -34,3 +34,5 @@ Game,"Replay camera shots (orbit, crane, push-in) from recorded play",todo,needs
 Tool,"Ball studio tab (physics, textures, trajectory lab)",done,"tab_balls.py, balls/balllib.py, data/balls.csv"
 Game,"Godot ball: physics + roll sprite + stadium projection (ball.gd, ball_physics.gd)",doing,untested in Godot
 Game,"Players kick / control the ball using ball power + touch",todo,needs the match view
+Tool,"Kick styles + ball spin preview (trivela, finesse, knuckle...)",done,"data/kick_styles.csv, Ball studio tab"
+Game,"Godot ball sprite from real 3D spin (shader) + Ball.kick styles",doing,untested in Godot

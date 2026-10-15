@@ -97,6 +97,7 @@ func _project_ball(b: Ball) -> void:
 	var s := maxf(0.2, absf(edge.x - p.x) * 2.0 / Ball.SPRITE_DIAMETER)
 	b.position = p
 	b.scale = Vector2.ONE * s
+	b.set_view(camera.global_transform.basis.inverse())
 	b.place_shadow(g - p, w.y)
 	b.z_index = clampi(int(g.y) + 1, -4000, 4000)
 

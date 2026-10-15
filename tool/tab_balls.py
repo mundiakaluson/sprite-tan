@@ -12,9 +12,15 @@ SLIDERS = [('gravity', 'Gravity m/s2', 0.5, 25, 0.05), ('air_drag', 'Air drag', 
            ('knuckle_speed', 'Knuckle above m/s', 3, 40, 0.5), ('crisis', 'Dip (drag jump)', 0, 3, 0.05), ('crisis_speed', 'Dip below m/s', 3, 40, 0.5), ('restitution', 'Bounce', 0, 1, 0.01),
            ('friction', 'Grip on grass', 0, 1.5, 0.01), ('roll_drag', 'Rolling drag', 0, 2, 0.01), ('spin_decay', 'Spin decay /s', 0, 1.5, 0.01), ('mass', 'Mass kg', 0.2, 1.0, 0.01),
            ('radius', 'Radius m (game)', 0.08, 0.3, 0.005), ('touch', 'First touch (gameplay)', 0.4, 1.6, 0.01), ('power', 'Kick power (gameplay)', 0.5, 1.6, 0.01)]
-SHOT = [('speed', 'Speed m/s', 8, 45, 28), ('elev', 'Elevation deg', 0, 45, 8), ('azim', 'Aim sideways deg', -25, 25, 0), ('side', 'Side spin rad/s', -80, 80, 0), ('back', 'Back spin rad/s', -60, 60, 0)]
+SHOT = [('speed', 'Speed m/s', 8, 45, 28), ('elev', 'Elevation deg', 0, 45, 8), ('azim', 'Aim sideways deg', -25, 25, 0), ('side', 'Side spin rad/s', -80, 80, 0), ('back', 'Back spin rad/s', -60, 60, 0), ('roll', 'Roll spin rad/s', -60, 60, 0)]
+KICK_COLS = ('speed', 'elev', 'azim', 'side', 'back', 'roll')
 COLS = ['#e8453c', '#3c8fe8', '#e8b83c', '#5bd17a', '#b36be8', '#e8863c']
-PRESETS = dict(Drive=dict(speed=30, elev=7, azim=0, side=0, back=0), Knuckle=dict(speed=30, elev=6, azim=0, side=0, back=0), Curler=dict(speed=24, elev=14, azim=-4, side=-45, back=12), Lob=dict(speed=18, elev=38, azim=0, side=0, back=-20))
+
+
+def new_kick(t):
+    n = 1
+    while any(r['id'] == f'K{n:02d}' for r in t.rows): n += 1
+    return dict(id=f'K{n:02d}', name='New kick', speed='25', elev='10', azim='0', side='0', back='0', roll='0', power='1.0', error='1.5', note='')
 
 
 def new_ball(t):
@@ -28,10 +34,12 @@ class BallsTab(ttk.Frame):
     """Ball studio: edit a ball's physics (gravity, drag, swerve, knuckle instability, bounce, grip), its pixel texture and its gameplay effect (first touch, kick power). The trajectory lab fires it and compares all balls."""
     def __init__(self, master):
         super().__init__(master)
-        self.t = tables.table('balls'); self.i = None; self.fr = 0; self._sheet = {}
+        self.t = tables.table('balls'); self.kt = tables.table('kick_styles'); self.i = None; self.fr = 0; self._map = {}; self.M = np.eye(3)
         pw = tables.Split(self); pw.pack(fill='both', expand=True)
         left = ttk.Frame(pw); pw.add(left)
-        self.grid_ = tables.Grid(left, self.t, choices=dict(pattern=BL.PATTERNS, shine=['0', '1']), new_row=new_ball, on_select=self.select,
+        nb = ttk.Notebook(left); nb.pack(fill='both', expand=True); gb = ttk.Frame(nb); gk = ttk.Frame(nb); nb.add(gb, text='Balls'); nb.add(gk, text='Kick styles (spin)')
+        self.kgrid = tables.Grid(gk, self.kt, new_row=new_kick, on_select=self.pick_kick, width_for=dict(id=45, name=110, note=260)); self.kgrid.pack(fill='both', expand=True)
+        self.grid_ = tables.Grid(gb, self.t, choices=dict(pattern=BL.PATTERNS, shine=['0', '1']), new_row=new_ball, on_select=self.select,
                                  hide=tuple(k for k, *_ in SLIDERS if k not in ('mass',)) + ('note', 'color_a', 'color_b', 'color_c', 'shine', 'radius'), width_for=dict(id=50, name=110)); self.grid_.pack(fill='both', expand=True)
         ctl = ttk.LabelFrame(left, text='Physics + gameplay (live; Save writes data/balls.csv)', padding=6); ctl.pack(fill='x')
         self.sl = {}
@@ -59,9 +67,13 @@ class BallsTab(ttk.Frame):
             ttk.Label(c1, text=lab).grid(row=n // 3, column=(n % 3) * 2, sticky='w', padx=2); self.v[k] = tk.DoubleVar(value=d)
             ttk.Scale(c1, from_=lo, to=hi, variable=self.v[k], length=85, command=lambda _v: self.plot()).grid(row=n // 3, column=(n % 3) * 2 + 1, padx=2, pady=1)
         pr = ttk.Frame(side); pr.pack(fill='x', pady=3)
-        for name, d in PRESETS.items(): ttk.Button(pr, text=name, command=lambda d=d: self.preset(d)).pack(side='left', padx=2)
+        ttk.Label(pr, text='Kick style').pack(side='left'); self.ks = ttk.Combobox(pr, values=[r['name'] for r in self.kt.rows], width=18, state='readonly'); self.ks.pack(side='left', padx=4)
+        self.ks.bind('<<ComboboxSelected>>', lambda _e: self.apply_style(self.ks.current()))
         ttk.Button(pr, text='New wobble (other seed)', command=self.reseed).pack(side='left', padx=6); self.seed = 1.0
-        self.t.listeners.append(self.changed); self.after(90, self.tick)
+        self.kt.listeners.append(lambda: self.ks.config(values=[r['name'] for r in self.kt.rows]))
+        self.t.listeners.append(self.changed)
+        if self.kt.rows: self.ks.current(0); self.apply_style(0)
+        self.after(90, self.tick)
 
     def row(self): return self.t.rows[self.i] if self.i is not None and self.i < len(self.t.rows) else None
     def select(self, idx): self.i = idx[0] if idx else None; self.sync(); self.plot()
@@ -89,25 +101,33 @@ class BallsTab(ttk.Frame):
         if c: self.set(f, c)
 
     def changed(self):
-        self._sheet.clear(); self.plot()
+        self._map.clear(); self.plot()
 
-    def preset(self, d):
-        for k, v in d.items(): self.v[k].set(v)
-        self.plot()
+    def pick_kick(self, idx):
+        if idx: self.apply_style(idx[0])
+
+    def apply_style(self, i):
+        if i is None or i < 0 or i >= len(self.kt.rows): return
+        k = self.kt.rows[i]
+        for c in KICK_COLS: self.v[c].set(BL.num(k, c))
+        self.M = np.eye(3); self.plot()
 
     def reseed(self): self.seed += 1; self.plot()
 
-    # ---- spinning preview
+    # ---- spinning preview: the ball turns with the spin of the current kick, seen from behind the ball (slow motion)
+    def spin_vec(self):
+        return BL.spin_vector(self.v['roll'].get(), self.v['side'].get(), self.v['back'].get(), self.v['azim'].get())
+
     def tick(self):
         try:
             r = self.row()
             if r and self.winfo_viewable():
-                key = r['id']
-                if key not in self._sheet: self._sheet[key] = BL.render_sheet(r)
-                self.fr = (self.fr + 1) % BL.FRAMES; f = self._sheet[key].crop((self.fr * BL.CELL, 0, (self.fr + 1) * BL.CELL, BL.CELL)).resize((144, 144), Image.NEAREST)
+                if r['id'] not in self._map: self._map[r['id']] = BL.render_map(r)
+                w = self.spin_vec(); self.M = BL.rot_axis(w, 0.03) @ self.M
+                f = BL.render_orient(r, BL.CHASE_VIEW @ self.M, self._map[r['id']]).resize((144, 144), Image.NEAREST)
                 bg = Image.new('RGBA', (150, 150), (70, 150, 74, 255)); bg.alpha_composite(f, (3, 3)); self._ph = ImageTk.PhotoImage(bg); self.pv.delete('all'); self.pv.create_image(0, 0, anchor='nw', image=self._ph)
         except Exception as e: self.info.config(text=f'preview error: {e}')
-        self.after(90, self.tick)
+        self.after(60, self.tick)
 
     # ---- trajectory lab: side view (top) and top view (bottom) of every ball, fired the same way
     def plot(self):
@@ -116,7 +136,7 @@ class BallsTab(ttk.Frame):
         s = {k: self.v[k].get() for k in self.v}; W, H = 640, 330; im = Image.new('RGB', (W, H), (42, 90, 50)); d = ImageDraw.Draw(im)
         side_box, top_box = (30, 8, W - 10, 168), (30, 182, W - 10, H - 8); rows = list(self.t.rows); res = {}
         for n, b in enumerate(rows):
-            try: res[b['id']] = BL.trajectory(b, s['speed'], s['elev'], s['azim'], s['side'], s['back'], seed=self.seed)
+            try: res[b['id']] = BL.trajectory(b, s['speed'], s['elev'], s['azim'], s['side'], s['back'], seed=self.seed, roll_spin=s['roll'])
             except Exception: pass
         sp_ = res.get(r['id']); xmax = min(120.0, max(20.0, float(sp_[:, 0].max()) * 1.1)) if sp_ is not None else 40.0; ymax = max(3.0, float(sp_[:, 1].max())) if sp_ is not None else 3.0; zr = max(3.0, float(np.abs(sp_[:, 2]).max())) if sp_ is not None else 3.0
         for box, ymin_, ymax_ in ((side_box, 0, ymax * 1.1), (top_box, -zr * 1.1, zr * 1.1)):
@@ -134,7 +154,8 @@ class BallsTab(ttk.Frame):
         p = res.get(r['id'])
         if p is not None:
             lat = float(np.interp(min(25.0, float(p[-1, 0])), p[:, 0], p[:, 2]))
-            self.info.config(text=f"{r['name']}: flies {p[-1, 0]:.0f} m, peaks {p[:, 1].max():.1f} m high, {lat:+.2f} m sideways at 25 m. Gameplay: first touch x{BL.num(r, 'touch', 1):.2f}, kick power x{BL.num(r, 'power', 1):.2f} "
+            w = float(np.linalg.norm(self.spin_vec())); turn = 'barely turns (a knuckle ball)' if w < BL.SPIN_LO else f'spins {w:.0f} rad/s ({w / math.tau:.1f} turns a second)'
+            self.info.config(text=f"{r['name']}, {turn}: flies {p[-1, 0]:.0f} m, peaks {p[:, 1].max():.1f} m high, {lat:+.2f} m sideways at 25 m. Gameplay: first touch x{BL.num(r, 'touch', 1):.2f}, kick power x{BL.num(r, 'power', 1):.2f} "
                                   f"(launch speed {s['speed'] * BL.num(r, 'power', 1):.1f} m/s). {r.get('note', '')}")
 
-    def refresh(self): self._sheet.clear(); self.plot()
+    def refresh(self): self._map.clear(); self.plot()

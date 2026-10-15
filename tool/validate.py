@@ -133,6 +133,7 @@ def run():
         if bd not in sys.path: sys.path.insert(0, bd)
         import balllib as BL
         for sev, rid, msg in BL.check(tables.table('balls').rows): add(sev, 'balls', rid, msg)
+        for sev, rid, msg in BL.check_kicks(tables.table('kick_styles').rows): add(sev, 'kick_styles', rid, msg)
     except (OSError, KeyError, ImportError): pass
     import re
     for r in tables.table('kits').rows:

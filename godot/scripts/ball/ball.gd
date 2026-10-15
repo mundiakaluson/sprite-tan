@@ -3,12 +3,12 @@ class_name Ball
 extends Node2D
 ## The ball on the pitch: 3D physics (BallPhysics, numbers from data/balls.csv) drawn as a pixel sprite that rolls, with a ground shadow. Add it to a stadium with
 ## stadium.add_ball(ball): the stadium projects it every frame (position, size by distance, depth order) and wires the goal nets (collider).
+## The sprite is drawn by shaders/ball.gdshader from the ball's real 3D orientation (turned by its spin each physics step): a rolling ball rolls, a trivela turns about a tilted axis, a knuckle ball barely turns.
 ## Gameplay hooks (from the ball row): power() scales kicks, touch() scales how easily a player controls it. Everything else (swerve, knuckle, bounce, grip) acts by itself.
 ##   var b := Ball.create("B02"); stadium.add_ball(b); b.launch(Vector3(0, 0.2, 0), Vector3(1, 0.1, 0), 28.0)
 signal bounced(speed: float)
 
 const SCENE := "res://scenes/ball/ball.tscn"
-const FRAMES := 16
 const SPRITE_DIAMETER := 14.0       # pixels of ball inside the 16 px cell
 
 @export var ball_id := "B01":
@@ -23,7 +23,9 @@ var phys := BallPhysics.new()
 var row := {}
 var live := false
 var collider := Callable()          ## (pos: Vector3, vel: Vector3, radius: float) -> Vector3, set by Stadium.add_ball
-var _rolled := 0.0
+var orient := Basis()               ## ball-local -> world
+var _view := Basis()                ## world -> camera, set by the stadium each frame
+var _mat: ShaderMaterial
 
 static func create(id := "B01") -> Ball:
 	var b := (load(SCENE) as PackedScene).instantiate() as Ball
@@ -37,6 +39,9 @@ func _ready() -> void:
 			var d := Vector2((x - 7.5) / 8.0, (y - 3.5) / 4.0).length()
 			if d <= 1.0: img.set_pixel(x, y, Color(0, 0, 0, 0.35))
 	shadow.texture = ImageTexture.create_from_image(img)
+	_mat = ShaderMaterial.new(); _mat.shader = load("res://shaders/ball.gdshader")
+	var white := Image.create(16, 16, false, Image.FORMAT_RGBA8); white.fill(Color.WHITE)
+	sprite.texture = ImageTexture.create_from_image(white); sprite.material = _mat
 	setup(ball_id)
 
 func setup(id: String) -> void:
@@ -45,9 +50,13 @@ func setup(id: String) -> void:
 		push_warning("Ball: '%s' not found in balls.csv (run Export to game)" % id)
 		return
 	phys.setup(row)
-	sprite.texture = Data.tex("balls/%s.png" % id)
-	sprite.hframes = FRAMES
-	sprite.frame = 0
+	_mat.set_shader_parameter("map", Data.tex("balls/%s_map.png" % id))
+	_mat.set_shader_parameter("shine", _f(row, "shine", 1.0))
+	_refresh_orient()
+
+static func _f(r: Dictionary, k: String, d: float) -> float:
+	var v = r.get(k, "")
+	return float(v) if str(v) != "" else d
 
 func power() -> float: return phys.power
 func touch() -> float: return phys.touch
@@ -68,9 +77,40 @@ func _physics_process(dt: float) -> void:
 		var hit := phys.step(sub)
 		if hit > 0.0: bounced.emit(hit)
 		if collider.is_valid(): phys.vel = collider.call(phys.pos, phys.vel, phys.rad)
-	_rolled += (Vector2(phys.vel.x, phys.vel.z).length() * dt) / phys.rad
-	sprite.frame = int(_rolled / TAU * FRAMES) % FRAMES
+	if phys.spin.length() > 0.0001:
+		orient = (Basis(phys.spin.normalized(), phys.spin.length() * dt) * orient).orthonormalized()
+	_refresh_orient()
 	if phys.vel.length() < 0.05 and phys.pos.y <= phys.rad + 0.001: live = false
+
+func set_view(world_to_camera: Basis) -> void:
+	_view = world_to_camera
+	_refresh_orient()
+
+func _refresh_orient() -> void:
+	if _mat != null: _mat.set_shader_parameter("orient", _view * orient)
+
+## A kick: style_id from data/kick_styles.csv (Finesse, Trivela, Knuckle, ...). aim = direction on the ground / towards the target (any length), strength = the player's power 0..1.3.
+## Speed = style speed x strength x style power x this ball's power. Aim error (degrees) is the style's error divided by this ball's touch. Spin is built in the travel frame:
+## roll about the travel axis, side about the vertical, back about the horizontal across the travel. Returns the style row.
+func kick(from: Vector3, aim: Vector3, style_id: String, strength := 1.0, rng_seed := -1.0) -> Dictionary:
+	var k := Data.row("kick_styles", style_id)
+	if k.is_empty():
+		push_warning("Ball.kick: no kick style '%s' (run Export to game)" % style_id)
+		return k
+	var flat := Vector3(aim.x, 0.0, aim.z)
+	if flat.length() < 0.001: flat = Vector3.RIGHT
+	flat = flat.normalized()
+	var err := _f(k, "error", 0.0) / maxf(0.3, phys.touch)
+	var yaw := deg_to_rad(_f(k, "azim", 0.0) + randf_range(-err, err))
+	var elev := deg_to_rad(_f(k, "elev", 0.0) + randf_range(-err, err) * 0.5)
+	var ex := flat.rotated(Vector3.UP, -yaw)                       # travel direction on the ground
+	var dir := (ex * cos(elev) + Vector3.UP * sin(elev))
+	var ey := Vector3.UP
+	var ez := ex.cross(ey)
+	var spin := ex * _f(k, "roll", 0.0) + ey * _f(k, "side", 0.0) + ez * _f(k, "back", 0.0)
+	var sp := _f(k, "speed", 25.0) * strength * _f(k, "power", 1.0)
+	launch(from, dir, sp, spin, (randf() * 100.0) if rng_seed < 0.0 else rng_seed)
+	return k
 
 ## called by the stadium each frame after it has placed this node: ground shadow offset in screen pixels (before this node's scale)
 func place_shadow(offset_px: Vector2, height_m: float) -> void:

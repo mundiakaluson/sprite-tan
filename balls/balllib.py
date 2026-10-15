@@ -1,5 +1,7 @@
 """Ball studio library: ball rows (data/balls.csv), flight physics, pixel-art texture sheets. Physics is mirrored in godot/scripts/ball/ball_physics.gd: keep the two in step.
-Ball textures: a 16-frame roll sheet (16x16 per frame, ball diameter 14 px) written to godot/assets/balls/<id>.png by the export step.
+Ball textures: an equirectangular panel map per ball (<id>_map.png) written by the export step. The game draws the 14 px ball with a shader (shaders/ball.gdshader) that wraps the map round
+a sphere and turns it with the ball's real spin, so a trivela spins about a tilted axis, a knuckle ball barely turns, a rolling ball rolls. render_orient() here does the same for the tool.
+Kick styles (data/kick_styles.csv) give the spin: roll = about the travel axis, side = about the vertical axis, back = about the horizontal axis across the travel (backspin).
 World: x along the pitch, y up, z across. Metres, seconds. spin = angular velocity vector (rad/s): +z = backspin when moving along +x, +y = side spin.
     python balls/balllib.py [out_dir]   writes sheets + a contact sheet"""
 import os, sys, csv, math, json
@@ -12,6 +14,7 @@ STEP = 1.0 / 120.0
 SPIN_LO = 15.0                  # below this spin rate (rad/s) a fast ball can knuckle
 KNU_W2 = 48.0                   # knuckle (metres of wobble) -> sideways acceleration: wobble runs at about 1 to 2 Hz, a = x * (2 pi f)^2
 FRAMES, CELL, DIAM = 16, 16, 14
+MAP_W, MAP_H = 512, 256
 PATTERNS = ['classic', 'voronoi8', 'stripes', 'rings', 'plain']
 
 
@@ -21,6 +24,38 @@ def num(r, k, d=0.0):
     try: return float(r.get(k))
     except (TypeError, ValueError): return d
 def hexrgb(h): h = h.strip().lstrip('#'); return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+def load_kicks():
+    with open(os.path.join(DATA, 'kick_styles.csv'), encoding='utf-8-sig') as f: return [dict(r) for r in csv.DictReader(f)]
+
+
+def check_kicks(rows):
+    out = []; ids = set()
+    for r in rows:
+        i = r['id']
+        if i in ids: out.append(('error', i, 'duplicate id'))
+        ids.add(i)
+        for k, lo, hi in (('speed', 3, 50), ('elev', 0, 60), ('azim', -30, 30), ('side', -100, 100), ('back', -100, 100), ('roll', -100, 100), ('power', 0.3, 1.5), ('error', 0, 15)):
+            if not lo <= num(r, k, -1e9) <= hi: out.append(('error', i, f'{k} must be {lo} to {hi}'))
+    return out
+
+
+def spin_vector(roll, side, back, azim_deg=0.0):
+    """world spin from the kick's roll / side / back numbers for a ball travelling along azim (0 = +x): ex = travel, ey = up, ez = ex x ey"""
+    a = math.radians(azim_deg); ex = np.array([math.cos(a), 0.0, math.sin(a)]); ey = np.array([0.0, 1.0, 0.0]); ez = np.cross(ex, ey)
+    return ex * roll + ey * side + ez * back
+
+
+def rot_axis(w, dt):
+    """rotation matrix for angular velocity w (rad/s) over dt seconds (Rodrigues)"""
+    ang = float(np.linalg.norm(w)) * dt
+    if ang < 1e-9: return np.eye(3)
+    k = np.asarray(w, float) / np.linalg.norm(w); K = np.array([[0, -k[2], k[1]], [k[2], 0, -k[0]], [-k[1], k[0], 0]])
+    return np.eye(3) + math.sin(ang) * K + (1 - math.cos(ang)) * (K @ K)
+
+
+CHASE_VIEW = np.array([[0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [-1.0, 0.0, 0.0]])      # world -> view for a camera behind the ball looking along +x
+
+
 def style(bid, rows=None):
     rows = rows or load()
     for r in rows:
@@ -95,14 +130,14 @@ class Ball:
         return bounced
 
 
-def launch(row, speed, elev_deg=15.0, azim_deg=0.0, side_spin=0.0, back_spin=0.0, seed=1.0, h=0.3):
+def launch(row, speed, elev_deg=15.0, azim_deg=0.0, side_spin=0.0, back_spin=0.0, seed=1.0, h=0.3, roll_spin=0.0):
     b = Ball(row, seed); e, a = math.radians(elev_deg), math.radians(azim_deg)
     b.pos = np.array([0.0, max(h, b.rad), 0.0]); b.vel = np.array([math.cos(e) * math.cos(a), math.sin(e), math.cos(e) * math.sin(a)]) * speed * num(row, 'power', 1.0)
-    b.spin = np.array([0.0, side_spin, back_spin]); return b
+    b.spin = spin_vector(roll_spin, side_spin, back_spin, azim_deg); return b
 
 
-def trajectory(row, speed, elev_deg=15, azim_deg=0, side_spin=0, back_spin=0, seed=1.0, t_max=3.5):
-    b = launch(row, speed, elev_deg, azim_deg, side_spin, back_spin, seed); pts = [b.pos.copy()]; n = int(t_max / STEP)
+def trajectory(row, speed, elev_deg=15, azim_deg=0, side_spin=0, back_spin=0, seed=1.0, t_max=3.5, roll_spin=0.0):
+    b = launch(row, speed, elev_deg, azim_deg, side_spin, back_spin, seed, roll_spin=roll_spin); pts = [b.pos.copy()]; n = int(t_max / STEP)
     for i in range(n):
         b.step()
         if i % 2 == 0: pts.append(b.pos.copy())
@@ -125,7 +160,7 @@ def panel_colour(n, row):
     """colour of the ball surface at unit vectors n (Nx3, in the ball's own frame) -> Nx3 floats"""
     a, b, c = (np.array(hexrgb(row[k]), float) for k in ('color_a', 'color_b', 'color_c')); pat = row.get('pattern', 'classic'); out = np.tile(a, (len(n), 1)); seam = np.zeros(len(n), bool)
     if pat in ('classic', 'voronoi8'):
-        C, npent = _centres(pat); d = n @ C.T; o = np.argsort(-d, axis=1); i1, i2 = o[:, 0], o[:, 1]; gap = d[np.arange(len(n)), i1] - d[np.arange(len(n)), i2]; seam = gap < (0.022 if pat == 'classic' else 0.05)
+        C, npent = _centres(pat); d = n @ C.T; o = np.argsort(-d, axis=1); i1, i2 = o[:, 0], o[:, 1]; gap = d[np.arange(len(n)), i1] - d[np.arange(len(n)), i2]; seam = gap < (0.03 if pat == 'classic' else 0.055)
         if pat == 'classic': out[i1 < npent] = b
         else: par = np.array([(C[i] > 0).sum() % 2 for i in range(len(C))]); out[par[i1] == 1] = b
     elif pat == 'stripes':
@@ -138,19 +173,31 @@ def panel_colour(n, row):
     return out
 
 
-def render_frame(row, angle):
-    """one frame of the ball rolled about the horizontal axis by `angle` radians"""
-    yy, xx = np.mgrid[0:CELL, 0:CELL]; cx = cy = (CELL - 1) / 2; R = DIAM / 2
-    nx = (xx - cx) / R; ny = -(yy - cy) / R; r2 = nx ** 2 + ny ** 2; inside = r2 <= 1.0; nz = np.sqrt(np.clip(1 - r2, 0, 1))
-    n = np.stack([nx, ny, nz], -1)[inside]; ca, sa = math.cos(-angle), math.sin(-angle)
-    nl = np.stack([n[:, 0], ca * n[:, 1] - sa * n[:, 2], sa * n[:, 1] + ca * n[:, 2]], -1)                       # inverse rotation about x
-    col = panel_colour(nl, row)
-    L = np.array([-0.45, 0.6, 0.66]); L /= np.linalg.norm(L); lam = np.clip(n @ L, 0, 1); band = np.digitize(lam, [0.18, 0.5, 0.8]); mult = np.array([0.74, 0.88, 1.0, 1.08])[band]
-    col = np.clip(col * mult[:, None], 0, 255)
+def render_map(row):
+    """the equirectangular panel map the game wraps round the ball (u = longitude, v = latitude, v = 0 at the top pole)"""
+    yy, xx = np.mgrid[0:MAP_H, 0:MAP_W]; lon = ((xx + 0.5) / MAP_W - 0.5) * math.tau; lat = (0.5 - (yy + 0.5) / MAP_H) * math.pi
+    n = np.stack([np.cos(lat) * np.cos(lon), np.sin(lat), np.cos(lat) * np.sin(lon)], -1).reshape(-1, 3)
+    return Image.fromarray(panel_colour(n, row).reshape(MAP_H, MAP_W, 3).astype(np.uint8), 'RGB')
+
+
+def render_orient(row, M=None, map_img=None):
+    """the 16x16 ball sprite for an orientation M (3x3, ball-local -> view space: x right, y up, z towards the viewer). Mirrors shaders/ball.gdshader."""
+    M = np.eye(3) if M is None else M; mp = np.asarray(map_img or render_map(row)); mh, mw = mp.shape[:2]
+    yy, xx = np.mgrid[0:CELL, 0:CELL]; R = DIAM / 2
+    nx = (xx + 0.5 - CELL / 2) / R; ny = -(yy + 0.5 - CELL / 2) / R; r2 = nx ** 2 + ny ** 2; inside = r2 <= 1.0; nz = np.sqrt(np.clip(1 - r2, 0, 1))
+    n = np.stack([nx, ny, nz], -1)[inside]; nl = n @ M                                                                  # = M.T @ n for each row
+    lon = np.arctan2(nl[:, 2], nl[:, 0]); lat = np.arcsin(np.clip(nl[:, 1], -1, 1))
+    mx = np.clip(((lon / math.tau + 0.5) * mw).astype(int), 0, mw - 1); my = np.clip(((0.5 - lat / math.pi) * mh).astype(int), 0, mh - 1); col = mp[my, mx].astype(float)
+    L = np.array([-0.45, 0.6, 0.66]); L /= np.linalg.norm(L); lam = np.clip(n @ L, 0, 1); band = np.digitize(lam, [0.18, 0.5, 0.8]); col = np.clip(col * np.array([0.74, 0.88, 1.0, 1.08])[band][:, None], 0, 255)
     if num(row, 'shine') > 0.5: col[lam > 0.93] = (255, 255, 255)
     img = np.zeros((CELL, CELL, 4), np.uint8); rgb = np.zeros((CELL, CELL, 3), np.uint8); rgb[inside] = col.astype(np.uint8); img[..., :3] = rgb; img[..., 3] = np.where(inside, 255, 0)
-    edge = inside & (r2 > (1 - 2.0 / R) ** 2); img[edge, :3] = (img[edge, :3] * 0.62).astype(np.uint8)                # dark rim
+    edge = inside & (r2 > (1 - 2.0 / R) ** 2); img[edge, :3] = (img[edge, :3] * 0.62).astype(np.uint8)
     return Image.fromarray(img, 'RGBA')
+
+
+def render_frame(row, angle):
+    """one frame of the ball rolled about the horizontal axis by `angle` radians (for contact sheets)"""
+    c, s_ = math.cos(angle), math.sin(angle); return render_orient(row, np.array([[1, 0, 0], [0, c, -s_], [0, s_, c]]))
 
 
 def render_sheet(row):
@@ -161,8 +208,10 @@ def render_sheet(row):
 
 def render_all(out_dir, log=print, tick=None):
     rows = load(); os.makedirs(out_dir, exist_ok=True)
+    for f in os.listdir(out_dir):                                       # drop old flipbook sheets
+        if f.endswith('.png') and not f.endswith('_map.png') and f != 'sheet.png': os.remove(os.path.join(out_dir, f))
     for i, r in enumerate(rows):
-        render_sheet(r).save(os.path.join(out_dir, r['id'] + '.png')); log(f"  {r['id']} {r['name']}")
+        render_map(r).save(os.path.join(out_dir, r['id'] + '_map.png')); log(f"  {r['id']} {r['name']}: panel map")
         if tick: tick(i + 1, len(rows))
     return len(rows)
 
@@ -170,8 +219,8 @@ def render_all(out_dir, log=print, tick=None):
 if __name__ == '__main__':
     out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, 'export', 'balls'); n = render_all(out); rows = load()
     sheet = Image.new('RGBA', (CELL * FRAMES * 4, CELL * 4 * len(rows)), (60, 110, 70, 255))
-    for j, r in enumerate(rows): sheet.alpha_composite(Image.open(os.path.join(out, r['id'] + '.png')).resize((CELL * FRAMES * 4, CELL * 4), Image.NEAREST), (0, j * CELL * 4))
+    for j, r in enumerate(rows): sheet.alpha_composite(render_sheet(r).resize((CELL * FRAMES * 4, CELL * 4), Image.NEAREST), (0, j * CELL * 4))
     sheet.save(os.path.join(out, 'sheet.png')); print('wrote', n, 'balls to', out)
     for r in rows:
-        for nm, kw in (('drive', dict(speed=28, elev_deg=8)), ('knuckle', dict(speed=30, elev_deg=6)), ('curler', dict(speed=24, elev_deg=14, side_spin=-45, back_spin=10))):
-            p = trajectory(r, **kw); print(r['id'], nm, 'range', round(float(p[-1, 0]), 1), 'lateral at 25m', round(float(np.interp(25, p[:, 0], p[:, 2])), 2), 'peak', round(float(p[:, 1].max()), 2))
+        for kk in load_kicks():
+            nm = kk['name']; p = trajectory(r, num(kk, 'speed'), num(kk, 'elev'), num(kk, 'azim'), num(kk, 'side'), num(kk, 'back'), roll_spin=num(kk, 'roll')); print(r['id'], nm, 'range', round(float(p[-1, 0]), 1), 'lateral at 25m', round(float(np.interp(25, p[:, 0], p[:, 2])), 2), 'peak', round(float(p[:, 1].max()), 2))

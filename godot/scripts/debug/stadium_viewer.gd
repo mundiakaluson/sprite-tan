@@ -9,6 +9,8 @@ var idx := 0
 var ball: Ball
 var ball_ids: Array = []
 var ball_idx := 0
+var kick_ids: Array = []
+var kick_idx := 0
 
 func _ready() -> void:
 	if not Data.ok:
@@ -20,6 +22,7 @@ func _ready() -> void:
 		var p := Player.create(); stadium.add_actor(p, spots[i]); p.setup(rows[i])
 		p.face_vector(Vector2(1, 0))
 	for r in Data.table("balls"): ball_ids.append(r["id"])
+	for r in Data.table("kick_styles"): kick_ids.append(r["id"])
 	ball = Ball.create(ball_ids[0] if not ball_ids.is_empty() else "B01"); stadium.add_ball(ball)
 	_label()
 
@@ -27,8 +30,14 @@ func shoot() -> void:
 	var goal_x := Stadium.L / 2.0
 	var from := Vector3(goal_x - 22.0, 0.3, randf_range(-6.0, 6.0))
 	var target := Vector3(goal_x, randf_range(0.3, 2.3), randf_range(-3.4, 3.4))
-	ball.launch(from, target - from + Vector3(0, 1.2, 0), 28.0, Vector3(0, randf_range(-30.0, 30.0), randf_range(0.0, 25.0)), randf() * 100.0)
+	var style := Data.row("kick_styles", kick_ids[kick_idx]) if not kick_ids.is_empty() else {}
+	ball.kick(from, target - from, String(style.get("id", "K01")), 1.0)
 	stadium.focus = Vector2(50, 85)
+
+func next_kick() -> void:
+	if kick_ids.is_empty(): return
+	kick_idx = (kick_idx + 1) % kick_ids.size()
+	_label()
 
 func next_ball() -> void:
 	if ball_ids.is_empty(): return
@@ -37,7 +46,7 @@ func next_ball() -> void:
 	_label()
 
 func _label() -> void:
-	info.text = "%s   ball %s   A/D = camera   1 2 3 = stadium   B = shoot   N = next ball" % [stadium.stadium_id, ball.ball_id if ball != null else "-"]
+	info.text = "%s   ball %s   A/D = camera   1 2 3 = stadium   B = shoot   N = next ball   K = next kick (%s)" % [stadium.stadium_id, ball.ball_id if ball != null else "-", Data.row("kick_styles", kick_ids[kick_idx]).get("name", "-") if not kick_ids.is_empty() else "-"]
 
 func _process(dt: float) -> void:
 	var move := Input.get_axis(&"ui_left", &"ui_right")
@@ -51,5 +60,6 @@ func _unhandled_key_input(ev: InputEvent) -> void:
 		stadium.stadium_id = ids[n]; _label()
 	elif k == KEY_B: shoot()
 	elif k == KEY_N: next_ball()
+	elif k == KEY_K: next_kick()
 	elif k == KEY_A: stadium.focus.y = clampf(stadium.focus.y - 6.0, 0.0, 100.0)
 	elif k == KEY_D: stadium.focus.y = clampf(stadium.focus.y + 6.0, 0.0, 100.0)
