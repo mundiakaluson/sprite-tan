@@ -29,8 +29,9 @@ func _show(t: Texture2D, pos: Vector2, s: int) -> void:
 	var r := TextureRect.new(); r.texture = t; r.position = pos; r.scale = Vector2(s, s)
 	r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST; add_child(r)
 
-func _unhandled_key_input(e: InputEvent) -> void:
-	if not (e is InputEventKey) or not e.pressed or player == null: return
+func _unhandled_key_input(ev: InputEvent) -> void:
+	var e := ev as InputEventKey
+	if e == null or not e.pressed or player == null: return
 	if e.keycode == KEY_LEFT: player.face(player.dir - 1)
 	elif e.keycode == KEY_RIGHT: player.face(player.dir + 1)
 	elif e.keycode == KEY_SPACE:

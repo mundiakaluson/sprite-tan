@@ -20,12 +20,12 @@ func reload() -> void:
 		return
 	for f in d.get_files():
 		if f.ends_with(".csv"):
-			var name := f.get_basename()
-			tables[name] = _read_csv("res://data/" + f)
+			var tname := f.get_basename()
+			tables[tname] = _read_csv("res://data/" + f)
 			var idx := {}
-			for r in tables[name]:
+			for r in tables[tname]:
 				if r.has("id"): idx[r["id"]] = r
-			by_id[name] = idx
+			by_id[tname] = idx
 	manifest = _read_json("res://data/export_manifest.json")
 	anims = _read_json("res://assets/sprites/animations.json")
 	ok = tables.has("players")
@@ -50,11 +50,11 @@ func _read_json(path: String) -> Dictionary:
 	var v = JSON.parse_string(FileAccess.get_file_as_string(path))
 	return v if v is Dictionary else {}
 
-func table(name: String) -> Array:
-	return tables.get(name, [])
+func table(tname: String) -> Array:
+	return tables.get(tname, [])
 
-func row(name: String, id: String) -> Dictionary:
-	return by_id.get(name, {}).get(id, {})
+func row(tname: String, id: String) -> Dictionary:
+	return by_id.get(tname, {}).get(id, {})
 
 static func num(v, d := 0.0) -> float:
 	var s := str(v).strip_edges()

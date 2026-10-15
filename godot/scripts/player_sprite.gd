@@ -7,7 +7,7 @@ extends Sprite2D
 const SHADER := preload("res://shaders/uv_skin.gdshader")
 var anim := "run"
 var dir := 16
-var frame := 0
+var fidx := 0
 var t := 0.0
 var fps_mult := 1.0
 var _meta := {}
@@ -27,12 +27,12 @@ func setup(player_id: String) -> void:
 	offset = Vector2(-o[0], -o[1])
 	play(anim)
 
-func play(name: String, loop_override := -1) -> void:
-	anim = name
-	frame = 0
+func play(clip: String) -> void:
+	anim = clip
+	fidx = 0
 	t = 0.0
-	texture = Data.tex("sprites/%s_uv_sheet.png" % name)
-	_meta = Data.anims.get("animations", {}).get(name, {})
+	texture = Data.tex("sprites/%s_uv_sheet.png" % clip)
+	_meta = Data.anims.get("animations", {}).get(clip, {})
 	_apply()
 
 func face(d: int) -> void:
@@ -40,7 +40,7 @@ func face(d: int) -> void:
 	_apply()
 
 func finished() -> bool:
-	return not _meta.get("loop", true) and frame >= int(_meta.get("frames", 1)) - 1
+	return not _meta.get("loop", true) and fidx >= int(_meta.get("frames", 1)) - 1
 
 func _process(delta: float) -> void:
 	if _meta.is_empty(): return
@@ -49,10 +49,10 @@ func _process(delta: float) -> void:
 	t += delta * 1000.0
 	while t >= ms:
 		t -= ms
-		if frame < n - 1: frame += 1
-		elif _meta.get("loop", true): frame = 0
+		if fidx < n - 1: fidx += 1
+		elif _meta.get("loop", true): fidx = 0
 	_apply()
 
 func _apply() -> void:
 	var c: Array = Data.anims.get("cell", [40, 40])
-	region_rect = Rect2(frame * c[0], dir * c[1], c[0], c[1])
+	region_rect = Rect2(fidx * c[0], dir * c[1], c[0], c[1])
