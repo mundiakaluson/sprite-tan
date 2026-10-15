@@ -1,11 +1,12 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ball/ball.gd" id="1"]
+[ext_resource type="AnimationLibrary" path="res://animations/ball/ball_library.tres" id="2"]
 
 [node name="Ball" type="Node2D"]
 script = ExtResource("1")
 
-[node name="Shadow" type="Sprite2D" parent="."]
-z_index = -1
-
-[node name="Sprite" type="Sprite2D" parent="."]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": ExtResource("2")
+}

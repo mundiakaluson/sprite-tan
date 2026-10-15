@@ -9,6 +9,7 @@ extends Node2D
 signal bounced(speed: float)
 
 const SCENE := "res://scenes/ball/ball.tscn"
+const CHASE_VIEW := Basis(Vector3(0, 0, -1), Vector3(0, 1, 0), Vector3(1, 0, 0))   # world x -> view -z, y -> y, z -> x
 const SPRITE_DIAMETER := 14.0       # pixels of ball inside the 16 px cell
 
 @export var ball_id := "B01":
@@ -16,15 +17,23 @@ const SPRITE_DIAMETER := 14.0       # pixels of ball inside the 16 px cell
 		ball_id = v
 		if is_node_ready(): setup(v)
 
-@onready var sprite: Sprite2D = $Sprite
-@onready var shadow: Sprite2D = $Shadow
+@export_group("Animation preview")
+## spin the ball by hand (rad/s, world axes; +x = roll about the travel axis, +y = side spin, +z = backspin). The AnimationPlayer clips (one per kick style, generated from
+## data/kick_styles.csv) set this, so play a clip in the Animation tab to see that kick's spin. Ignored while the ball is flying (live).
+@export var preview_spin := Vector3.ZERO
+@export_range(0.05, 2.0) var preview_speed := 0.3        ## slow motion for the preview
+
+## The Shadow and Sprite nodes are made in _ready() (not saved into the scene, so the scene file stays clean); the clips in the AnimationPlayer find the sprite by the name "Sprite".
+var sprite: Sprite2D
+var shadow: Sprite2D
+@onready var anim_player: AnimationPlayer = $AnimationPlayer
 
 var phys := BallPhysics.new()
 var row := {}
 var live := false
 var collider := Callable()          ## (pos: Vector3, vel: Vector3, radius: float) -> Vector3, set by Stadium.add_ball
 var orient := Basis()               ## ball-local -> world
-var _view := Basis()                ## world -> camera, set by the stadium each frame
+var _view := CHASE_VIEW             ## world -> camera, set by the stadium each frame (the default looks at the ball from behind)
 var _mat: ShaderMaterial
 
 static func create(id := "B01") -> Ball:
@@ -33,6 +42,8 @@ static func create(id := "B01") -> Ball:
 	return b
 
 func _ready() -> void:
+	shadow = Sprite2D.new(); shadow.name = "Shadow"; shadow.z_index = -1; add_child(shadow)
+	sprite = Sprite2D.new(); sprite.name = "Sprite"; add_child(sprite)
 	var img := Image.create(16, 8, false, Image.FORMAT_RGBA8)
 	for y in 8:
 		for x in 16:
@@ -69,6 +80,12 @@ func launch(from: Vector3, dir: Vector3, speed: float, spin := Vector3.ZERO, see
 func stop() -> void:
 	phys.vel = Vector3.ZERO; phys.spin = Vector3.ZERO; live = false
 
+func _process(dt: float) -> void:
+	if live: return
+	if preview_spin.length() > 0.0001:                  # animation preview (editor and game): turn by the clip's spin in slow motion
+		orient = (Basis(preview_spin.normalized(), preview_spin.length() * dt * preview_speed) * orient).orthonormalized()
+		_refresh_orient()
+
 func _physics_process(dt: float) -> void:
 	if Engine.is_editor_hint() or not live: return
 	var n := maxi(1, int(ceil(dt * 120.0)))
@@ -87,7 +104,11 @@ func set_view(world_to_camera: Basis) -> void:
 	_refresh_orient()
 
 func _refresh_orient() -> void:
-	if _mat != null: _mat.set_shader_parameter("orient", _view * orient)
+	if _mat == null: return
+	var m := _view * orient                      # ball-local -> view: its columns are the ball's own axes seen from the camera
+	_mat.set_shader_parameter("axis_x", m.x)
+	_mat.set_shader_parameter("axis_y", m.y)
+	_mat.set_shader_parameter("axis_z", m.z)
 
 ## A kick: style_id from data/kick_styles.csv (Finesse, Trivela, Knuckle, ...). aim = direction on the ground / towards the target (any length), strength = the player's power 0..1.3.
 ## Speed = style speed x strength x style power x this ball's power. Aim error (degrees) is the style's error divided by this ball's touch. Spin is built in the travel frame:

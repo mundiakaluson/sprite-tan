@@ -185,8 +185,32 @@ def step_packs(c):
     c.counts['pack wrappers'] = len(packs); c.log(f'drew {len(packs)} pack wrappers and {len(PL.RARS)} card backs')
 
 
+def ball_library():
+    """AnimationLibrary for the Ball scene: idle + one clip per kick style that sets Ball.preview_spin (so the Animation tab shows how each kick spins the ball).
+    Knuckle-like kicks (almost no spin) also jump the sprite sideways abruptly. Regenerated every export from data/kick_styles.csv."""
+    import re, random, balllib as BL
+    ks = BL.load_kicks(); clips = [('idle', 'idle', (0.0, 0.0, 0.0), 0.0)]
+    for k in ks:
+        sp = BL.spin_vector(BL.num(k, 'roll'), BL.num(k, 'side'), BL.num(k, 'back'), 0.0)
+        clips.append((k['id'] + '_' + re.sub(r'[^A-Za-z0-9]+', '_', k['name']).strip('_'), k['name'], tuple(float(v) for v in sp), float(sum(v * v for v in sp) ** 0.5)))
+    L = ['[gd_resource type="AnimationLibrary" load_steps=%d format=3]\n' % (len(clips) + 1)]
+    for cid, nm, sp, mag in clips:
+        L.append(f'[sub_resource type="Animation" id="Animation_{cid}"]\nresource_name = "{cid}"\nlength = 1.0\nloop_mode = 1\nstep = 0.05')
+        L.append('tracks/0/type = "value"\ntracks/0/imported = false\ntracks/0/enabled = true\ntracks/0/path = NodePath(".:preview_spin")\ntracks/0/interp = 1\ntracks/0/loop_wrap = true\n'
+                 'tracks/0/keys = {\n"times": PackedFloat32Array(0),\n"transitions": PackedFloat32Array(1),\n"update": 1,\n"values": [Vector3(%.3f, %.3f, %.3f)]\n}' % sp)
+        if cid != 'idle' and mag < BL.SPIN_LO:                                   # a knuckle ball: no spin, the path jumps about instead
+            r = random.Random(cid); ts = [0.0, 0.18, 0.41, 0.66, 0.83]; vs = ', '.join('Vector2(%.1f, %.1f)' % (r.uniform(-1.5, 1.5), r.uniform(-1.0, 1.0)) for _ in ts)
+            L.append('tracks/1/type = "value"\ntracks/1/imported = false\ntracks/1/enabled = true\ntracks/1/path = NodePath("Sprite:position")\ntracks/1/interp = 0\ntracks/1/loop_wrap = true\n'
+                     'tracks/1/keys = {\n"times": PackedFloat32Array(%s),\n"transitions": PackedFloat32Array(%s),\n"update": 1,\n"values": [%s]\n}' % (', '.join(str(t) for t in ts), ', '.join('1' for _ in ts), vs))
+        L.append('')
+    L.append('[resource]\n_data = {\n' + ',\n'.join(f'&"{cid}": SubResource("Animation_{cid}")' for cid, *_ in clips) + '\n}\n')
+    return '\n'.join(L), len(clips)
+
+
 def step_balls(c):
     import balllib as BL
+    lib, n_clips = ball_library(); od = os.path.join(c.out, 'animations', 'ball'); os.makedirs(od, exist_ok=True)
+    open(os.path.join(od, 'ball_library.tres'), 'w', newline='\n').write(lib); c.counts['ball animations'] = n_clips; c.log(f'wrote {n_clips} ball animations (idle + one per kick style) to animations/ball/')
     n = BL.render_all(c.path('assets', 'balls'), log=c.log, tick=c.tick); c.counts['balls'] = n
     c.log(f'drew {n} ball panel maps (physics numbers go with data/balls.csv, spins with data/kick_styles.csv)')
 
