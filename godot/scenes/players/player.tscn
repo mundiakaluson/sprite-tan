@@ -1,42 +1,35 @@
-[gd_scene format=3 uid="uid://bjvnfrnr2x0ps"]
+[gd_scene load_steps=10 format=3]
 
-[ext_resource type="Script" uid="uid://0uc6lj3vd80" path="res://scripts/players/player.gd" id="1"]
-[ext_resource type="Script" uid="uid://6hc4xvlafffk" path="res://scripts/players/player_sprite.gd" id="2"]
-[ext_resource type="Shader" uid="uid://cas52cdby7o4n" path="res://shaders/uv_skin.gdshader" id="2_es4m5"]
-[ext_resource type="Script" uid="uid://c6r17whlrw62t" path="res://scripts/players/state_machine.gd" id="3"]
-[ext_resource type="Texture2D" uid="uid://bw7jd1b2nlvoy" path="res://assets/looks/PL242.png" id="3_fsrjl"]
-[ext_resource type="Script" uid="uid://d076o77wy5keu" path="res://scripts/players/player_state.gd" id="4"]
-[ext_resource type="Texture2D" uid="uid://dtmpqi3g32528" path="res://assets/sprites/base_idle_uv_sheet.png" id="4_mh0hk"]
-[ext_resource type="Script" uid="uid://cydrhggkrrihg" path="res://scripts/players/states/state_run.gd" id="5"]
-[ext_resource type="Script" uid="uid://dpouw6tigaiev" path="res://scripts/players/states/state_action.gd" id="6"]
-[ext_resource type="Script" uid="uid://7vqqngsj75eg" path="res://scripts/players/states/state_timed.gd" id="7"]
+[ext_resource type="Script" path="res://scripts/players/player.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/players/player_sprite.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/players/state_machine.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/players/player_state.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/players/states/state_run.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/players/states/state_action.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/players/states/state_timed.gd" id="7"]
+[ext_resource type="AnimationLibrary" path="res://animations/players/player_library.tres" id="8"]
+[ext_resource type="AnimationNodeStateMachine" path="res://animations/players/player_flow.tres" id="9"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_18rgo"]
-shader = ExtResource("2_es4m5")
-shader_parameter/skin = ExtResource("3_fsrjl")
-
-[node name="Player" type="Node2D" unique_id=12105812]
+[node name="Player" type="Node2D"]
 script = ExtResource("1")
 
-[node name="Sprite" type="Sprite2D" parent="." unique_id=1791074944]
-texture_filter = 1
-material = SubResource("ShaderMaterial_18rgo")
-position = Vector2(96, 55)
-texture = ExtResource("4_mh0hk")
-centered = false
-offset = Vector2(-20, -30)
-region_enabled = true
-region_rect = Rect2(720, 640, 40, 40)
+[node name="Sprite" type="Sprite2D" parent="."]
 script = ExtResource("2")
-sheet = null
-frame_index = null
-direction = null
 
-[node name="StateMachine" type="Node" parent="." unique_id=844633000]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": ExtResource("8")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = ExtResource("9")
+anim_player = NodePath("../AnimationPlayer")
+
+[node name="StateMachine" type="Node" parent="."]
 script = ExtResource("3")
 initial_state = NodePath("Idle")
 
-[node name="Idle" type="Node" parent="StateMachine" unique_id=510053267]
+[node name="Idle" type="Node" parent="StateMachine"]
 script = ExtResource("4")
 clip = "base_idle"
 event_transitions = {
@@ -45,14 +38,21 @@ event_transitions = {
 "stun": "Stunned"
 }
 
-[node name="Run" type="Node" parent="StateMachine" unique_id=7158790]
+[node name="Run" type="Node" parent="StateMachine"]
 script = ExtResource("5")
+clip = "run"
+stop_movement = false
+event_transitions = {
+"play_action": "Action",
+"stun": "Stunned"
+}
 
-[node name="Action" type="Node" parent="StateMachine" unique_id=310201770]
+[node name="Action" type="Node" parent="StateMachine"]
 script = ExtResource("6")
 go_to_when_clip_ends = &"Idle"
 
-[node name="Stunned" type="Node" parent="StateMachine" unique_id=2097277720]
+[node name="Stunned" type="Node" parent="StateMachine"]
 script = ExtResource("7")
-duration = 1.2
 clip = "base_stun"
+duration = 1.2
+then_go_to = &"Idle"

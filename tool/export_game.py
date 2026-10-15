@@ -13,7 +13,7 @@ What lands where (godot/ is the Godot 4 project; assets/ and data/ are generated
   assets/card/      shared card layers: bg_/top_ per rarity, foil_ strips (36 frames) per foil style
   assets/font/      the 3x5 pixel font (atlas + chars.txt); data/card_rules.json has the layout numbers
   assets/packs/     pack wrappers drawn from data/packs.csv and the card backs per tier
-  animations/       player_library.tres (one Animation per sprite sheet) and player_flow.tres (AnimationTree state machine, arrows from data/animation_flow.csv); tracked in git
+  animations/players/ player_library.tres (one Animation per sprite sheet) and player_flow.tres (AnimationTree state machine, arrows from data/animation_flow.csv); tracked in git
   shaders/          uv_skin.gdshader"""
 import os, sys, json, shutil, time, csv, subprocess
 
@@ -116,8 +116,8 @@ def step_players(c):
 
 def step_animations(c):
     """one Godot Animation per sprite sheet (AnimationPlayer library) + an AnimationTree state machine whose arrows come from data/animation_flow.csv.
-    Written to godot/animations/ (tracked in git: they only name clips, they never point at generated images)."""
-    meta = json.load(open(os.path.join(UV, 'animations.json')))['animations']; names = sorted(meta); out = os.path.join(c.out, 'animations'); os.makedirs(out, exist_ok=True)
+    Written to godot/animations/players/ (tracked in git: they only name clips, they never point at generated images)."""
+    meta = json.load(open(os.path.join(UV, 'animations.json')))['animations']; names = sorted(meta); out = os.path.join(c.out, 'animations', 'players'); os.makedirs(out, exist_ok=True)
     flow = [r for r in csv.DictReader(open(os.path.join(DATA, 'animation_flow.csv'), encoding='utf-8-sig')) if r['from'] in meta and r['to'] in meta]
     # --- library
     L = ['[gd_resource type="AnimationLibrary" load_steps=%d format=3]\n' % (len(names) + 1)]
