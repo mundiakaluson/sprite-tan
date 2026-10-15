@@ -53,6 +53,7 @@ After a change, say what to test and ask the user to paste the Output panel if s
 Update `godot/README.md`, `docs/DECISIONS.md`, `data/progress.csv`, the Claude Docs design document (14a/14b), and this file if a rule changes. Run `python tool/selftest.py` and the export.
 
 ## Stadium and goals (3D)
+Placing in the editor: instance scenes/players/player.tscn or scenes/ball/ball.tscn under the stadium's Actors node and set Pitch Position (Preview Player / Ball Id pick the look); Stadium._adopt_placed() registers them at run time. Do not attach scripts by hand (data.gd, ball_physics.gd, goal_net.gd are RefCounted, not nodes).
 - `scenes/stadium/stadium.tscn` is a Node3D (Camera3D TV view). Art in `assets/pitches/<id>/` is generated + tracked. Players stay 2D and are projected with `Stadium.add_actor(node, pitch_pos)`.
 - Goals: `scripts/stadium/goal.gd` (Goal) + `goal_net.gd` (GoalNet, pure sim). Styles come from `data/goals.csv`. goal_net.gd mirrors `stadiums/goallib.py`: change one, change the other, then re-tune in the tool's Goal simulator tab.
 - Stadium look and camera come from `data/stadiums.csv` (Stadiums tab in the tool). Test scene: `scenes/debug/stadium_viewer.tscn` (A/D camera, 1-3 stadium, B shoots).

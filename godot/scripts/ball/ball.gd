@@ -17,6 +17,9 @@ const SPRITE_DIAMETER := 14.0       # pixels of ball inside the 16 px cell
 		ball_id = v
 		if is_node_ready(): setup(v)
 
+## where the ball rests when this scene is placed inside a Stadium's Actors node (pitch coords)
+@export var pitch_position := Vector2(50, 50)
+
 @export_group("Animation preview")
 ## spin the ball by hand (rad/s, world axes; +x = roll about the travel axis, +y = side spin, +z = backspin). The AnimationPlayer clips (one per kick style, generated from
 ## data/kick_styles.csv) set this, so play a clip in the Animation tab to see that kick's spin. Ignored while the ball is flying (live).

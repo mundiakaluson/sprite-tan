@@ -32,6 +32,8 @@ var move_target := Vector2.ZERO
 	set(v):
 		preview_player = v
 		if is_node_ready() and sprite != null and Engine.is_editor_hint(): sprite.player_id = v
+## where the player stands when this scene is placed inside a Stadium's Actors node (pitch coords, x 0-100 across, y 0-100 own goal to opponent goal)
+@export var pitch_position := Vector2(50, 50)
 var _playback: AnimationNodeStateMachinePlayback
 var _chain := {}                # clip -> next clip, for arrows marked auto in animation_flow.csv
 

@@ -42,6 +42,24 @@ var _balls: Array[Ball] = []
 
 func _ready() -> void:
 	rebuild()
+	if not Engine.is_editor_hint(): _adopt_placed()
+
+## Players and balls placed under Actors in the scene editor (instances of player.tscn / ball.tscn) are registered when the game starts.
+## Set their Pitch Position in the inspector; a player shows the look of its Preview Player id.
+func _adopt_placed() -> void:
+	for c in actors.get_children():
+		if c is Player:
+			add_actor(c, c.pitch_position)
+			c.setup(Data.row("players", c.preview_player))
+			c.face_vector(Vector2(1, 0))
+		elif c is Ball:
+			_adopt_ball(c)
+
+func _adopt_ball(b: Ball) -> void:
+	_balls.append(b)
+	b.collider = ball_update
+	b.launch(world_pos(b.pitch_position) + Vector3(0, 0.2, 0), Vector3.RIGHT, 0.0)
+	_project_ball(b)
 
 # ---- coordinates
 func world_pos(p: Vector2) -> Vector3:
