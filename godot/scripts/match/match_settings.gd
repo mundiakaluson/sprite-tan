@@ -9,8 +9,14 @@ static var current: MatchSettings
 @export_group("Match")
 @export var stadium_id := "ST01"
 @export var ball_id := "B01"
-@export var home_formation := "F01"
-@export var away_formation := "F02"
+## formation by name (pick from the list; names come from data/formations.csv)
+@export var home_formation := "4-4-2"
+@export var away_formation := "4-3-3"
+## kit by id (data/kits.csv: home, away, keeper, third, ...). Give the teams different kits so you can tell them apart.
+@export var home_kit := "home"
+@export var away_kit := "away"
+## the goalkeepers' kit
+@export var keeper_kit := "keeper"
 ## real minutes the 90 game minutes take
 @export_range(1.0, 20.0) var match_minutes := 4.0
 
@@ -146,3 +152,29 @@ static var current: MatchSettings
 @export var receiver_control_k := 1.3
 ## a ball too fast to control keeps this much of its speed after bouncing off the player
 @export_range(0.0, 1.0) var bounce_off := 0.45
+
+## drop-down lists in the inspector, read from the exported tables
+func _validate_property(property: Dictionary) -> void:
+	var table := ""
+	var col := "id"
+	match property.name:
+		"home_formation", "away_formation":
+			table = "formations"
+			col = "name"
+		"home_kit", "away_kit", "keeper_kit": table = "kits"
+		_: return
+	var names: Array = []
+	for r in Data.table(table): names.append(str(r.get(col, "")))
+	if names.is_empty(): return
+	property.hint = PROPERTY_HINT_ENUM
+	property.hint_string = ",".join(names)
+
+## formation id (F01) for a name ("4-4-2") or an id
+static func formation_id(name_or_id: String) -> String:
+	for r in Data.table("formations"):
+		if r["name"] == name_or_id or r["id"] == name_or_id: return r["id"]
+	return "F01"
+
+## jersey colour of a kit, for the HUD
+static func kit_color(kit: String) -> Color:
+	return Color(str(Data.row("kits", kit).get("jersey", "#ffffff")))

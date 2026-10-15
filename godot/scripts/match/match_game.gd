@@ -55,16 +55,16 @@ func _ready() -> void:
 		return
 	stadium.stadium_id = settings.stadium_id
 	var used := {}
-	home = Team.new(); home.label = "HOME"; home.dir = 1.0; home.human = true; home.color = Color("d63240")
-	away = Team.new(); away.label = "AWAY"; away.dir = -1.0; away.color = Color("3a5bd6")
-	home.build(settings.home_formation, used, rng)
-	away.build(settings.away_formation, used, rng)
+	home = Team.new(); home.label = "HOME"; home.dir = 1.0; home.human = true; home.kit = settings.home_kit; home.color = MatchSettings.kit_color(settings.home_kit)
+	away = Team.new(); away.label = "AWAY"; away.dir = -1.0; away.kit = settings.away_kit; away.color = MatchSettings.kit_color(settings.away_kit)
+	home.build(MatchSettings.formation_id(settings.home_formation), used, rng)
+	away.build(MatchSettings.formation_id(settings.away_formation), used, rng)
 	teams = [home, away]
 	for t in teams:
 		for f in t.players:
 			f.node = Player.create()
 			stadium.add_actor(f.node, Vector2(50, 50))
-			f.node.setup(f.row)
+			f.node.setup(f.row, settings.keeper_kit if f.is_keeper() else t.kit)
 			all.append(f)
 	ball = Ball.create(settings.ball_id)
 	stadium.add_ball(ball)

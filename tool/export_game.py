@@ -76,9 +76,11 @@ def step_looks(c):
     T = _tables(); rows = T.table('players').rows; lines = ['id,hair_style,atlas,kit_slot']
     for i, r in enumerate(rows):
         Image.fromarray(looks.player_skin(r)).save(c.path('assets', 'looks', f"{r['id']}.png"))
+        for k in looks.KITS:
+            Image.fromarray(looks.player_skin(r, k)).save(c.path('assets', 'looks', f"{r['id']}__{k}.png"))
         lines.append(f"{r['id']},{r['hair_style']},looks/{r['id']}.png,{'keeper' if r['role'] == 'GK' else 'outfield'}"); c.tick(i + 1, len(rows))
     open(c.path('data', 'looks_index.csv'), 'w', newline='').write('\n'.join(lines) + '\n')
-    c.counts['player looks'] = len(rows); c.log(f'wrote {len(rows)} player look atlases')
+    c.counts['player looks'] = len(rows); c.log(f'wrote {len(rows)} player look atlases (+ one per kit: <id>__<kit>.png)')
 
 
 def step_cards(c):

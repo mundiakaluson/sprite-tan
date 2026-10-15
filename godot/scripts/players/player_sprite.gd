@@ -15,6 +15,11 @@ const SHADER := preload("res://shaders/uv_skin.gdshader")
 	set(v):
 		player_id = v
 		_apply_skin()
+## kit to wear (an id from data/kits.csv: home, away, keeper, third...). Empty = the player's default look. Needs the kit atlases from Export to game.
+@export var kit := "":
+	set(v):
+		kit = v
+		_apply_skin()
 ## sprite sheet name = animation name, e.g. "run", "kick", "base_idle". Animated by the AnimationPlayer; pick one here to preview.
 @export var sheet := "base_idle":
 	set(v):
@@ -67,7 +72,9 @@ func _apply_skin() -> void:
 		m = ShaderMaterial.new()
 		m.shader = SHADER
 		material = m
-	var skin := Data.tex("looks/%s.png" % player_id)
+	var skin: Texture2D = null
+	if kit != "": skin = Data.tex("looks/%s__%s.png" % [player_id, kit])
+	if skin == null: skin = Data.tex("looks/%s.png" % player_id)
 	if skin != null: m.set_shader_parameter("skin", skin)
 
 func _apply_sheet() -> void:

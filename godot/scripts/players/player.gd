@@ -40,8 +40,9 @@ var _chain := {}                # clip -> next clip, for arrows marked auto in a
 static func create() -> Player:
 	return (load(SCENE) as PackedScene).instantiate() as Player
 
-func setup(r: Dictionary) -> void:
+func setup(r: Dictionary, kit := "") -> void:
 	row = r
+	sprite.kit = kit
 	sprite.setup(str(r.get("id", "")))
 	if not sprite.clip_event.is_connected(_on_clip_event): sprite.clip_event.connect(_on_clip_event)
 	_chain.clear()
