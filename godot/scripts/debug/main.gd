@@ -1,6 +1,6 @@
 extends Control
 ## Debug view: proves the export loads. Shows the export info, a recoloured player running, a live-built player card and tooltip, a skill card and a pack wrapper.
-## Click = send the player there (run state). K = play the kick clip (action state). SPACE = open the first live shop pack (see Output).
+## Keys are Input Map actions (Project > Project Settings > Input Map): move_order (left click), play_kick (K), open_pack (Space).
 ## Replace this with the real game.
 
 var rng := RandomNumberGenerator.new()
@@ -35,15 +35,11 @@ func _show(t: Texture2D, pos: Vector2, s: int) -> void:
 
 func _unhandled_input(ev: InputEvent) -> void:
 	if player == null: return
-	var mb := ev as InputEventMouseButton
-	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+	if ev.is_action_pressed("move_order"):
 		player.move_to(get_local_mouse_position())
-		return
-	var e := ev as InputEventKey
-	if e == null or not e.pressed: return
-	if e.keycode == KEY_K:
+	elif ev.is_action_pressed("play_kick"):
 		player.play_action("kick", Vector2(1, 0))
-	elif e.keycode == KEY_SPACE:
+	elif ev.is_action_pressed("open_pack"):
 		var shop := PackLib.shop()
 		if shop.is_empty(): print("no live packs"); return
 		var pk: Dictionary = shop[0]

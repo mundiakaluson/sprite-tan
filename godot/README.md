@@ -24,6 +24,9 @@ Godot 4.2+. Nothing in here has been run yet (the project was written without Go
 | `assets/pitches/` | not generated: hand-made pitch art, tracked in git |
 | `shaders/` | `uv_skin.gdshader` |
 
+## Controls
+Keys and mouse buttons are **Input Map actions**, stored in `project.godot` under `[input]` and editable in Project > Project Settings > Input Map. Current actions: `move_order` (left click), `play_kick` (K), `open_pack` (Space). Scripts only ever name the action (`event.is_action_pressed("play_kick")`), never a key, so rebinding needs no code change. Add new actions there and use them from scripts.
+
 ## Folders
 Scenes mirror scripts: `scenes/<feature>/` next to `scripts/<feature>/` (`scenes/players/player.tscn`, `scenes/cards/player_card.tscn`, `scenes/debug/main.tscn`). New scene = new or existing feature folder, never the scenes root. Run scene: `scenes/debug/main.tscn`.
 
