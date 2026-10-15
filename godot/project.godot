@@ -1,0 +1,19 @@
+; Engine configuration file. Opened with Godot 4.2+ (tested nowhere yet: written without Godot installed).
+config_version=5
+
+[application]
+config/name="Dugout"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.2")
+
+[autoload]
+Data="*res://scripts/data.gd"
+
+[display]
+window/size/viewport_width=960
+window/size/viewport_height=540
+window/stretch/mode="viewport"
+window/stretch/scale_mode="integer"
+
+[rendering]
+textures/canvas_textures/default_texture_filter=0

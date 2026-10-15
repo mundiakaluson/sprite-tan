@@ -92,4 +92,14 @@ Pity: counter per pack type in the player's save (packs since the last pity_rari
 Logic: `packs/packlib.py` (no Tk; roll, weights, state, simulate, check). Wrapper art: `packs/design2.foil_bag(row)`. Opening: `packs/opening.py` (Scene; `skip_to` jumps to the summary).
 Opening look (decided): pack settles in, trembles, disintegrates to dust, ends with a punch, cards settle in a stack, reveal one at a time; no rays or rings. Card back is blank with one tier-colour border.
 Tool: Packs tab (list, Definition, Odds/guarantee/pity with live total and a dry-spell slider, Pools with eligible counts, Look with tilt shimmer, Simulator for one pack or all packs, Opening preview with Skip).
-Not done yet: pity counter in the save, the shop UI, wrapper extras ("substance" ideas), the Godot port.
+Not done yet: pity counter in the save, the shop UI, wrapper extras ("substance" ideas). Logic is ported to `godot/scripts/packlib.gd`.
+
+## ANIMATIONS (status)
+All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE 29, DEFEND 35, SUPPORT 30, KEEPER 25, TITAN 25 cinematic scenes. Defend and Keeper had a natural-arms pass (9 clips: DF01, DF03, DF04, DF05, DF10, DF20, DF30, DF33, GK01). Rest of the Defend/Keeper clips, Hold Up Play and a few weak Titan scenes are still to polish. Base animations (idle, walk, jog...) are in progress.
+
+## GODOT + EXPORT (built, untested in Godot)
+- The Godot project lives in `godot/` (Godot 4.2+, nearest filtering, 960x540 viewport, integer scaling). Data and art are generated into `godot/data/` and `godot/assets/` by the tool's global **EXPORT TO GAME** button (`tool/export_game.py`); those folders are git-ignored, so after cloning press Export once.
+- Export steps: CSV data, sprite sheets + skins + `animations.json` + shader, hair layers, one 96x24 look atlas per player, skill card faces + tooltips, player cards + tooltips + 36-frame shimmer strips for specials, pack wrappers + tier card backs, `export_manifest.json` (time, git commit, counts).
+- Game side: autoload `Data` (`scripts/data.gd`) reads every CSV (columns are the contract: add, never rename); `PackLib` ports `packlib.py`; `PlayerSprite` plays a sheet through `uv_skin.gdshader` with the player's atlas.
+- Saves hold what is not data: owned cards, pity counters, coins.
+- Godot was not installed where this was written, so the GDScript has not been run.

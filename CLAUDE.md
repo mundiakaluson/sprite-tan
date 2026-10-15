@@ -5,8 +5,7 @@ Dugout: a pixel-art football manager-card game (see README.md; the name is in da
 summarised in docs/DECISIONS.md.
 
 ## Rules of engagement with the user
-- Brainstorm first and write decisions into the design doc; put a checkpoint before each new stage. Do not start
-  Godot or big builds until the user says so.
+- Brainstorm first and write decisions into the design doc; put a checkpoint before each new stage. Godot is allowed now (user said go): the project is in godot/. Still ask before other big builds.
 - Keep replies short and plain. Do not over-explain on card faces or in the UI.
 - Data lives in CSVs under data/ and is loaded by the game at runtime, so keep columns stable and values tweakable.
 
@@ -23,8 +22,12 @@ the description shows in the hover tooltip (cardlib2.popup). All 200 emblems dra
 Manager tool in tool/ is built (see README). Run `python tool/selftest.py` after changes. Custom animations live in data/animations/*.json and are
 registered into sprites/gen_uv.py via sprites/custom_anims.py.
 
+## Godot and export
+`godot/` is the Godot 4 project. `tool/export_game.py` (big EXPORT TO GAME button in the tool, top bar) writes `godot/data/` and `godot/assets/` (git-ignored, generated). GDScript is untested: Godot is not installed in the container. Tracked: scripts/ (data.gd, packlib.gd, player_sprite.gd, main.gd), shaders/, scenes/, project.godot.
+Other tables now: packs, pack_odds, pack_pools (Packs tab, packs/packlib.py, packs/opening.py). Skill card face is the player-card style (cardlib2.card).
+
 ## Next up
 (Roadmap with status lives in data/progress.csv and shows on the tool's Dashboard tab; keep it updated.)
 1. Tool follow-ups: hair-style and kit editors, pack-odds simulator, Windows test pass, palette-swap shader for indexed export.
 2. Player cards: done (tool/playercard.py, portrait.py, foil.py; special flag in players.csv). Next: hair-style polish, pack-odds simulator.
-3. Godot skeleton loading the CSVs.
+3. Godot: skeleton + export done; next the match view, hand/engagement UI, pack shop + opening scene, save file (pity, owned cards).
