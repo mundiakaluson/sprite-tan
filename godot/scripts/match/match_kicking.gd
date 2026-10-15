@@ -75,14 +75,14 @@ func _release(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over:
 	elif bad: tumble(f, s.clips_stumble_medium)
 	elif press > 0.0 and g.rng.randf() < s.stumble_pressed * press: tumble(f, s.clips_stumble_light)
 
-## 0..1: how close the nearest opponent is (1 = at his shoulder, 0 = further than pressure_radius)
+## 0..1: how close the nearest opponent is (1 = at his shoulder, 0 = further than kick_pressure_radius)
 func _pressure(f: Footballer) -> float:
 	var s := g.settings
-	var best := s.pressure_radius
+	var best := s.kick_pressure_radius
 	for o in g.all:
 		if o.team == f.team or o.is_keeper(): continue
 		best = minf(best, o.pos.distance_to(f.pos))
-	return 1.0 - best / s.pressure_radius
+	return 1.0 - best / s.kick_pressure_radius
 
 func tumble(f: Footballer, list: PackedStringArray) -> void:
 	if list.is_empty(): return

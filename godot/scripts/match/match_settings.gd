@@ -71,7 +71,7 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var pivot_done_deg := 14.0
 @export var pivot_max := 0.6
 ## an opponent closer than this (m) is pressing him (full pressure at his shoulder)
-@export var pressure_radius := 3.0
+@export var kick_pressure_radius := 3.0
 ## chance a pass is scuffed = base + (60 - PAS) * per_pas + pressure * pressure_k + (kicked before turning) * misaligned_k; a scuffed pass gets this much aim error (metres)
 @export var scuff_base := 0.05
 @export var scuff_per_pas := 0.004
