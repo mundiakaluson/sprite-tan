@@ -37,18 +37,6 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var win_points := 24
 @export var loss_points := 18
 
-@export_group("Camera")
-## take the camera from the stadium (data/stadiums.csv, a TV view that cuts off the near touchline); untick to use the numbers below, which show the whole width of the pitch
-@export var use_stadium_camera := false
-## metres above the grass and behind the near touchline
-@export var cam_height := 30.0
-@export var cam_back := 22.0
-## the camera aims at this Z on the grass (0 = centre line, negative = towards the far touchline)
-@export var cam_look_z := 15.5
-@export_range(10.0, 90.0) var cam_fov := 36.0
-## how fast the camera follows the ball along the pitch
-@export var cam_follow_speed := 4.0
-
 @export_group("Players")
 ## top speed = speed_base + PAC x speed_per_pac
 @export var speed_base := 4.4

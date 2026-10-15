@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/stadium/stadium.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/camera/camera_rig.gd" id="2"]
 
 [node name="Stadium" type="Node3D"]
 script = ExtResource("1")
@@ -12,5 +13,6 @@ transform = Transform3D(1, 0, 0, 0, 0.88, 0.47, 0, -0.47, 0.88, 0, 26, 50)
 current = true
 fov = 34.0
 far = 400.0
+script = ExtResource("2")
 
 [node name="Actors" type="Node2D" parent="."]

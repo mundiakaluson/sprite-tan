@@ -112,3 +112,6 @@ MatchSettings > Match > Custom Formations: add an element, New FormationLayout (
 ## Ball touch and keeper saves
 - Ball drawn at `MatchSettings.ball_scale` (Ball.visual_scale). First touch: the ball eases to the foot over `settle_time` at `settle_rate`, and `control_cushion` kills part of his speed (no snap).
 - `scripts/match/match_keeper.gd` (MatchKeeper): on-target shots make the keeper play a clip picked at random from the lists in MatchSettings > Goalkeeper saves (catch / claim / palm / low / mid / far; add clip names to add variants). He moves to the ball line, and at the clip's `strike` key the save resolves: catch, deflect or miss. Left dives play the clip mirrored (`Footballer.mirror` -> `Player.set_mirror`). Untested in Godot.
+
+## Camera
+`scripts/camera/camera_rig.gd` (CameraRig) is the script on the Camera node in scenes/stadium/stadium.tscn; all camera numbers are its inspector exports (Orbit: yaw / pitch / distance / fov / aim offset; Follow: speed, limit, pan; Stadium: use_stadium_layout). Rotating around the players = yaw_deg, or `orbit_to(yaw, pitch, dist, seconds)` from code. MatchSettings no longer has camera settings. Untested in Godot.

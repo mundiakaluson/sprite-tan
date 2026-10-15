@@ -175,3 +175,4 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - AI interaction layer (AiInteract + AiTrait): cover, outlet, traits via players.csv traits column.
 - Ball touch + keeper saves: smaller ball, eased first touch, animated keeper dives with clip lists and mirror (match_keeper.gd). Untested.
 - Camera pans across the pitch with the ball (Stadium pan_far / pan_speed): ball far side -> camera slides up, near side -> bottom line back in view.
+- Camera moved to scripts/camera/camera_rig.gd (CameraRig): orbit around the followed point (yaw/pitch/distance), all in the inspector; MatchSettings camera group removed.

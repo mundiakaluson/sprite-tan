@@ -58,14 +58,6 @@ func _ready() -> void:
 	if not Data.ok:
 		hud.message("No exported data. Open the manager tool and press Export to game.", 999.0)
 		return
-	stadium.use_layout_camera = settings.use_stadium_camera
-	stadium.stadium_id = settings.stadium_id
-	if not settings.use_stadium_camera:
-		stadium.cam_height = settings.cam_height
-		stadium.cam_back = settings.cam_back
-		stadium.look_z = settings.cam_look_z
-		stadium.fov = settings.cam_fov
-	stadium.follow_speed = settings.cam_follow_speed
 	stadium.snap_camera()
 	var used := {}
 	home = Team.new(); home.label = "HOME"; home.dir = 1.0; home.human = true; home.kit = settings.home_kit; home.color = settings.home_kit.jersey
