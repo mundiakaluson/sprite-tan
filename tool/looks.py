@@ -19,7 +19,7 @@ def kit_ids():
 
 
 KITS = kit_ids()
-# The game recolours the kit parts of a look atlas live (shaders/uv_skin.gdshader), so exported atlases are painted in these fixed KEY colours. Keep in sync with the shader.
+# The game recolours the kit parts of a look atlas at load time (godot/scripts/players/kit_colors.gd key_map), so exported atlases are painted in these fixed KEY colours. Keep in sync with KitColors.key_map() in godot.
 KEY_KIT = dict(jersey=(255, 0, 0), trim=(0, 255, 0), shorts=(0, 0, 255), shorts_trim=(255, 255, 0), stripe=(255, 0, 255), socks=(0, 255, 255),
                sock_trim=(255, 128, 0), boots=(128, 0, 255), accent=(0, 255, 128), number='10', pattern='plain')
 KEY_KIT_GK = dict(KEY_KIT, glove=(128, 255, 0))

@@ -8,7 +8,7 @@ extends Sprite2D
 
 signal clip_event(event_name: String)       # "strike", "land", ... fired by the animation's method track
 
-static var _logged := false
+static var _kit_cache := {}
 const SHADER := preload("res://shaders/uv_skin.gdshader")
 
 ## whose look to use (the Player sets it in game; set it here to preview in the editor)
@@ -20,7 +20,7 @@ const SHADER := preload("res://shaders/uv_skin.gdshader")
 @export var kit: KitColors:
 	set(v):
 		kit = v
-		_apply_kit()
+		_apply_skin()
 ## sprite sheet name = animation name, e.g. "run", "kick", "base_idle". Animated by the AnimationPlayer; pick one here to preview.
 @export var sheet := "base_idle":
 	set(v):
@@ -73,24 +73,41 @@ func _apply_skin() -> void:
 		m = ShaderMaterial.new()
 		m.shader = SHADER
 		material = m
-	var skin := Data.tex("looks/%s.png" % player_id)
-	if skin != null: m.set_shader_parameter("skin", skin)
-	_apply_kit()
-
-func _apply_kit() -> void:
-	var m := material as ShaderMaterial
-	if m == null: return
 	var k := kit
-	if k == null:
-		if not Data.ok: return
-		k = KitColors.from_preset("keeper" if str(Data.row("players", player_id).get("role", "")) == "GK" else "home")
-	m.set_shader_parameter("use_kit", true)
-	if not _logged:
-		_logged = true
-		print("PlayerSprite kit applied: ", player_id, " jersey ", k.jersey, " shader ", m.shader.resource_path)
-	for part in ["jersey", "trim", "shorts", "shorts_trim", "stripe", "socks", "sock_trim", "boots", "accent", "glove"]:
-		var c: Color = k.get(part)
-		m.set_shader_parameter("kit_" + part, Vector3(c.r, c.g, c.b))
+	if k == null: k = _default_kit()
+	var skin := _kit_atlas(player_id, k)
+	if skin != null: m.set_shader_parameter("skin", skin)
+
+func _default_kit() -> KitColors:
+	var role := str(Data.row("players", player_id).get("role", ""))
+	return KitColors.from_preset("keeper" if role == "GK" else "home")
+
+## the player's look atlas with the kit parts (painted in KEY colours by the export, see tool/looks.py KEY_KIT) replaced by the team's colours. Cached per player + colours.
+static func _kit_atlas(pid: String, k: KitColors) -> Texture2D:
+	var key := "%s|%s" % [pid, k.signature()]
+	if _kit_cache.has(key): return _kit_cache[key]
+	var img: Image = null
+	var path := ProjectSettings.globalize_path("res://assets/looks/%s.png" % pid)
+	if FileAccess.file_exists("res://assets/looks/%s.png" % pid): img = Image.load_from_file(path)
+	if img == null or img.is_empty():
+		var t := Data.tex("looks/%s.png" % pid)
+		if t == null: return null
+		img = t.get_image()
+	img.convert(Image.FORMAT_RGBA8)
+	var map := k.key_map()
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			if c.a < 0.5: continue
+			var id := Vector3i(roundi(c.r * 255.0), roundi(c.g * 255.0), roundi(c.b * 255.0))
+			if map.has(id): img.set_pixel(x, y, map[id])
+	var tex := ImageTexture.create_from_image(img)
+	_kit_cache[key] = tex
+	return tex
+
+## forget the recoloured atlases (after changing a kit colour while the game runs)
+static func clear_kit_cache() -> void:
+	_kit_cache.clear()
 
 func _apply_sheet() -> void:
 	if not Data.ok: Data.reload()

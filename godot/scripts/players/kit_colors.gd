@@ -51,3 +51,16 @@ static func from_preset(id: String) -> KitColors:
 	var k := KitColors.new()
 	k.apply(id)
 	return k
+
+## key colour in the exported look atlas (tool/looks.py KEY_KIT) -> this kit's colour
+func key_map() -> Dictionary:
+	return {
+		Vector3i(255, 0, 0): jersey, Vector3i(0, 255, 0): trim, Vector3i(0, 0, 255): shorts, Vector3i(255, 255, 0): shorts_trim,
+		Vector3i(255, 0, 255): stripe, Vector3i(0, 255, 255): socks, Vector3i(255, 128, 0): sock_trim, Vector3i(128, 0, 255): boots,
+		Vector3i(70, 0, 140): Color(boots.r * 0.55, boots.g * 0.55, boots.b * 0.55), Vector3i(0, 255, 128): accent, Vector3i(128, 255, 0): glove}
+
+## changes when any colour changes (cache key)
+func signature() -> String:
+	var parts: Array = []
+	for c in [jersey, trim, shorts, shorts_trim, stripe, socks, sock_trim, boots, accent, glove]: parts.append(c.to_html(false))
+	return "".join(parts)
