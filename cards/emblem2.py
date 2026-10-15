@@ -14,16 +14,34 @@ def lay(a, m):
     a.alpha_composite(outline(m))
 
 
+def lay_fig(a, m):
+    """finish a footballer layer: crisp mask, light from the top left (rim lit top/left edges, shaded bottom/right), outline in a darkened version of the neighbouring colour"""
+    import numpy as _np
+    arr = _np.array(m); mk = arr[..., 3] > 40; arr[..., 3] = _np.where(mk, 255, 0)
+    P = _np.pad(mk, 1); up = ~P[:-2, 1:-1]; lf = ~P[1:-1, :-2]; dn = ~P[2:, 1:-1]; rt = ~P[1:-1, 2:]
+    rgb = arr[..., :3].astype(float)
+    lit = mk & (up | lf); shd = mk & (dn | rt) & ~lit
+    rgb[lit] = _np.clip(rgb[lit] * 1.18 + 14, 0, 255); rgb[shd] *= 0.72
+    arr[..., :3] = rgb.astype(_np.uint8)
+    out = _np.zeros_like(arr); H, W = mk.shape
+    for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        sh = _np.roll(_np.roll(arr, dy, 0), dx, 1); sm = _np.roll(_np.roll(mk, dy, 0), dx, 1) & ~mk
+        out[sm, :3] = (sh[sm, :3] * 0.28).astype(_np.uint8) + _np.array([6, 5, 12], _np.uint8); out[sm, 3] = 255
+    res = Image.fromarray(out, 'RGBA'); res.alpha_composite(Image.fromarray(arr, 'RGBA')); a.alpha_composite(res)
+
+
 def person(a, x, y, shirt, pose='stand', f=1, opp=False, keeper=False, hair=(52, 36, 28)):
     """footballer, feet at (x, y), about 16 px tall. f=+1 faces right, -1 faces left. Colour = shirt (rgb)."""
     m = Image.new('RGBA', (W_, H_), (0, 0, 0, 0)); d = ImageDraw.Draw(m)
     sh = (GREY_SHIRT if opp else tuple(shirt)) + (255,); sho = (60, 64, 100, 255) if opp else SHORTS
     X = lambda dx: x + f * dx
     hand = GLOVE if keeper else SK
+    sock = tuple(min(255, int(v * 0.9)) for v in sh[:3]) + (255,)
     def head(cx, cy):
         d.ellipse([cx - 2.5, cy - 2.5, cx + 2.5, cy + 2.5], fill=SK); d.pieslice([cx - 2.5, cy - 2.7, cx + 2.5, cy + 2.3], 180, 360, fill=hair + (255,))
+        d.point((cx + f * 1.3, cy + 0.4), (44, 30, 28, 255)); d.line([(cx - f * 0.5, cy + 2), (cx + f * 1.5, cy + 2)], fill=SKD)
     def leg(hx, hy, fx, fy, w=2):
-        d.line([(hx, hy), (fx, fy)], fill=SK, width=w); d.line([(fx, fy), (fx + f * 1.5, fy)], fill=BOOT_, width=2)
+        d.line([(hx, hy), (fx, fy)], fill=SK, width=w); d.line([((hx + fx) / 2, (hy + fy) / 2 + 0.5), (fx, fy)], fill=sock, width=w); d.line([(fx, fy), (fx + f * 1.5, fy)], fill=BOOT_, width=2)
     if pose == 'stand':
         leg(X(-1.2), y - 4, X(-1.2), y - 1); leg(X(1.4), y - 4, X(1.4), y - 1)
         d.rectangle([X(-3) if f > 0 else X(3), y - 10, X(3) if f > 0 else X(-3), y - 5], fill=sh); d.rectangle([min(X(-3), X(3)), y - 5, max(X(-3), X(3)), y - 3], fill=sho)
@@ -73,7 +91,7 @@ def person(a, x, y, shirt, pose='stand', f=1, opp=False, keeper=False, hair=(52,
         d.rectangle([min(X(-3), X(3)), y - 10, max(X(-3), X(3)), y - 5], fill=sh); d.rectangle([min(X(-3), X(3)), y - 5, max(X(-3), X(3)), y - 3], fill=sho)
         d.line([(X(-3), y - 9), (X(-7), y - 8)], fill=hand, width=2); d.line([(X(3), y - 9), (X(7), y - 8)], fill=hand, width=2)
         d.ellipse([X(0) - 2.5, y - 15.5, X(0) + 2.5, y - 10.5], fill=hair + (255,))
-    lay(a, m)
+    lay_fig(a, m)
 
 
 def arrow(a, p0, p1, col, w=2, head=4, alpha=255):
