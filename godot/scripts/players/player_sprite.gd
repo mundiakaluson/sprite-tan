@@ -73,7 +73,9 @@ func _apply_skin() -> void:
 		m.shader = SHADER
 		material = m
 	var skin: Texture2D = null
-	if kit != "": skin = Data.tex("looks/%s__%s.png" % [player_id, kit])
+	if kit != "":
+		skin = Data.tex("looks/%s__%s.png" % [player_id, kit])
+		if skin == null and not Engine.is_editor_hint(): push_warning("No kit atlas assets/looks/%s__%s.png: run Export to game (Player look atlases step)." % [player_id, kit])
 	if skin == null: skin = Data.tex("looks/%s.png" % player_id)
 	if skin != null: m.set_shader_parameter("skin", skin)
 
