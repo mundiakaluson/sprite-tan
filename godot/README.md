@@ -33,7 +33,7 @@ Scenes mirror scripts: `scenes/<feature>/` next to `scripts/<feature>/` (`scenes
 ## Scripts (one folder per feature)
 | folder | what |
 |---|---|
-| `scripts/core/` | `data.gd` (autoload `Data`): loads every CSV into `Data.tables` / `Data.by_id`, plus `Data.manifest`, `Data.anims`, `Data.rules`. `Data.tex("cards/SH01.png")` loads an exported image |
+| `scripts/core/` | `data.gd` (static class `Data`, no autoload, so editor previews work): loads every CSV into `Data.tables` / `Data.by_id`, plus `Data.manifest`, `Data.anims`, `Data.rules`. `Data.tex("cards/SH01.png")` loads an exported image |
 | `scripts/packs/` | `packlib.gd` (`PackLib`): port of `packs/packlib.py` (shop schedule, odds, pity, guarantee, pools, roll) |
 | `scripts/cards/` | `player_card.gd` (`PlayerCard`), `player_tip.gd` (`PlayerTip`), `pixel_text.gd` (`PixelText`): cards built live from the CSV row with shared layers and the player's face. Stats are never baked into images |
 | `scripts/players/` | `player.gd` (`Player`), `player_sprite.gd` (`PlayerSprite`: recoloured sheet player), `state_machine.gd` (`PlayerStateMachine`), `player_state.gd` (`PlayerState`, the base node for every state) |
