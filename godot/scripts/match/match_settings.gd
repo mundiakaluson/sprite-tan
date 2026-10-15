@@ -1,3 +1,4 @@
+@tool
 class_name MatchSettings
 extends Resource
 ## (MatchSettings.current is the set the running match uses, so footballers can read it.)
@@ -5,6 +6,8 @@ extends Resource
 ## save it as another .tres to keep presets (arcade, simulation, ...). Distances are metres, speeds metres per second, times seconds.
 
 static var current: MatchSettings
+## the built-in formation names, used for the drop-down before the first export (data/formations.csv has the real list)
+const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1", "4-1-2-1-2", "3-5-2", "3-4-3", "5-3-2", "5-4-1"]
 
 @export_group("Match")
 @export var stadium_id := "ST01"
@@ -192,9 +195,9 @@ func _validate_property(property: Dictionary) -> void:
 		_: return
 	var names: Array = []
 	for r in Data.table(table): names.append(str(r.get(col, "")))
+	if names.is_empty(): names = FALLBACK_FORMATIONS.duplicate()   # no export yet: the built-in names
 	for l in custom_formations:
 		if l != null: names.append(l.layout_name)
-	if names.is_empty(): return
 	property.hint = PROPERTY_HINT_ENUM
 	property.hint_string = ",".join(names)
 
