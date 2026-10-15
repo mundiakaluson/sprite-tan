@@ -7,8 +7,8 @@
 [ext_resource type="Script" path="res://scripts/players/states/state_run.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/players/states/state_action.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/players/states/state_timed.gd" id="7"]
-[ext_resource type="AnimationLibrary" path="res://animations/player_library.tres" id="8"]
-[ext_resource type="AnimationNodeStateMachine" path="res://animations/player_flow.tres" id="9"]
+[ext_resource type="AnimationLibrary" path="res://animations/players/player_library.tres" id="8"]
+[ext_resource type="AnimationNodeStateMachine" path="res://animations/players/player_flow.tres" id="9"]
 
 [node name="Player" type="Node2D"]
 script = ExtResource("1")

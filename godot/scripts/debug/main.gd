@@ -26,7 +26,9 @@ func _ready() -> void:
 	var cid: String = Data.table("cards")[0]["id"]
 	var sk := SkillCard.new_card(cid); sk.position = Vector2(360, 80); sk.scale = Vector2(2, 2); add_child(sk); sk.play("appear")
 	var shop := PackLib.shop()
-	if shop.size() > 0: _show(Data.tex("packs/%s.png" % shop[0]["id"]), Vector2(520, 60), 1)
+	if shop.size() > 0:
+		var pw := PackWrapper.new_pack(shop[0]["id"]); pw.position = Vector2(520, 60); pw.scale = Vector2(2, 2); add_child(pw); pw.play("appear")
+		pw.gui_input.connect(func(ev): if ev is InputEventMouseButton and ev.pressed: pw.play_open())
 
 func _show(t: Texture2D, pos: Vector2, s: int) -> void:
 	if t == null: return
