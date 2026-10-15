@@ -1,7 +1,9 @@
-pack,price,player_items,card_items,common,uncommon,rare,epic,legend,guarantee_min
-Player Pack,500,3,0,50,32,14,3.5,0.5,
-Card Pack,500,0,4,50,32,14,3.5,0.5,
-Mixed Pack,500,2,2,50,32,14,3.5,0.5,
-Rare Pack,1000,2,2,25,30,32,11,2,RARE
-Epic Pack,1500,2,2,10,20,35,28,7,EPIC
-Legend Pack,2000,2,2,0,10,30,40,20,EPIC
+pack,common,uncommon,rare,epic,legend
+player,50,32,14,3.5,0.5
+card,50,32,14,3.5,0.5
+mixed,50,32,14,3.5,0.5
+rare,25,30,32,11,2
+epic,10,20,35,28,7
+legend,0,10,30,40,20
+weekly,20,30,35,13,2
+striker_special,15,30,35,17,3

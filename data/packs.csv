@@ -1,0 +1,9 @@
+id,name,source,price,player_items,card_items,tier,foil,silhouette,guarantee_min,pity_rarity,pity_start,pity_step,pity_hard,start,end,sort,active,note
+player,Player Pack,shop,500,3,0,COMMON,,bust,,RARE,8,2,25,,,10,1,
+card,Card Pack,shop,500,0,4,COMMON,,cards,,RARE,8,2,25,,,20,1,
+mixed,Mixed Pack,shop,500,2,2,COMMON,,both,,RARE,8,2,25,,,30,1,
+rare,Rare Pack,shop,1000,2,2,RARE,aurora,bust,RARE,EPIC,6,3,20,,,40,1,
+epic,Epic Pack,shop,1500,2,2,EPIC,galaxy,bust,EPIC,LEGEND,10,2,30,,,50,1,
+legend,Legend Pack,shop,2000,2,2,LEGEND,rainbow,bust,EPIC,LEGEND,6,3,15,,,60,1,
+weekly,Weekly Reward Pack,ranked,0,2,2,RARE,aurora,bust,RARE,EPIC,0,0,0,,,70,1,Weekly ranked reward. Not for sale.
+striker_special,Striker Special,event,1200,3,1,RARE,aurora,bust,RARE,EPIC,5,3,15,2026-10-16,2026-10-31 23:59,5,1,Example limited pack: strikers and shot cards only.

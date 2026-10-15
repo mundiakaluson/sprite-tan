@@ -13,7 +13,7 @@ exporting sprites. The Godot game itself has not been started.
 
 | Path | What |
 | --- | --- |
-| `data/` | CSVs the game loads at runtime: `cards`, `players`, `pack_odds`, `formations`, `formation_slots`, `formation_families`, `styles` |
+| `data/` | CSVs the game loads at runtime: `cards`, `players`, `packs`, `pack_odds`, `pack_pools`, `formations`, `formation_slots`, `formation_families`, `styles` |
 | `sprites/` | Ray-cast pose engine and UV-lookup sprite renderer: `gen_player_v2.py`, `gen_actions.py`, `gen_uv.py`, `gen_hair.py`, `export_hair.py`. Built sheets are in `sprites/out_uv/` |
 | `cards/` | Card face renderer (`cardlib2.py`) and emblem toolkit (`emblem.py`) |
 | `scripts/` | One-off data generators (players, rarity, stats, formations). Run them from `data/` |

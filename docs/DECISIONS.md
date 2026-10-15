@@ -81,3 +81,15 @@ The old titan/titan_zap.py and titan_demo.py are kept as the original reference.
 Skill cards now use the player-card language (cards/cardlib2.py `card`; old face kept as `card_old`): dark field with a glow in the CATEGORY colour, thin frame in the RARITY colour,
 big slot number top left with the category under it, rarity top right, plain name with side lines, three stats (HIT / RISK / CD) with no boxes and thin bars. Titan cards use the galaxy foil and a foil frame.
 Emblems: no mini footballers (decided). Emblems are ball, direction arrows, stars and icons only; the old figure calls are switched off (emblem2.FIGURES) and recipes.fit() drops the ground line, centres and doubles what is left. Some may need a proper redraw later.
+
+## PACKS (built)
+Tables (all loaded at runtime, edited in the Packs tab or Excel):
+- `data/packs.csv`: id, name, source (shop / ranked / event), price, player_items, card_items, tier, foil, silhouette, guarantee_min, pity_rarity, pity_start, pity_step, pity_hard, start, end, sort, active, note.
+  Weekly ranked rewards use source=ranked, price 0. Limited packs set start/end (event); expired, upcoming and inactive packs are not in the shop (`packlib.shop()`).
+- `data/pack_odds.csv`: pack id, common..legend percent per item.
+- `data/pack_pools.csv`: pack, kind (player/card), category (role or card category), rarity, id, mode (include/exclude), weight. No rows for a kind = everything; a rarity the pool empties falls back to the whole table.
+Pity: counter per pack type in the player's save (packs since the last pity_rarity+). After pity_start dry packs the odds lift by pity_step points per extra pack toward pity_rarity and better; pity_hard dry packs force one. Boost 0 and hard 0 = off.
+Logic: `packs/packlib.py` (no Tk; roll, weights, state, simulate, check). Wrapper art: `packs/design2.foil_bag(row)`. Opening: `packs/opening.py` (Scene; `skip_to` jumps to the summary).
+Opening look (decided): pack settles in, trembles, disintegrates to dust, ends with a punch, cards settle in a stack, reveal one at a time; no rays or rings. Card back is blank with one tier-colour border.
+Tool: Packs tab (list, Definition, Odds/guarantee/pity with live total and a dry-spell slider, Pools with eligible counts, Look with tilt shimmer, Simulator for one pack or all packs, Opening preview with Skip).
+Not done yet: pity counter in the save, the shop UI, wrapper extras ("substance" ideas), the Godot port.

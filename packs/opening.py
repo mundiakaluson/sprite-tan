@@ -9,6 +9,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 for p in ('packs', 'tool', 'cards', 'sprites', 'titan'):
     sys.path.insert(0, os.path.join(ROOT, p))
 import design2 as D
+import packlib as PL
 import foil
 import engine as E
 import playercard as PC
@@ -30,22 +31,9 @@ def out_back(t): t = clamp(t); c = 1.7; return 1 + (c + 1) * (t - 1) ** 3 + c * 
 
 
 # ---------------------------------------------------------------------------------------------------------------- the pull
-def roll(pack, seed=1, best=None):
-    od = D.odds()[pack]; rng = random.Random(seed)
-    P, C = int(od['player_items']), int(od['card_items']); w = [float(od[k.lower()]) for k in RARS]
-    players = tables.table('players').rows; cards = [r for r in tables.table('cards').rows if not r['id'].startswith('TT')] + [r for r in tables.table('cards').rows if r['id'].startswith('TT')]
-    for _ in range(200):
-        items = [('player', rng.choices(RARS, w)[0]) for _ in range(P)] + [('card', rng.choices(RARS, w)[0]) for _ in range(C)]
-        gm = (od.get('guarantee_min') or '').strip().upper()
-        if gm and max(RARS.index(r) for _, r in items) < RARS.index(gm): k = rng.randrange(len(items)); items[k] = (items[k][0], gm)
-        if best is None or max(RARS.index(r) for _, r in items) >= RARS.index(best): break
-        rng = random.Random(rng.random())
-    pull = []
-    for kind, rar in items:
-        pool = [r for r in (players if kind == 'player' else cards) if r['rarity'] == rar] or [r for r in (players if kind == 'player' else cards)]
-        pull.append(dict(kind=kind, rarity=rar, row=rng.choice(pool)))
-    pull.sort(key=lambda x: RARS.index(x['rarity']))                                            # best card last
-    return pull
+def roll(b, seed=1, best=None, dry=0, players=None, cards=None):
+    """one pull from a pack bundle (packlib): odds, pools, guarantee and pity all come from the data"""
+    return PL.roll(b, players or PL.read('players'), cards or PL.read('cards'), random.Random(seed), dry, best)
 
 
 def face(item, t=1.0):
@@ -120,11 +108,12 @@ def burst(ov, rar, age, cx, cy, seed):
 
 # ---------------------------------------------------------------------------------------------------------------- the scene
 class Scene:
-    def __init__(s, pack, seed=1, best=None):
-        s.pack = pack; s.od = D.odds()[pack]; s.pull = roll(pack, seed, best); s.n = len(s.pull); s.seed = seed
-        s.art = D.foil_bag(pack, s.od); s.top = max(RARS.index(x['rarity']) for x in s.pull); s.topc = ACC[RARS[s.top]]
-        s.backs = {r: card_back(r, D.LOOK[pack][1] if D.LOOK[pack][0] == r else None) for r in RARS}; s.fcache = {}
-        s.styleCol = ACC[RARS[RARS.index(D.LOOK[pack][0])]] if D.LOOK[pack][0] in RARS else (200, 200, 220)
+    def __init__(s, pack, seed=1, best=None, dry=0, players=None, cards=None):
+        """pack = a packlib bundle, or a pack id / name from data/packs.csv"""
+        if isinstance(pack, str): data = PL.load(); pid = next(r['id'] for r in data['packs'] if pack in (r['id'], r['name'])); pack = PL.bundle(pid, data)
+        s.b = pack; s.pk = pack['pk']; s.pack = s.pk['name']; s.tier = s.pk['tier']; s.pull = roll(pack, seed, best, dry, players, cards); s.n = len(s.pull); s.seed = seed
+        s.art = D.foil_bag(s.pk); s.top = max(RARS.index(x['rarity']) for x in s.pull); s.topc = ACC[RARS[s.top]]
+        s.backs = {r: card_back(r) for r in RARS}; s.fcache = {}
         # timeline
         s.T_punch = 90; s.T_float = 0; s.T_charge = 30; s.T_tear = 64; s.T_out = 76; s.T_rev = 106; t = s.T_rev; s.rev = []
         for it in s.pull:
@@ -220,7 +209,7 @@ def frame(s, i):
         u = clamp((i - t0) / 5.0); u = 1 - (1 - u) ** 3; fly_y = CY + 4 * (1 - u)
         if i < sr[0]:                                                                        # waiting in the stack, top card = next to reveal
             x = CX + k * 1.2 - (s.n - 1) * 0.6; y = fly_y + k * 1.2 - (s.n - 1) * 0.6 + 0.8 * math.sin(i * 0.2 + k)
-            put(cv, s.backs[RARS[RARS.index(D.LOOK[s.pack][0])] if D.LOOK[s.pack][0] in RARS else 'COMMON'], x, y, 2.0 * lerp(1.4, 1.0, u), rot=0.0, alpha=clamp((i - t0) / 2.0 + 0.2))
+            put(cv, s.backs[s.tier], x, y, 2.0 * lerp(1.4, 1.0, u), rot=0.0, alpha=clamp((i - t0) / 2.0 + 0.2))
     # ---------------------------------------------------------------- reveals
     rev_k = next((k for k, r in enumerate(s.rev) if r[0] <= i < r[4]), None)
     dim = 0.0
@@ -237,12 +226,12 @@ def frame(s, i):
             u = (i - a0) / max(1, a1 - a0); sh = 0.3 + big * 0.8 * u * u; ox = rng.uniform(-1, 1) * sh; oy = rng.uniform(-1, 1) * sh
             glow(arr, CX, CY, 90 + 40 * u * (1 + big * 0.3), 110 + 40 * u, col, 0.18 * u * (0.3 + big * 0.35))
             for q in range(int(2 + 6 * u * (big / 2.0))): r = random.Random(q * 9 + i); a_ = r.uniform(0, 6.28); dd = 60 + r.uniform(0, 40); od.point((int(CX + math.cos(a_) * dd), int(CY + math.sin(a_) * dd * 1.2)), col + (200,))
-            enter = smooth((i - a0) / 6.0); put(cv, s.backs[D.LOOK[s.pack][0] if D.LOOK[s.pack][0] in RARS else 'COMMON'], CX + ox, CY + oy + (1 - enter) * 4, 2.0 * (1 + 0.04 * u))
+            enter = smooth((i - a0) / 6.0); put(cv, s.backs[s.tier], CX + ox, CY + oy + (1 - enter) * 4, 2.0 * (1 + 0.04 * u))
             if rar == 'LEGEND': dim = 0.35 * u
             elif rar == 'EPIC': dim = 0.2 * u
         elif i < a2:                                                                          # flip
             u = (i - a1) / (a2 - a1); wf = abs(math.cos(math.pi * u)); face_up = u >= 0.5
-            im = s.fimg(k, 0.9) if face_up else s.backs[D.LOOK[s.pack][0] if D.LOOK[s.pack][0] in RARS else 'COMMON']
+            im = s.fimg(k, 0.9) if face_up else s.backs[s.tier]
             put(cv, im, CX, CY, 2.0 * (1 + 0.12 * math.sin(math.pi * u)), wf=wf, k=0.12 * math.sin(math.pi * u) * (1 if u < 0.5 else -1))
             dim = (0.35 if rar == 'LEGEND' else 0.2 if rar == 'EPIC' else 0.0)
             glow(arr, CX, CY, 150, 150, col, 0.5 * u * (0.4 + big * 0.2))
@@ -272,9 +261,17 @@ def frame(s, i):
 Scene.frame = frame
 
 
+def skip_to(s, i):
+    """the skip button: from any frame jump to the start of the summary (the cards then slide into the final row)"""
+    return max(i, s.T_sum)
+
+
+Scene.skip_to = skip_to
+
+
 def tilt_frames(pack, n=48):
     """the idle pack: the player tilts it, the foil catches the light (in game the tilt follows the mouse / finger)"""
-    s = Scene(pack, 3); out = []
+    s = pack if hasattr(pack, 'art') else Scene(pack, 3); out = []
     for i in range(n):
         ph = 2 * math.pi * i / n; tilt = 0.5 * math.sin(ph); arr = background(); im = Image.fromarray(arr.astype(np.uint8), 'RGB').convert('RGBA'); cv = Image.new('RGBA', (VW, VH), (0, 0, 0, 0))
         art = glare(s.art, (0.5 + 0.5 * math.sin(ph + 0.3)) * 150 - 10, 80)

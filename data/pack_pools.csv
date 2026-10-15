@@ -1,0 +1,5 @@
+pack,kind,category,rarity,id,mode,weight,note
+striker_special,player,ST,,,include,1,Players: category is the main role
+striker_special,player,LW,,,include,0.5,
+striker_special,player,RW,,,include,0.5,
+striker_special,card,SHOT,,,include,1,Cards: category is SHOT / PASS / DRIBBLE / SUPPORT / DEFEND / KEEPER / TITAN

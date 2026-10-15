@@ -1,5 +1,5 @@
 """Game manager tool (name in data/project.csv).  Run from the repo root:  python tool/app.py
-Tabs: Dashboard (start page) | Players | Cards | Formations | Animations | Base animations | Hair styles | Kits | Other tables | Checks | Build | Sprite import.
+Tabs: Dashboard (start page) | Players | Cards | Packs | Formations | Animations | Base animations | Hair styles | Kits | Other tables | Checks | Build | Sprite import.
 All data is plain CSV in data/ (edit in Excel too: changes on disk are picked up automatically)."""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -17,6 +17,7 @@ def main():
     from tab_dashboard import DashboardTab
     from tab_players import PlayersTab
     from tab_cards import CardsTab
+    from tab_packs import PacksTab
     from tab_formations import FormationsTab
     from tab_anim import AnimTab
     from tab_base import BaseTab
@@ -26,7 +27,7 @@ def main():
     from tab_check import CheckTab
     from tab_import import ImportTab
     from tab_build import BuildTab
-    tabs = [('Dashboard', DashboardTab), ('Players', PlayersTab), ('Cards', CardsTab), ('Formations', FormationsTab), ('Animations', AnimTab), ('Base animations', BaseTab), ('Hair styles', HairTab), ('Kits', KitsTab), ('Other tables', TablesTab), ('Checks', CheckTab), ('Build', BuildTab), ('Sprite import', ImportTab)]
+    tabs = [('Dashboard', DashboardTab), ('Players', PlayersTab), ('Cards', CardsTab), ('Packs', PacksTab), ('Formations', FormationsTab), ('Animations', AnimTab), ('Base animations', BaseTab), ('Hair styles', HairTab), ('Kits', KitsTab), ('Other tables', TablesTab), ('Checks', CheckTab), ('Build', BuildTab), ('Sprite import', ImportTab)]
     built = {}
     for name, cls in tabs:
         try:

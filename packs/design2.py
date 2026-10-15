@@ -12,14 +12,7 @@ from playercard import RC, _mix, _spark, _text2
 
 W, H = 64, 96; BW, BH, BY = 64, 90, 3
 BASE = (12, 13, 20)
-# pack -> (rarity palette, foil style or None, silhouette kind)
-LOOK = {'Player Pack': ('COMMON', None, 'bust'), 'Card Pack': ('UNCOMMON', None, 'cards'), 'Mixed Pack': ('RARE', None, 'both'),
-        'Rare Pack': ('RARE', 'aurora', 'bust'), 'Epic Pack': ('EPIC', 'galaxy', 'bust'), 'Legend Pack': ('LEGEND', 'rainbow', 'bust')}
-TIER = {'Player Pack': 'COMMON', 'Card Pack': 'COMMON', 'Mixed Pack': 'COMMON', 'Rare Pack': 'RARE', 'Epic Pack': 'EPIC', 'Legend Pack': 'LEGEND'}
-
-
-def odds():
-    return {r['pack']: r for r in csv.DictReader(open(os.path.join(ROOT, 'data', 'pack_odds.csv'), encoding='utf-8'))}
+import packlib as PL
 
 
 def body(r, style):
@@ -62,8 +55,12 @@ def silhouette(kind, r, style):
     return im
 
 
-def foil_bag(pk, od):
-    rar, style, kind = LOOK[pk]; r = RC[rar]; legend = rar == 'LEGEND'; edge = r['light'] if legend else r['main']
+def look(pk): return pk['tier'], (pk.get('foil') or None), pk.get('silhouette') or 'bust'
+
+
+def foil_bag(pk, od=None):
+    """wrapper art from one row of data/packs.csv (tier, foil, silhouette, name, counts, price)"""
+    rar, style, kind = look(pk); r = RC[rar]; legend = rar == 'LEGEND'; edge = r['light'] if legend else r['main']
     b = body(r, style); sil = silhouette(kind, r, style); b.alpha_composite(sil)
     px = b.load()
     for y in range(46, BH):                                                        # darken toward the bottom for the text
@@ -72,17 +69,22 @@ def foil_bag(pk, od):
             c = px[x, y]; px[x, y] = _mix(c[:3], tuple(int(v * 0.3) for v in c[:3]) if style else _mix(r['dark'], BASE, 0.8), min(1, tt * tt * 1.15)) + (255,)
     d = ImageDraw.Draw(b)
     # top left: item count (big) and what it is; top right: tier
-    n = int(od['player_items']) + int(od['card_items']); what = {'Player Pack': 'PLAYERS', 'Card Pack': 'CARDS'}.get(pk, 'ITEMS')
+    P, C = PL.inum(pk.get('player_items')), PL.inum(pk.get('card_items')); n = P + C; what = 'PLAYERS' if not C else 'CARDS' if not P else 'ITEMS'
     _text2(b, 5, 5, str(n), (255, 255, 255, 255)); draw_text(b, 5, 18, what, r['light'] + (255,)); d.line([(5, 25), (5 + max(text_w(what), 10), 25)], fill=r['main'] + (255,))
-    tn = TIER[pk]; draw_text(b, BW - 5 - text_w(tn), 5, tn, r['light'] + (255,))
+    tn = rar; draw_text(b, BW - 5 - text_w(tn), 5, tn, r['light'] + (255,))
     if style: _spark(d, BW - 5 - text_w(tn) - 4, 7, (255, 255, 255, 255))
-    nm = pk.upper().replace(' PACK', ''); ww = text_w(nm)
-    draw_text(b, (BW - ww) // 2, 63, nm, (255, 255, 255, 255)); draw_text(b, (BW - text_w('PACK')) // 2, 70, 'PACK', r['light'] + (255,))
-    d.line([(5, 66), (BW // 2 - ww // 2 - 3, 66)], fill=r['dark'] + (255,)); d.line([(BW // 2 + ww // 2 + 3, 66), (BW - 6, 66)], fill=r['dark'] + (255,))
-    rare = float(od['rare']) + float(od['epic']) + float(od['legend']); cols = [('COST', od['price'])]
-    for ci, (kk, v) in enumerate(cols):
-        cxm = BW // 2
-        draw_text(b, cxm - text_w(kk) // 2, 77, kk, (140, 146, 176, 255)); draw_text(b, cxm - text_w(v) // 2, 83, v, (255, 255, 255, 255))
+    full = pk['name'].upper(); nm = full[:-5].strip() if full.endswith(' PACK') else full; ww = text_w(nm)
+    if ww <= BW - 14:
+        draw_text(b, (BW - ww) // 2, 63, nm, (255, 255, 255, 255)); draw_text(b, (BW - text_w('PACK')) // 2, 70, 'PACK', r['light'] + (255,))
+        d.line([(5, 66), (BW // 2 - ww // 2 - 3, 66)], fill=r['dark'] + (255,)); d.line([(BW // 2 + ww // 2 + 3, 66), (BW - 6, 66)], fill=r['dark'] + (255,))
+    else:                                                                            # long names: two lines
+        w = nm.split(' '); mid = max(1, len(w) // 2); l1, l2 = ' '.join(w[:mid]), ' '.join(w[mid:])
+        draw_text(b, (BW - text_w(l1)) // 2, 60, l1, (255, 255, 255, 255)); draw_text(b, (BW - text_w(l2)) // 2, 66, l2, (255, 255, 255, 255))
+    price = str(PL.inum(pk.get('price')))
+    if PL.inum(pk.get('price')) > 0:
+        cxm = BW // 2; draw_text(b, cxm - text_w('COST') // 2, 77, 'COST', (140, 146, 176, 255)); draw_text(b, cxm - text_w(price) // 2, 83, price, (255, 255, 255, 255))
+    else:
+        draw_text(b, (BW - text_w('REWARD')) // 2, 80, 'REWARD', r['light'] + (255,))
     out = Image.new('RGBA', (W, H), (0, 0, 0, 0)); out.alpha_composite(b, (0, BY)); d = ImageDraw.Draw(out)
     metal = _mix(r['dark'], (120, 126, 150), 0.45) if not legend else _mix(r['dark'], (255, 220, 150), 0.5); hi = _mix(metal, (255, 255, 255), 0.35)
     for (y0, y1, top) in ((0, BY - 1, True), (BY + BH, H - 1, False)):             # crimped ends: fine vertical ridges and a serrated cut
@@ -105,9 +107,9 @@ def foil_bag(pk, od):
     return out
 
 
-def sleeve(pk, od):
+def sleeve(pk, od=None):
     """a rigid sleeve: no crimp, a slim lid, and a diagonal paper band across the foil carrying the name"""
-    f = foil_bag(pk, od); rar, style, kind = LOOK[pk]; r = RC[rar]; d = ImageDraw.Draw(f)
+    f = foil_bag(pk, od); rar, style, kind = look(pk); r = RC[rar]; d = ImageDraw.Draw(f)
     d.rectangle([0, 0, W - 1, 6], fill=_mix(r['dark'], BASE, 0.5) + (255,)); d.line([(0, 7), (W - 1, 7)], fill=r['main'] + (255,)); d.line([(0, 8), (W - 1, 8)], fill=_mix(r['dark'], BASE, 0.8) + (255,))
     d.rectangle([0, H - 7, W - 1, H - 1], fill=_mix(r['dark'], BASE, 0.5) + (255,)); d.line([(0, H - 8), (W - 1, H - 8)], fill=r['main'] + (255,))
     for x in range(4, W - 4, 6): d.point((x, 3), r['main'] + (255,)); d.point((x, H - 4), r['main'] + (255,))
@@ -116,9 +118,9 @@ def sleeve(pk, od):
 
 
 def sheet(fn, S=4):
-    od = odds(); im = Image.new('RGB', (len(LOOK) * (W * S + 16) + 16, H * S + 32), (22, 16, 38))
-    for i, pk in enumerate(LOOK):
-        p = fn(pk, od[pk]).resize((W * S, H * S), Image.NEAREST); im.paste(p, (16 + i * (W * S + 16), 16), p)
+    packs = PL.load()['packs']; im = Image.new('RGB', (len(packs) * (W * S + 16) + 16, H * S + 32), (22, 16, 38))
+    for i, pk in enumerate(packs):
+        p = fn(pk).resize((W * S, H * S), Image.NEAREST); im.paste(p, (16 + i * (W * S + 16), 16), p)
     return im
 
 

@@ -92,11 +92,20 @@ def run():
     ids = {r['id'] for r in F}
     for s in slots:
         if s['formation'] not in ids: add('error', 'formation_slots', s['formation'], 'slot for unknown formation')
-    for r in tables.table('pack_odds').rows:
-        try:
-            tot = sum(float(r[k]) for k in ('common', 'uncommon', 'rare', 'epic', 'legend'))
-            if abs(tot - 100) > 0.5: add('warn', 'pack_odds', r['pack'], f'odds add up to {tot}, not 100')
-        except ValueError: add('error', 'pack_odds', r['pack'], 'non-numeric odds')
+    import os, sys
+    pk_dir = os.path.join(tables.ROOT, 'packs')
+    if pk_dir not in sys.path: sys.path.insert(0, pk_dir)
+    import packlib as PL
+    data = dict(packs=tables.table('packs').rows, odds={r['pack']: r for r in tables.table('pack_odds').rows}, pools=tables.table('pack_pools').rows)
+    ids = {}
+    for r in data['packs']:
+        if r['id'] in ids: add('error', 'packs', r['id'], 'duplicate id')
+        ids[r['id']] = 1
+        for sev, msg in PL.check(dict(pk=r, odds=data['odds'].get(r['id'], {}), pools=[x for x in data['pools'] if x['pack'] == r['id']]), tables.table('players').rows, tables.table('cards').rows): add(sev, 'packs', r['id'], msg)
+    for k in data['odds']:
+        if k not in ids: add('error', 'pack_odds', k, 'odds for an unknown pack')
+    for x in data['pools']:
+        if x['pack'] not in ids: add('error', 'pack_pools', x['pack'], 'pool row for an unknown pack')
     import re
     for r in tables.table('kits').rows:
         for c in ('jersey', 'trim', 'shorts', 'shorts_trim', 'stripe', 'socks', 'sock_trim', 'boots', 'accent'):
