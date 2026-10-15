@@ -1,23 +1,26 @@
 extends Control
 ## Debug view: proves the export loads. Shows the export info, a recoloured player running, a live-built player card and tooltip, a skill card and a pack wrapper.
-## SPACE opens the first live shop pack and prints the pull. Left/Right turn the player. Replace this with the real game.
+## Click = send the player there (run state). K = play the kick clip (action state). SPACE = open the first live shop pack (see Output).
+## Replace this with the real game.
 
 var rng := RandomNumberGenerator.new()
 var info: Label
-var player: PlayerSprite
+var player: Player
 var dry := 0
 
 func _ready() -> void:
 	rng.randomize()
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	info = Label.new(); info.position = Vector2(8, 6); add_child(info)
 	if not Data.ok:
 		info.text = "No exported data. Open the manager tool and press EXPORT TO GAME, then reopen this project (Godot imports the new files)."
 		return
 	var m := Data.manifest
-	info.text = "exported %s  commit %s   players %d  cards %d  packs %d\nSPACE = open a pack   LEFT/RIGHT = turn" % [m.get("exported", "?"), m.get("git", "?"), Data.table("players").size(), Data.table("cards").size(), Data.table("packs").size()]
+	info.text = "exported %s  commit %s   players %d  cards %d  packs %d\nclick = move   K = kick   SPACE = open a pack" % [m.get("exported", "?"), m.get("git", "?"), Data.table("players").size(), Data.table("cards").size(), Data.table("packs").size()]
 	var pid: String = Data.table("players")[0]["id"]
-	player = PlayerSprite.new(); player.position = Vector2(80, 200); player.scale = Vector2(4, 4); add_child(player)
-	player.setup(pid); player.play("run"); player.face(8)
+	player = Player.new(); player.position = Vector2(80, 200); player.scale = Vector2(4, 4); add_child(player)
+	player.setup(Data.row("players", pid))
+	player.state_changed.connect(func(a, b): print("state ", a, " -> ", b))
 	var pc := PlayerCard.new(); pc.position = Vector2(200, 80); pc.scale = Vector2(2, 2); add_child(pc); pc.show_player(Data.row("players", pid))
 	var tip := PlayerTip.new(); tip.position = Vector2(200, 280); tip.scale = Vector2(2, 2); add_child(tip); tip.show_player(Data.row("players", pid))
 	var cid: String = Data.table("cards")[0]["id"]
@@ -30,11 +33,16 @@ func _show(t: Texture2D, pos: Vector2, s: int) -> void:
 	var r := TextureRect.new(); r.texture = t; r.position = pos; r.scale = Vector2(s, s)
 	r.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST; add_child(r)
 
-func _unhandled_key_input(ev: InputEvent) -> void:
+func _unhandled_input(ev: InputEvent) -> void:
+	if player == null: return
+	var mb := ev as InputEventMouseButton
+	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+		player.move_to(get_local_mouse_position())
+		return
 	var e := ev as InputEventKey
-	if e == null or not e.pressed or player == null: return
-	if e.keycode == KEY_LEFT: player.face(player.dir - 1)
-	elif e.keycode == KEY_RIGHT: player.face(player.dir + 1)
+	if e == null or not e.pressed: return
+	if e.keycode == KEY_K:
+		player.play_action("kick", Vector2(1, 0))
 	elif e.keycode == KEY_SPACE:
 		var shop := PackLib.shop()
 		if shop.is_empty(): print("no live packs"); return
