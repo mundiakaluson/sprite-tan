@@ -188,7 +188,7 @@ func _goal(side: float) -> void:      # side -1 = own goal (left), +1 = opponent
 	world.add_child(g); goals.append(g)
 
 ## the ball (world space) near a goal: returns its new velocity after the net and posts acted on it. Call once per physics frame.
-func ball_update(pos: Vector3, vel: Vector3, radius := 0.11) -> Vector3:
+func ball_update(pos: Vector3, vel: Vector3, radius := GoalNet.BALL_R) -> Vector3:
 	for g in goals: vel = g.ball_update(pos, vel, radius)
 	return vel
 

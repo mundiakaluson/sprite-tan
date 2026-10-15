@@ -31,6 +31,9 @@ var grav := 6.0
 var drag := 6.0
 var pr := 0.06
 var bounce := 0.55
+const NET_A := 1100.0         # how hard the net wall pushes the ball back (m/s^2 per metre of penetration, times stiffness)
+const NET_C := 22.0           # the net soaks up the ball's speed while it is touching (1/s)
+const BALL_R := 0.17          # game ball radius (a real ball is 0.11 m; a bit bigger reads better on screen)
 var p := PackedVector3Array()
 var prev := PackedVector3Array()
 var home := PackedVector3Array()
@@ -85,7 +88,7 @@ func _build() -> void:
 				if j < nv: _edge(edge_set, idx[Vector2i(i, j)], idx[Vector2i(i, j + 1)])
 	p = PackedVector3Array(pts); prev = p.duplicate(); home = p.duplicate()
 	pinned.resize(p.size())
-	for i in p.size(): pinned[i] = 1 if (p[i].x < 0.001 or p[i].y < 0.001) else 0
+	for i in p.size(): pinned[i] = 1 if (p[i].x < 0.001 or p[i].y < 0.001 or (absf(p[i].y - h) < 0.001 and absf(p[i].x - dep) < 0.001)) else 0   # front frame, ground, rear top bar
 	edges.clear(); rest.clear()
 	for k in edge_set.keys():
 		var a: int = k >> 20; var b: int = k & 0xFFFFF
@@ -99,7 +102,7 @@ func reset() -> void:
 	left.x = 0; left.v = 0; right.x = 0; right.v = 0; bar.x = 0; bar.v = 0
 
 ## advance by dt. The ball (local position / velocity / radius) is optional. Returns {"vel": Vector3, "hits": [["net"|"left"|"right"|"bar", point], ...]}
-func step(dt: float, has_ball := false, bp := Vector3.ZERO, bv := Vector3.ZERO, br := 0.11) -> Dictionary:
+func step(dt: float, has_ball := false, bp := Vector3.ZERO, bv := Vector3.ZERO, br := BALL_R) -> Dictionary:
 	var hits := []
 	var newv := bv
 	var n := p.size()
@@ -123,8 +126,22 @@ func step(dt: float, has_ball := false, bp := Vector3.ZERO, bv := Vector3.ZERO, 
 				p[i] = bp + nrm * reach; prev[i] = p[i] - bv * dt * 0.6; count += 1
 		if count > 0:
 			touching = true
-			newv = bv * exp(-drag * dt * minf(10.0, count) / 3.0)
+			newv = newv * exp(-drag * dt * minf(10.0, count) / 3.0)
 			hits.append(["net", bp])
+		# inside the goal the net is a soft wall (back, roof, sides): the ball cannot pass through it, the mesh bulges to show it
+		if bp.x > 0.0 and absf(bp.z) < hw + br and bp.y < h:
+			var aa := NET_A * stiff
+			var damp_k := 1.0 - minf(0.9, NET_C * dt)
+			var dd := bp.x + br - (dep_low + (dep - dep_low) * clampf(bp.y / h, 0.0, 1.0))
+			if dd > 0.0:
+				newv.x -= aa * dd * dt; newv *= damp_k; hits.append(["net", bp])
+			dd = absf(bp.z) + br - hw
+			var sg := 1.0 if bp.z > 0.0 else -1.0
+			if dd > 0.0:
+				newv.z -= sg * aa * dd * dt; newv *= damp_k; hits.append(["net", bp])
+			dd = bp.y + br - h
+			if dd > 0.0:
+				newv.y -= aa * dd * dt; newv *= damp_k; hits.append(["net", bp])
 		var parts := [["left", Vector3(0, 0, -hw), Vector3(0, h, -hw), left], ["right", Vector3(0, 0, hw), Vector3(0, h, hw), right], ["bar", Vector3(0, h, -hw), Vector3(0, h, hw), bar]]
 		for part in parts:
 			var a: Vector3 = part[1]; var b: Vector3 = part[2]; var ab := b - a

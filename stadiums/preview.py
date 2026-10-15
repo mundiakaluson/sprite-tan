@@ -80,6 +80,8 @@ def draw_goal(canvas, cam, net, side, row=None, alpha=None):
     lt = W3((wl * GL.SWAY_SCALE, h, -hw)); rt = W3((wr * GL.SWAY_SCALE, h, hw)); lb = W3((0, 0, -hw)); rb = W3((0, 0, hw))
     wd = max(2, int(cam.f * net.pr * 2 / max(1.0, cam.pt(lb)[2])))
     line3(d, cam, lb, lt, pcol + (255,), wd); line3(d, cam, rb, rt, pcol + (255,), wd)
+    bl, br_, tl, tr = W3((net.dep_low, 0, -hw)), W3((net.dep_low, 0, hw)), W3((net.dep, h, -hw)), W3((net.dep, h, hw)); w2 = max(1, wd - 1)         # rear posts and top bar hold the net up
+    line3(d, cam, bl, tl, pcol + (255,), w2); line3(d, cam, br_, tr, pcol + (255,), w2); line3(d, cam, tl, tr, pcol + (255,), w2)
     line3(d, cam, (lt[0], lt[1] + wb * GL.SWAY_SCALE * 0.5, lt[2]), (rt[0], rt[1] + wb * GL.SWAY_SCALE * 0.5, rt[2]), pcol + (255,), wd)
 
 
@@ -113,7 +115,7 @@ def render(row, cam=None, size=(960, 540), nets=None, cache=None, ball=None, goa
         nets = nets or {-1: GL.Net(gs), 1: GL.Net(gs)}
         for side in (-1, 1): draw_goal(canvas, cam, nets[side], side)
     if ball is not None:
-        bx, by, bz = ball; px, py, pz = cam.pt((bx, by, bz)); gx, gy, _ = cam.pt((bx, 0, bz)); r = max(2, cam.f * 0.11 / pz)
+        bx, by, bz = ball; px, py, pz = cam.pt((bx, by, bz)); gx, gy, _ = cam.pt((bx, 0, bz)); r = max(2, cam.f * GL.BALL_R / pz)
         d.ellipse([gx - r * 1.1, gy - r * 0.4, gx + r * 1.1, gy + r * 0.4], fill=(0, 0, 0, 90)); d.ellipse([px - r, py - r, px + r, py + r], fill=(250, 250, 250, 255), outline=(30, 30, 30, 255))
     return canvas.convert('RGB')
 

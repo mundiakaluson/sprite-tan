@@ -15,7 +15,7 @@ signal hit_frame(part: String, point: Vector3)
 @export var override_stiffness := -1.0      ## < 0 = use the style
 @export var override_drag := -1.0
 @export var override_post_sway := -1.0
-@export var ball_radius := 0.11
+@export var ball_radius := GoalNet.BALL_R
 
 var net := GoalNet.new()
 var style := {}
@@ -45,6 +45,9 @@ func rebuild() -> void:
 	_left = _post(Vector3(0, net.h / 2.0, -net.hw), Vector3(net.pr * 2, net.h, net.pr * 2), pc)
 	_right = _post(Vector3(0, net.h / 2.0, net.hw), Vector3(net.pr * 2, net.h, net.pr * 2), pc)
 	_bar = _post(Vector3(0, net.h, 0), Vector3(net.pr * 2, net.pr * 2, net.hw * 2 + net.pr * 2), pc)
+	var rp := net.pr * 0.8                                  # rear posts and top bar hold the net up
+	_beam(Vector3(net.dep_low, 0, -net.hw), Vector3(net.dep, net.h, -net.hw), rp, pc); _beam(Vector3(net.dep_low, 0, net.hw), Vector3(net.dep, net.h, net.hw), rp, pc)
+	_beam(Vector3(net.dep, net.h, -net.hw), Vector3(net.dep, net.h, net.hw), rp, pc)
 	_net_node = MeshInstance3D.new(); _mesh = ImmediateMesh.new(); _net_node.mesh = _mesh
 	var m := StandardMaterial3D.new(); m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED; m.albedo_color = nc; m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA; m.cull_mode = BaseMaterial3D.CULL_DISABLED
 	_net_node.material_override = m; add_child(_net_node)
@@ -55,6 +58,12 @@ func _post(at: Vector3, size: Vector3, col: Color) -> MeshInstance3D:
 	var m := StandardMaterial3D.new(); m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED; m.albedo_color = col; mi.material_override = m
 	add_child(mi)
 	return mi
+
+func _beam(a: Vector3, b: Vector3, r: float, col: Color) -> void:
+	var dir := b - a
+	var up := Vector3.RIGHT if absf(dir.normalized().y) > 0.99 else Vector3.UP
+	var mi := _post((a + b) / 2.0, Vector3(r * 2.0, r * 2.0, dir.length()), col)
+	mi.basis = Basis.looking_at(dir, up)
 
 func _draw_net() -> void:
 	_mesh.clear_surfaces()

@@ -141,7 +141,7 @@ class GoalSimTab(ttk.Frame):
     def shoot(self):
         if self.net is None: return
         sp = self.v['speed'].get(); tz, ty = self.v['aimz'].get(), self.v['aimy'].get(); fz, dist = self.v['fromz'].get(), self.v['dist'].get()
-        p0 = np.array([X0 - dist, 0.11, fz]); tgt = np.array([X0, ty, tz]); d = tgt - p0; dh = float(np.hypot(d[0], d[2])); t = dh / sp
+        p0 = np.array([X0 - dist, GL.BALL_R, fz]); tgt = np.array([X0, ty, tz]); d = tgt - p0; dh = float(np.hypot(d[0], d[2])); t = dh / sp
         vel = np.array([d[0] / t, (d[1] + 0.5 * 9.81 * t * t) / t, d[2] / t]); self.ball = [p0, vel]; self.trail = []; self.running = True; self.info = ''
         self.hit_log = []
 
@@ -158,7 +158,7 @@ class GoalSimTab(ttk.Frame):
             ball = None
             if self.ball is not None:
                 p, v = self.ball; p, v = GL.ball_flight(p, v, dt)
-                loc = (p - np.array([X0, 0, 0]), v, 0.11); nv, hits = self.net.step(dt, ball=loc if abs(p[0] - X0) < 4 and abs(p[2]) < 6 else None)
+                loc = (p - np.array([X0, 0, 0]), v, GL.BALL_R); nv, hits = self.net.step(dt, ball=loc if abs(p[0] - X0) < 4 and abs(p[2]) < 6 else None)
                 if nv is not None and hits: v = nv
                 for h in hits:
                     if h[0] != 'net' and (not self.hit_log or self.hit_log[-1] != h[0]): self.hit_log.append(h[0]); self.info = 'hit the ' + h[0] + (' post' if h[0] != 'bar' else '')
@@ -177,7 +177,7 @@ class GoalSimTab(ttk.Frame):
             if z > 0.5: d.ellipse([x - 1.5, y - 1.5, x + 1.5, y + 1.5], fill=(255, 255, 255, 90))
         PV.draw_goal(img, cam, self.nets[-1], -1); PV.draw_goal(img, cam, self.net, 1)
         if self.ball is not None:
-            p = self.ball[0]; px, py, pz = cam.pt(p); gx, gy, _ = cam.pt((p[0], 0, p[2])); r = max(2.5, cam.f * 0.11 / max(pz, 0.5))
+            p = self.ball[0]; px, py, pz = cam.pt(p); gx, gy, _ = cam.pt((p[0], 0, p[2])); r = max(2.5, cam.f * GL.BALL_R / max(pz, 0.5))
             d.ellipse([gx - r * 1.1, gy - r * 0.4, gx + r * 1.1, gy + r * 0.4], fill=(0, 0, 0, 90)); d.ellipse([px - r, py - r, px + r, py + r], fill=(250, 250, 250, 255), outline=(30, 30, 30, 255))
         d.text((8, 6), f'{self.info}   net energy {self.net.energy:.1f}', fill=(230, 230, 240, 255))
         self._ph = ImageTk.PhotoImage(img); self.cv.delete('all'); self.cv.create_image(0, 0, anchor='nw', image=self._ph)

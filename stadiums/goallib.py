@@ -90,7 +90,7 @@ class Net:
         panel((0, 0, hw), (0, h, hw), (d, h, hw), (dl, 0, hw))                           # side (z = +hw)
         self.p = np.array(P, float); self.prev = self.p.copy(); self.home = self.p.copy()
         self.edges = np.array(sorted(edges), int); self.rest = np.linalg.norm(self.p[self.edges[:, 0]] - self.p[self.edges[:, 1]], axis=1)
-        self.pin = (self.p[:, 0] < 1e-3) | (self.p[:, 1] < 1e-3)                          # front frame + ground
+        self.pin = (self.p[:, 0] < 1e-3) | (self.p[:, 1] < 1e-3) | ((np.abs(self.p[:, 1] - h) < 1e-3) & (np.abs(self.p[:, 0] - d) < 1e-3))   # front frame, ground, rear top bar
 
     def reset(self): self.p[:] = self.home; self.prev[:] = self.home; self.t = 0.0
     @property
@@ -107,8 +107,16 @@ class Net:
             d = self.p - bp; dist = np.linalg.norm(d, axis=1); near = (dist < br + self.mesh * 0.4) & (~self.pin)
             self.touching = bool(near.any())
             if self.touching:
-                n = d[near] / np.maximum(dist[near], 1e-6)[:, None]; self.p[near] = bp + n * (br + self.mesh * 0.4); self.prev[near] = self.p[near] - bv * dt * 0.6
-                newv = bv * float(np.exp(-self.drag * dt * min(10, near.sum()) / 3.0)); hits.append(('net', bp))
+                dn = d[near] / np.maximum(dist[near], 1e-6)[:, None]; self.p[near] = bp + dn * (br + self.mesh * 0.4); self.prev[near] = self.p[near] - bv * dt * 0.6
+                newv = newv * float(np.exp(-self.drag * dt * min(10, int(near.sum())) / 3.0)); hits.append(('net', bp))
+            # inside the goal the net is a soft wall (back, roof, sides): the ball cannot pass through it, the mesh bulges to show it
+            if 0.0 < bp[0] and abs(bp[2]) < self.hw + br and bp[1] < self.h:
+                A = NET_A * self.stiff; C = NET_C; dd = bp[0] + br - (self.dep_low + (self.dep - self.dep_low) * min(1.0, max(0.0, bp[1] / self.h)))
+                if dd > 0: newv[0] -= A * dd * dt; newv *= (1 - min(0.9, C * dt)); hits.append(('net', bp))
+                dd = abs(bp[2]) + br - self.hw; sg = 1.0 if bp[2] > 0 else -1.0
+                if dd > 0: newv[2] -= sg * A * dd * dt; newv *= (1 - min(0.9, C * dt)); hits.append(('net', bp))
+                dd = bp[1] + br - self.h
+                if dd > 0: newv[1] -= A * dd * dt; newv *= (1 - min(0.9, C * dt)); hits.append(('net', bp))
             # posts and bar: capsules
             for name, a, b in (('left', (0, 0, -self.hw), (0, self.h, -self.hw)), ('right', (0, 0, self.hw), (0, self.h, self.hw)), ('bar', (0, self.h, -self.hw), (0, self.h, self.hw))):
                 a, b = np.array(a, float), np.array(b, float); ab = b - a; t = float(np.clip(np.dot(bp - a, ab) / np.dot(ab, ab), 0, 1)); cp = a + ab * t
@@ -126,10 +134,15 @@ class Net:
         return newv, hits
 
 
+NET_A = 1100.0               # how hard the net wall pushes the ball back (m/s^2 per metre of penetration, times stiffness)
+NET_C = 22.0                 # the net soaks up the ball's speed while it is touching (1/s)
+BALL_R = 0.17                # ball radius in the game (a real ball is 0.11 m; slightly bigger reads better on screen)
+
+
 def ball_flight(pos, vel, dt, g=9.81, drag=0.012):
     """plain ball physics for the simulator: gravity + air drag + a bounce on the ground"""
     pos = np.array(pos, float); vel = np.array(vel, float); vel[1] -= g * dt; vel *= (1 - drag * dt * 10); pos = pos + vel * dt
-    if pos[1] < 0.11 and vel[1] < 0: pos[1] = 0.11; vel[1] *= -0.6; vel[[0, 2]] *= 0.92
+    if pos[1] < BALL_R and vel[1] < 0: pos[1] = BALL_R; vel[1] *= -0.6; vel[[0, 2]] *= 0.92
     return pos, vel
 
 
@@ -138,6 +151,6 @@ if __name__ == '__main__':
     for g in load():
         n = Net(g); t0 = time.time(); peak = 0; e = []
         for i in range(720):
-            nv, h = n.step(STEP, ball=((0.1 + i * 0.18, 1.2, 0.5), (22, 0, 0), 0.11) if i < 20 else None); peak = max(peak, n.energy)
+            nv, h = n.step(STEP, ball=((0.1 + i * 0.18, 1.2, 0.5), (22, 0, 0), BALL_R) if i < 20 else None); peak = max(peak, n.energy)
             if i in (60, 240, 480, 719): e.append(round(n.energy, 3))
         print(g['id'], 'nodes', len(n.p), 'springs', len(n.edges), 'peak', round(peak, 2), 'energy at .5s/2s/4s/6s', e, 'ms/step', round((time.time() - t0) / 720 * 1000, 2))
