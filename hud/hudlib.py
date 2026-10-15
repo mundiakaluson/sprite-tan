@@ -58,7 +58,7 @@ def button(S, state):
     return im
 
 
-def strip(S, w=1280, h=150):
+def strip(S, w=1280, h=160):
     """the HUD strip under the pitch: dark card field with a dithered gradient, a faint pitch diagram (centre circle, halfway line, boxes) and a notched frame line on top"""
     import math
     im = Image.new('RGBA', (w, h)); px = im.load()

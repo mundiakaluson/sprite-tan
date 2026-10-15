@@ -91,6 +91,8 @@ func _ready() -> void:
 	hud.bind_command(command)
 	hud.set_team_colors(home.color, away.color)
 	hud.setup_scoreboard(settings, home.color, away.color)
+	hud.strip_changed.connect(_fit_view)
+	_fit_view(hud.strip_height())
 	hud.set_team_commands(brain.stance_list(home))
 	hud.set_team_active(home.stance_id)
 	hud.team_command.connect(_on_team_command)
@@ -168,3 +170,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if k != null and k.pressed and not k.echo and k.keycode == KEY_F11:
 		var w := get_window()
 		w.mode = Window.MODE_WINDOWED if w.mode == Window.MODE_FULLSCREEN else Window.MODE_FULLSCREEN
+
+## the pitch view fills the window above the HUD strip (the strip's height is set in match_hud.tscn)
+func _fit_view(strip_h: float) -> void:
+	var view := get_node_or_null("View") as Control
+	if view != null: view.offset_bottom = -strip_h

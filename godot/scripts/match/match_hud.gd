@@ -3,21 +3,18 @@ extends CanvasLayer
 ## Match HUD. It is a real scene (scenes/match/match_hud.tscn, instanced in match.tscn) so you can open it, select any node and move / restyle it in the editor:
 ## Score, Who (selected player), Orders (the four order buttons, named Order_<id>), CommandBox (the current command), Message (GOAL!, KICK OFF), Controls (help text),
 ## Hand (the skill cards are added here), TeamTitle / TeamGrid (the stance buttons are added here), Overlay (rings and aim lines over the pitch). This script only fills them in.
-## The pitch has its own area (the top 580 px of the 1280 x 720 game viewport, a SubViewport in match.tscn); the strip below it is the HUD, so nothing covers the play.
+## The pitch view is everything above the Strip node (the match scene follows the strip height), so nothing covers the play.
+## Layout: every group is a panel with its parts inside (OrdersPanel > Who, Orders; HandPanel > Hand; TeamPanel > TeamTitle, TeamGrid, TeamNote; CommandPanel > title, note). Move or resize any node in the 2D view.
 ## No pop-ups: orders are buttons in the strip. Cards are the real SkillCard faces; the number on a card is its cooldown in seconds.
 
 signal menu_chosen(id: String)          ## an order button was pressed ("through", "run", "press", "tackle")
 signal card_pressed(index: int)         ## a card in the hand was clicked
 signal team_command(id: String)         ## a team command button was pressed
 
-## size of the cards in the hand (1 = the full 64 x 90 card, pixel for pixel; 1.5 is a touch uneven but bigger, 2 is exact but needs a taller strip)
-@export_range(0.5, 2.0, 0.25) var card_scale := 1.5
 ## size of the hover tooltip (the card's tooltip image x this)
 @export_range(1.0, 4.0, 1.0) var tooltip_scale := 2.0
-## size of the TEAM stance buttons
-@export var team_button_size := Vector2(112, 20)
 
-const PITCH_H := 580.0                  ## the pitch view is the top part of the screen, the HUD strip the rest
+signal strip_changed(height: float)    ## the Strip node was moved / resized in the scene: the pitch view takes the rest of the screen
 ## colour of each command kind in the command box and on the highlighted players
 const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), "lob": Color(1.0, 0.9, 0.3), "shoot": Color(1.0, 0.4, 0.35), "run": Color(0.5, 1.0, 0.5),
 	"press": Color(1.0, 0.65, 0.3), "tackle": Color(1.0, 0.65, 0.3), "card": Color(0.8, 0.6, 1.0), "team": Color(0.6, 0.75, 1.0)}
@@ -27,8 +24,9 @@ const KIND_COLORS := {"pass": Color(1, 1, 1), "through": Color(0.35, 0.9, 1.0), 
 @onready var _msg: PixelLabel = %Message
 @onready var _team_panel: PixelPanel = %TeamPanel
 @onready var _cmd_panel: PixelPanel = %CommandPanel
-@onready var _hand: HBoxContainer = %Hand
-@onready var _team_grid: GridContainer = %TeamGrid
+@onready var _hand: HandBar = %Hand
+@onready var _strip: Control = %Strip
+@onready var _team_grid: StanceGrid = %TeamGrid
 @onready var _team_note: PixelLabel = %TeamNote
 @onready var _cmd_title: PixelLabel = %CommandTitle
 @onready var _hint: PixelLabel = %CommandNote
@@ -55,6 +53,8 @@ var _toast_t := 0.0
 
 func _ready() -> void:
 	_overlay.hud = self
+	_strip.resized.connect(_fit_pitch)
+	_fit_pitch()
 	_msg.text = ""
 	# the order buttons are the children of Orders named Order_<id>
 	for b in _orders.get_children():
@@ -65,6 +65,15 @@ func _ready() -> void:
 		button.pressed.connect(func(): menu_chosen.emit(id))
 		_order_buttons[id] = button
 	_show_command()
+
+## height of the HUD strip: the pitch view is everything above it. Move the Strip node's top edge in the scene to change it.
+func strip_height() -> float:
+	return _strip.offset_bottom - _strip.offset_top    # the strip is anchored to the bottom, so this is its height at any window size
+
+func _fit_pitch() -> void:
+	var h := strip_height()
+	_overlay.offset_bottom = -h
+	strip_changed.emit(h)
 
 func _process(dt: float) -> void:
 	if _msg_t > 0.0:
@@ -113,9 +122,10 @@ func set_hand(rows: Array) -> void:
 	for r in rows:
 		var box := Control.new()
 		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		box.custom_minimum_size = Vector2(64, 90) * card_scale
+		box.custom_minimum_size = _hand.card_size()
 		var card := SkillCard.new_card(String(r["id"]))
-		card.scale = Vector2.ONE * card_scale
+		card.scale = Vector2.ONE * _hand.card_scale
+		box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		card.tooltip_scale = tooltip_scale
 		box.add_child(card)
 		_hand.add_child(box)
@@ -140,7 +150,7 @@ func set_team_commands(commands: Array) -> void:
 	for cmd in commands:
 		var b := PixelButton.new()
 		b.text = String(cmd["label"])
-		b.custom_minimum_size = team_button_size
+		b.custom_minimum_size = _team_grid.button_size
 		b.text_scale = 2
 		b.accent = _team_accent
 		b.toggle_mode = true

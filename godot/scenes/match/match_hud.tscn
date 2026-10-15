@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/match/match_hud.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/match/hud_overlay.gd" id="2"]
@@ -7,20 +7,23 @@
 [ext_resource type="Script" path="res://scripts/ui/pixel_button.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/ui/pixel_image.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/ui/scorebug.gd" id="7"]
+[ext_resource type="Script" path="res://scripts/match/hand_bar.gd" id="8"]
+[ext_resource type="Script" path="res://scripts/match/stance_grid.gd" id="9"]
 
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1")
 
 [node name="Root" type="Control" parent="."]
-anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
 offset_bottom = 0.0
-layout_mode = 3
 mouse_filter = 2
+layout_mode = 3
 
 [node name="Strip" type="Control" parent="Root"]
 anchor_left = 0.0
@@ -28,9 +31,10 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 0.0
-offset_top = -150.0
+offset_top = -160.0
 offset_right = 0.0
 offset_bottom = 0.0
+unique_name_in_owner = true
 script = ExtResource("6")
 
 [node name="Overlay" type="Control" parent="Root"]
@@ -41,179 +45,18 @@ anchor_bottom = 1.0
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
-offset_bottom = -150.0
+offset_bottom = -160.0
 unique_name_in_owner = true
 mouse_filter = 2
 script = ExtResource("2")
 
 [node name="Scorebug" type="Control" parent="Root"]
-unique_name_in_owner = true
 offset_left = 8.0
 offset_top = 6.0
 offset_right = 264.0
 offset_bottom = 58.0
+unique_name_in_owner = true
 script = ExtResource("7")
-
-[node name="Who" type="Control" parent="Root"]
-anchor_left = 0.0
-anchor_top = 1.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = -142.0
-offset_right = 208.0
-offset_bottom = -130.0
-unique_name_in_owner = true
-text = ""
-script = ExtResource("4")
-text_scale = 2
-
-[node name="Orders" type="GridContainer" parent="Root"]
-anchor_left = 0.0
-anchor_top = 1.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = -120.0
-offset_right = 208.0
-offset_bottom = -8.0
-unique_name_in_owner = true
-theme_override_constants/h_separation = 4
-theme_override_constants/v_separation = 4
-columns = 2
-
-[node name="Order_through" type="Control" parent="Root/Orders"]
-custom_minimum_size = Vector2(100, 52)
-text_scale = 2
-layout_mode = 2
-text = "THROUGH"
-disabled = true
-script = ExtResource("5")
-
-[node name="Order_run" type="Control" parent="Root/Orders"]
-custom_minimum_size = Vector2(100, 52)
-text_scale = 2
-layout_mode = 2
-text = "RUN"
-disabled = true
-script = ExtResource("5")
-
-[node name="Order_press" type="Control" parent="Root/Orders"]
-custom_minimum_size = Vector2(100, 52)
-text_scale = 2
-layout_mode = 2
-text = "PRESS"
-disabled = true
-script = ExtResource("5")
-
-[node name="Order_tackle" type="Control" parent="Root/Orders"]
-custom_minimum_size = Vector2(100, 52)
-text_scale = 2
-layout_mode = 2
-text = "TACKLE"
-disabled = true
-script = ExtResource("5")
-
-[node name="HandPanel" type="Control" parent="Root"]
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -392.0
-offset_top = -144.0
-offset_right = 392.0
-offset_bottom = -6.0
-script = ExtResource("3")
-
-[node name="Hand" type="HBoxContainer" parent="Root"]
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -387.0
-offset_top = -139.0
-offset_right = 387.0
-offset_bottom = -11.0
-unique_name_in_owner = true
-mouse_filter = 2
-theme_override_constants/separation = 1
-
-[node name="TeamPanel" type="Control" parent="Root"]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -244.0
-offset_top = -144.0
-offset_right = -4.0
-offset_bottom = -52.0
-unique_name_in_owner = true
-script = ExtResource("3")
-
-[node name="TeamTitle" type="Control" parent="Root/TeamPanel"]
-offset_left = 8.0
-offset_top = 5.0
-offset_right = 88.0
-offset_bottom = 17.0
-text = "TEAM"
-color = Color(0.55, 0.57, 0.69, 1)
-script = ExtResource("4")
-text_scale = 2
-
-[node name="TeamGrid" type="GridContainer" parent="Root/TeamPanel"]
-unique_name_in_owner = true
-offset_left = 6.0
-offset_top = 20.0
-offset_right = 234.0
-offset_bottom = 88.0
-mouse_filter = 2
-theme_override_constants/h_separation = 4
-theme_override_constants/v_separation = 4
-columns = 2
-
-[node name="TeamNote" type="Control" parent="Root/TeamPanel"]
-unique_name_in_owner = true
-offset_left = 8.0
-offset_top = 28.0
-offset_right = 234.0
-offset_bottom = 40.0
-text = "NO COMMANDS YET"
-color = Color(0.35, 0.37, 0.45, 1)
-script = ExtResource("4")
-text_scale = 2
-
-[node name="CommandPanel" type="Control" parent="Root"]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -244.0
-offset_top = -48.0
-offset_right = -4.0
-offset_bottom = -6.0
-unique_name_in_owner = true
-script = ExtResource("3")
-
-[node name="CommandTitle" type="Control" parent="Root/CommandPanel"]
-unique_name_in_owner = true
-offset_left = 8.0
-offset_top = 6.0
-offset_right = 232.0
-offset_bottom = 18.0
-text = "COMMAND: -"
-script = ExtResource("4")
-text_scale = 2
-
-[node name="CommandNote" type="Control" parent="Root/CommandPanel"]
-unique_name_in_owner = true
-offset_left = 8.0
-offset_top = 21.0
-offset_right = 232.0
-offset_bottom = 40.0
-wrap = true
-color = Color(0.55, 0.57, 0.69, 1)
-script = ExtResource("4")
-text_scale = 1
 
 [node name="Message" type="Control" parent="Root"]
 anchor_left = 0.5
@@ -225,6 +68,175 @@ offset_top = -300.0
 offset_right = 300.0
 offset_bottom = -276.0
 unique_name_in_owner = true
+text = ""
 text_scale = 4
 align = 1
 script = ExtResource("4")
+
+[node name="OrdersPanel" type="Control" parent="Root"]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -156.0
+offset_right = 216.0
+offset_bottom = -4.0
+script = ExtResource("3")
+
+[node name="Who" type="Control" parent="Root/OrdersPanel"]
+offset_left = 8.0
+offset_top = 6.0
+offset_right = 204.0
+offset_bottom = 18.0
+unique_name_in_owner = true
+text = ""
+text_scale = 2
+script = ExtResource("4")
+
+[node name="Orders" type="GridContainer" parent="Root/OrdersPanel"]
+offset_left = 6.0
+offset_top = 26.0
+offset_right = 206.0
+offset_bottom = 146.0
+unique_name_in_owner = true
+mouse_filter = 2
+columns = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+
+[node name="Order_through" type="Control" parent="Root/OrdersPanel/Orders"]
+custom_minimum_size = Vector2(98, 58)
+layout_mode = 2
+text = "THROUGH"
+text_scale = 2
+disabled = true
+script = ExtResource("5")
+
+[node name="Order_run" type="Control" parent="Root/OrdersPanel/Orders"]
+custom_minimum_size = Vector2(98, 58)
+layout_mode = 2
+text = "RUN"
+text_scale = 2
+disabled = true
+script = ExtResource("5")
+
+[node name="Order_press" type="Control" parent="Root/OrdersPanel/Orders"]
+custom_minimum_size = Vector2(98, 58)
+layout_mode = 2
+text = "PRESS"
+text_scale = 2
+disabled = true
+script = ExtResource("5")
+
+[node name="Order_tackle" type="Control" parent="Root/OrdersPanel/Orders"]
+custom_minimum_size = Vector2(98, 58)
+layout_mode = 2
+text = "TACKLE"
+text_scale = 2
+disabled = true
+script = ExtResource("5")
+
+[node name="HandPanel" type="Control" parent="Root"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -392.0
+offset_top = -156.0
+offset_right = 392.0
+offset_bottom = -4.0
+script = ExtResource("3")
+
+[node name="Hand" type="HBoxContainer" parent="Root/HandPanel"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+unique_name_in_owner = true
+mouse_filter = 2
+theme_override_constants/separation = 1
+script = ExtResource("8")
+
+[node name="TeamPanel" type="Control" parent="Root"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -244.0
+offset_top = -156.0
+offset_right = -4.0
+offset_bottom = -56.0
+unique_name_in_owner = true
+script = ExtResource("3")
+
+[node name="TeamTitle" type="Control" parent="Root/TeamPanel"]
+offset_left = 8.0
+offset_top = 5.0
+offset_right = 88.0
+offset_bottom = 17.0
+text = "TEAM"
+color = Color(0.55, 0.57, 0.69, 1)
+text_scale = 2
+script = ExtResource("4")
+
+[node name="TeamGrid" type="GridContainer" parent="Root/TeamPanel"]
+offset_left = 6.0
+offset_top = 22.0
+offset_right = 234.0
+offset_bottom = 92.0
+unique_name_in_owner = true
+mouse_filter = 2
+columns = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+script = ExtResource("9")
+
+[node name="TeamNote" type="Control" parent="Root/TeamPanel"]
+offset_left = 8.0
+offset_top = 28.0
+offset_right = 234.0
+offset_bottom = 40.0
+unique_name_in_owner = true
+text = "NO COMMANDS YET"
+color = Color(0.35, 0.37, 0.45, 1)
+text_scale = 2
+script = ExtResource("4")
+
+[node name="CommandPanel" type="Control" parent="Root"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -244.0
+offset_top = -52.0
+offset_right = -4.0
+offset_bottom = -4.0
+unique_name_in_owner = true
+script = ExtResource("3")
+
+[node name="CommandTitle" type="Control" parent="Root/CommandPanel"]
+offset_left = 8.0
+offset_top = 6.0
+offset_right = 232.0
+offset_bottom = 18.0
+unique_name_in_owner = true
+text = "COMMAND: -"
+text_scale = 2
+script = ExtResource("4")
+
+[node name="CommandNote" type="Control" parent="Root/CommandPanel"]
+offset_left = 8.0
+offset_top = 23.0
+offset_right = 232.0
+offset_bottom = 44.0
+unique_name_in_owner = true
+wrap = true
+color = Color(0.55, 0.57, 0.69, 1)
+text_scale = 1
+script = ExtResource("4")
+
