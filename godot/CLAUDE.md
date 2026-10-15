@@ -26,6 +26,8 @@ After a change, say what to test and ask the user to paste the Output panel if s
 - States ask for clips with `player.play_clip(name)`; do not touch AnimationPlayer or the sprite from states. Orders to players are events: `player.move_to`, `player.play_action`, `player.send_event`.
 - Adding a PLAYER = a row in `data/players.csv` (look columns) + Export (writes `assets/looks/<id>.png` and `assets/faces/<id>.png`). No scene or script change.
 
+- `scenes/debug/animation_viewer.tscn` is the animation viewer (pick player + clip, rotate while playing). Keep it working when the player scene changes.
+
 ## Cards
 - Player cards are modular: shared layers per rarity / foil style, one face image per player, text and stats drawn live from the row (`PlayerCard`, `PixelText`, `data/card_rules.json`). Never bake stats into images.
 - Skill cards are one exported image each (unique emblem art) plus tooltips; adding a card = a row in `cards.csv` + a recipe in `cards/recipes.py` + Export.

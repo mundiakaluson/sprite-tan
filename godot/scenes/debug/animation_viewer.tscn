@@ -1,0 +1,97 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/debug/animation_viewer.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/players/player.tscn" id="2"]
+
+[node name="AnimationViewer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector2(640, 330)
+scale = Vector2(7, 7)
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 280.0
+offset_bottom = 532.0
+
+[node name="Box" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="PlayerPicker" type="OptionButton" parent="Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Filter" type="LineEdit" parent="Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "filter clips"
+
+[node name="Clips" type="ItemList" parent="Panel/Box"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 250)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DirLabel" type="Label" parent="Panel/Box"]
+layout_mode = 2
+text = "Direction (drag the picture, arrows, A / D)"
+
+[node name="Direction" type="HSlider" parent="Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0
+max_value = 31
+step = 1
+value = 16
+
+[node name="Spin" type="CheckButton" parent="Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Spin"
+
+[node name="SpinLabel" type="Label" parent="Panel/Box"]
+layout_mode = 2
+text = "Spin speed (directions per second)"
+
+[node name="SpinSpeed" type="HSlider" parent="Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0
+max_value = 20
+step = 0.5
+value = 4
+
+[node name="SpeedLabel" type="Label" parent="Panel/Box"]
+layout_mode = 2
+text = "Playback speed"
+
+[node name="Speed" type="HSlider" parent="Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 0.1
+max_value = 3
+step = 0.05
+value = 1
+
+[node name="Repeat" type="CheckButton" parent="Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Repeat"
+
+[node name="Pause" type="CheckButton" parent="Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Pause"
+
+[node name="Info" type="Label" parent="Panel/Box"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
