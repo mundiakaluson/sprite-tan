@@ -67,6 +67,15 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 ## players push each other apart inside this distance
 @export var separation := 0.9
 
+@export_group("Ball and first touch")
+## how big the ball is drawn (1 = the old size)
+@export_range(0.3, 1.5) var ball_scale := 0.7
+## when a player gets the ball it eases to his feet over this long instead of snapping (seconds), at this speed (higher = quicker)
+@export var settle_time := 0.3
+@export var settle_rate := 9.0
+## the first touch kills this fraction of his speed (a trap), and he is slowed for a moment
+@export_range(0.0, 1.0) var control_cushion := 0.35
+
 @export_group("Possession")
 ## how close the ball must be to a player's feet to be picked up
 @export var pickup_reach := 0.9
@@ -168,6 +177,44 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var tackle_dash := 6.5
 @export var tackle_card_reach := 3.0
 @export var tackle_reach_per_point := 0.25
+
+@export_group("Goalkeeper saves")
+## the keeper dives for a shot faster than this (m/s) that is heading for the goal and within his reach
+@export var save_threat_speed := 9.0
+## ... and that arrives within this many seconds
+@export var save_max_time := 1.3
+## he starts the dive when the ball is this many seconds later than the clip's strike frame
+@export var save_reaction := 0.1
+## how far sideways he can dive (metres), how high he can jump to add to his reach height, how far past his normal reach a dive stretches
+@export var dive_range := 4.6
+@export var jump_height := 0.8
+@export var dive_extra := 0.9
+## the dive also goes a bit forward (metres)
+@export var dive_forward := 0.5
+## how much of the sideways distance a stand-and-catch / claim / palm covers (0 = he stays put)
+@export_range(0.0, 1.0) var stand_travel := 0.6
+## ball height (m) above which it is a high ball (claimed if slow, palmed if fast) and below which it is low
+@export var high_ball := 1.9
+@export var low_ball := 0.6
+@export var claim_speed := 13.0
+@export var catch_speed := 14.0
+## a central ball closer than this to him is caught standing
+@export var stand_range := 1.2
+## a ball further than this to the side is a far stretch (fingertips)
+@export var far_range := 3.2
+## clean catches (catch, claim) can hold a shot this much faster than a dive
+@export var catch_bonus := 4.0
+## deflections: sideways speed round the post, height of a palm over the bar, height of a fingertip save
+@export var deflect_wide := 6.0
+@export var palm_lift := 5.0
+@export var deflect_lift := 2.5
+@export_subgroup("Save clips (he picks one at random)")
+@export var clips_catch := PackedStringArray(["gk08_big_hands", "gk03_smother"])
+@export var clips_claim := PackedStringArray(["gk05_claim_cross"])
+@export var clips_palm := PackedStringArray(["gk10_high_palm", "gk04_punch_clear"])
+@export var clips_low := PackedStringArray(["gk09_low_dive", "gk20_cat_reflexes"])
+@export var clips_mid := PackedStringArray(["gk02_reach_dive", "gk12_starfish"])
+@export var clips_far := PackedStringArray(["gk24_fingertip_save", "gk23_far_post_reach"])
 
 @export_group("Goalkeeper and control")
 ## a keeper catches a shot slower than base + HAN x per_han (m/s), otherwise he parries

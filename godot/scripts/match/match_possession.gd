@@ -14,23 +14,30 @@ func take(f: Footballer) -> void:
 	f.hold = 0.0
 	f.carried = 0.0
 	f.think = g.rng.randf_range(0.2, 0.5)
+	f.settle = g.settings.settle_time                       # the ball eases to his feet
+	if not f.is_keeper(): f.vel *= 1.0 - g.settings.control_cushion   # the first touch is a trap
 	g.ball.hold()
 
 ## every physics frame
 func update(dt: float) -> void:
 	if g.carrier != null:
-		_carry()
+		_carry(dt)
 		if g.phase == MatchGame.Phase.PLAY:
 			g.carrier.hold += dt
 			_auto_tackles(dt)
 		return
 	if g.phase == MatchGame.Phase.PLAY: _loose(dt)
 
-func _carry() -> void:
+func _carry(dt: float) -> void:
 	var c := g.carrier
 	var spot := c.pos + c.face * (g.settings.touch_ahead + 0.06 * c.vel.length())
 	var b := g.ball
-	b.phys.pos = Vector3(spot.x, b.phys.rad, spot.y)
+	var target := Vector3(spot.x, b.phys.rad, spot.y)
+	if c.settle > 0.0:
+		c.settle -= dt
+		b.phys.pos = b.phys.pos.lerp(target, clampf(dt * g.settings.settle_rate, 0.0, 1.0))
+	else:
+		b.phys.pos = target
 	var v3 := Vector3(c.vel.x, 0.0, c.vel.y)
 	b.phys.vel = v3
 	b.live = false
@@ -46,7 +53,7 @@ func _loose(_dt: float) -> void:
 	var best: Footballer = null
 	var bd := 1.0
 	for f in g.all:
-		if f.no_touch > 0.0: continue
+		if f.no_touch > 0.0 or (f.is_keeper() and (f.lock > 0.0 or g.keeper.busy(f))): continue
 		var reach := s.pickup_reach
 		var max_h := s.reach_height
 		if f.is_keeper():

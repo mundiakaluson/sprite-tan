@@ -108,3 +108,7 @@ Nothing links the Strip height to the pitch view in code: when you change the st
 
 ## Adding a formation from the inspector
 MatchSettings > Match > Custom Formations: add an element, New FormationLayout (`scripts/ai/formation_layout.gd`): id, layout_name, family, the ten outfield slots (FormationSlot: role, style, x across 0-100, y along 0-100 = the columns of data/formation_slots.csv), optional shape numbers (-1 = family default) and optional `play` (an AiShapedFormation: press / block numbers; empty = the shared defaults). It then shows in the Home / Away Formation lists. Save it as a .tres in `scenes/ai/layouts/` (see `example_3421.tres`, a 3-4-2-1). Lookup is `MatchSettings.layout(name_or_id)`, used by `Team.build`, `AiContext.setup` and `AiProfile.formation_for`. The 10 built-in formations still come from data/formations.csv (the manager tool); custom ones are Godot-only for now.
+
+## Ball touch and keeper saves
+- Ball drawn at `MatchSettings.ball_scale` (Ball.visual_scale). First touch: the ball eases to the foot over `settle_time` at `settle_rate`, and `control_cushion` kills part of his speed (no snap).
+- `scripts/match/match_keeper.gd` (MatchKeeper): on-target shots make the keeper play a clip picked at random from the lists in MatchSettings > Goalkeeper saves (catch / claim / palm / low / mid / far; add clip names to add variants). He moves to the ball line, and at the clip's `strike` key the save resolves: catch, deflect or miss. Left dives play the clip mirrored (`Footballer.mirror` -> `Player.set_mirror`). Untested in Godot.

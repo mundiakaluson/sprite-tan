@@ -26,7 +26,7 @@ var move_target := Vector2.ZERO
 @export_range(0, 31) var facing := 16:
 	set(v):
 		facing = posmod(v, 32)
-		if is_node_ready() and sprite != null: sprite.face(facing)
+		if is_node_ready() and sprite != null: _apply_face()
 ## which player's look the preview shows (forwarded to the Sprite)
 @export var preview_player := "PL242":
 	set(v):
@@ -54,6 +54,19 @@ func setup(r: Dictionary, kit: KitColors = null) -> void:
 	if not sm.transitioned.is_connected(_on_transitioned): sm.transitioned.connect(_on_transitioned)
 	sm.start()
 
+## the picture is mirrored (flipped, direction index 32 - d): a left dive made from the clip authored for the right (docs/DECISIONS.md, keeper clips)
+var mirror := false
+
+func set_mirror(m: bool) -> void:
+	if m == mirror: return
+	mirror = m
+	if sprite != null:
+		sprite.flip_h = m
+		_apply_face()
+
+func _apply_face() -> void:
+	sprite.face(posmod(32 - facing, 32) if mirror else facing)
+
 func _ready() -> void:
 	if Engine.is_editor_hint(): sprite.face(facing)
 
@@ -79,7 +92,7 @@ func face_vector(v: Vector2) -> void:
 	if v.length() < 0.001: return
 	var deg := rad_to_deg(atan2(v.x, -v.y))          # up = 0, right = 90, down = 180, left = 270
 	facing = posmod(int(round(deg / 11.25)), 32)
-	sprite.face(facing)
+	_apply_face()
 
 func has_clip(clip: String) -> bool:
 	return anim_player.has_animation(clip)
@@ -89,7 +102,7 @@ func play_clip(clip: String) -> void:
 	if not has_clip(clip):
 		push_warning("Player: no animation '%s' (export first, or check the name in the Animation panel)" % clip)
 		return
-	sprite.face(facing)
+	_apply_face()
 	_playback.start(clip)
 
 func current_clip() -> String:

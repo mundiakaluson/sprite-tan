@@ -55,8 +55,10 @@ func update(dt: float) -> void:
 
 func _show(f: Footballer) -> void:
 	g.stadium.set_actor_pos(f.node, g.stadium.pitch_pos(Vector3(f.pos.x, 0.0, f.pos.y)))
+	f.node.set_mirror(f.mirror and f.lock > 0.0)
 	f.node.face_vector(f.face)
 	if f.lock > 0.0: return
+	f.mirror = false
 	var speed := f.vel.length()
 	var want_clip := "base_idle"
 	if speed > 5.8: want_clip = "base_sprint"

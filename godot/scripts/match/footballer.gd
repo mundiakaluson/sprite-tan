@@ -22,6 +22,8 @@ var carried := 0.0              ## metres he has carried the ball since he got i
 var clip := ""
 var pending := Callable()       ## runs when the animation reaches its strike point
 var pending_t := 0.0
+var mirror := false              ## play his clip mirrored (a left dive: the keeper clips are authored for the right)
+var settle := 0.0               ## seconds left of the ball easing to his feet after he got it
 var ai := {}                    ## memory of the AI interaction layer (space target, ...)
 var order := {}                 ## an order from the human: {kind: "run" / "press", target, t}; empty = play by himself
 

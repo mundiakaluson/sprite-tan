@@ -173,3 +173,4 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - HUD scene restructured so every group is a panel with its parts inside, HandBar / StanceGrid editor placeholders, pitch view follows the Strip height (160).
 - Formation AI: F01 has its own file; F02-F10 share AiShapedFormation (defend in lines trailing the ball, press triggers, build-up drop of the holder, one full back goes / one stays, 10 between the lines, two 10s pocket + run beyond) with a numbers-only file per formation from tactico.pro. Not on tactico: the exact diamond is 4-4-2 Diamond (F06 = 4-1-2-1-2).
 - AI interaction layer (AiInteract + AiTrait): cover, outlet, traits via players.csv traits column.
+- Ball touch + keeper saves: smaller ball, eased first touch, animated keeper dives with clip lists and mirror (match_keeper.gd). Untested.

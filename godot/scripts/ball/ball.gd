@@ -29,6 +29,11 @@ const SPRITE_DIAMETER := 14.0       # pixels of ball inside the 16 px cell
 
 ## The Shadow and Sprite nodes are made in _ready() (not saved into the scene, so the scene file stays clean); the clips in the AnimationPlayer find the sprite by the name "Sprite".
 var sprite: Sprite2D
+## how big the ball is drawn (1 = full size); MatchGame sets it from MatchSettings > Ball and first touch
+var visual_scale := 0.7:
+	set(v):
+		visual_scale = v
+		if sprite != null: sprite.scale = Vector2.ONE * v
 var shadow: Sprite2D
 @onready var anim_player: AnimationPlayer = $AnimationPlayer
 ## Free / Held / Pass / Through / Lob / Shot (child nodes, scenes/ball/ball.tscn)
@@ -61,6 +66,7 @@ func _ready() -> void:
 	_mat = ShaderMaterial.new(); _mat.shader = load("res://shaders/ball.gdshader")
 	var white := Image.create(16, 16, false, Image.FORMAT_RGBA8); white.fill(Color.WHITE)
 	sprite.texture = ImageTexture.create_from_image(white); sprite.material = _mat
+	sprite.scale = Vector2.ONE * visual_scale
 	setup(ball_id)
 
 func setup(id: String) -> void:
@@ -180,4 +186,4 @@ func place_shadow(offset_px: Vector2, height_m: float) -> void:
 	shadow.position = offset_px / scale
 	shadow.modulate.a = clampf(1.0 - height_m * 0.12, 0.25, 1.0)
 	var s := clampf(1.0 - height_m * 0.06, 0.5, 1.0)
-	shadow.scale = Vector2(s, s)
+	shadow.scale = Vector2(s, s) * visual_scale

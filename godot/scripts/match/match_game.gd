@@ -43,6 +43,7 @@ var rules: MatchRules
 var orders: MatchOrders
 var cards: MatchCards
 var brain: AiBrain
+var keeper: MatchKeeper
 var command := MatchCommand.new()   ## what the human is doing right now (shown in the HUD box)
 var _next_kick: Team
 var _slow := false
@@ -81,8 +82,10 @@ func _ready() -> void:
 	ball = Ball.create(settings.ball_id)
 	stadium.add_ball(ball)
 	ball.preview_speed = 1.0
+	ball.visual_scale = settings.ball_scale
 	poss = MatchPossession.new(self)
 	motion = MatchMotion.new(self)
+	keeper = MatchKeeper.new(self)
 	rules = MatchRules.new(self)
 	orders = MatchOrders.new(self)
 	cards = MatchCards.new(self)
@@ -152,6 +155,7 @@ func _physics_process(dt: float) -> void:
 	elif Input.is_action_just_pressed("m_restart"):
 		get_tree().reload_current_scene()
 	motion.update(dt)
+	keeper.update(dt)
 	poss.update(dt)
 	if phase == Phase.PLAY: rules.check()
 	cards.tick(dt)
