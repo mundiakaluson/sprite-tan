@@ -1,5 +1,6 @@
 """The 30 SHOT skill animations (SH01-SH30). Run:  python moves_shot.py [id ...]  to (re)write data/animations/shXX_*.json"""
 import math, sys
+import gen_actions as A
 import moves as M
 import numpy as np
 import moves as M
@@ -53,7 +54,38 @@ def sh02():
     return m
 
 
-FINESSE_ENV = {8: 0.25, 9: 0.55, 10: 0.8, 11: 0.95, 12: 1.0, 13: 0.95, 14: 0.75, 15: 0.45, 16: 0.2, 17: 0.05}
+FINESSE_ENV = {8: 0.25, 9: 0.55, 10: 0.8, 11: 0.95, 12: 1.0, 13: 0.95, 14: 0.9, 15: 0.75, 16: 0.5, 17: 0.25, 18: 0.08}
+
+
+def retime(m, tmap, ms=None, strike=None):
+    """a new Move whose frame j shows the source move at (fractional) source time tmap[j]: slow a wind-up down, hold the top of the backswing,
+    whip the strike through in a frame or two and let the follow-through hang. Interpolates the source's dense poses with PCHIP."""
+    src = m.poses(); n = len(src); xs = list(range(n))
+    out = M.Move({}, len(tmap), ms or m.ms, dict(m.events))
+    keys = sorted(src[0].keys())
+    for j, t in enumerate(tmap):
+        out.keys[j] = {k: float(A.pchip(xs, [src[i][k] for i in xs], t)) for k in keys}
+    if strike is not None: out.events['strike'] = strike
+    return out
+
+
+def finesse_windup(m):
+    """a big, readable backswing: the hips open and the kicking leg is drawn right back and up behind him (heel towards the backside, toe pointed),
+    shoulders coiled the other way and the plant-side arm already rising; this is what tells you the ball is going to be bent"""
+    from gen_actions import foot as gfoot, pole as gpole
+    for f, ft, coil in ((8, (3.0, -8.0, 11.0, 60), 0.4), (9, (3.8, -13.0, 16.5, 72), 0.8), (10, (4.2, -15.5, 19.5, 80), 1.0)):
+        k = m.keys[f]
+        k.update(gfoot('R', ft[0], ft[1], ft[2], ft[3])); k.update(gpole('R', 1.0, 1.0, -0.4))
+        k['pyaw'] = k.get('pyaw', 0.0) - 0.25 * coil                    # hips open to the kicking side
+        k['cyaw'] = k.get('cyaw', 0.0) + 0.3 * coil                     # shoulders stay square: the coil
+        k['L_a1'] = k.get('L_a1', 0.0) + (2.0 - k.get('L_a1', 0.0)) * coil
+    return m
+
+
+# new frame -> source frame: short run-in, slow wind-up with a hold at the top, a two-frame whip into contact (new frame 12),
+# a long follow-through that keeps the lean, then the recovery steps
+FINESSE_TIME = [4.0, 5.3, 6.6, 7.6, 8.2, 8.7, 9.2, 9.6, 9.9, 10.05, 10.15, 11.0, 12.0, 12.5, 13.0, 13.5, 14.0, 14.6, 15.2, 15.8, 16.4,
+                17.0, 17.6, 18.2, 18.8, 19.4, 20.0, 20.6]
 
 
 def finesse_bend(m, amt=1.0, roll=1.0, tilt=0.35, back=0.5, hips=-0.2, head=0.45, drift=2.2):
@@ -81,7 +113,7 @@ def finesse_bend(m, amt=1.0, roll=1.0, tilt=0.35, back=0.5, hips=-0.2, head=0.45
 
 @move('SH03', 'Finesse Curler')
 def sh03():
-    return finesse_bend(finesse_base())
+    return retime(finesse_bend(finesse_windup(finesse_base())), FINESSE_TIME, ms=60, strike=12)
 
 
 @move('SH05', 'Chip Lob')

@@ -60,6 +60,7 @@ func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_i
 		var key := "%s %s" % [over.get("style", "K01"), clip]
 		stat_shots[key] = int(stat_shots.get(key, 0)) + 1
 	var dur := g.settings.shot_clip_time if action == "shot" else g.settings.kick_clip_time
+	if clip in g.settings.clips_slow_kick: dur = g.settings.curl_clip_time      # curlers: the wind-up has to be seen
 	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.5), func(): _release(f, action, to, to_vel, over, receiver), 1.0, dur, speed > 1.0)
 
 ## the kick clip for this action: by distance, direction behind him, and kind of pass; one at random from the list
