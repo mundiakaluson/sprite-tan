@@ -11,6 +11,7 @@ extends AiRole
 @export var cross_z := 22.0
 
 func _init() -> void:
+	attacker = true
 	push_weight = 1.0
 	shoot_bias = 0.6
 	dribble_urge = 0.55

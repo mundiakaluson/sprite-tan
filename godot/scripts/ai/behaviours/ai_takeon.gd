@@ -13,7 +13,11 @@ extends AiBehaviour
 @export var cooldown := 2.5
 ## never in his own third, never when a shot is on (pitch depth 0..1)
 @export var min_depth := 0.3
-@export var max_depth := 0.9
+@export var max_depth := 0.97
+## in the final stretch (depth over final_depth) attackers try it final_boost times as often: they go at their man instead of passing back
+@export var final_depth := 0.72
+@export var final_boost := 2.5
+@export var attack_roles := PackedStringArray(["ST", "LW", "RW", "CAM"])
 ## not with another defender this close behind the first (a double team: pass instead)
 @export var second_man := 3.0
 
@@ -29,6 +33,7 @@ func wants(f: Footballer, c: AiContext, role: AiRole) -> bool:
 	var d := _defender(f, c)
 	if d == null: return false
 	var p := rate * (0.4 + f.stat("DRI", 60) / 100.0) * (0.5 + role.dribble_urge) * c.game.get_physics_process_delta_time()
+	if depth > final_depth and f.role in attack_roles: p *= final_boost
 	return c.game.rng.randf() < p
 
 func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:

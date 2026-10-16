@@ -17,6 +17,8 @@ extends AiBehaviour
 @export var edge_rate := 0.8
 ## a defender (not the keeper) standing right in the line: no shot (lane width m). The keeper is dealt with by choosing the corner.
 @export var lane_width := 1.1
+## in the box with a body in the way he still has a go now and then (per second): shots get blocked, but strikers shoot
+@export var blocked_try := 0.6
 ## seconds before he can decide to shoot again
 @export var cooldown := 0.6
 
@@ -83,7 +85,7 @@ func wants(f: Footballer, c: AiContext, role: AiRole) -> bool:
 	var d := f.pos.distance_to(c.goal())
 	var in_box := c.in_zone(f.pos, box_zone)
 	if not in_box and d > edge_range: return false
-	if _blocked(f, c): return false
+	if _blocked(f, c) and not (in_box and c.game.rng.randf() < blocked_try * c.game.get_physics_process_delta_time()): return false
 	var skill := 0.5 + f.stat("SHO", 60) / 100.0
 	var p := (rate if in_box else edge_rate) * skill * role.shoot_bias * c.game.get_physics_process_delta_time()
 	if c.pressure(f.pos) < c.s.pressure_radius: p *= 2.0                # pressed: get it off

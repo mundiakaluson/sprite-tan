@@ -68,6 +68,9 @@ func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_i
 		dur *= lerpf(g.settings.shot_time_slow, g.settings.shot_time_fast, sho)
 	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.5), func(): _release(f, action, to, to_vel, over, receiver), 1.0, dur, speed > 1.0)
 	stat_kicks["%s %s" % [f.role, action]] = int(stat_kicks.get("%s %s" % [f.role, action], 0)) + 1
+	var fdepth := (f.pos.x * f.team.dir + MatchGame.HALF_L) / (2.0 * MatchGame.HALF_L)
+	if fdepth > 0.72 and action in ["pass", "lob"] and (to.x - f.pos.x) * f.team.dir < -1.0:
+		stat_kicks["final-third back " + f.role] = int(stat_kicks.get("final-third back " + f.role, 0)) + 1
 	if action == "shot":
 		f.glide_k = g.settings.shot_glide_k
 		stat_shot_speed.append([snappedf(speed, 0.1), -1.0])                 # shoots in his stride and runs on through it

@@ -184,6 +184,12 @@ func _wants_shot(f: Footballer, c: AiContext) -> bool:
 	if c.lane_blocked(f.pos, c.goal(), lane_width): return false
 	return c.game.rng.randf() < c.s.shoot_chance * shoot_bias * (0.5 + f.stat("SHO", 60) / 100.0)
 
+## an attacker (ST / winger / CAM set this): near their box he does not pass backwards unless there is nothing else on;
+## each metre a pass goes backwards costs final_back_per_m once he is past final_depth (pitch depth 0..1)
+@export var attacker := false
+@export var final_depth := 0.72
+@export var final_back_per_m := 1.6
+
 ## the best pass: {mate, action} or {} when nothing is worth it. Scores forward gain, space around the receiver, the length the settings like, blocked lanes and risk.
 func _pick_pass(f: Footballer, c: AiContext) -> Dictionary:
 	var s := c.s
@@ -197,6 +203,7 @@ func _pick_pass(f: Footballer, c: AiContext) -> Dictionary:
 		if m.is_keeper(): score -= keeper_penalty
 		if c.depth(m.pos) > risk_depth and o["open"] < risk_open: score -= (1.0 - c.f("risk")) * risk_penalty
 		score += _pass_bias(f, m, c)
+		if attacker and c.depth(f.pos) > final_depth and o["forward"] < 0.0: score += o["forward"] * final_back_per_m      # going backwards near their box: last resort
 		if score > bs:
 			bs = score
 			best = {"mate": m, "action": "pass"}

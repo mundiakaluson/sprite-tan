@@ -10,6 +10,7 @@ extends AiRole
 @export var poacher_x := 38.0
 
 func _init() -> void:
+	attacker = true
 	push_weight = 1.0
 	shoot_bias = 1.0
 	dribble_urge = 0.35

@@ -7,8 +7,9 @@ extends AiBehaviour
 ## back to goal = facing less than this towards the goal (dot), or an opponent within `tight` m
 @export_range(-1.0, 1.0) var facing_max := 0.25
 @export var tight := 3.0
-## pitch depth (0..1) from where he does it
+## pitch depth (0..1) where he does it: not near their box (there he turns, takes his man on or shoots)
 @export var min_depth := 0.45
+@export var max_depth := 0.74
 ## the lay-off: a team mate (these roles) 5 to max_dist m away, deeper or level, with nobody within `free` m of him
 @export var support_roles := PackedStringArray(["CM", "CAM", "CDM", "LW", "RW"])
 @export var max_dist := 18.0
@@ -20,15 +21,15 @@ extends AiBehaviour
 static var stat_layoffs := 0
 
 func _init() -> void:
-	priority = -6
+	priority = 2
 	roles = PackedStringArray(["ST"])
 	when = WITH_BALL
 
 func wants(f: Footballer, c: AiContext, _role: AiRole) -> bool:
 	if c.game.kicking.busy(f) or f.lock > 0.0 or f.hold < 0.15 or f.hold > 1.5: return false
-	if c.depth(f.pos) < min_depth: return false
+	if c.depth(f.pos) < min_depth or c.depth(f.pos) > max_depth: return false
 	var back := f.face.dot((c.goal() - f.pos).normalized()) < facing_max
-	if not back and c.pressure(f.pos) > tight: return false
+	if not back or c.pressure(f.pos) > tight * 2.0: return false             # only with his back to goal and someone on him
 	return _support(f, c) != null
 
 func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:

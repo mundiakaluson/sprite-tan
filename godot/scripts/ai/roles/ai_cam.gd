@@ -11,6 +11,7 @@ extends AiRole
 @export_range(0.0, 1.0) var through_depth := 0.7
 
 func _init() -> void:
+	attacker = true
 	push_weight = 0.9
 	shoot_bias = 0.8
 	dribble_urge = 0.4
