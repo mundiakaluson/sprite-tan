@@ -62,3 +62,4 @@ Game,"Keeper reads the game (line, speed, shuffle, relaxed/alert/set stances); f
 Game,"Ball rolls to the foot (damped spring) and dribbles with a touch per stride; moving players easier to click, double click follows the runner",doing,"headless-checked for jumps; feel to be tested in Godot"
 Game,"AI take-ons (fake + burst), defenders bite (slide/stumble), AI standing and slide tackles",doing,"headless: ~7 take-ons, ~26 tackles, 1-2 slides per match; look in Godot"
 Game,"Sprint vs run clips by own top speed, stamina + tired run, AI sprint into space, keeper 1v1 rush (auto + Rush order)",doing,"headless-checked; feel to be tested in Godot (new Order_rush button in the HUD scene)"
+Game,"Panic clearance clips (flinch / hack and fall), run facing elevation fix, sprint nerf",doing,"bake cl01/cl02 in the tool then Export; test in Godot"
