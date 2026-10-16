@@ -253,7 +253,7 @@ def panic_clear(kind):
         drop = sm((f - 11.0) / 8.0) if fall else 0.0
         end = sm((f - 19.0) / 4.0) if fall else 0.0
         rec = sm((f - 14.0) / 5.0) if not fall else 0.0
-        lean = -0.55 * thru - 0.2 * shy + 0.3 * wind                      # leans back through the ball, forward as he winds
+        lean = -0.3 * thru - 0.1 * shy + 0.2 * wind                      # leans back through the ball, forward as he winds
         pz = lerp(22.7 - 1.6 * shy - 1.2 * wind + 0.6 * swing, 8.0, drop)
         roll = -1.45 * drop
         ry = lerp(0.8 - 11.0 * wind + 17.0 * swing + 6.0 * thru, -3.0, drop)
@@ -261,7 +261,7 @@ def panic_clear(kind):
         R = (lerp(2.8, 3.6, drop), ry, -50 * wind + 45 * (swing + thru) + 20 * drop, (rz if f < 15 else None))
         L = (lerp(-2.8, -0.5, drop), lerp(-0.6 + 1.5 * wind, -4.0, drop), 20 * drop, None)     # the plant foot stays down
         d.at(f, R=R, L=L, pz=pz, cpitch=lean * (1 - drop), croll=roll, proll=roll + 0.06 * (1 - drop), ppitch=0.15 * wind - 0.2 * thru,
-             hyaw=-0.85 * drop, hpitch=0.25 * shy - 0.15 * thru, hroll=-0.15 * shy, pyaw=-0.35 * wind + 0.5 * (swing + thru) * (1 - drop))
+             hyaw=-0.85 * drop, hpitch=0.1 * shy, hroll=-0.1 * shy, pyaw=-0.12 * wind + 0.2 * (swing + thru) * (1 - drop))
         up = mix(REST, (1.9, 0.9, 1.7, 0.0), shy)
         wide = (-0.9, 0.5, 0.3, 0.0)                                      # arms thrown out and back for the swing
         r = mix(up, wide, max(swing, thru)); l = mix(up, (2.4, 0.7, 1.2, 0.0), max(swing, thru) * (1 - rec))

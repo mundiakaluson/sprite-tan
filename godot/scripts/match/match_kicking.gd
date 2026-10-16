@@ -6,19 +6,28 @@ extends RefCounted
 
 var g: MatchGame
 var _tumble_chain := {}      ## Footballer -> clip to play after a fall
+var _after := {}             ## Footballer -> Callable to run when his kick is released (a runner sent off by a through ball)
 var stat_passes := 0         ## counters for the headless balance runs
 var stat_scuffs := 0
 var stat_tumbles := 0
+var stat_shots := {}         ## headless: "style clip" -> count of shots taken
 
 func _init(game: MatchGame) -> void:
 	g = game
+
+## run `cb` once f's pending kick is released (dropped if it never is)
+func after_release(f: Footballer, cb: Callable) -> void:
+	_after[f] = cb
 
 func busy(f: Footballer) -> bool:
 	return not f.aim_done.is_null()
 
 ## the entry point (MatchPossession.kick_action calls this)
 func kick(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: Dictionary, receiver: Footballer) -> void:
-	if g.carrier != f or f.lock > 0.0 or busy(f): return
+	if g.carrier != f:
+		_after.erase(f)
+		return
+	if f.lock > 0.0 or busy(f): return
 	var s := g.settings
 	var dir := to - f.pos
 	if dir.length() > 0.1 and absf(f.face.angle_to(dir)) > deg_to_rad(s.pivot_min_deg):
@@ -33,7 +42,9 @@ func kick(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: Dic
 func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_in: Dictionary, receiver: Footballer) -> void:
 	f.aim_done = Callable()
 	f.mirror = false
-	if g.carrier != f: return
+	if g.carrier != f:
+		_after.erase(f)
+		return
 	if receiver != null: to = receiver.pos                                  # he may have moved while we turned
 	var dir := to - f.pos
 	var speed := f.vel.length()
@@ -42,7 +53,12 @@ func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_i
 		over["_mis"] = clampf(absf(f.face.angle_to(dir)) / deg_to_rad(90.0), 0.0, 1.0)      # how far round he still was: kicking before turning is less accurate
 		f.face = dir.normalized()                                              # a small turn at most (bigger ones were pivots), so he kicks where the ball goes
 		f.settle = maxf(f.settle, 0.15)
-	var clip := pick_clip(f, action, to)
+	var clip := String(over.get("_clip", ""))
+	over.erase("_clip")
+	if clip == "" or not f.node.has_clip(clip): clip = pick_clip(f, action, to)
+	if action == "shot":
+		var key := "%s %s" % [over.get("style", "K01"), clip]
+		stat_shots[key] = int(stat_shots.get(key, 0)) + 1
 	var dur := g.settings.shot_clip_time if action == "shot" else g.settings.kick_clip_time
 	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.5), func(): _release(f, action, to, to_vel, over, receiver), 1.0, dur, speed > 1.0)
 
@@ -136,6 +152,9 @@ func _release(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over:
 			o["noise"] = maxf(float(o.get("noise", 0.0)), s.scuff_noise)
 			g.hud.toast("%s: scuffed" % f.display_name())
 	g.poss.launch(f, action, to, to_vel, o, receiver)
+	var cb: Callable = _after.get(f, Callable())
+	_after.erase(f)
+	if g.carrier != f and not cb.is_null(): cb.call()
 	if g.carrier == f: return                                               # the ball was not released
 	if not passing: return
 	if f.clip == s.clip_panic_fall:                                         # the hack carries him over: lie there, then get up

@@ -7,6 +7,7 @@ var dir := 1.0                  ## +1 attacks towards +x (right of the screen), 
 var human := false
 var score := 0
 var color := Color.WHITE
+var ai := {}                    ## team-level AI memory (one-two cooldown, ...)
 var stance_id := "auto"        ## the team command in force (TeamStance.id); "auto" = the formation as designed
 var kit: KitColors              ## the colours he plays in
 var formation_id := "F01"

@@ -149,5 +149,11 @@ MatchSettings > Match > Custom Formations: add an element, New FormationLayout (
 
 ## Pressured clearance, run facing, sprint (latest)
 - Lob/clearance with an opponent inside `panic_pressure` plays `cl01_panic_clear` (flinch, hack, stagger) or, with `panic_fall_chance`, `cl02_panic_clear_fall` (then base_get_up). Clips in sprites/moves_fluid.py; bake + Export. Settings: MatchSettings "Pressured clearance".
-- `Player.face_vector` stretches the screen direction by 1/sin(SPRITE_ELEVATION_DEG=30) because the sprites were rendered from a 30 degree elevation camera; fixes diagonal runs facing too far sideways.
+- `Player.face_vector` stretches the screen direction vertically by 1/`Player.sprite_squash` (0.72; exact geometry is 0.5 but looked too much toward the camera; 1.0 = old screen-angle behaviour). Tweak if diagonals look off.
 - Sprint nerf: sprint_factor 1.06, AiSprint duration 2.3.
+
+## Through-ball runner, one-two, finishing
+- A through ball no longer sends the runner off while the passer is still turning: `MatchKicking.after_release(f, callable)` runs when the kick is struck; `MatchOrders.send_runner` then orders the run after `through_react` s (order `delay`). AI and human through balls both use it.
+- `ai_finish.gd` (drop-in behaviour, priority -5): in `opp_box` (or up to `edge_range`) the carrier shoots without needing a lane past the keeper; one on one (keeper `keeper_out` m off his line) = chip (K05, sh05, speed sqrt(dist x chip_k)) when further than `chip_gap`, else a placed side-foot finish to the corner away from the keeper; wide of `side_y` = a curler to the far post (K02 finesse bends clockwise, K03 trivela the other way, picked by geometry, clip sh03 / sh04); central = placed / snapped finish. AiIntent has `style`, `clip`, `speed_override`; MatchKicking reads `over["_clip"]`.
+- `ai_onetwo.gd` (drop-in, simple version): carrier with a defender ahead and a free team mate 5-15 m away passes to him and runs past the defender (`after_release` -> `MatchOrders.send_run`); the wall man (`f.ai["onetwo_return"]`, any role) plays a through ball back first time within `return_window`. Team cooldown in `Team.ai`. Later: the skill card (1-2) sets these numbers. Headless: about 2 per match, most returned.
+- Headless counters: `MatchKicking.stat_shots` (style + clip), `AiOneTwo.stat_started / stat_returned`.

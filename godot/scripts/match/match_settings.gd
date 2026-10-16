@@ -288,6 +288,8 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export_range(0.0, 1.0) var through_curve_chance := 0.12
 @export var through_lead := 1.5
 @export var through_run_speed := 7.0
+## seconds after the ball is struck before the runner reacts and sets off
+@export var through_react := 0.25
 
 @export_group("Card effects")
 ## success roll: the card's stat difference to 60 counts this much per point (percent)

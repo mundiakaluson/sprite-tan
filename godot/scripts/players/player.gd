@@ -91,11 +91,12 @@ func move_speed() -> float:
 ## the sprites were rendered by a camera looking down at ELEVATION degrees, which squashes the ground depth by sin(ELEVATION) (sprites/gen_player_v2.py ELEV = 30). A body turned to a world heading
 ## only LOOKS that way on screen when the heading is un-squashed again, so a screen direction is stretched vertically by 1 / sin(ELEVATION) before picking the sprite direction.
 ## Without this a runner going down-right on screen faced much more to the right than he moved.
-const SPRITE_ELEVATION_DEG := 30.0
+## 0.5 is the exact geometry (sin 30) but made the body look too much toward the camera in play; 1.0 is the old behaviour (screen angle). Tweak between.
+static var sprite_squash := 0.72
 
 func face_vector(v: Vector2) -> void:
 	if v.length() < 0.001: return
-	v.y /= sin(deg_to_rad(SPRITE_ELEVATION_DEG))
+	v.y /= sprite_squash
 	var deg := rad_to_deg(atan2(v.x, -v.y))          # up = 0, right = 90, down = 180, left = 270
 	facing = posmod(int(round(deg / 11.25)), 32)
 	_apply_face()

@@ -12,5 +12,10 @@ var action := ""
 var target: Footballer
 ## spot for a shot, or for a pass with no team mate
 var aim := Vector2.INF
+## a shot's kick style (data/kick_styles.csv id, "" = the shot's default) and animation clip ("" = picked by distance); set by AiFinish
+var style := ""
+var clip := ""
+## ball speed for a shot (m/s), 0 = the shot's own
+var speed_override := 0.0
 ## shown nowhere yet: handy to print while tuning a role
 var note := ""

@@ -86,10 +86,18 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 		f.want = to / d * minf(top * i.speed, d * 2.0) if d > 0.4 else Vector2.ZERO
 	match i.action:
 		"pass", "through", "lob":
-			if i.target != null: g.poss.kick_action(f, i.action, i.target.pos, i.target.vel, {}, i.target)
+			if i.target != null:
+				if i.action == "through":                                       # the runner sets off when the ball is struck
+					var mate := i.target
+					g.kicking.after_release(f, func(): g.orders.send_runner(f, mate, Vector2(f.team.dir * g.settings.through_run_speed, 0.0)))
+				g.poss.kick_action(f, i.action, i.target.pos, i.target.vel, {}, i.target)
 			elif i.aim != Vector2.INF: g.poss.kick_action(f, i.action, i.aim)
 		"shoot":
-			g.poss.kick_action(f, "shot", i.aim, Vector2.ZERO, {})
+			var over := {}
+			if i.style != "": over["style"] = i.style
+			if i.clip != "": over["_clip"] = i.clip
+			if i.speed_override > 0.0: over["speed"] = i.speed_override
+			g.poss.kick_action(f, "shot", i.aim, Vector2.ZERO, over)
 		"smother": g.keeper.smother(f, i.target)
 		"takeon": g.dribble.take_on(f, i.target)
 		"slide": g.dribble.slide_tackle(f, i.target)
