@@ -163,6 +163,16 @@ offset_right = 98.0
 offset_bottom = 120.0
 script = ExtResource("5")
 
+[node name="Order_rush" type="Control" parent="Root/OrdersPanel/Orders"]
+texture_filter = 1
+custom_minimum_size = Vector2(64, 18)
+anchors_preset = 0
+offset_left = 102.0
+offset_top = 93.0
+offset_right = 200.0
+offset_bottom = 120.0
+script = ExtResource("5")
+
 [node name="HandPanel" type="Control" parent="Root"]
 texture_filter = 1
 anchors_preset = 0

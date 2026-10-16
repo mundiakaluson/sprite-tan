@@ -72,6 +72,13 @@ func update(dt: float) -> void:
 		f.pos.x = clampf(f.pos.x, -MatchGame.HALF_L - 3.0, MatchGame.HALF_L + 3.0)
 		f.pos.y = clampf(f.pos.y, -MatchGame.HALF_W - 2.0, MatchGame.HALF_W + 2.0)
 		if g.carrier == f: f.carried += before.distance_to(f.pos)
+		var raw := f.top_speed(false)
+		var sp := f.vel.length()
+		if playing:
+			if sp > s.sprint_clip_frac * raw: f.stamina -= s.sprint_drain * maxf(0.3, 1.3 - f.stat("PHY", 60) / 100.0 * s.phy_k) * dt
+			elif sp > 0.45 * raw: f.stamina += s.jog_regen * dt
+			else: f.stamina += s.rest_regen * dt
+			f.stamina = clampf(f.stamina, 0.0, 1.0)
 		var tb := Vector2(g.ball.phys.pos.x, g.ball.phys.pos.z) - f.pos
 		if f.is_keeper() and f.lock <= 0.0 and f.aim_done.is_null() and not gliding and f.vel.length() < s.keeper_watch_speed and tb.length() > 1.0:
 			var kstep := deg_to_rad(s.keeper_turn_deg_per_s) * dt                  # a keeper keeps his chest to the ball while he shuffles across
@@ -97,7 +104,9 @@ func _show(f: Footballer) -> void:
 	var want_clip := "base_idle"
 	if not busy:
 		var speed := f.vel.length()
-		if speed > 5.8: want_clip = "base_sprint"
+		var raw := f.top_speed(false)
+		if speed > 3.2 and f.stamina < g.settings.tired_clip_below: want_clip = "base_tired_run"
+		elif speed > g.settings.sprint_clip_frac * raw and speed > 4.0: want_clip = "base_sprint"
 		elif speed > 3.2: want_clip = "base_jog"
 		elif speed > 0.4: want_clip = "base_walk"
 		if f.is_keeper():

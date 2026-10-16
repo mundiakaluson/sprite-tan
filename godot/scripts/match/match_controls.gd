@@ -303,6 +303,9 @@ func _on_menu(id: String) -> void:
 	elif id == "tackle":
 		game.orders.tackle(selected)
 		clear()
+	elif id == "rush":
+		game.orders.keeper_rush(selected)
+		clear()
 	else:
 		order = id
 		mode = Mode.AIMING

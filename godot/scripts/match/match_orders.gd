@@ -9,6 +9,7 @@ func _init(game: MatchGame) -> void:
 
 ## the order buttons that make sense for a player now
 func menu_for(f: Footballer) -> Array:
+	if f.is_keeper() and g.carrier != f: return ["rush"]
 	if g.carrier == f: return ["pass", "through", "lob", "shoot", "run"]
 	return ["run", "press", "tackle"]
 
@@ -26,6 +27,14 @@ func _run_order(f: Footballer, spot: Vector2) -> void:
 func press(f: Footballer) -> void:
 	f.order = {"kind": "press", "t": g.settings.press_order_time}
 	g.command.show("press", "PRESS", f, null, "", g.settings.command_hold)
+
+## the keeper comes out to close the carrier down (a one on one); the AI does it by itself when nobody is back, this forces it
+func keeper_rush(f: Footballer) -> void:
+	if g.carrier == null or g.carrier.team == f.team:
+		g.hud.toast("Nobody to rush out at")
+		return
+	f.order = {"kind": "rush", "t": g.settings.keeper_rush_order_time}
+	g.command.show("rush", "KEEPER OUT", f, g.carrier, "", g.settings.command_hold)
 
 func tackle(f: Footballer) -> void:
 	if g.carrier == null or g.carrier.team == f.team:

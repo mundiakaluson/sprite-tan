@@ -29,6 +29,16 @@ func update(dt: float) -> void:
 		if not f.order.is_empty() and not f.is_keeper():
 			g.orders.follow(f, dt)
 			continue
+		if f.is_keeper() and String(f.order.get("kind", "")) == "rush":           # the human sent the keeper out
+			f.order["t"] = float(f.order["t"]) - dt
+			var c0: AiContext = ctx[f.team]
+			if f.order["t"] <= 0.0 or c0.carrier == null or c0.carrier.team == f.team:
+				f.order = {}
+			else:
+				var gk: AiRole = profiles[f.team].role_for(f.role)
+				if gk is AiGk:
+					_apply(f, (gk as AiGk).rush(f, c0), c0)
+					continue
 		var role: AiRole = profiles[f.team].role_for(f.role)
 		var intent := role.think(f, ctx[f.team], dt)
 		profiles[f.team].interact.post(f, intent, ctx[f.team])
@@ -80,6 +90,7 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 			elif i.aim != Vector2.INF: g.poss.kick_action(f, i.action, i.aim)
 		"shoot":
 			g.poss.kick_action(f, "shot", i.aim, Vector2.ZERO, {})
+		"smother": g.keeper.smother(f, i.target)
 		"takeon": g.dribble.take_on(f, i.target)
 		"slide": g.dribble.slide_tackle(f, i.target)
 		"tackle":

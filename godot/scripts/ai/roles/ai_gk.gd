@@ -21,6 +21,26 @@ extends AiRole
 @export var pass_lane := 1.8
 ## a slow loose ball in his box (zone own_box, speed below this): he comes out and takes it if no team mate is clearly nearer
 @export var claim_speed := 14.0
+@export_group("One on one")
+## an opponent with the ball, running at him (at least rush_min_speed m/s), within rush_range m of the goal line and rush_lane m of the middle, with nobody back to deal with it: he goes out to close him down.
+## A defender goal-side of the carrier (within cover_width m of his line to goal) means no rush; one right behind him (within catch_up m, at least catch_ratio of his speed, not tired / down) is catching him up: he waits.
+@export var rush_range := 32.0
+@export var rush_min_speed := 4.5
+@export var rush_lane := 24.0
+@export var cover_width := 6.0
+@export var catch_up := 7.0
+@export_range(0.3, 1.5) var catch_ratio := 0.9
+## a defender below this stamina, or on the floor (locked in a fall), does not count
+@export var chaser_tired := 0.25
+## once out, he commits unless a defender gets goal-side
+@export var rush_sticky := true
+## once started he keeps coming for at least this many seconds
+@export var rush_hold := 1.2
+## closes in to this many metres, then smothers (MatchSettings > Keeper one on one)
+@export var smother_range := 2.8
+## when the carrier is this close he stops running at him and holds his ground (m)
+@export var rush_stop := 1.4
+
 @export_group("Reading the game")
 ## play is up the pitch (ball past the halfway line): he pushes up as the ball goes, smoothly from sweep_from to sweep_to of the pitch depth, to sweep_base + sweep_line x line height
 @export_range(0.0, 1.0) var sweep_from := 0.45
@@ -42,6 +62,10 @@ func _init() -> void:
 
 func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 	if c.carrier == f: return _with_ball(f, c, dt)
+	if (c.carrier == null or c.carrier.team == f.team) and _now() > float(f.ai.get("rush_t", 0.0)): f.ai["rush"] = false
+	if c.carrier != null and c.carrier.team != f.team:
+		if _breakaway(f, c): return rush(f, c)
+		if _now() > float(f.ai.get("rush_t", 0.0)): f.ai["rush"] = false
 	var goal_x := c.own_goal().x
 	var bd := absf(c.ball.x - goal_x)
 	if c.carrier == null:
@@ -89,3 +113,48 @@ func _with_ball(f: Footballer, c: AiContext, _dt: float) -> AiIntent:
 		i.target = best
 	return i
 	
+
+# ---------------------------------------------------------------- one on one
+## the carrier is through on goal and nobody can stop it but the keeper (see the exports above)
+func _breakaway(f: Footballer, c: AiContext) -> bool:
+	var k := c.carrier
+	var goal := c.own_goal()
+	var committed: bool = f.ai.get("rush", false) and rush_sticky
+	var line := absf(k.pos.x - goal.x)
+	if line > rush_range * (1.3 if committed else 1.0) or absf(k.pos.y) > rush_lane * (1.3 if committed else 1.0): return false
+	var to_goal := goal - k.pos
+	if k.vel.length() < rush_min_speed * (0.5 if committed else 1.0) or k.vel.dot(to_goal) <= 0.0: return false
+	var dirk := to_goal.normalized()
+	for m in c.team.players:
+		if m == f or m.is_keeper(): continue
+		var down: bool = m.lock > 0.0 or m.stamina < chaser_tired                       # on the floor or out of legs: not a defender now
+		if down: continue
+		var rel := m.pos - k.pos
+		var along := rel.dot(dirk)                                                    # > 0: between the carrier and the goal
+		var across := absf(rel.x * dirk.y - rel.y * dirk.x)
+		if along > 0.0 and across < cover_width: return false                         # goal-side cover
+		if not committed and along < 0.0 and -along < catch_up and across < cover_width and m.vel.length() >= catch_ratio * k.vel.length(): return false    # catching him up: wait
+	if not committed: f.ai["rush_t"] = _now() + rush_hold            # a rush lasts at least this long, no flicker
+	f.ai["rush"] = true
+	return true
+
+## close the carrier down: run at his line to goal, then smother. `forced` = the human's Rush order (no conditions).
+func rush(f: Footballer, c: AiContext) -> AiIntent:
+	var k := c.carrier
+	var i := AiIntent.new()
+	var goal := c.own_goal()
+	var d := f.pos.distance_to(k.pos)
+	var ahead := k.pos + k.vel * 0.3
+	i.move_to = c.clamp_pitch(ahead, 0.5)
+	i.speed = c.s.sprint_factor
+	i.note = "rush"
+	if d < smother_range and f.lock <= 0.0:
+		i.action = "smother"
+		i.target = k
+	elif d < rush_stop:
+		i.move_to = f.pos
+	if f.pos.distance_to(goal) > 30.0: i.move_to = c.clamp_pitch(goal + (k.pos - goal).normalized() * 25.0, 0.5)
+	return i
+
+func _now() -> float:
+	return Engine.get_physics_frames() / float(Engine.physics_ticks_per_second)

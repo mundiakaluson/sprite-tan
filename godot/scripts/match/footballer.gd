@@ -19,6 +19,7 @@ var shield := 0.0               ## seconds nobody can tackle him (dribble cards)
 var think := 0.0                ## AI decision timer
 var hold := 0.0                 ## seconds he has held the ball
 var carried := 0.0              ## metres he has carried the ball since he got it
+var stamina := 1.0             ## 1 = fresh; sprinting drains it (MatchSettings > Stamina and sprint), low stamina slows him and plays the tired run
 var clip := ""
 var pending := Callable()       ## runs when the animation reaches its strike point
 var pending_t := 0.0
@@ -38,10 +39,11 @@ func stat(key: String, d := 60) -> int:
 func is_keeper() -> bool:
 	return role == "GK"
 
-func top_speed() -> float:
+func top_speed(tired := true) -> float:
 	var s := MatchSettings.current if MatchSettings.current != null else MatchSettings.new()
-	if is_keeper(): return s.keeper_speed
-	return s.speed_base + stat("PAC", 60) * s.speed_per_pac
+	var v := s.keeper_speed if is_keeper() else s.speed_base + stat("PAC", 60) * s.speed_per_pac
+	if tired: v *= lerpf(s.tired_speed, 1.0, clampf(stamina / maxf(s.tired_below, 0.01), 0.0, 1.0))
+	return v
 
 func display_name() -> String:
 	return str(row.get("name", "?"))

@@ -164,3 +164,32 @@ func _resolve(k: Footballer, kind: String, lateral: float, in_reach: bool) -> vo
 		b.phys.vel = Vector3(-v.x * 0.3, v.y * 0.5 + 2.0, v.z + g.rng.randf_range(-5.0, 5.0))   # a parry back into play
 	k.no_touch = 0.5
 	save_event.emit(k, kind, "", "deflect")
+
+# ---------------------------------------------------------------- one on one: closing the carrier down
+var stat_smothers := 0
+
+func smother(k: Footballer, c: Footballer) -> void:
+	stat_smothers += 1
+	var s := g.settings
+	if c == null or g.carrier != c or k.lock > 0.0 or busy(k): return
+	var dir := (c.pos + c.vel * 0.15 - k.pos)
+	if dir.length() < 0.1: dir = k.face
+	dir = dir.normalized()
+	k.face = dir
+	k.vel = dir * 5.5
+	var clip := s.clip_smother if k.node.has_clip(s.clip_smother) else ""
+	g.motion.act(k, clip, g.motion.strike_frac(clip, 0.4), func(): _smother_lands(k, c), 1.0, s.smother_clip_time, true)
+
+func _smother_lands(k: Footballer, c: Footballer) -> void:
+	var s := g.settings
+	if g.carrier != c: return
+	if k.pos.distance_to(c.pos) > s.smother_reach or c.shield > 0.0:
+		g.poss.failed_tackle(k, c)                                              # he went too early / too late: down, the carrier is through
+		return
+	var p := clampf(s.smother_base + ((k.stat("REF", 60) + k.stat("HAN", 60)) * 0.5 - c.stat("DRI", 60)) * s.smother_per_stat, 0.15, 0.85)
+	if g.rng.randf() < p:
+		save_event.emit(k, "smother", "", "catch")
+		g.poss.won_tackle(k, c)
+		k.lock = maxf(k.lock, 0.3)
+	else:
+		g.poss.failed_tackle(k, c)

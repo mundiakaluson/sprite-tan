@@ -68,6 +68,18 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 ## the first touch kills this fraction of his speed (a trap), and he is slowed for a moment
 @export_range(0.0, 1.0) var control_cushion := 0.35
 
+@export_group("Stamina and sprint")
+## a clip is a sprint (base_sprint) from this fraction of his own top speed, otherwise a jog; running that fast drains stamina (per second, less with PHY), jogging gives a little back, standing a lot
+@export_range(0.5, 1.0) var sprint_clip_frac := 0.9
+@export var sprint_drain := 0.16
+@export var jog_regen := 0.008
+@export var rest_regen := 0.04
+## PHY 100 drains this much less (drain x (1.3 - PHY / 100 x phy_k)); below `tired_below` stamina his top speed falls to `tired_speed` of normal and he runs the tired run clip (under `tired_clip_below`)
+@export var phy_k := 1.0
+@export_range(0.05, 1.0) var tired_below := 0.3
+@export_range(0.3, 1.0) var tired_speed := 0.75
+@export var tired_clip_below := 0.25
+
 @export_group("Kick turn and stumble")
 ## he turns to face the target first when it is more than this many degrees away from where he faces, at this speed (degrees per second); the kick starts when he is within `pivot_done_deg`, or after `pivot_max` s
 @export var pivot_min_deg := 65.0
@@ -164,6 +176,16 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var slide_reach := 1.9
 @export var slide_win_base := 0.55
 @export var slide_per_stat := 0.008
+
+@export_group("Keeper one on one")
+## the keeper rushing a breakaway: smother clip, how long it takes, how far the carrier can be at the strike frame, win chance = base + (keeper (REF + HAN) / 2 - carrier DRI) x per_stat
+@export var clip_smother := "gk03_smother"
+@export var smother_clip_time := 0.8
+@export var smother_reach := 2.2
+@export var smother_base := 0.5
+@export var smother_per_stat := 0.008
+## the Rush order (click the keeper): how long it lasts (s)
+@export var keeper_rush_order_time := 4.0
 
 @export_group("Tackle tumbles")
 ## a won tackle: the tackler slides in (clip below, played in tackle_clip_time s) and the ball changes hands at its strike frame; the victim then falls with this chance, else stumbles
