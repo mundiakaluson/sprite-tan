@@ -40,6 +40,8 @@ var shadow: Sprite2D
 @onready var sm: BallStateMachine = get_node_or_null("StateMachine") as BallStateMachine
 ## the kick action of the last kick ("pass", "through", "lob", "shot"), kept while the ball is still flying
 var action := ""
+## the kick style id (data/kick_styles.csv) of the last kick; the keeper reads its save_difficulty, the trail shows spin kicks
+var style := ""
 
 var phys := BallPhysics.new()
 var row := {}
@@ -163,6 +165,7 @@ func _refresh_orient() -> void:
 ## roll about the travel axis, side about the vertical, back about the horizontal across the travel. Returns the style row.
 func kick(from: Vector3, aim: Vector3, style_id: String, strength := 1.0, rng_seed := -1.0) -> Dictionary:
 	var k := Data.row("kick_styles", style_id)
+	style = style_id
 	if k.is_empty():
 		push_warning("Ball.kick: no kick style '%s' (run Export to game)" % style_id)
 		return k
@@ -180,6 +183,37 @@ func kick(from: Vector3, aim: Vector3, style_id: String, strength := 1.0, rng_se
 	var sp := _f(k, "speed", 25.0) * strength * _f(k, "power", 1.0)
 	launch(from, dir, sp, spin, (randf() * 100.0) if rng_seed < 0.0 else rng_seed)
 	return k
+
+## a copy of this ball's physics (same numbers, position, velocity and spin) to step forward for predictions
+func copy_physics() -> BallPhysics:
+	var p := BallPhysics.new()
+	for key in ["g", "rad", "drag", "mag", "knu", "knu_v", "crisis", "crisis_v", "e", "mu", "roll", "sdec", "power", "touch", "mass", "pos", "vel", "spin", "t", "seed_value"]:
+		p.set(key, phys.get(key))
+	return p
+
+## where a kick would cross the line x = line_x (no aim error): launched from `from` towards `aim` (pitch x / z) with a kick style and a ball speed (m/s).
+## Returns the 3D point (x, height, z), or the last point if it never gets there within `max_t` s. Used by the AI to aim curlers so the bend takes them into the corner.
+func predict_cross(from: Vector3, aim: Vector2, style_id: String, speed: float, line_x: float, max_t := 3.0) -> Vector3:
+	var k := Data.row("kick_styles", style_id)
+	var p := copy_physics()
+	var flat := Vector3(aim.x - from.x, 0.0, aim.y - from.z)
+	if flat.length() < 0.001: return from
+	flat = flat.normalized()
+	var ex := flat.rotated(Vector3.UP, -deg_to_rad(_f(k, "azim", 0.0)))
+	var elev := deg_to_rad(_f(k, "elev", 0.0))
+	var spin := ex * _f(k, "roll", 0.0) + Vector3.UP * _f(k, "side", 0.0) + ex.cross(Vector3.UP) * _f(k, "back", 0.0)
+	p.launch(from, ex * cos(elev) + Vector3.UP * sin(elev), speed, spin, 1.0)
+	var side := signf(line_x - from.x)
+	var t := 0.0
+	var dt := 1.0 / 60.0
+	while t < max_t:
+		var before := p.pos
+		p.step(dt)
+		t += dt
+		if (p.pos.x - line_x) * side >= 0.0:
+			var u := (line_x - before.x) / maxf(absf(p.pos.x - before.x), 0.0001) * side
+			return before.lerp(p.pos, clampf(absf(u), 0.0, 1.0))
+	return p.pos
 
 ## called by the stadium each frame after it has placed this node: ground shadow offset in screen pixels (before this node's scale)
 func place_shadow(offset_px: Vector2, height_m: float) -> void:

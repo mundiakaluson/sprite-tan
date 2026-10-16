@@ -475,3 +475,19 @@ static func layout(name_or_id: String) -> FormationLayout:
 @export var chest_shield := 0.8
 ## while the duel clip plays both slide under the ball at up to this speed (m/s)
 @export var aerial_steer_speed := 5.0
+
+@export_group("Ball trail")
+## a fading line behind a fast ball so curl and skip can be seen; spin kicks (finesse, trivela, benders, low drive) show it from a lower speed
+@export var trail_enabled := true
+@export var trail_min_speed := 20.0
+@export var trail_min_speed_spin := 12.0
+@export var trail_seconds := 0.45
+@export var trail_width := 2.0
+@export var trail_color := Color(1.0, 1.0, 1.0, 0.55)
+
+@export_group("Keeper reading shots")
+## how much of the ball's real bend / dip the keeper reads when he commits (0 = he dives at the straight line, 1 = he reads it perfectly): read_base + (REF - 60) x read_per_ref, clamped
+@export_range(0.0, 1.0) var read_base := 0.45
+@export var read_per_ref := 0.015
+## each kick style's save_difficulty (data/kick_styles.csv) cuts the stop chance; good keepers cancel part of it: counter = (average REF HAN - 60) / 40 x keeper_counter, clamped 0..1
+@export_range(0.0, 1.0) var keeper_counter := 0.8

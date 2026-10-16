@@ -47,6 +47,7 @@ var keeper: MatchKeeper
 var kicking: MatchKicking
 var dribble: MatchDribble
 var aerial: MatchAerial
+var trail: BallTrail
 var command := MatchCommand.new()   ## what the human is doing right now (shown in the HUD box)
 var _next_kick: Team
 var _slow := false
@@ -78,6 +79,9 @@ func _ready() -> void:
 	stadium.add_ball(ball)
 	ball.preview_speed = 1.0
 	ball.visual_scale = settings.ball_scale
+	trail = BallTrail.new()
+	stadium.actors.add_child(trail)
+	trail.setup(ball, stadium.camera, settings)
 	poss = MatchPossession.new(self)
 	motion = MatchMotion.new(self)
 	keeper = MatchKeeper.new(self)

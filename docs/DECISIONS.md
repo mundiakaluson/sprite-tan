@@ -195,3 +195,4 @@ Open / rough edges the user reported:
 - Stat proxies for headers / intelligence (no real stats yet).
 - Headless tools used: scratchpad bal2.gd (full match counters), lob.gd (lob duels), chip.gd (chip / curler landing); recreate from godot/CLAUDE.md notes if needed. Do not `pkill -f` a script name: it kills the shell.
 - Facing bug found: sprite sheet rows start at facing-the-camera, the game's direction starts at away; rows were read upside down. Fixed with PlayerSprite.sheet_row (16 - direction); sprite_squash back to the exact 0.5.
+- Shots: visible curve (trail), low drive and flat bender styles, AI aims curlers by simulating the flight, keepers read bend by REF and cancel style difficulty by REF/HAN.

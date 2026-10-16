@@ -66,8 +66,12 @@ func _consider(k: Footballer) -> void:
 	if g.last_touch == null or g.last_touch.team == k.team: return                   # a pass or clearance of his own side is no shot
 	var t := (k.pos.x - bp.x) / v.x
 	if t <= 0.0 or t > s.save_max_time: return
-	var z := bp.z + v.z * t
+	var z := bp.z + v.z * t                                                           # the straight-line guess
 	var h := maxf(bp.y + v.y * t - 0.5 * 9.81 * t * t, 0.12)
+	var real := _future(t)                                                            # where the bend / dip / skip really takes it
+	var read := clampf(s.read_base + (k.stat("REF", 60) - 60) * s.read_per_ref, 0.0, 1.0)
+	z = lerpf(z, real.z, read)                                                        # a good keeper reads the curve, a poor one dives at the line it started on
+	h = maxf(lerpf(h, real.y, read), 0.12)
 	if absf(z) > MatchGame.GOAL_HALF + 0.6: return                                    # wide of the post: no save to make
 	var lateral := z - k.pos.y
 	if absf(lateral) > s.dive_range or h > s.keeper_reach_height + s.jump_height: return
@@ -79,6 +83,19 @@ func _consider(k: Footballer) -> void:
 	if t > ts + s.save_reaction: return                                               # too early: wait until the clip would arrive with the ball
 	save_event.emit(k, kind, clip, "start")
 	_start(k, clip, kind, anim.length, ts, lateral, z, h)
+
+## the ball's real position t seconds ahead (a copy of its physics stepped forward)
+func _future(t: float) -> Vector3:
+	var src := g.ball.phys
+	var p := BallPhysics.new()
+	for key in ["g", "rad", "drag", "mag", "knu", "knu_v", "crisis", "crisis_v", "e", "mu", "roll", "sdec", "power", "touch", "mass", "pos", "vel", "spin", "t", "seed_value"]:
+		p.set(key, src.get(key))
+	var dt := 1.0 / 60.0
+	var left := t
+	while left > 0.0:
+		p.step(minf(dt, left))
+		left -= dt
+	return p.pos
 
 func _kind(lateral: float, h: float, speed: float) -> String:
 	var s := g.settings
@@ -139,7 +156,9 @@ func _resolve(k: Footballer, kind: String, lateral: float, in_reach: bool) -> vo
 		return
 	var parry := false
 	var skill := s.save_skill_base + (k.stat("REF", 60) + k.stat("HAN", 60)) * 0.5 * s.save_skill_per_stat
-	var stop := clampf(skill * (1.0 - s.dive_difficulty * clampf(absf(lateral) / s.dive_range, 0.0, 1.0)), 0.02, 0.98)
+	var diff := Data.num(Data.row("kick_styles", g.ball.style).get("save_difficulty"), 0.0)       # bend, skip, knuckle: harder to hold
+	var counter := clampf(((k.stat("REF", 60) + k.stat("HAN", 60)) * 0.5 - 60.0) / 40.0 * s.keeper_counter, 0.0, 1.0)
+	var stop := clampf(skill * (1.0 - s.dive_difficulty * clampf(absf(lateral) / s.dive_range, 0.0, 1.0)) * (1.0 - diff * (1.0 - counter)), 0.02, 0.98)
 	if g.rng.randf() > stop:
 		if g.rng.randf() >= s.save_parry:                                              # it beats him
 			k.no_touch = 0.4

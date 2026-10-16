@@ -35,9 +35,28 @@ extends AiBehaviour
 @export_group("Wide shots")
 ## shooter further than this (m) off the middle: a curler to the far post
 @export var side_y := 9.0
-## how far (m) outside the far post the curler is aimed
-@export var curl_out := 3.0
+## how far (m) outside the far post the curler is aimed, and its ball speed (m/s; faster ones balloon over and bend less)
+@export var curl_out := 2.0
+@export var curl_speed := 23.0
 ## which curl it is follows the geometry: the finesse (inside of the boot, K02) bends clockwise, the trivela (outside, K03) the other way, so one wing gets each
+
+@export_group("Shot quality")
+## good shooters strike it flat with a little bend away from the keeper (K10 / K11): SHO at least this, chance per central shot, aimed this far (m) inside the corner so the bend takes it into it
+@export var flat_sho_min := 74
+@export_range(0.0, 1.0) var flat_share := 0.75
+@export var flat_aim_in := 1.6
+## a low drive (K09) that skips in front of the keeper: from at least this far (m), chance per shot
+@export var low_drive_min := 11.0
+@export_range(0.0, 1.0) var low_drive_share := 0.3
+## keeper off his line: a striker with SHO and "game sense" (average of PAS and DRI) at least these bends it round him into the far post instead of chipping / placing,
+## when he is at least curl_min_gap (m) from the keeper
+@export var curl_sho_min := 72
+@export var curl_sense_min := 66
+@export var curl_min_gap := 5.0
+## corrections when aiming a bending shot by simulating its flight
+@export var solve_steps := 4
+@export var clips_flat := PackedStringArray(["sh02_instep_drive", "sh18_near_post_lash", "sh23_snap_shot"])
+@export var clip_low_drive := "sh16_low_skimmer"
 
 @export_group("Clips")
 @export var clips_one_on_one := PackedStringArray(["sh01_side_foot_place", "sh28_composure_finish", "sh24_one_touch_finish"])
@@ -78,7 +97,14 @@ func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 	var far := _corner(f, c, gk, half_goal)                              # the corner away from the keeper
 	i.aim = Vector2(goal.x + c.dir * 1.5, far)
 	i.speed_override = 0.0
+	var sho := f.stat("SHO", 60)
+	var sense := (f.stat("PAS", 60) + f.stat("DRI", 60)) * 0.5
 	if gk != null and off_line > keeper_out:                              # one on one
+		if sho >= curl_sho_min and sense >= curl_sense_min and gap >= curl_min_gap:
+			var side := -signf(gk.pos.y - f.pos.y) if absf(gk.pos.y - f.pos.y) > 0.4 else -signf(f.pos.y + 0.01)     # the far post: away from where the keeper is
+			_curl(i, f, c, side, half_goal)
+			i.note = "keeper off his line: curled round him"
+			return i
 		if gap > chip_gap:
 			i.style = "K05"
 			i.clip = clip_chip
@@ -91,14 +117,24 @@ func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 			i.note = "place past keeper"
 		return i
 	if absf(f.pos.y) > side_y:                                          # wide: bend it round the keeper to the far post
-		var out := Vector2(goal.x + c.dir * 1.5, -signf(f.pos.y) * (half_goal + curl_out))
-		var v := out - f.pos
-		var bend := Vector2(goal.x, -signf(f.pos.y) * (half_goal - post_margin)) - out      # the way it has to come back
-		var cw := v.x * bend.y - v.y * bend.x < 0.0                       # K02 (finesse) bends clockwise (cross < 0), K03 (trivela) the other way
-		i.style = "K02" if cw else "K03"
-		i.clip = clip_finesse if cw else clip_trivela
-		i.aim = out
+		_curl(i, f, c, -signf(f.pos.y), half_goal)
 		i.note = "curler"
+		return i
+	var d := f.pos.distance_to(goal)
+	if sho >= flat_sho_min and rng.randf() < flat_share:                 # struck flat, bending late away from the keeper into the corner
+		var corner := Vector2(goal.x + c.dir * 1.5, far)
+		var start := Vector2(corner.x, far - signf(far) * flat_aim_in)
+		var cw := _cross(start - f.pos, corner - start) < 0.0              # starts inside, bends out into the corner (away from the keeper)
+		i.style = "K10" if cw else "K11"
+		i.clip = _pick(clips_flat, f, rng)
+		i.speed_override = _shot_speed(f)
+		i.aim = _solve(c, i.style, i.speed_override, Vector2(goal.x, far), start)
+		i.note = "flat bender"
+		return i
+	if d >= low_drive_min and rng.randf() < low_drive_share:              # low and hard, skipping up off the grass in front of him
+		i.style = "K09"
+		i.clip = clip_low_drive if f.node.has_clip(clip_low_drive) else _pick(clips_flat, f, rng)
+		i.note = "low drive"
 		return i
 	i.style = "K01"
 	i.clip = _pick(clips_central, f, rng)
@@ -106,6 +142,38 @@ func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 	return i
 
 # ---------------------------------------------------------------- helpers
+## a curler into the post on `side` (+1 / -1 across): aimed curl_out m outside it, bending back in; the spin direction follows the geometry
+## (K02 finesse = inside of the boot bends clockwise, K03 trivela = outside of the boot the other way)
+func _curl(i: AiIntent, f: Footballer, c: AiContext, side: float, half_goal: float) -> void:
+	var goal := c.goal()
+	var out := Vector2(goal.x + c.dir * 1.5, side * (half_goal + curl_out))
+	var post := Vector2(goal.x, side * (half_goal - post_margin))
+	var cw := _cross(out - f.pos, post - out) < 0.0
+	i.style = "K02" if cw else "K03"
+	i.clip = clip_finesse if cw else clip_trivela
+	i.speed_override = curl_speed                                          # slower than a drive: more time to bend, and no ballooning from the backspin
+	i.aim = _solve(c, i.style, curl_speed, Vector2(goal.x, post.y), out)    # aim so the bend brings it into the post
+
+## the aim that makes a kick with this style and speed cross the goal line at `target` (a few corrections of a simulated flight, Ball.predict_cross); starts from `guess`
+func _solve(c: AiContext, style_id: String, speed: float, target: Vector2, guess: Vector2) -> Vector2:
+	var b := c.game.ball
+	var from := b.phys.pos
+	var aim := guess
+	for n in solve_steps:
+		var hit := b.predict_cross(from, aim, style_id, speed, target.x)
+		var miss := target.y - hit.z
+		if absf(miss) < 0.15: break
+		aim.y += miss * 0.9
+	return aim
+
+## the shot's own speed for this shooter (data/ball_actions.csv row "shot")
+func _shot_speed(f: Footballer) -> float:
+	var r := Data.row("ball_actions", "shot")
+	return clampf(Data.num(r.get("base_speed"), 24.0) + Data.num(r.get("per_stat"), 0.11) * f.stat("SHO", 60), Data.num(r.get("min_speed"), 18.0), Data.num(r.get("max_speed"), 36.0))
+
+func _cross(a: Vector2, b: Vector2) -> float:
+	return a.x * b.y - a.y * b.x
+
 ## which corner (y) to put it in: the one the keeper is not at; with no keeper, the far one from the shooter
 func _corner(f: Footballer, c: AiContext, gk: Footballer, half_goal: float) -> float:
 	var side := signf(f.pos.y) if absf(f.pos.y) > 0.5 else (1.0 if c.game.rng.randf() < 0.5 else -1.0)
