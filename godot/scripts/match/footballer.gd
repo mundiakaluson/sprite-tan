@@ -27,6 +27,7 @@ var aim_done := Callable()      ## runs when the pivot is finished; empty = not 
 var aim_t := 0.0
 var glide := false               ## kicking on the move: he keeps his speed through the clip (slows gently) instead of stopping
 var mirror := false              ## play his clip mirrored (a left dive: the keeper clips are authored for the right)
+var ball_rel := Vector3.ZERO     ## the ball's velocity relative to him while it settles (a damped spring, so a pass rolls to his foot instead of snapping)
 var settle := 0.0               ## seconds left of the ball easing to his feet after he got it
 var ai := {}                    ## memory of the AI interaction layer (space target, ...)
 var order := {}                 ## an order from the human: {kind: "run" / "press", target, t}; empty = play by himself

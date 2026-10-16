@@ -18,6 +18,10 @@ extends Node
 @export var drag_threshold := 8.0       ## pixels the pointer must move with the button down before it counts as a drag
 @export var pick_radius := 20.0         ## how close to a player's body a click counts as on him
 @export var double_click_ms := 350
+## a runner is harder to hit: the pick radius grows by this many pixels per m/s of his speed
+@export var pick_moving_k := 5.0
+## on the second click of a double click the player you just clicked is picked if the pointer is within pick_radius + this many pixels of him now (he has moved on)
+@export var double_click_extend := 45.0
 @export_group("Drag from the ball carrier")
 ## the drag snaps to the nearest team mate when the pointer is within this many pixels of him
 @export var snap_radius := 60.0
@@ -134,6 +138,9 @@ func _press(p: Vector2) -> void:
 	_dragging = false
 	_shot_drag = false
 	var now := Time.get_ticks_msec()
+	if _last_click != null and now - _last_click_ms < double_click_ms and _down != _last_click:
+		if _body(_last_click).distance_to(p) < maxf(pick_radius, 11.0 * _last_click.node.scale.y) + double_click_extend + _last_click.vel.length() * pick_moving_k:
+			_down = _last_click                                                      # a double click follows the runner you just clicked
 	if _down != null and _down == _last_click and now - _last_click_ms < double_click_ms:
 		# double click on a team mate: the carrier passes to him
 		_last_click = null
@@ -254,15 +261,17 @@ func _lob(p: Vector2) -> void:
 	game.orders.pass_to(lober, "lob", mate if mate != lober else null, _ground(p))
 	clear()
 
+func _body(f: Footballer) -> Vector2:
+	return f.node.position + Vector2(0.0, -13.0 * f.node.scale.y)
+
 func _pick(p: Vector2) -> Footballer:
 	var best: Footballer = null
 	var bd := 1e9
 	for f in game.home.players:
 		if not f.node.visible: continue
 		var sc := f.node.scale.y
-		var body := f.node.position + Vector2(0.0, -13.0 * sc)
-		var d := body.distance_to(p)
-		if d < maxf(pick_radius, 11.0 * sc) and d < bd:
+		var d := _body(f).distance_to(p)
+		if d < maxf(pick_radius, 11.0 * sc) + f.vel.length() * pick_moving_k and d < bd:
 			bd = d
 			best = f
 	return best

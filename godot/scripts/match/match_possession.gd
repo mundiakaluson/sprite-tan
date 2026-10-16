@@ -14,8 +14,13 @@ func take(f: Footballer) -> void:
 	f.hold = 0.0
 	f.carried = 0.0
 	f.think = g.rng.randf_range(0.2, 0.5)
-	f.settle = g.settings.settle_time                       # the ball eases to his feet
+	f.settle = g.settings.settle_time                       # the ball rolls to his feet (a damped spring, MatchSettings > Ball and first touch)
+	f.ball_rel = ((g.ball.phys.vel - Vector3(f.vel.x, 0.0, f.vel.y)) * (1.0 - g.settings.control_cushion)).limit_length(g.settings.settle_max_speed)
 	if not f.is_keeper(): f.vel *= 1.0 - g.settings.control_cushion   # the first touch is a trap
+	if Vector2(g.ball.phys.pos.x, g.ball.phys.pos.z).distance_to(f.pos) > g.settings.settle_snap:        # a restart / a ball from far away: place it, no flying across the pitch
+		var at := f.pos + f.face * g.settings.touch_ahead
+		g.ball.phys.pos = Vector3(at.x, g.ball.phys.rad, at.y)
+		f.ball_rel = Vector3.ZERO
 	g.ball.hold()
 
 ## every physics frame
@@ -29,18 +34,27 @@ func update(dt: float) -> void:
 	if g.phase == MatchGame.Phase.PLAY: _loose(dt)
 
 func _carry(dt: float) -> void:
+	var s := g.settings
 	var c := g.carrier
-	var spot := c.pos + c.face * (g.settings.touch_ahead + g.settings.touch_speed * c.vel.length())
+	var spd := c.vel.length()
+	var pulse := s.touch_pulse * clampf(spd / 6.0, 0.0, 1.0) * (0.5 + 0.5 * sin(TAU * c.carried / s.touch_stride))     # a touch every stride: the ball runs ahead, then he catches up
+	var spot := c.pos + c.face * (s.touch_ahead + s.touch_speed * spd + pulse)
 	var b := g.ball
 	var target := Vector3(spot.x, b.phys.rad, spot.y)
+	var cv := Vector3(c.vel.x, 0.0, c.vel.y)
 	if c.settle > 0.0:
 		c.settle -= dt
-		b.phys.pos = b.phys.pos.lerp(target, clampf(dt * g.settings.settle_rate, 0.0, 1.0))
+		var w := s.settle_omega
+		c.ball_rel += (-w * w * (b.phys.pos - target) - 2.0 * w * c.ball_rel) * dt         # critically damped: no overshoot, no snap, keeps the pass's momentum
+		c.ball_rel = c.ball_rel.limit_length(s.settle_max_speed)
+		b.phys.pos += (c.ball_rel + cv) * dt
+		b.phys.vel = c.ball_rel + cv
+		if c.settle <= 0.0: c.ball_rel = Vector3.ZERO
 	else:
 		b.phys.pos = target
-	var v3 := Vector3(c.vel.x, 0.0, c.vel.y)
-	b.phys.vel = v3
+		b.phys.vel = cv
 	b.live = false
+	var v3 := Vector3(c.vel.x, 0.0, c.vel.y)
 	b.preview_spin = v3.cross(Vector3.UP) / b.phys.rad if v3.length() > 0.1 else Vector3.ZERO
 	g.last_touch = c
 

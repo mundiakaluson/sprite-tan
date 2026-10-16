@@ -59,8 +59,12 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 ## how big the ball is drawn (1 = the old size)
 @export_range(0.3, 1.5) var ball_scale := 0.7
 ## when a player gets the ball it eases to his feet over this long instead of snapping (seconds), at this speed (higher = quicker)
-@export var settle_time := 0.3
-@export var settle_rate := 9.0
+@export var settle_time := 0.4
+## the ball reaches his foot as a critically damped spring (omega, higher = quicker; ~16 settles in 0.25 s); the incoming ball speed is kept up to settle_max_speed m/s
+@export var settle_omega := 12.0
+@export var settle_max_speed := 12.0
+## a ball further than this (m) from the new carrier is placed at his feet instead of rolling there (restarts)
+@export var settle_snap := 2.5
 ## the first touch kills this fraction of his speed (a trap), and he is slowed for a moment
 @export_range(0.0, 1.0) var control_cushion := 0.35
 
@@ -152,6 +156,9 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var touch_ahead := 0.3
 ## the ball runs this much further ahead for each m/s he runs
 @export var touch_speed := 0.035
+## dribbling: the ball runs this much further ahead (m) once per `touch_stride` metres, then he catches up (scaled by speed, full at 6 m/s)
+@export var touch_pulse := 0.4
+@export var touch_stride := 2.3
 @export var no_touch_after_kick := 0.35
 @export var tackle_reach := 1.3
 ## tackle attempts per second when a defender is on the carrier (x DEF / DRI)
