@@ -45,13 +45,14 @@ func update(dt: float) -> void:
 	if g.carrier != null or b.action != ev["action"] or (b.phys.pos.y < 0.5 and _t > float(ev["t_c"])):
 		_end()
 		return
-	if _t >= _next_refresh and not ev.get("resolved", false):
+	if _t >= _next_refresh:
 		_next_refresh = _t + 0.2
 		_refresh()
 	var left := float(ev["t_land"]) - _t
 	marker.show_at(clampf(left / maxf(float(ev["total"]), 0.1), 0.0, 1.0))
 	g.stadium.set_actor_pos(marker, g.stadium.pitch_pos(Vector3(ev["land"].x, 0.0, ev["land"].y)))
 	if not ev.get("resolved", false) and float(ev["t_c"]) - _t <= s.aerial_trigger: _resolve()
+	_steer(dt)
 
 # ---------------------------------------------------------------- prediction
 ## a copy of the ball's physics, stepped ahead: where and when it comes down to head height and to the grass
@@ -97,7 +98,7 @@ func _refresh() -> void:
 	ev["contest"] = pr["contest"]
 	ev["t_land"] = _t + float(pr["t_land"])
 	ev["t_c"] = _t + float(pr["t_c"])
-	_pick()
+	if not ev.get("resolved", false): _pick()
 
 func _end() -> void:
 	if ev.is_empty():
@@ -181,6 +182,7 @@ func _perform(win: Dictionary, lose: Dictionary) -> void:
 		"leap": stat_leap += 1
 	_face(w, l)
 	_face(l, w)
+	ev["acting"] = [w, l]
 	g.motion.act(w, clip, frac, func(): _won(win, lose), 0.0, dur)
 	g.motion.act(l, s.clip_challenge, g.motion.strike_frac(s.clip_challenge, 0.45), func(): pass, 0.0, dur)
 
@@ -198,7 +200,7 @@ func _won(win: Dictionary, lose: Dictionary) -> void:
 	if w.pos.distance_to(Vector2(bp.x, bp.z)) > s.header_reach or bp.y > s.header_max_h or bp.y < s.header_min_h: return      # he missed it
 	if win["approach"] == "push":
 		g.kicking.tumble(l, s.clips_fall if g.rng.randf() < s.push_fall_chance else s.clips_stumble_medium)
-		g.poss.take(w)                                                       # chested down at his feet
+		_chest(w, l)                                                         # chested down: the ball stays free and drops at his feet, no snapping
 		return
 	stat_headers += 1
 	var h: Dictionary = win["head"]
@@ -207,6 +209,28 @@ func _won(win: Dictionary, lose: Dictionary) -> void:
 	g.last_touch = w
 	g.pass_target = h["mate"]
 	w.no_touch = g.settings.no_touch_after_kick
+
+## the chest takes the pace off: the ball keeps its own physics, loses most of its speed and drops just ahead of him; he is first to it (receiver reach) and the loser is out of it for a moment
+func _chest(w: Footballer, l: Footballer) -> void:
+	var s := g.settings
+	var b := g.ball
+	b.set_free()
+	var v := b.phys.vel
+	var ahead := w.face * s.chest_drop_ahead
+	b.phys.vel = Vector3(v.x * s.chest_keep + ahead.x, minf(v.y, 0.0) * 0.2 + s.chest_pop, v.z * s.chest_keep + ahead.y)
+	b.phys.spin *= 0.3
+	g.pass_target = w
+	g.last_touch = w
+	l.no_touch = maxf(l.no_touch, s.chest_shield)
+
+## while a duel is being played the two keep adjusting under the ball (the clips are locked in place, so this slides them to where it really comes down)
+func _steer(dt: float) -> void:
+	var s := g.settings
+	var c: Vector2 = ev["contest"]
+	for f in ev.get("acting", []):
+		if f.pending.is_null(): continue
+		var to := c - f.pos
+		if to.length() > 0.25: f.pos += to.normalized() * minf(to.length(), s.aerial_steer_speed * dt)
 
 ## what the winner does with the header: clear (defensive roles, or nobody to find), shoot (close to goal) or pass to the best team mate
 func _head_plan(p: Footballer) -> Dictionary:

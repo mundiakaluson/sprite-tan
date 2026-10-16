@@ -468,3 +468,10 @@ static func layout(name_or_id: String) -> FormationLayout:
 @export var clip_header_pass := "sh11_glancing_header"
 @export var clip_header_shot := "sh12_power_header"
 @export var clip_challenge := "base_jump"
+## chest control: the ball keeps this share of its sideways speed, pops up this much (m/s) and drops this far ahead of him (m/s of push); the loser cannot touch it for chest_shield s
+@export var chest_keep := 0.15
+@export var chest_pop := 1.6
+@export var chest_drop_ahead := 1.2
+@export var chest_shield := 0.8
+## while the duel clip plays both slide under the ball at up to this speed (m/s)
+@export var aerial_steer_speed := 5.0
