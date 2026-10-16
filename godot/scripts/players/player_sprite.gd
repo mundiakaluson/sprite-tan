@@ -116,4 +116,10 @@ func _apply_sheet() -> void:
 
 func _apply_region() -> void:
 	var c: Array = Data.anims.get("cell", [40, 40])
-	region_rect = Rect2(frame_index * c[0], direction * c[1], c[0], c[1])
+	region_rect = Rect2(frame_index * c[0], sheet_row(direction) * c[1], c[0], c[1])
+
+## The sheets are rendered by sprites/gen_uv.py with row k = body heading k x 11.25 degrees measured from FACING THE CAMERA (row 0 = front, 8 = right, 16 = back, 24 = left),
+## while `direction` counts from AWAY (0 = up the screen, 16 = toward the camera). Same left/right, opposite up/down, so the row is 16 - direction.
+## (Using the direction as the row directly showed his back when he ran at the camera and his face when he ran away.)
+static func sheet_row(dir: int) -> int:
+	return posmod(16 - dir, 32)

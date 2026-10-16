@@ -149,7 +149,7 @@ MatchSettings > Match > Custom Formations: add an element, New FormationLayout (
 
 ## Pressured clearance, run facing, sprint (latest)
 - Lob/clearance with an opponent inside `panic_pressure` plays `cl01_panic_clear` (flinch, hack, stagger) or, with `panic_fall_chance`, `cl02_panic_clear_fall` (then base_get_up). Clips in sprites/moves_fluid.py; bake + Export. Settings: MatchSettings "Pressured clearance".
-- `Player.face_vector` stretches the screen direction vertically by 1/`Player.sprite_squash` (0.72; exact geometry is 0.5 but looked too much toward the camera; 1.0 = old screen-angle behaviour). Tweak if diagonals look off.
+- FACING ROOT CAUSE (fixed): sheet rows count from FACING THE CAMERA (gen_uv a00 = front, a16 = back) but `direction` counts from AWAY (0 = up, 16 = toward camera). Rows were read directly, so every up/down was flipped (back shown when running at the camera, face when running away, diagonals mirrored). `PlayerSprite.sheet_row(d) = 16 - d` now. `Player.face_vector` also stretches the screen direction vertically by 1/`Player.sprite_squash` (0.5 = exact geometry of the 30 degree sprite camera).
 - Sprint nerf: sprint_factor 1.06, AiSprint duration 2.3.
 
 ## Through-ball runner, one-two, finishing

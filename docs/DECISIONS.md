@@ -194,3 +194,4 @@ Open / rough edges the user reported:
 - Aerial contest: "a bit better, some rough edges". Clips are first pass (bake ct01-ct03 and Export). Chest control now leaves the ball free; duel players slide under the predicted spot. Needs a look in Godot (ring size, timing, header outcomes).
 - Stat proxies for headers / intelligence (no real stats yet).
 - Headless tools used: scratchpad bal2.gd (full match counters), lob.gd (lob duels), chip.gd (chip / curler landing); recreate from godot/CLAUDE.md notes if needed. Do not `pkill -f` a script name: it kills the shell.
+- Facing bug found: sprite sheet rows start at facing-the-camera, the game's direction starts at away; rows were read upside down. Fixed with PlayerSprite.sheet_row (16 - direction); sprite_squash back to the exact 0.5.

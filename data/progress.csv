@@ -65,3 +65,4 @@ Game,"Sprint vs run clips by own top speed, stamina + tired run, AI sprint into 
 Game,"Panic clearance clips (flinch / hack and fall), run facing elevation fix, sprint nerf",doing,"bake cl01/cl02 in the tool then Export; test in Godot"
 Game,"Through-ball runner timing, AI one-two, AI finishing (box shots, chip, curlers), panic clear rework",doing,"headless: ~15 shots, ~2 one-twos per match; look in Godot, bake cl01/cl02"
 Game,"Aerial contest: landing ring, wait under lobs, header / shove and chest / shoulder leap duels (+3 clips)",doing,"headless: ~4 events per match; bake ct01-ct03, test in Godot"
+Game,"Facing fix: sprite sheet rows were read upside down (row = 16 - direction)",done,"check running toward / away from the camera in Godot"
