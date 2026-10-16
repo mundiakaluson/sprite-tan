@@ -377,6 +377,15 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var parry_scatter := 4.0
 @export_subgroup("Save clips (he picks one at random)")
 @export var clips_catch := PackedStringArray(["gk08_big_hands", "gk03_smother"])
+## when the save is going to be a CATCH (decided as he commits) these play instead: diving catches for low / mid / far balls, body catches for shots at him
+@export var clips_catch_dive := PackedStringArray(["gk29_diving_catch"])
+@export var clips_catch_body := PackedStringArray(["gk30_chest_catch", "gk08_big_hands"])
+## his body stops this far (m) short of the ball sideways so his hand meets it (a parry off the glove, not the chest); for a catch it is closer (the ball comes into both hands in front of him)
+@export var hand_offset := 1.0
+@export var catch_hand_offset := 0.4
+## with the ball, the keeper carries it in his hands: this far in front of him (m) at this height (m)
+@export var keeper_hold_ahead := 0.25
+@export var keeper_hold_height := 1.0
 @export var clips_claim := PackedStringArray(["gk05_claim_cross"])
 @export var clips_palm := PackedStringArray(["gk10_high_palm", "gk04_punch_clear"])
 @export var clips_low := PackedStringArray(["gk09_low_dive", "gk27_bottom_hand_save", "gk20_cat_reflexes"])

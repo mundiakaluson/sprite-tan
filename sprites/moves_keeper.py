@@ -470,6 +470,127 @@ def gk28():
     return d.done()
 
 
+CLUTCH = (1.05, 0.7, 2.4, 0.4)          # forearms wrapped round the ball at the chest
+STAND = dict(pz=23.4, cpitch=0.12, hpitch=0.15)
+
+
+def stand_gk(d, f, **kw):
+    b = dict(STAND); b.update(kw)
+    d.at(f, R=(2.6, 0.8, 0, None), L=(-2.6, -0.6, 0, None), **b)
+
+
+def gk_ease(u):
+    u = max(0.0, min(1.0, u)); return u * u * (3 - 2 * u)
+
+
+@move('GK29', 'Diving Catch')
+def gk29():
+    """dives, takes it cleanly in both hands at full stretch, and pulls it straight into the chest as he lands, curled round it"""
+    from moves_fluid import mix
+    d = K(36); idle(d, 0, 4)
+    d.shot(10, (9.0, 5.0, 18.0), start=(11.0, 34.0, 8.0), out=(0, 0, 0), g=0.0)
+    e = dive(d, 5, h=27.0, reach=(2.3, 0.45, 2.6, 0.2), lt=4.0, lie=8, roll=1.4, hands='both')
+    for f in range(11, e):
+        u = gk_ease((f - 10) / 4.0)
+        k = d.m.keys[f]
+        a = (k.get('R_s1', 2.3), k.get('R_a1', 0.45), k.get('R_s2', 2.6), k.get('R_a2', 0.2))
+        c = mix(a, CLUTCH, u)
+        d.arms(f, c, c)
+        d.m.k(f, cpitch=k.get('cpitch', 0.0) + 0.5 * u)                          # curls round it
+        d.held(f, 1.2 * u + 1.5 * (1 - u), 3.5, 15.0 - 6.0 * gk_ease((f - 12) / 5.0))
+    getup(d, e, 36 - e) if e < 36 else None
+    for f in range(e, 36):
+        d.arms(f, CLUTCH, CLUTCH); d.held(f, 0.0, 4.0, 14.0)
+    d.W = {f: v for f, v in d.W.items() if f <= 10}
+    d.m.events = {'strike': 10}
+    return d.done()
+
+
+@move('GK30', 'Chest Catch')
+def gk30():
+    """a shot straight at him: knees give, the hands go under it, the ball is smothered into the chest and he hunches over it"""
+    d = K(26); idle(d, 0, 3)
+    d.shot(8, (0.4, 6.0, 13.0), start=(0.6, 34.0, 10.0), out=(0, 0, 0), g=0.0)
+    for f in range(4, 26):
+        give = gk_ease((f - 6) / 3.0) * (1 - gk_ease((f - 14) / 6.0))
+        scoop = gk_ease((f - 4) / 3.0)
+        clutch = gk_ease((f - 8) / 3.0)
+        d.at(f, R=(3.0, 0.8, 0, None), L=(-3.0, -0.6, 0, None), pz=21.6 - 2.2 * give + 1.6 * gk_ease((f - 15) / 6.0), cpitch=0.45 + 0.4 * give, hpitch=0.35)
+        a = tuple(r + (c - r) * clutch for r, c in zip((1.25, 0.25, 1.9, 0.2), CLUTCH))
+        a = tuple(x + (y - x) * (1 - scoop) for x, y in zip(a, (1.15, 0.45, 1.55, 0.25)))
+        d.arms(f, a, a)
+        if f > 8: d.held(f, 0.0, 3.5 + 0.8 * give, 14.0 - 2.0 * give)
+    d.W = {f: v for f, v in d.W.items() if f <= 8}
+    d.m.events = {'strike': 8}
+    return d.done()
+
+
+## arm tuples are (upper swing, upper out, forearm swing, forearm out): swing 0 = hanging, pi/2 = straight forward, pi = straight up; out = away from the body
+TUCK = (0.45, 0.3, 1.6, -0.75)            # ball tucked against the hip, forearm across the waist
+REST = (0.15, 0.2, 0.3, 0.05)
+
+
+def gesture(N, right_arm, body=None, ball=(-1.0, 3.4, 12.5)):
+    """keeper with the ball tucked into his left arm while the right arm does the talking. right_arm(f) -> arm tuple, body(f) -> dict of extra body keys"""
+    d = K(N)
+    for f in range(N):
+        kw = body(f) if body else {}
+        stand_gk(d, f, **kw)
+        d.arms(f, right_arm(f), TUCK)
+        d.held(f, *ball)
+    d.m.events = {}
+    return d
+
+
+@move('GK31', 'Point To Team Mate')
+def gk31():
+    """picks his man: the arm comes up and points out straight at him, held, then down (the game faces him at the team mate first)"""
+    rest = REST; point = (1.5, 0.25, 1.55, 0.2)
+    def arm(f):
+        u = gk_ease((f - 3) / 4.0) * (1 - gk_ease((f - 16) / 5.0))
+        jab = 0.08 * math.sin(f * 1.3) * u
+        return tuple(r + (p - r) * u + (jab if i == 0 else 0.0) for i, (r, p) in enumerate(zip(rest, point)))
+    d = gesture(24, arm, lambda f: dict(hyaw=0.1 * gk_ease((f - 3) / 4.0), cyaw=0.12 * gk_ease((f - 3) / 4.0)))
+    return d.done()
+
+
+@move('GK32', 'Wave Team Up')
+def gk32():
+    """we need a goal: the arm sweeps forward and up again and again, urging the team up the pitch, leaning into it"""
+    up = (2.8, 0.2, 2.9, 0.1); fwd = (1.7, 0.25, 1.9, 0.15)
+    def arm(f):
+        w = 0.5 + 0.5 * math.sin(f * 0.75 - 1.2)
+        u = gk_ease(f / 3.0) * (1 - gk_ease((f - 24) / 4.0))
+        a = tuple(x + (y - x) * w for x, y in zip(fwd, up))
+        return tuple(r + (x - r) * u for r, x in zip(REST, a))
+    d = gesture(30, arm, lambda f: dict(cpitch=0.12 + 0.15 * math.sin(f * 0.75 - 1.2) ** 2 * gk_ease(f / 3.0), hpitch=0.05))
+    return d.done()
+
+
+@move('GK33', 'Calm It Down')
+def gk33():
+    """we are winning: no rush, the free hand pats the air palm down a few times, slow and deliberate"""
+    def arm(f):
+        u = gk_ease((f - 2) / 4.0) * (1 - gk_ease((f - 24) / 4.0))
+        pat = 0.18 * math.sin(f * 0.6)
+        tgt = (0.9 + pat, 0.3, 1.5 + pat, 0.1)                                   # forearm out flat at the waist, palm down, patting
+        return tuple(r + (t - r) * u for r, t in zip(REST, tgt))
+    d = gesture(30, arm, lambda f: dict(hpitch=0.1, pz=23.2))
+    return d.done()
+
+
+@move('GK34', 'Organise Defence')
+def gk34():
+    """shouting at the back line: the arm sweeps from one side to the other pointing out who picks up whom, head and shoulders turning with it"""
+    def arm(f):
+        u = gk_ease((f - 2) / 3.0) * (1 - gk_ease((f - 26) / 4.0))
+        sw = math.sin(f * 0.42)
+        tgt = (1.5, 0.2 + 0.75 * sw, 1.55, 0.25 + 0.8 * sw)                       # arm straight out, sweeping across the back line
+        return tuple(r + (t - r) * u for r, t in zip(REST, tgt))
+    d = gesture(30, arm, lambda f: dict(cyaw=0.3 * math.sin(f * 0.42) * gk_ease((f - 2) / 3.0), hyaw=0.45 * math.sin(f * 0.42 + 0.3) * gk_ease((f - 2) / 3.0), cpitch=0.08))
+    return d.done()
+
+
 def build(ids=None):
     out = []
     for id_, (label, fn) in MOVES.items():

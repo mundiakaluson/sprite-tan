@@ -41,6 +41,9 @@ func _carry(dt: float) -> void:
 	var spot := c.pos + c.face * (s.touch_ahead + s.touch_speed * spd + pulse)
 	var b := g.ball
 	var target := Vector3(spot.x, b.phys.rad, spot.y)
+	if c.is_keeper():                                                                   # a keeper holds it in his hands, not at his feet
+		var hands := c.pos + c.face * g.settings.keeper_hold_ahead
+		target = Vector3(hands.x, g.settings.keeper_hold_height, hands.y)
 	var cv := Vector3(c.vel.x, 0.0, c.vel.y)
 	if c.settle > 0.0:
 		c.settle -= dt

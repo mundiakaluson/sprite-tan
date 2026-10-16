@@ -28,10 +28,10 @@ func update(dt: float) -> void:
 		if not d["done"] and float(d["t"]) >= float(d["strike"]) - g.settings.save_window_before:
 			if _in_reach(f, d["kind"]):
 				d["done"] = true
-				_resolve(f, d["kind"], d["lateral"], true)
+				_resolve(f, d["kind"], d["lateral"], true, d.get("plan", ""))
 			elif float(d["t"]) >= float(d["strike"]) + g.settings.save_window_after or _passed(f):
 				d["done"] = true
-				_resolve(f, d["kind"], d["lateral"], false)
+				_resolve(f, d["kind"], d["lateral"], false, d.get("plan", ""))
 		if f.lock <= 0.0:
 			_dives.erase(f)
 	if g.phase != MatchGame.Phase.PLAY or g.carrier != null: return
@@ -76,13 +76,15 @@ func _consider(k: Footballer) -> void:
 	var lateral := z - k.pos.y
 	if absf(lateral) > s.dive_range or h > s.keeper_reach_height + s.jump_height: return
 	var kind := _kind(lateral, h, v.length())
-	var clip := _pick(kind)
+	var plan := _plan(k, kind, lateral, v.length())                                   # decided now, so the clip shows it: catch / parry / beaten
+	var clip := _pick_for(kind, plan)
+	if clip == "" or not k.node.has_clip(clip): clip = _pick(kind)
 	if clip == "" or not k.node.has_clip(clip): return
 	var anim := k.node.anim_player.get_animation(clip)
 	var ts := _strike_time(anim)
 	if t > ts + s.save_reaction: return                                               # too early: wait until the clip would arrive with the ball
 	save_event.emit(k, kind, clip, "start")
-	_start(k, clip, kind, anim.length, ts, lateral, z, h)
+	_start(k, clip, kind, anim.length, ts, lateral, z, h, plan)
 
 ## the ball's real position t seconds ahead (a copy of its physics stepped forward)
 func _future(t: float) -> Vector3:
@@ -129,7 +131,7 @@ func _strike_time(anim: Animation) -> float:
 	return anim.length * 0.3
 
 # ---------------------------------------------------------------- the dive
-func _start(k: Footballer, clip: String, kind: String, length: float, ts: float, lateral: float, z: float, h: float) -> void:
+func _start(k: Footballer, clip: String, kind: String, length: float, ts: float, lateral: float, z: float, h: float, plan := "parry") -> void:
 	var s := g.settings
 	var bp := g.ball.phys.pos
 	var to_ball := Vector2(bp.x - k.pos.x, bp.z - k.pos.y)
@@ -137,14 +139,42 @@ func _start(k: Footballer, clip: String, kind: String, length: float, ts: float,
 	var right := Vector2(-face.y, face.x)                                             # his right on the screen
 	k.face = face
 	k.mirror = absf(lateral) > 0.5 and Vector2(0.0, signf(lateral)).dot(right) < 0.0     # clips dive to his right; a left dive is the mirrored clip
-	var reach_z := clampf(lateral, -_cover(k, ts), _cover(k, ts)) * (1.0 if kind in ["low", "mid", "far"] else s.stand_travel)
+	# his body stops an arm's length short of the ball so the HAND meets it (a parry off the glove, not off the chest); a catch takes it in front of the body
+	var hand := (s.catch_hand_offset if plan == "catch" else s.hand_offset) if kind in ["low", "mid", "far"] else 0.0
+	var body_z := signf(lateral) * maxf(absf(lateral) - hand, 0.0)
+	var reach_z := clampf(body_z, -_cover(k, ts), _cover(k, ts)) * (1.0 if kind in ["low", "mid", "far"] else s.stand_travel)
 	var to := Vector2(k.pos.x + k.team.dir * s.dive_forward, k.pos.y + reach_z)
 	g.motion.act(k, clip, 1.0, func(): pass)
 	k.lock = length + s.save_window_after
-	_dives[k] = {"from": k.pos, "to": to, "t": 0.0, "T": maxf(ts, 0.1), "strike": ts, "kind": kind, "lateral": lateral, "done": false}
+	_dives[k] = {"from": k.pos, "to": to, "t": 0.0, "T": maxf(ts, 0.1), "strike": ts, "kind": kind, "lateral": lateral, "done": false, "plan": plan}
 
 # ---------------------------------------------------------------- the contact
-func _resolve(k: Footballer, kind: String, lateral: float, in_reach: bool) -> void:
+## the stop chance (REF / HAN, how far he has to go, the kick style's difficulty countered by his class)
+func _stop_chance(k: Footballer, lateral: float) -> float:
+	var s := g.settings
+	var skill := s.save_skill_base + (k.stat("REF", 60) + k.stat("HAN", 60)) * 0.5 * s.save_skill_per_stat
+	var diff := Data.num(Data.row("kick_styles", g.ball.style).get("save_difficulty"), 0.0)
+	var counter := clampf(((k.stat("REF", 60) + k.stat("HAN", 60)) * 0.5 - 60.0) / 40.0 * s.keeper_counter, 0.0, 1.0)
+	return clampf(skill * (1.0 - s.dive_difficulty * clampf(absf(lateral) / s.dive_range, 0.0, 1.0)) * (1.0 - diff * (1.0 - counter)), 0.02, 0.98)
+
+## what this save will be, rolled when he commits: "catch" (holds it), "parry" (off the glove) or "beaten"
+func _plan(k: Footballer, kind: String, lateral: float, speed: float) -> String:
+	var s := g.settings
+	if g.rng.randf() > _stop_chance(k, lateral):
+		return "parry" if g.rng.randf() < s.save_parry else "beaten"
+	var clean := kind in ["catch", "claim"]
+	var limit := s.save_speed_base + k.stat("HAN", 60) * s.save_speed_per_han + (s.catch_bonus if clean else 0.0)
+	return "catch" if speed <= limit and kind != "palm" else "parry"
+
+## a clip that shows the planned outcome: diving catches / chest catches for a catch, the one-hand dives otherwise
+func _pick_for(kind: String, plan: String) -> String:
+	var s := g.settings
+	if plan == "catch":
+		var list: PackedStringArray = s.clips_catch_dive if kind in ["low", "mid", "far"] else (s.clips_catch_body if kind == "catch" else PackedStringArray())
+		if not list.is_empty(): return list[g.rng.randi() % list.size()]
+	return _pick(kind)
+
+func _resolve(k: Footballer, kind: String, lateral: float, in_reach: bool, plan := "") -> void:
 	var s := g.settings
 	var b := g.ball
 	var bp := b.phys.pos
@@ -154,22 +184,14 @@ func _resolve(k: Footballer, kind: String, lateral: float, in_reach: bool) -> vo
 		k.no_touch = 0.4                                                               # a miss: the ball carries on
 		save_event.emit(k, kind, "", "miss")
 		return
-	var parry := false
-	var skill := s.save_skill_base + (k.stat("REF", 60) + k.stat("HAN", 60)) * 0.5 * s.save_skill_per_stat
-	var diff := Data.num(Data.row("kick_styles", g.ball.style).get("save_difficulty"), 0.0)       # bend, skip, knuckle: harder to hold
-	var counter := clampf(((k.stat("REF", 60) + k.stat("HAN", 60)) * 0.5 - 60.0) / 40.0 * s.keeper_counter, 0.0, 1.0)
-	var stop := clampf(skill * (1.0 - s.dive_difficulty * clampf(absf(lateral) / s.dive_range, 0.0, 1.0)) * (1.0 - diff * (1.0 - counter)), 0.02, 0.98)
-	if g.rng.randf() > stop:
-		if g.rng.randf() >= s.save_parry:                                              # it beats him
-			k.no_touch = 0.4
-			save_event.emit(k, kind, "", "miss")
-			return
-		parry = true                                                                   # a fingertip / palm parry round the post
-	var speed := v.length()
-	var clean := kind in ["catch", "claim"]
-	var limit := s.save_speed_base + k.stat("HAN", 60) * s.save_speed_per_han + (s.catch_bonus if clean else 0.0)
+	if plan == "": plan = _plan(k, kind, lateral, v.length())
+	if plan == "beaten":                                                               # it beats him
+		k.no_touch = 0.4
+		save_event.emit(k, kind, "", "miss")
+		return
+	var parry := plan == "parry"
 	g.last_touch = k
-	if speed <= limit and kind != "palm" and not parry:
+	if plan == "catch":
 		save_event.emit(k, kind, "", "catch")
 		g.poss.take(k)
 		return

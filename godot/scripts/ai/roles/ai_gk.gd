@@ -61,7 +61,13 @@ func _init() -> void:
 	dribble_urge = 0.0
 
 func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
-	if c.carrier == f: return _with_ball(f, c, dt)
+	if c.carrier == f:
+		if c.profile != null:                                                    # keeper behaviours with the ball (AiKeeperGesture, ...)
+			for b in c.profile.all_behaviours():
+				if b != null and b.applies(f, AiBehaviour.WITH_BALL) and b.wants(f, c, self):
+					var o := b.act(f, c, self, dt)
+					if o != null: return o
+		return _with_ball(f, c, dt)
 	if (c.carrier == null or c.carrier.team == f.team) and _now() > float(f.ai.get("rush_t", 0.0)): f.ai["rush"] = false
 	if c.carrier != null and c.carrier.team != f.team:
 		if _breakaway(f, c): return rush(f, c)
@@ -92,6 +98,9 @@ func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 	if absf(f.pos.x - x) > 6.0: speed = maxf(speed, c.s.jog_factor)    # a long way off his spot: hurry back
 	return _go(c, Vector2(x, z), speed)
 
+## a pointed-at team mate further than this (m) gets it lofted, nearer ones rolled / passed
+@export var long_from := 30.0
+
 func _with_ball(f: Footballer, c: AiContext, _dt: float) -> AiIntent:
 	var i := AiIntent.new()
 	i.move_to = f.pos
@@ -108,9 +117,14 @@ func _with_ball(f: Footballer, c: AiContext, _dt: float) -> AiIntent:
 		if score > bs:
 			bs = score
 			best = m
+	var pointed: Footballer = f.ai.get("gk_target", null)                 # he pointed at somebody (AiKeeperGesture): that is who gets it
+	if pointed != null and pointed.team == f.team:
+		best = pointed
+		long = pointed.pos.distance_to(f.pos) > long_from
 	if best != null:
 		i.action = "lob" if long else "pass"
 		i.target = best
+		f.ai.erase("gk_target")
 	return i
 	
 

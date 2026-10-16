@@ -99,6 +99,11 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 			if i.speed_override > 0.0: over["speed"] = i.speed_override
 			g.poss.kick_action(f, "shot", i.aim, Vector2.ZERO, over)
 		"smother": g.keeper.smother(f, i.target)
+		"gesture":                                                              # a keeper's gesture with the ball in his hands (AiKeeperGesture)
+			if f.lock <= 0.0 and i.clip != "":
+				if i.target != null and i.target.pos.distance_to(f.pos) > 0.5: f.face = (i.target.pos - f.pos).normalized()
+				f.want = Vector2.ZERO
+				g.motion.act(f, i.clip, 0.9, func(): pass, 0.0, i.speed_override)
 		"takeon": g.dribble.take_on(f, i.target)
 		"slide": g.dribble.slide_tackle(f, i.target)
 		"tackle":
