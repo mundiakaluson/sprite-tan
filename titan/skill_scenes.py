@@ -19,8 +19,8 @@ SC_TITLE['DF08_UP'] = 'DOUBLE TEAM UPFIELD'
 SC_TITLE['DF08_DEEP'] = 'DOUBLE TEAM DEEP'
 
 # ---------------------------------------------------------------- timeline (scene frames, 40 ms)
-T_CARD, T_SCAN, T_LOCK, T_CHARGE, T_ZAP, T_ARRIVE = 22, 24, 33, 36, 47, 53
-SLOW = 0.12                                   # world speed while the card plays out (the engagement freeze)
+T_CARD, T_SCAN, T_LOCK, T_CHARGE, T_ZAP, T_ARRIVE = 22, 23, 27, 28, 32, 36
+SLOW = 0.4                                   # world speed while the card plays out (the engagement freeze)
 
 
 def gt(i):
@@ -66,35 +66,30 @@ def ease_zap(t):                              # explodes out of the blocks, brak
 def scan(c, src, mates, lock_i, i):
     """radar from the defender who played it: an expanding ring, rays out to team mates, the nearest one locked"""
     age = i - T_SCAN
-    if 0 <= age < 14:
-        for j in range(3):
-            r = 8 + 150 * smooth((age - j * 2.5) / 12)
-            if r > 8: fx.ring(c, src, r, CYAN, 200 * (1 - age / 14), 'under')
-    if T_SCAN + 2 <= i < T_ZAP + 2:
+    if 0 <= age < 7: fx.ring(c, src, 6 + 40 * smooth(age / 6), CYAN, 110 * (1 - age / 7), 'under')
+    mates = [mates[lock_i]]; lock_i = 0
+    if T_SCAN + 2 <= i < T_ZAP:
         for n, m in enumerate(mates):
             grow = clamp((i - T_SCAN - 2 - n) / 5)
             q = src + (m - src) * grow
             locked = n == lock_i and i >= T_LOCK
-            col = YEL if locked else CYAN; a = 220 if locked else int(140 * (1 - clamp((i - T_LOCK) / 6)))
+            col = CYAN; a = 90
             if a <= 0: continue
             for t in np.linspace(0, 1, 18):                                       # dashed ray
                 if int(t * 18 + i * 0.7) % 2: continue
                 p = src + (q - src) * t; c.ud.point((int(p[0]), int(p[1])), fill=col + (a,))
             if grow >= 1: fx.ring(c, m, 7 if locked else 6, col, a, 'under')
-    if T_LOCK <= i < T_ZAP:                                                       # the lock: a reticle snaps onto him
-        m = mates[lock_i]; k = clamp((i - T_LOCK) / 4)
-        fx.reticle(c, m + P(0, -12), lerp(22, 9, smooth(k)), (i - T_LOCK) * 0.25, YEL, 255)
+
 
 
 def charge(c, p, i):
     """he winds up: arcs crawl over him, a glow under his feet, his body fills with light"""
     age = i - T_CHARGE; k = clamp(age / (T_ZAP - T_CHARGE)); rng = random.Random(i * 17)
-    fx.glow(c, p + P(0, 1), 6 + 8 * k, YEL, 0.55 * k + 0.2)
-    for _ in range(2 + int(4 * k)):
-        a = p + P(rng.uniform(-7, 7), rng.uniform(-22, -2)); b = a + P(rng.uniform(-7, 7), rng.uniform(-6, 6))
-        fx.bolt(c, a, b, rng.randint(0, 999), CYAN if rng.random() < 0.5 else YEL, 230, jag=2, w=2)
-    if age % 3 == 0: fx.ring(c, p, 4 + 7 * k, YEL, 200, 'under')
-    return k
+    fx.glow(c, p + P(0, 1), 4 + 3 * k, CYAN, 0.25)
+    for _ in range(1 + int(k)):
+        a = p + P(rng.uniform(-5, 5), rng.uniform(-18, -4)); b = a + P(rng.uniform(-4, 4), rng.uniform(-3, 3))
+        fx.bolt(c, a, b, rng.randint(0, 999), CYAN, 170, jag=1.5, w=1)
+    return k * 0.3
 
 
 def zap(c, pts, i, anim_face_skin):
@@ -102,44 +97,38 @@ def zap(c, pts, i, anim_face_skin):
     t = (i - T_ZAP) / (T_ARRIVE - T_ZAP)
     s_head = ease_zap(t)
     ghosts = []
-    for g in range(9):                                                            # afterimages at fixed points of the path
-        sg = (g + 0.5) / 9
+    for g in range(4):                                                            # afterimages at fixed points of the path
+        sg = (g + 0.5) / 4
         if sg <= s_head: ghosts.append(sg)
     for n, sg in enumerate(ghosts):
         q, d = along(pts, sg); passed_at = T_ZAP + (sg / max(s_head, 1e-6)) * (i - T_ZAP)
-        age = i - passed_at; a = int(200 * clamp(1 - age / 9))
-        if a > 8: c.spr('base_sprint', (n * 3) % 10, d, HOME, q, tint_rgb=CYAN if n % 2 else YEL, tint_a=a, mix=0.85, shadow=False)
+        age = i - passed_at; a = int(90 * clamp(1 - age / 5))
+        if a > 8: c.spr('base_sprint', (n * 3) % 10, d, HOME, q, tint_rgb=CYAN, tint_a=a, mix=0.6, shadow=False)
     if t <= 1.0:
         q, d = along(pts, s_head)
-        fx.glow(c, q + P(0, -10), 14, YEL, 0.8, 'over')
-        prev, _ = along(pts, max(0.0, s_head - 0.25))
-        fx.bolt(c, prev + P(0, -10), q + P(0, -10), i * 13, YEL, 255, jag=4, w=5)
-        fx.bolt(c, prev + P(0, -4), q + P(0, -12), i * 29, CYAN, 220, jag=6, w=3)
-        c.spr('base_sprint', i % 10, d, HOME, q, tint_rgb=WHITE, tint_a=255, mix=0.75)
+        prev, _ = along(pts, max(0.0, s_head - 0.2))
+        fx.bolt(c, prev + P(0, -8), q + P(0, -8), i * 13, CYAN, 170, jag=2, w=2)
+        c.spr('base_sprint', i % 10, d, HOME, q, tint_rgb=CYAN, tint_a=255, mix=0.3)
         return q, d
     return None, None
 
 
-def residue(c, pts, i, life=70):
+def residue(c, pts, i, life=26):
     """the charge he leaves on the grass: a scorch line, crackling bolts that flicker and die out, sparks hopping off"""
     age = i - T_ARRIVE + 3
     if age < 0: return
     k = clamp(1 - age / life)
     if k <= 0: return
-    c.ud.line([tuple(p) for p in pts], fill=(34, 52, 30, int(150 * clamp(1 - age / (life * 1.6)))), width=3)
+    c.ud.line([tuple(p) for p in pts], fill=(40, 60, 36, int(60 * k)), width=1)
     rng = random.Random(i * 7 + 3)
     for a, b in chop(pts):
-        if rng.random() > 0.35 + 0.5 * k: continue                                # flicker
-        fx.bolt(c, a + P(0, -1), b + P(0, -1), rng.randint(0, 9999), YEL if rng.random() < 0.6 else CYAN, int(255 * k), jag=2.5, w=2, layer='under')
-    for n in range(3):
-        if rng.random() < k:
-            a, _ = chop(pts)[rng.randrange(len(chop(pts)))]
-            fx.burst(c, a, (i % 6), rng.randint(0, 999), n=4, speed=1.2, col=YEL, life=6, up=1.2)
+        if rng.random() > 0.3 * k: continue                                        # flicker
+        fx.bolt(c, a + P(0, -1), b + P(0, -1), rng.randint(0, 9999), CYAN, int(150 * k), jag=1.5, w=1, layer='under')
 
 
 def card_pop(c, i, cid='DF08'):
     """the card the defender played, shown big while the effect plays"""
-    if not T_CARD <= i < T_ARRIVE + 6: return
+    return
     a = clamp((i - T_CARD) / 3) * clamp((T_ARRIVE + 6 - i) / 4)
     im = card_face(cid, 1)
     if a < 1: im = fade(im, int(255 * a))
@@ -158,10 +147,9 @@ def bob(i): return 1.0 + abs(math.sin(i * 0.7)) * 1.0
 
 
 # ======================================================================================================== DF08_UP
-@scene('DF08_UP', N=132, titan=(T_CARD, T_ARRIVE + 4), color=YEL, result='WON IT FROM BEHIND')
+@scene('DF08_UP', N=132, titan=(999, 1000), color=CYAN, result='WON IT FROM BEHIND')
 def df08_up(c):
-    i = c.i; w = gt(i)
-    c.dim(0.45 * c.ta, (14, 18, 50))
+    i = c.i; w = gt(i); c.hud = False
     # the attacker drives up the pitch at the first defender, who backs off; the nearest team mate is behind him
     car0, d10 = P(110, 124), P(182, 120)
     mates = [P(46, 176), P(200, 66), P(236, 158)]; H0 = mates[0]
@@ -197,17 +185,17 @@ def df08_up(c):
         if i < T_CHARGE: runner(c, p, unit(car - p), HOME, i=w, rate=0.6)
         else:
             k = charge(c, p, i)
-            c.spr('guard', 3, unit(land - p), HOME, p, tint_rgb=YEL, tint_a=255, mix=0.25 + 0.5 * k)
+            c.spr('guard', 3, unit(land - p), HOME, p, tint_rgb=CYAN, tint_a=255, mix=k)
     elif i < T_ARRIVE:
         zap(c, path, i, None)
     else:
         a = i - T_ARRIVE
         if a == 0: pass
-        fx.shock(c, land, a, YEL, 8, 26, 2); fx.burst(c, land + P(0, -6), a, 77, n=16, speed=2.2, col=YEL, life=10)
-        if i < T_POKE: c.spr('base_sprint', 4, P(1, -0.2), HOME, land + P(a * 0.6, -a * 0.2), tint_rgb=YEL, tint_a=255, mix=0.5 * clamp(1 - a / 6))
+        fx.burst(c, land + P(0, -4), a, 77, n=5, speed=1.0, col=CYAN, life=5)
+        if i < T_POKE: c.spr('base_sprint', 4, P(1, -0.2), HOME, land + P(a * 0.6, -a * 0.2), tint_rgb=CYAN, tint_a=255, mix=0.25 * clamp(1 - a / 4))
         else:
             k = ak('df03_poke_tackle', i, T_POKE)
-            c.spr('df03_poke_tackle', k, P(1, -0.1), HOME, land + P(3.6, -1.2), tint_rgb=YEL, tint_a=255, mix=0.35 * clamp(1 - (i - T_POKE) / 14))
+            c.spr('df03_poke_tackle', k, P(1, -0.1), HOME, land + P(3.6, -1.2), tint_rgb=CYAN, tint_a=255, mix=0.0)
         if T_POKE <= i < T_POKE + 6: fx.shock(c, car + P(6, 0), i - T_POKE, WHITE, 6, 10, 1)
     zap_ghosts_after(c, path, i)
     residue(c, path, i)
@@ -216,7 +204,6 @@ def df08_up(c):
     if i < T_ARRIVE: cx, cy, z = (car[0] + d1[0]) / 2 - 18, 132, 2.15
     else: cx, cy, z = lerp((car[0] + d1[0]) / 2 - 18, car[0] + 12, smooth((i - T_ARRIVE) / 12)), lerp(132, 124, smooth((i - T_ARRIVE) / 12)), lerp(2.15, 3.0, smooth((i - T_ARRIVE - 4) / 12))
     c.cam(cx, cy, z)
-    if T_ARRIVE <= i < T_ARRIVE + 3: c.shake(2.0)
 
 
 def step_up(land, car, i, t0, t1):
@@ -227,18 +214,17 @@ def step_up(land, car, i, t0, t1):
 
 def zap_ghosts_after(c, pts, i):
     """after he lands the afterimages fade where they were"""
-    if not T_ARRIVE <= i < T_ARRIVE + 10: return
-    for n in range(9):
-        sg = (n + 0.5) / 9; q, d = along(pts, sg); age = i - (T_ZAP + sg * (T_ARRIVE - T_ZAP))
-        a = int(200 * clamp(1 - age / 9))
-        if a > 8: c.spr('base_sprint', (n * 3) % 10, d, HOME, q, tint_rgb=CYAN if n % 2 else YEL, tint_a=a, mix=0.85, shadow=False)
+    if not T_ARRIVE <= i < T_ARRIVE + 5: return
+    for n in range(4):
+        sg = (n + 0.5) / 4; q, d = along(pts, sg); age = i - (T_ZAP + sg * (T_ARRIVE - T_ZAP))
+        a = int(90 * clamp(1 - age / 5))
+        if a > 8: c.spr('base_sprint', (n * 3) % 10, d, HOME, q, tint_rgb=CYAN, tint_a=a, mix=0.6, shadow=False)
 
 
 # ======================================================================================================== DF08_DEEP
-@scene('DF08_DEEP', N=132, titan=(T_CARD, T_ARRIVE + 4), color=YEL, result='DOUBLED UP AND WON IT')
+@scene('DF08_DEEP', N=132, titan=(999, 1000), color=CYAN, result='DOUBLED UP AND WON IT')
 def df08_deep(c):
-    i = c.i; w = gt(i)
-    c.dim(0.45 * c.ta, (14, 18, 50))
+    i = c.i; w = gt(i); c.hud = False
     # the attacker runs at our box; the first defender stands him up; the nearest team mate is upfield and wide
     car0, d10 = P(214, 126), P(272, 122)
     mates = [P(196, 86), P(300, 172), P(160, 166)]; H0 = mates[0]
@@ -271,14 +257,14 @@ def df08_deep(c):
         if i < T_CHARGE: runner(c, p, unit(car - p), HOME, i=w, rate=0.6)
         else:
             k = charge(c, p, i)
-            c.spr('guard', 3, unit(land - p), HOME, p, tint_rgb=YEL, tint_a=255, mix=0.25 + 0.5 * k)
+            c.spr('guard', 3, unit(land - p), HOME, p, tint_rgb=CYAN, tint_a=255, mix=k)
     elif i < T_ARRIVE:
         zap(c, path, i, None)
     else:
-        a = i - T_ARRIVE; fx.shock(c, land, a, YEL, 8, 26, 2); fx.burst(c, land + P(0, -6), a, 91, n=16, speed=2.2, col=YEL, life=10)
+        a = i - T_ARRIVE; fx.burst(c, land + P(0, -4), a, 91, n=5, speed=1.0, col=CYAN, life=5)
         hp = step_up(land, car, i, T_SQUEEZE, T_TACKLE)
-        tm = 0.5 * clamp(1 - a / 6)
-        if i < T_SQUEEZE: c.spr('base_sprint', 4, P(-1, -0.3), HOME, land, tint_rgb=YEL, tint_a=255, mix=tm)
+        tm = 0.25 * clamp(1 - a / 4)
+        if i < T_SQUEEZE: c.spr('base_sprint', 4, P(-1, -0.3), HOME, land, tint_rgb=CYAN, tint_a=255, mix=tm)
         elif i < T_WIN: c.spr('df10_jockey', ak('df10_jockey', i, 0, 1.4, loop=True), unit(car - hp), HOME, hp)
         else:                                                                     # the ball runs to him: he takes it away from goal
             b = i - T_WIN; hr = hp + P(-b * 1.0, b * 0.35)
@@ -287,15 +273,13 @@ def df08_deep(c):
     if T_TACKLE <= i < T_WIN: c.ball(lerp(car + P(4.5, 1), car + P(10, 4), (i - T_TACKLE) / 6), 0.6)
     if T_TACKLE + 3 <= i < T_TACKLE + 9: fx.shock(c, car + P(6, 0), i - T_TACKLE - 3, WHITE, 6, 10, 1)
     if T_SQUEEZE <= i < T_TACKLE:                                                 # the trap: a fading lasso between the two defenders
-        hp = step_up(land, car, i, T_SQUEEZE, T_TACKLE); a = int(120 * (0.6 + 0.4 * math.sin(i * 0.8)))
-        fx.bolt(c, d1 + P(0, -8), hp + P(0, -8), i * 5, YEL, a, jag=3, w=1, layer='under')
+        pass
     zap_ghosts_after(c, path, i)
     residue(c, path, i)
     card_pop(c, i)
     if i < T_ARRIVE: cx, cy, z = (car[0] + d1[0]) / 2 + 6, 104, 2.15
     else: cx, cy, z = lerp((car[0] + d1[0]) / 2 + 6, car[0] + 24, smooth((i - T_ARRIVE) / 12)), lerp(104, 128, smooth((i - T_ARRIVE) / 12)), lerp(2.15, 3.0, smooth((i - T_ARRIVE - 4) / 12))
     c.cam(cx, cy, z)
-    if T_ARRIVE <= i < T_ARRIVE + 3: c.shake(2.0)
 
 
 if __name__ == '__main__':
