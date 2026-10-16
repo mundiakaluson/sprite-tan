@@ -56,19 +56,26 @@ def sh02():
 FINESSE_ENV = {8: 0.25, 9: 0.55, 10: 0.8, 11: 0.95, 12: 1.0, 13: 0.95, 14: 0.75, 15: 0.45, 16: 0.2, 17: 0.05}
 
 
-def finesse_bend(m, amt=1.0, roll=1.0, back=0.6, hips=-0.2, head=0.45):
-    """the visible curler shape: the chest side-bends hard away from the kicking leg (a C through the waist, pelvis stays level) and leans back,
-    the head counter-tilts with the eyes kept on the ball, the body sinks into the plant and drifts over it. Exaggerated on purpose: at 40 px a
-    real 25 degree bend reads as upright. Strongest at the contact frame (12)."""
+def finesse_bend(m, amt=1.0, roll=1.0, tilt=0.35, back=0.5, hips=-0.2, head=0.45, drift=2.2):
+    """the curler shape from the references (Locatelli v Juve, the low-camera academy goal): the WHOLE body tips over the planted foot (pelvis roll `tilt`)
+    and the chest bends further (`roll`) so head and shoulders hang out over the plant side, shoulders back / hips through (`back`, `hips`) so the C
+    reads side-on too, head counter-tilted with the eyes on the ball, the plant-side arm flung out wide and up, the kicking-side arm swept back.
+    Exaggerated on purpose: at 40 px a real 25 degree bend reads as upright. Strongest at the contact frame (12)."""
+    L_ARM = (0.2, 2.35, 0.5, 0.9)                                         # wide and high: balance
+    R_ARM = (-0.7, 0.7, 0.6, 0.4)                                         # back and down, across the turn
     for f, b in FINESSE_ENV.items():
         k = m.keys[f]; b *= amt
         k['croll'] = k.get('croll', 0.0) + (roll - k.get('croll', 0.0)) * b
+        k['proll'] = k.get('proll', 0.0) + (tilt - k.get('proll', 0.0)) * b
         k['cpitch'] = k.get('cpitch', 0.0) - back * b                      # shoulders back ...
         k['ppitch'] = k.get('ppitch', 0.0) + hips * b                      # ... hips through: the C reads in the side view too
-        k['hroll'] = k.get('hroll', 0.0) + (-0.45 - k.get('hroll', 0.0)) * b
+        k['hroll'] = k.get('hroll', 0.0) + (-0.55 - k.get('hroll', 0.0)) * b
         k['hpitch'] = k.get('hpitch', 0.0) + head * b                      # eyes down on the ball
-        k['root_x'] = k.get('root_x', 0.0) - 1.0 * b
-        k['pz'] = k.get('pz', 23.0) - 0.8 * b
+        k['root_x'] = k.get('root_x', 0.0) - drift * b                     # the body hangs out over the plant foot
+        k['pz'] = k.get('pz', 23.0) - 1.0 * b
+        for side, tgt in (('L', L_ARM), ('R', R_ARM)):
+            for key, v in zip(('s1', 'a1', 's2', 'a2'), tgt):
+                kk = f'{side}_{key}'; k[kk] = k.get(kk, 0.0) + (v - k.get(kk, 0.0)) * b
     return m
 
 
