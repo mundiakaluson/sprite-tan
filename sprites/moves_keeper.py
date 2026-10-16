@@ -470,7 +470,35 @@ def gk28():
     return d.done()
 
 
-CLUTCH = (1.05, 0.7, 2.4, 0.4)          # forearms wrapped round the ball at the chest
+CLUTCH = (0.55, 0.3, 2.0, -0.85)        # the ball held in both hands against the chest (hands in front of it, not inside him)
+BASKET = (0.95, 0.15, 1.65, -0.45)      # both hands out in front, palms together under the ball
+
+
+def hand_pos(p, side):
+    """where his hand is (same maths as gen_uv.build_scene): side 'R' / 'L'"""
+    import numpy as np
+    from gen_uv import BASE, Rz, Rx, Ry
+    P = BASE; b = P['build']; tr = P['trunk']; sg = 1 if side == 'R' else -1
+    P0 = np.array([p['root_x'], p['root_y'], p['pz']])
+    Rp = Rz(p['pyaw']) @ Rx(-p['ppitch']) @ Ry(p['proll']); Rc = Rz(p['cyaw']) @ Rx(-p['cpitch']) @ Ry(p['croll'])
+    Wst = P0 + Rp @ np.array([0, 0, 6.2 * tr]); J = Wst + Rc @ np.array([sg * 4.7 * b, 0.0, 6.0 * tr])
+    Lu, Lf = 7.8 * P['legs'] ** 0.5, 7.2 * P['legs'] ** 0.5
+    def dv(sa, aa):
+        v = np.array([sg * math.sin(aa), math.sin(sa) * math.cos(aa), -math.cos(sa) * math.cos(aa)]); return v / np.linalg.norm(v)
+    Ep = J + Lu * (Rc @ dv(p[side + '_s1'], p[side + '_a1'])); fv = Rc @ dv(p[side + '_s2'], p[side + '_a2'])
+    return Ep + Lf * fv + 1.0 * fv
+
+
+def ball_in_hands(m, frames, out=1.6):
+    """after the catch the ball is wherever his hands are (between the palms, a little in front of them), so it never sinks into his body"""
+    import numpy as np
+    poses = m.poses()
+    for f in frames:
+        p = poses[f]; r, l = hand_pos(p, 'R'), hand_pos(p, 'L'); c = (r + l) / 2
+        Rc_f = np.array([math.sin(p['cyaw']) * -1, math.cos(p['cyaw']), 0.0])        # chest forward on the ground
+        c = c + Rc_f * out * 0.0
+        m.keys[f].update(bx=float(c[0]), by=float(c[1]), bz=float(max(c[2], 2.5)), bvis=1.0)
+    return m
 STAND = dict(pz=23.4, cpitch=0.12, hpitch=0.15)
 
 
@@ -485,49 +513,45 @@ def gk_ease(u):
 
 @move('GK29', 'Diving Catch')
 def gk29():
-    """dives, takes it cleanly in both hands at full stretch, and pulls it straight into the chest as he lands, curled round it"""
+    """dives with BOTH hands out at the ball, takes it in the hands at full stretch, brings it in to the chest as he comes down, lands holding it and gets up with it"""
     from moves_fluid import mix
-    d = K(36); idle(d, 0, 4)
+    d = K(40); idle(d, 0, 4)
     d.shot(10, (9.0, 5.0, 18.0), start=(11.0, 34.0, 8.0), out=(0, 0, 0), g=0.0)
-    e = dive(d, 5, h=27.0, reach=(2.3, 0.45, 2.6, 0.2), lt=4.0, lie=8, roll=1.4, hands='both')
-    for f in range(11, e):
-        u = gk_ease((f - 10) / 4.0)
+    e = dive(d, 5, h=27.0, reach=(2.3, 0.25, 2.5, -0.15), lt=4.0, lie=8, roll=1.4, hands='both')
+    for f in range(10, e):
+        u = gk_ease((f - 11) / 6.0)                                              # holds it out in the hands, then gathers it in
         k = d.m.keys[f]
-        a = (k.get('R_s1', 2.3), k.get('R_a1', 0.45), k.get('R_s2', 2.6), k.get('R_a2', 0.2))
+        a = (k.get('R_s1', 2.3), k.get('R_a1', 0.25), k.get('R_s2', 2.5), k.get('R_a2', -0.15))
         c = mix(a, CLUTCH, u)
         d.arms(f, c, c)
-        d.m.k(f, cpitch=k.get('cpitch', 0.0) + 0.5 * u)                          # curls round it
-        d.held(f, 1.2 * u + 1.5 * (1 - u), 3.5, 15.0 - 6.0 * gk_ease((f - 12) / 5.0))
-    getup(d, e, 36 - e) if e < 36 else None
-    for f in range(e, 36):
-        d.arms(f, CLUTCH, CLUTCH); d.held(f, 0.0, 4.0, 14.0)
-    d.W = {f: v for f, v in d.W.items() if f <= 10}
+        d.m.k(f, cpitch=k.get('cpitch', 0.0) + 0.45 * u)                         # curls round it as it comes in
+    getup(d, e, 40 - e) if e < 40 else None
+    for f in range(e, 40):
+        d.arms(f, CLUTCH, CLUTCH)                                               # up on his feet, ball held to the chest
+    d.W = {f: v for f, v in d.W.items() if f < 10}
     d.m.events = {'strike': 10}
-    return d.done()
+    m = d.done()
+    return ball_in_hands(m, range(10, 40))
 
 
 @move('GK30', 'Chest Catch')
 def gk30():
-    """a shot straight at him: knees give, the hands go under it, the ball is smothered into the chest and he hunches over it"""
+    """a shot straight at him: hands together in front, palms under it (a basket), the ball meets the hands, he gives with it, brings it in to the chest
+    and hunches over it. The ball stays between his hands the whole time."""
+    from moves_fluid import mix
     d = K(26); idle(d, 0, 3)
-    d.shot(8, (0.4, 6.0, 13.0), start=(0.6, 34.0, 10.0), out=(0, 0, 0), g=0.0)
+    d.shot(8, (0.4, 7.0, 13.0), start=(0.6, 34.0, 10.0), out=(0, 0, 0), g=0.0)
     for f in range(4, 26):
-        give = gk_ease((f - 6) / 3.0) * (1 - gk_ease((f - 14) / 6.0))
-        scoop = gk_ease((f - 4) / 3.0)
-        clutch = gk_ease((f - 8) / 3.0)
-        d.at(f, R=(3.0, 0.8, 0, None), L=(-3.0, -0.6, 0, None), pz=21.6 - 2.2 * give + 1.6 * gk_ease((f - 15) / 6.0), cpitch=0.45 + 0.4 * give, hpitch=0.35)
-        a = tuple(r + (c - r) * clutch for r, c in zip((1.25, 0.25, 1.9, 0.2), CLUTCH))
-        a = tuple(x + (y - x) * (1 - scoop) for x, y in zip(a, (1.15, 0.45, 1.55, 0.25)))
+        give = gk_ease((f - 7) / 3.0) * (1 - gk_ease((f - 14) / 6.0))
+        basket = gk_ease((f - 4) / 3.0)
+        clutch = gk_ease((f - 9) / 4.0)
+        d.at(f, R=(3.0, 0.8, 0, None), L=(-3.0, -0.6, 0, None), pz=21.6 - 2.0 * give + 1.6 * gk_ease((f - 15) / 6.0), cpitch=0.4 + 0.35 * give, hpitch=0.35)
+        a = mix(mix(READY, BASKET, basket), CLUTCH, clutch)
         d.arms(f, a, a)
-        if f > 8: d.held(f, 0.0, 3.5 + 0.8 * give, 14.0 - 2.0 * give)
-    d.W = {f: v for f, v in d.W.items() if f <= 8}
+    d.W = {f: v for f, v in d.W.items() if f < 8}
     d.m.events = {'strike': 8}
-    return d.done()
-
-
-## arm tuples are (upper swing, upper out, forearm swing, forearm out): swing 0 = hanging, pi/2 = straight forward, pi = straight up; out = away from the body
-TUCK = (0.45, 0.3, 1.6, -0.75)            # ball tucked against the hip, forearm across the waist
-REST = (0.15, 0.2, 0.3, 0.05)
+    m = d.done()
+    return ball_in_hands(m, range(8, 26))
 
 
 def gesture(N, right_arm, body=None, ball=(-1.0, 3.4, 12.5)):

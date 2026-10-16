@@ -44,6 +44,10 @@ func _carry(dt: float) -> void:
 	if c.is_keeper():                                                                   # a keeper holds it in his hands, not at his feet
 		var hands := c.pos + c.face * g.settings.keeper_hold_ahead
 		target = Vector3(hands.x, g.settings.keeper_hold_height, hands.y)
+		var tracked := g.motion.clip_ball(c)                                            # during a catch / gesture clip: exactly where the clip has it
+		if tracked != Vector3.INF:
+			target = tracked
+			c.settle = 0.0
 	var cv := Vector3(c.vel.x, 0.0, c.vel.y)
 	if c.settle > 0.0:
 		c.settle -= dt

@@ -386,6 +386,8 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 ## with the ball, the keeper carries it in his hands: this far in front of him (m) at this height (m)
 @export var keeper_hold_ahead := 0.25
 @export var keeper_hold_height := 1.0
+## metres per sprite-rig unit (the clips' own ball track, root motion): a 1.8 m player is about 46 rig units
+@export var rig_unit_m := 0.039
 @export var clips_claim := PackedStringArray(["gk05_claim_cross"])
 @export var clips_palm := PackedStringArray(["gk10_high_palm", "gk04_punch_clear"])
 @export var clips_low := PackedStringArray(["gk09_low_dive", "gk27_bottom_hand_save", "gk20_cat_reflexes"])

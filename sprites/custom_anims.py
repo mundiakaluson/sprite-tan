@@ -142,6 +142,8 @@ def export(name, with_hair=False, progress=print, procs=2):
     meta['animations'][name] = dict(frames=n, ms_per_frame=a.get('ms', 70), loop=a.get('loop', False), events=a.get('events', {}),
                                     root_forward_px=[round(p['root_y'] * U.SC, 2) for p in poses], root_side_px=[round(p['root_x'] * U.SC, 2) for p in poses],
                                     mist=[round(p.get('fxm', 0.0), 2) for p in poses], custom=True)
+    if any(p.get('bvis', 0.0) > 0.5 for p in poses):          # where the clip's own ball is (rig units, relative to the root: side, forward, up, visible) so the game can keep the real ball in his hands
+        meta['animations'][name]['ball'] = [[round(p.get('bx', 0.0) - p['root_x'], 2), round(p.get('by', 0.0) - p['root_y'], 2), round(p.get('bz', 0.0), 2), 1 if p.get('bvis', 0.0) > 0.5 else 0] for p in poses]
     if a.get('contact'): meta['animations'][name]['contact'] = a['contact']
     json.dump(meta, open(mp, 'w'), indent=1)
     progress('done')

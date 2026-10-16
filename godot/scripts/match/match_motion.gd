@@ -42,6 +42,20 @@ func _time(f: Footballer, clip_name: String, duration: float) -> void:
 		n.use_custom_timeline = false
 		_stretched.erase(clip_name)
 
+## the clip's own ball position for the frame he is on (exported per frame with the clip: side, forward, up in rig units), turned into pitch metres;
+## Vector3.INF when the clip has no ball track or the ball is not in it on this frame. Used to keep the real ball in a keeper's hands through a catch or a gesture.
+func clip_ball(f: Footballer) -> Vector3:
+	var a: Dictionary = Data.anims.get("animations", {}).get(f.clip, {})
+	var tr: Array = a.get("ball", [])
+	if tr.is_empty() or f.node == null or f.node.sprite == null: return Vector3.INF
+	var i := clampi(f.node.sprite.frame_index, 0, tr.size() - 1)
+	var e: Array = tr[i]
+	if e.size() < 4 or int(e[3]) == 0: return Vector3.INF
+	var u := g.settings.rig_unit_m
+	var right := Vector2(-f.face.y, f.face.x) * (-1.0 if f.mirror else 1.0)
+	var p := f.pos + f.face * float(e[1]) * u + right * float(e[0]) * u
+	return Vector3(p.x, maxf(float(e[2]) * u, g.ball.phys.rad), p.y)
+
 ## where in a clip (0..1) its strike event is
 func strike_frac(clip_name: String, fallback := 0.5) -> float:
 	var a: Dictionary = Data.anims.get("animations", {}).get(clip_name, {})
