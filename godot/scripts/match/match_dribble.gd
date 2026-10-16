@@ -28,7 +28,9 @@ func take_on(f: Footballer, d: Footballer) -> bool:
 	if absf(f.pos.y + perp.y * side * 4.0) > MatchGame.HALF_W - 2.0: side = -side            # not towards the touchline
 	var fake := (dir * 0.4 + perp * side).normalized()                                          # shows the shoulder one way ...
 	var cut := (dir * 0.85 - perp * side).normalized()                                          # ... and goes the other, past him
-	var clip := _pick(f, s.clips_takeon)
+	var skilled := g.rng.randf() < clampf((f.stat("DRI", 60) - 60) / 40.0, 0.0, s.skill_max)
+	var clip := _pick(f, s.clips_takeon_skill if skilled else s.clips_takeon)
+	if clip == "": clip = _pick(f, s.clips_takeon)
 	var total := s.takeon_fake_time + s.takeon_burst_time
 	g.motion.act(f, clip, 1.0, func(): pass, 1.0, total, true)
 	var bite := clampf(s.takeon_bite_base + (f.stat("DRI", 60) - d.stat("DEF", 60)) * s.takeon_bite_per_stat, 0.1, 0.9)

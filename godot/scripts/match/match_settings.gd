@@ -137,7 +137,10 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 
 @export_group("Take-on and slide tackles")
 ## a take-on: he shows the shoulder one way for fake_time s (at fake_speed x top speed), then bursts the other way for burst_time s (burst_speed x top speed, turning at turn_rate)
-@export var clips_takeon := PackedStringArray(["dr05_body_feint", "dr01_step_over", "dr14_chop_cut", "dr07_la_croqueta", "dr15_stepover_chain"])
+@export var clips_takeon := PackedStringArray(["dr01_step_over", "dr05_body_feint", "dr14_chop_cut", "dr02_drag_back", "dr28_pull_push", "dr27_outside_hook"])
+## skill moves, used instead with chance (DRI - 60) / 40 (at most skill_max): elastico, croqueta, roulette, stepover chain, cruyff turn, spin
+@export var clips_takeon_skill := PackedStringArray(["dr08_elastico", "dr07_la_croqueta", "dr03_roulette", "dr15_stepover_chain", "dr09_cruyff_turn", "dr21_spin_away"])
+@export_range(0.0, 1.0) var skill_max := 0.7
 @export var takeon_fake_time := 0.3
 @export var takeon_burst_time := 0.5
 @export var takeon_fake_speed := 0.8
