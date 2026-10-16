@@ -186,3 +186,11 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - Pressured clearances use dedicated panic clips (flinch/stagger or hack-and-fall). Sprite facing corrects for the sprite render elevation (30 deg). Sprint slightly toned down (1.06, 2.3 s).
 - Through-ball runners set off when the ball is struck (short reaction), not at the order. AI finishing is a behaviour with variants (chip when the keeper is out and far, placed finish when close, curlers from the wings, central finishes). Simple AI one-two as a behaviour; the enhanced version belongs to the 1-2 card later.
 - Aerial contests are a module (MatchAerial) plus the AiContest behaviour: the two nearest wait under a lob (yellow landing ring), then header / shove-and-chest / shoulder leap by stats and role.
+
+## Handoff (end of Sonnet session, 2026-10-16)
+Done and pushed this session: sprint nerf, panic-clear clips (cl01/cl02), run-facing squash (`Player.sprite_squash`), through-ball runner timing, AI one-two, AI finishing variants, aerial contests (MatchAerial, AiContest, ct01-ct03 clips, yellow landing ring).
+Open / rough edges the user reported:
+- Facing: users saw players "look south" after the squash change; value is a guess (0.72), tune between 0.5 and 1.0. Panic-clear body twist was reduced; re-bake cl01/cl02.
+- Aerial contest: "a bit better, some rough edges". Clips are first pass (bake ct01-ct03 and Export). Chest control now leaves the ball free; duel players slide under the predicted spot. Needs a look in Godot (ring size, timing, header outcomes).
+- Stat proxies for headers / intelligence (no real stats yet).
+- Headless tools used: scratchpad bal2.gd (full match counters), lob.gd (lob duels), chip.gd (chip / curler landing); recreate from godot/CLAUDE.md notes if needed. Do not `pkill -f` a script name: it kills the shell.
