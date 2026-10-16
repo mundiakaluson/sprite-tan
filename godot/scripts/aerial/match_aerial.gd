@@ -227,9 +227,10 @@ func _chest(w: Footballer, l: Footballer) -> void:
 func _steer(dt: float) -> void:
 	var s := g.settings
 	var c: Vector2 = ev["contest"]
-	for f in ev.get("acting", []):
+	for a in ev.get("acting", []):
+		var f: Footballer = a
 		if f.pending.is_null(): continue
-		var to := c - f.pos
+		var to: Vector2 = c - f.pos
 		if to.length() > 0.25: f.pos += to.normalized() * minf(to.length(), s.aerial_steer_speed * dt)
 
 ## what the winner does with the header: clear (defensive roles, or nobody to find), shoot (close to goal) or pass to the best team mate
