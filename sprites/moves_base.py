@@ -65,6 +65,10 @@ def build(ids=None):
     for name, (label, fn, loop) in R.MOVES.items():
         if ids and name not in ids: continue
         m = fn(); m.loop = loop; m.save(name, label, 'base reaction, sprites/moves_reactions.py'); out.append(name)
+    import moves_turns as T
+    for name, (label, fn, loop) in T.MOVES.items():
+        if ids and name not in ids: continue
+        m = fn(); m.loop = loop; m.save(name, label, 'turn with the ball, sprites/moves_turns.py'); out.append(name)
     gaits_csv(); return out
 
 

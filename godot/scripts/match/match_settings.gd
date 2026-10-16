@@ -77,9 +77,9 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var pivot_brake := 6.0
 @export var pivot_min_speed := 1.5
 ## turn clips played during the pivot: sharp (DRI >= skilled_dri), normal, heavy (DRI < heavy_dri)
-@export var clips_turn_skilled := PackedStringArray(["dr09_cruyff_turn", "dr22_trap_and_turn", "dr21_spin_away"])
-@export var clips_turn_normal := PackedStringArray(["dr14_chop_cut", "dr22_trap_and_turn"])
-@export var clips_turn_heavy := PackedStringArray(["base_recover_step", "dr14_chop_cut"])
+@export var clips_turn_skilled := PackedStringArray(["tn04_spin_turn", "tn03_sharp_turn"])
+@export var clips_turn_normal := PackedStringArray(["tn02_plant_turn", "tn03_sharp_turn"])
+@export var clips_turn_heavy := PackedStringArray(["tn01_heavy_turn", "tn02_plant_turn"])
 @export var skilled_dri := 75
 @export var heavy_dri := 55
 ## an opponent closer than this (m) is pressing him (full pressure at his shoulder)

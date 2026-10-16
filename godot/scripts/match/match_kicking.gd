@@ -32,6 +32,7 @@ func kick(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: Dic
 
 func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_in: Dictionary, receiver: Footballer) -> void:
 	f.aim_done = Callable()
+	f.mirror = false
 	if g.carrier != f: return
 	if receiver != null: to = receiver.pos                                  # he may have moved while we turned
 	var dir := to - f.pos
@@ -75,8 +76,14 @@ func _turn_clip(f: Footballer) -> void:
 	for c in list:
 		if f.node.has_clip(c): ok.append(c)
 	if ok.is_empty(): return
-	_play(f, ok[g.rng.randi() % ok.size()])
-	f.lock = 0.0                                                         # the clip is only a picture here; the pivot itself holds him
+	var clip := ok[g.rng.randi() % ok.size()]
+	var turn := f.face.angle_to(f.aim)
+	var agi := lerpf(s.agility_min, s.agility_max, clampf((dri - 40) / 50.0, 0.0, 1.0))
+	var rate := deg_to_rad(s.pivot_deg_per_s) * agi / (1.0 + f.vel.length() * 0.5 * s.pivot_speed_drag)
+	g.motion._time(f, clip, clampf(absf(turn) / rate, 0.25, s.pivot_max))     # the clip lasts as long as the turn does
+	f.node.play_clip(clip)
+	f.clip = clip
+	f.mirror = turn < 0.0                                                # the turn clips turn to his right; a left turn plays mirrored
 
 func update(dt: float) -> void:
 	var s := g.settings
@@ -84,6 +91,7 @@ func update(dt: float) -> void:
 		if not f.aim_done.is_null():
 			if g.carrier != f or g.phase != MatchGame.Phase.PLAY:
 				f.aim_done = Callable()
+				f.mirror = false
 			else:
 				f.aim_t += dt
 				var a := f.face.angle_to(f.aim)

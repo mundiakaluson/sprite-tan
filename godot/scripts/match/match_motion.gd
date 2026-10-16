@@ -88,7 +88,7 @@ func update(dt: float) -> void:
 
 func _show(f: Footballer) -> void:
 	g.stadium.set_actor_pos(f.node, g.stadium.pitch_pos(Vector3(f.pos.x, 0.0, f.pos.y)))
-	f.node.set_mirror(f.mirror and f.lock > 0.0)
+	f.node.set_mirror(f.mirror and (f.lock > 0.0 or not f.aim_done.is_null()))
 	f.node.face_vector(g.stadium.screen_dir(f.pos, f.face))          # the picture turns by what the camera sees, not by the pitch angle
 	if f.lock > 0.0 or not f.aim_done.is_null(): return
 	f.mirror = false
