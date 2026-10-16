@@ -57,7 +57,7 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 
 @export_group("Ball and first touch")
 ## how big the ball is drawn (1 = the old size)
-@export_range(0.3, 1.5) var ball_scale := 0.7
+@export_range(0.3, 1.5) var ball_scale := 0.85
 ## when a player gets the ball it eases to his feet over this long instead of snapping (seconds), at this speed (higher = quicker)
 @export var settle_time := 0.4
 ## the ball reaches his foot as a critically damped spring (omega, higher = quicker; ~16 settles in 0.25 s); the incoming ball speed is kept up to settle_max_speed m/s

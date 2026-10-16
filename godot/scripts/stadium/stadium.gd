@@ -17,7 +17,8 @@ const W := 68.0
 		stadium_id = v
 		if is_node_ready(): rebuild()
 @export_group("Players")
-@export var player_height_m := 1.8
+## drawn height of a player (m): only sizes the sprites, not the gameplay. 1.8 = true scale; larger reads better on a full-size pitch (most football games cheat this)
+@export var player_height_m := 2.4
 @export var sprite_height_px := 26.0    ## how tall a player sprite is in pixels at scale 1 (feet to top of head)
 
 @onready var camera: CameraRig = $Camera
