@@ -54,7 +54,7 @@ def sh02():
     return m
 
 
-FINESSE_ENV = {8: 0.25, 9: 0.55, 10: 0.8, 11: 0.95, 12: 1.0, 13: 0.95, 14: 0.9, 15: 0.75, 16: 0.5, 17: 0.25, 18: 0.08}
+FINESSE_ENV = {8: 0.25, 9: 0.55, 10: 0.8, 11: 0.95, 12: 1.0, 13: 0.98, 14: 0.95, 15: 0.9, 16: 0.85, 17: 0.8, 18: 0.75}   # the lean is kept through the follow-through; run_out unwinds it
 
 
 def retime(m, tmap, ms=None, strike=None):
@@ -84,20 +84,32 @@ def finesse_windup(m):
 
 # new frame -> source frame: short run-in, slow wind-up with a hold at the top, a two-frame whip into contact (new frame 12),
 # a long follow-through that keeps the lean, then the recovery steps
-# (the tail stops at the follow-through landing, then settle_to_stand eases him upright watching the ball: no running steps in the clip)
+# (the clip stops at the follow-through landing; run_out then carries him on, off balance, back into his run)
 FINESSE_TIME = [4.0, 5.3, 6.6, 7.6, 8.2, 8.7, 9.2, 9.6, 9.9, 10.05, 10.15, 11.0, 12.0, 12.5, 13.0, 13.5, 14.0, 14.6, 15.2, 15.8, 16.4,
-                17.0, 17.4, 17.7]
+                17.0]
 
 
-def settle_to_stand(m, frames=6, watch=0.15):
-    """append `frames` frames easing from the last pose to a balanced stand (feet under him, arms down, head up following the ball):
-    after a shot he stops and watches it instead of stepping straight back into a run"""
-    last = dict(m.keys[m.N - 1]); goal = dict(last); goal.update(stand(0, last.get('root_y', 0.0)))
-    goal['hpitch'] = watch; goal['bvis'] = last.get('bvis', 0.0)
-    for k in ('bx', 'by', 'bz', 'brx', 'brz'): goal.pop(k, None)
+def run_out(m, frames=10, step=3.1, phase0=0.25, legs_in=3.0, stagger=1.6):
+    """after the follow-through he keeps running, but you can see what the curl cost him: the kicking leg comes down across, he lands heavy
+    and off balance (dips, drifts further over to the plant side), and the lean, the counter-tilted head and the wide balancing arm only
+    unwind over the next strides; the legs find the run first, the upper body last. Ends in a plain run pose, so the game's run clip follows on."""
+    last = dict(m.keys[m.N - 1]); ry = last.get('root_y', 0.0); rx = last.get('root_x', 0.0)
+    upper = ('croll', 'proll', 'cpitch', 'ppitch', 'cyaw', 'pyaw', 'hroll', 'hpitch', 'hyaw',
+             'L_s1', 'L_a1', 'L_s2', 'L_a2', 'R_s1', 'R_a1', 'R_s2', 'R_a2')
     for i in range(1, frames + 1):
-        u = i / frames; u = u * u * (3 - 2 * u)
-        m.keys[m.N - 1 + i] = {k: (last[k] + (goal[k] - last[k]) * u if k in goal and isinstance(last[k], float) else last[k]) for k in last}
+        run = A.run_pose(A.BASE, phase0 + i / 12.0, ry + step * i)
+        u_up = min(1.0, i / frames); u_up = u_up * u_up * (3 - 2 * u_up)
+        u_lg = min(1.0, i / legs_in); u_lg = u_lg * u_lg * (3 - 2 * u_lg)
+        k = {key: (last[key] * (1 - u_up) if key in upper and isinstance(last[key], float) else last[key]) for key in last}   # params the run pose leaves out still unwind
+        for key, v in run.items():
+            if key not in last or not isinstance(v, float): k[key] = v; continue
+            u = u_up if key in upper else u_lg
+            k[key] = last[key] + (v - last[key]) * u
+        heavy = math.sin(math.pi * min(1.0, i / 4.0)) if i <= 4 else 0.0     # the heavy, sideways landing
+        k['pz'] = k.get('pz', 23.0) - 1.4 * heavy
+        k['root_x'] = rx * (1 - u_up) - stagger * heavy
+        k['bvis'] = 0.0
+        m.keys[m.N - 1 + i] = k
     m.N += frames
     return m
 
@@ -127,7 +139,7 @@ def finesse_bend(m, amt=1.0, roll=1.0, tilt=0.35, back=0.5, hips=-0.2, head=0.45
 
 @move('SH03', 'Finesse Curler')
 def sh03():
-    return settle_to_stand(retime(finesse_bend(finesse_windup(finesse_base())), FINESSE_TIME, ms=55, strike=12))
+    return run_out(retime(finesse_bend(finesse_windup(finesse_base())), FINESSE_TIME, ms=55, strike=12))
 
 
 @move('SH05', 'Chip Lob')
