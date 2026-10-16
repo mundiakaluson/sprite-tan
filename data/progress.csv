@@ -54,3 +54,4 @@ Game,"Formations can be added from the Godot inspector (FormationLayout in Match
 Game,"Ball touch and keeper saves: smaller ball, eased first touch, keeper dive/catch/deflect clips with mirror",doing,"untested in Godot; tune in MatchSettings > Goalkeeper saves"
 Game,"Players turn before passing; scuffed or pressed passes cause stumble/fall",doing,"untested in Godot; tune in MatchSettings > Kick turn and stumble"
 Game,"AI behaviours: add a decision as one script + one list entry (example: jockey)",doing,"untested in Godot"
+Game,"Kick clip variations, passing on the run, tackle tumbles, softer scuffs",doing,"untested visually in Godot; headless: ~86 passes/match, ~7% scuffed, ~24 tumbles"

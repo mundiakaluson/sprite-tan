@@ -25,6 +25,7 @@ var pending_t := 0.0
 var aim := Vector2.ZERO          ## he is pivoting to face this way before a kick (MatchKicking)
 var aim_done := Callable()      ## runs when the pivot is finished; empty = not pivoting
 var aim_t := 0.0
+var glide := false               ## kicking on the move: he keeps his speed through the clip (slows gently) instead of stopping
 var mirror := false              ## play his clip mirrored (a left dive: the keeper clips are authored for the right)
 var settle := 0.0               ## seconds left of the ball easing to his feet after he got it
 var ai := {}                    ## memory of the AI interaction layer (space target, ...)

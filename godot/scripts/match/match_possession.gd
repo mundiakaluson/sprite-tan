@@ -111,14 +111,47 @@ func resolve_tackle(f: Footballer, target: Footballer, bonus: float) -> void:
 		return
 	if target.shield > 0.0: return
 	var chance := 0.5 + (f.stat("DEF", 60) - target.stat("DRI", 60)) * 0.01 + bonus
-	if g.rng.randf() < chance: steal(f, target)
-	else: f.lock = maxf(f.lock, 0.6)
+	if g.rng.randf() < chance: won_tackle(f, target)
+	else: failed_tackle(f, target)
 
 func steal(thief: Footballer, victim: Footballer) -> void:
 	victim.no_touch = g.settings.lose_ball_pause
 	victim.pending = Callable()
 	thief.no_touch = 0.0
 	take(thief)
+
+## the ball changes hands at the tackle's strike point; the tackler is back on his feet quickly, the victim goes down (or stumbles)
+func won_tackle(thief: Footballer, victim: Footballer) -> void:
+	var s := g.settings
+	steal(thief, victim)
+	thief.lock = minf(thief.lock, 0.15)
+	victim.aim_done = Callable()
+	if g.rng.randf() < s.tackle_victim_fall: g.kicking.tumble(victim, s.clips_fall)
+	else: g.kicking.tumble(victim, s.clips_stumble_medium)
+
+## he went in and missed: over-committed and stumbles or falls, and the carrier is knocked about a little
+func failed_tackle(tackler: Footballer, carrier: Footballer) -> void:
+	var s := g.settings
+	if g.rng.randf() < s.tackle_miss_fall: g.kicking.tumble(tackler, s.clips_fall)
+	else: g.kicking.tumble(tackler, s.clips_stumble_medium)
+	tackler.no_touch = maxf(tackler.no_touch, 0.4)
+	if carrier.lock <= 0.0 and g.rng.randf() < s.tackle_miss_carrier_stumble: g.kicking.tumble(carrier, s.clips_stumble_light)
+
+## a defender goes in on the carrier: plays the tackle clip, and at its strike frame it is won or lost
+func start_tackle(f: Footballer, target: Footballer, won: bool) -> void:
+	var s := g.settings
+	var list := PackedStringArray()
+	for c in s.clips_tackle:
+		if f.node.has_clip(c): list.append(c)
+	var clip: String = "" if list.is_empty() else list[g.rng.randi() % list.size()]
+	f.vel = (target.pos - f.pos).normalized() * 5.0
+	f.face = (target.pos - f.pos).normalized()
+	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.45), func(): _tackle_lands(f, target, won), 1.0, s.tackle_clip_time, true)
+
+func _tackle_lands(f: Footballer, target: Footballer, won: bool) -> void:
+	if g.carrier != target or f.pos.distance_to(target.pos) > 2.4: return
+	if won: won_tackle(f, target)
+	else: failed_tackle(f, target)
 
 ## defenders on the carrier win the ball now and then (the human's players too)
 func _auto_tackles(dt: float) -> void:
@@ -131,5 +164,8 @@ func _auto_tackles(dt: float) -> void:
 		if o.pos.distance_to(c.pos) > s.tackle_reach: continue
 		var rate := s.tackle_rate * (o.stat("DEF", 60) + 30.0) / (c.stat("DRI", 60) + 30.0) * (1.0 if o.team.human else lerpf(0.6, 1.0, s.ai_level))
 		if g.rng.randf() < rate * dt:
-			steal(o, c)
+			start_tackle(o, c, true)
+			return
+		if g.rng.randf() < s.tackle_miss_rate * dt:
+			start_tackle(o, c, false)
 			return

@@ -66,18 +66,18 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 
 @export_group("Kick turn and stumble")
 ## he turns to face the target first when it is more than this many degrees away from where he faces, at this speed (degrees per second); the kick starts when he is within `pivot_done_deg`, or after `pivot_max` s
-@export var pivot_min_deg := 30.0
+@export var pivot_min_deg := 65.0
 @export var pivot_deg_per_s := 520.0
 @export var pivot_done_deg := 14.0
 @export var pivot_max := 0.6
 ## an opponent closer than this (m) is pressing him (full pressure at his shoulder)
 @export var kick_pressure_radius := 3.0
 ## chance a pass is scuffed = base + (60 - PAS) * per_pas + pressure * pressure_k + (kicked before turning) * misaligned_k; a scuffed pass gets this much aim error (metres)
-@export var scuff_base := 0.05
-@export var scuff_per_pas := 0.004
-@export var scuff_pressure := 0.3
-@export var scuff_misaligned := 0.25
-@export var scuff_noise := 8.0
+@export var scuff_base := 0.04
+@export var scuff_per_pas := 0.002
+@export var scuff_pressure := 0.15
+@export var scuff_misaligned := 0.12
+@export var scuff_noise := 4.5
 ## after a scuffed pass he falls (when pressed) with this chance, else stumbles; a clean pass under pressure still makes him stumble a bit with this chance
 @export_range(0.0, 1.0) var fall_chance := 0.4
 @export_range(0.0, 1.0) var stumble_pressed := 0.25
@@ -86,6 +86,37 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var clips_stumble_light := PackedStringArray(["base_stumble_fwd_s", "base_stumble_side_s", "base_stumble_back_s"])
 @export var clips_stumble_medium := PackedStringArray(["base_stumble_fwd_m", "base_stumble_side_m", "base_stumble_back_m"])
 @export var clips_fall := PackedStringArray(["base_fall"])
+
+@export_group("Kick animations")
+## the whole kick clip is played in this many seconds (the authored clips take ~1.5 s, far too slow for a pass); the ball goes at the clip's strike frame
+@export var kick_clip_time := 0.7
+@export var shot_clip_time := 0.75
+## a player who kicks while running keeps moving: he slows at this rate (m/s2) during the clip instead of stopping dead
+@export var glide_brake := 4.0
+## pass clips by situation (right-footed clips; one is picked at random from the list)
+@export var clips_pass_short := PackedStringArray(["ps16_square_ball", "ps12_outside_foot_pass", "ps23_lay_off"])
+@export var clips_pass_medium := PackedStringArray(["ps03_driven_pass", "ps12_outside_foot_pass", "ps16_square_ball"])
+@export var clips_pass_long := PackedStringArray(["ps18_long_ball_forward", "air_pass_low", "ps10_switch_play"])
+@export var clips_pass_back := PackedStringArray(["ps17_return_pass", "ps25_reverse_pass"])
+@export var clips_pass_through := PackedStringArray(["ps01_through_ball", "ps15_killer_ball"])
+@export var clips_pass_lob := PackedStringArray(["ps13_chipped_pass", "ps02_lofted_through"])
+@export var clips_shot_close := PackedStringArray(["sh01_side_foot_place", "sh14_toe_poke", "sh23_snap_shot", "sh24_one_touch_finish"])
+@export var clips_shot_far := PackedStringArray(["sh02_instep_drive", "sh07_power_blast", "sh22_rocket_long_shot", "sh19_dipping_drive"])
+## distances (m) between short / medium / long passes and close / far shots; a target more than back_deg behind him is a back pass
+@export var pass_short_m := 11.0
+@export var pass_long_m := 26.0
+@export var shot_far_m := 22.0
+@export var pass_back_deg := 110.0
+
+@export_group("Tackle tumbles")
+## a won tackle: the tackler slides in (clip below, played in tackle_clip_time s) and the ball changes hands at its strike frame; the victim then falls with this chance, else stumbles
+@export var clips_tackle := PackedStringArray(["df01_stand_tackle", "df03_poke_tackle"])
+@export var tackle_clip_time := 0.5
+@export_range(0.0, 1.0) var tackle_victim_fall := 0.4
+## a failed challenge (attempts per second while a defender is on the carrier): the tackler over-commits and stumbles / falls, the carrier is knocked a bit
+@export var tackle_miss_rate := 0.8
+@export_range(0.0, 1.0) var tackle_miss_fall := 0.3
+@export_range(0.0, 1.0) var tackle_miss_carrier_stumble := 0.3
 
 @export_group("Possession")
 ## how close the ball must be to a player's feet to be picked up

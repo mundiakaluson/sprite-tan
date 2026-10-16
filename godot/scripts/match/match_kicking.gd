@@ -6,6 +6,9 @@ extends RefCounted
 
 var g: MatchGame
 var _tumble_chain := {}      ## Footballer -> clip to play after a fall
+var stat_passes := 0         ## counters for the headless balance runs
+var stat_scuffs := 0
+var stat_tumbles := 0
 
 func _init(game: MatchGame) -> void:
 	g = game
@@ -26,11 +29,41 @@ func kick(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: Dic
 		return
 	_strike(f, action, to, to_vel, over, receiver)
 
-func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: Dictionary, receiver: Footballer) -> void:
+func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_in: Dictionary, receiver: Footballer) -> void:
 	f.aim_done = Callable()
 	if g.carrier != f: return
 	if receiver != null: to = receiver.pos                                  # he may have moved while we turned
-	g.motion.act(f, "kick", 0.35, func(): _release(f, action, to, to_vel, over, receiver))
+	var dir := to - f.pos
+	var speed := f.vel.length()
+	var over := over_in.duplicate()
+	if dir.length() > 0.1:
+		over["_mis"] = clampf(absf(f.face.angle_to(dir)) / deg_to_rad(90.0), 0.0, 1.0)      # how far round he still was: kicking before turning is less accurate
+		f.face = dir.normalized()                                              # a small turn at most (bigger ones were pivots), so he kicks where the ball goes
+		f.settle = maxf(f.settle, 0.15)
+	var clip := pick_clip(f, action, to)
+	var dur := g.settings.shot_clip_time if action == "shot" else g.settings.kick_clip_time
+	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.5), func(): _release(f, action, to, to_vel, over, receiver), 1.0, dur, speed > 1.0)
+
+## the kick clip for this action: by distance, direction behind him, and kind of pass; one at random from the list
+func pick_clip(f: Footballer, action: String, to: Vector2) -> String:
+	var s := g.settings
+	var d := f.pos.distance_to(to)
+	var back := absf(f.face.angle_to(to - f.pos)) > deg_to_rad(s.pass_back_deg)
+	var list: PackedStringArray
+	match action:
+		"shot": list = s.clips_shot_far if d > s.shot_far_m else s.clips_shot_close
+		"through": list = s.clips_pass_through
+		"lob": list = s.clips_pass_lob
+		_:
+			if back: list = s.clips_pass_back
+			elif d < s.pass_short_m: list = s.clips_pass_short
+			elif d > s.pass_long_m: list = s.clips_pass_long
+			else: list = s.clips_pass_medium
+	var ok := PackedStringArray()
+	for c in list:
+		if f.node.has_clip(c): ok.append(c)
+	if ok.is_empty(): return "ps03_driven_pass" if f.node.has_clip("ps03_driven_pass") else ""
+	return ok[g.rng.randi() % ok.size()]
 
 func update(dt: float) -> void:
 	var s := g.settings
@@ -61,10 +94,13 @@ func _release(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over:
 	var bad := false
 	var o := over.duplicate()
 	if passing:
-		var misaligned := clampf(absf(f.face.angle_to(to - f.pos)) / deg_to_rad(90.0), 0.0, 1.0)   # kicked before he had turned round
+		var misaligned := float(o.get("_mis", 0.0))
+		o.erase("_mis")
 		var chance := s.scuff_base + (60 - f.stat("PAS", 60)) * s.scuff_per_pas + press * s.scuff_pressure + misaligned * s.scuff_misaligned
 		bad = g.rng.randf() < chance
+		stat_passes += 1
 		if bad:
+			stat_scuffs += 1
 			o["noise"] = maxf(float(o.get("noise", 0.0)), s.scuff_noise)
 			g.hud.toast("%s: scuffed" % f.display_name())
 	g.poss.launch(f, action, to, to_vel, o, receiver)
@@ -85,6 +121,7 @@ func _pressure(f: Footballer) -> float:
 	return 1.0 - best / s.kick_pressure_radius
 
 func tumble(f: Footballer, list: PackedStringArray) -> void:
+	stat_tumbles += 1
 	if list.is_empty(): return
 	var clip := list[g.rng.randi() % list.size()]
 	if not f.node.has_clip(clip): return
