@@ -53,10 +53,28 @@ def sh02():
     return m
 
 
+FINESSE_ENV = {8: 0.25, 9: 0.55, 10: 0.8, 11: 0.95, 12: 1.0, 13: 0.95, 14: 0.75, 15: 0.45, 16: 0.2, 17: 0.05}
+
+
+def finesse_bend(m, amt=1.0, roll=1.0, back=0.6, hips=-0.2, head=0.45):
+    """the visible curler shape: the chest side-bends hard away from the kicking leg (a C through the waist, pelvis stays level) and leans back,
+    the head counter-tilts with the eyes kept on the ball, the body sinks into the plant and drifts over it. Exaggerated on purpose: at 40 px a
+    real 25 degree bend reads as upright. Strongest at the contact frame (12)."""
+    for f, b in FINESSE_ENV.items():
+        k = m.keys[f]; b *= amt
+        k['croll'] = k.get('croll', 0.0) + (roll - k.get('croll', 0.0)) * b
+        k['cpitch'] = k.get('cpitch', 0.0) - back * b                      # shoulders back ...
+        k['ppitch'] = k.get('ppitch', 0.0) + hips * b                      # ... hips through: the C reads in the side view too
+        k['hroll'] = k.get('hroll', 0.0) + (-0.45 - k.get('hroll', 0.0)) * b
+        k['hpitch'] = k.get('hpitch', 0.0) + head * b                      # eyes down on the ball
+        k['root_x'] = k.get('root_x', 0.0) - 1.0 * b
+        k['pz'] = k.get('pz', 23.0) - 0.8 * b
+    return m
+
+
 @move('SH03', 'Finesse Curler')
 def sh03():
-    m = finesse_base()
-    return m
+    return finesse_bend(finesse_base())
 
 
 @move('SH05', 'Chip Lob')
