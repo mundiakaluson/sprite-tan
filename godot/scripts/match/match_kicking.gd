@@ -61,6 +61,9 @@ func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_i
 		stat_shots[key] = int(stat_shots.get(key, 0)) + 1
 	var dur := g.settings.shot_clip_time if action == "shot" else g.settings.kick_clip_time
 	if clip in g.settings.clips_slow_kick: dur = g.settings.curl_clip_time      # curlers: the wind-up has to be seen
+	if action == "shot":                                                    # a good finisher gets it off quicker
+		var sho := clampf((f.stat("SHO", 60) - 40.0) / 50.0, 0.0, 1.0)
+		dur *= lerpf(g.settings.shot_time_slow, g.settings.shot_time_fast, sho)
 	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.5), func(): _release(f, action, to, to_vel, over, receiver), 1.0, dur, speed > 1.0)
 
 ## the kick clip for this action: by distance, direction behind him, and kind of pass; one at random from the list

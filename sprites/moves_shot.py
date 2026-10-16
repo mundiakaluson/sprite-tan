@@ -434,25 +434,39 @@ def celebrate(m, f0, f1, kind='fist'):
     return m
 
 
+TRIVELA_TIME = [4.0, 5.3, 6.6, 7.6, 8.2, 8.7, 9.2, 9.6, 9.9, 10.05, 10.15, 11.0, 12.0, 12.5, 13.0, 13.5, 14.0, 14.6, 15.2, 15.8, 16.4, 17.0]
+
+
 @move('SH04', 'Trivela Bender')
 def sh04():
+    """outside of the right boot. Plant foot well to the LEFT of the ball and a touch behind it; the kicking leg is drawn back BEHIND the plant leg with
+    the knee turned in and the hips closed; it whips across the ball from inside to outside with the toes pointed down and in (the outside of the boot
+    on the ball), then flicks out wide and high to the RIGHT as the hips spin open; the body leans away to the left to make room, the right arm flies out
+    wide with the leg, the left arm folds across. Retimed like the finesse (hold at the top of the backswing, two-frame whip, contact frame 12) and he
+    runs on off balance while the lean unwinds."""
     m = kick_base()
-    # outside of the right boot: torso and hips bend over to the right, the leg swings out wide and the toes point in
     for f in (7, 8): m.k(f, croll=0.1 * (f - 6))
-    frame(m, 9, R=(-0.5, -4.0, 45, 7.0, 0.3, 0.0), L=(-3.4, 4.0, -6), root_y=1.4, pz=24.2, cpitch=0.18, croll=0.22, proll=0.1, pyaw=-0.25)
-    frame(m, 10, R=(-1.6, -8.5, 55, 11.0, 0.5, 0.2), L=(-3.0, 5.0, -6), root_y=2.0, pz=23.6, cpitch=0.2, croll=0.32, proll=0.18, pyaw=-0.45, root_x=0.6)
-    frame(m, 11, R=(1.8, -1.0, 68, 8.5, 0.9, 0.35), L=(-3.0, 5.4, -6), root_y=2.4, pz=23.2, cpitch=0.2, croll=0.42, proll=0.24, pyaw=-0.15, root_x=0.8)
-    frame(m, 12, R=(5.4, 7.6, 78, 3.6, 1.0, 0.45), L=(-2.8, 5.8, -6), root_y=2.7, pz=23.0, cpitch=0.2, croll=0.5, proll=0.28, pyaw=0.15, root_x=1.0)
-    frame(m, 13, R=(5.8, 15.5, 62, 7.0, 0.9, 0.35), L=(-2.8, 6.0, -5), root_y=3.8, pz=23.4, cpitch=0.18, croll=0.4, proll=0.22, pyaw=0.35, root_x=0.8)
-    frame(m, 14, R=(3.0, 20.0, 55, 10.0, 0.7, 0.3), L=(-3.0, 6.6, 10, 5.0), root_y=5.8, pz=24.6, cpitch=0.14, croll=0.28, proll=0.14, pyaw=0.55)
-    frame(m, 15, R=(-0.8, 22.5, 45, 12.0, 0.4), L=(-3.0, 7.6, 14, 4.0), root_y=7.8, pz=25.2, cpitch=0.12, croll=0.16, proll=0.06, pyaw=0.7)          # leg swings across the body, still reaching
-    frame(m, 16, R=(-1.0, 22.0, 30, 9.0), L=(-2.6, 9.0, 20, 5.0), root_y=9.8, pz=25.0, cpitch=0.1, croll=0.06, pyaw=0.5)
-    frame(m, 17, R=(1.0, 20.0, 12, None), L=(-2.4, 11.0, 20, 6.0), root_y=12.0, pz=24.0, cpitch=0.1, croll=0.0, pyaw=0.2)
-    arms_out(m, 11, (-0.2, 1.3, 0.2, 1.0), (1.2, 1.6, 1.6, 1.5)); arms_out(m, 12, (-0.3, 1.4, 0.0, 1.0), (1.3, 1.7, 1.7, 1.6))
+    #           R foot (x, y, fp, z, fy, fr)              L foot                body
+    frame(m, 8,  R=(0.8, -6.0, 55, 8.0, 0.2, 0.0),   L=(-4.2, 3.0, 10, 4.0), root_y=1.0, pz=24.4, cpitch=0.16, croll=0.12, proll=0.06, pyaw=0.15, cyaw=-0.05)
+    frame(m, 9,  R=(-0.6, -10.5, 65, 13.0, 0.5, 0.1), L=(-4.6, 4.0, -6),     root_y=1.6, pz=23.6, cpitch=0.2, croll=0.25, proll=0.12, pyaw=0.32, cyaw=-0.15, hpitch=0.4)
+    frame(m, 10, R=(-1.4, -12.5, 72, 15.5, 0.7, 0.15), L=(-4.6, 4.4, -6),    root_y=2.0, pz=23.2, cpitch=0.22, croll=0.36, proll=0.16, pyaw=0.42, cyaw=-0.25, hpitch=0.5)
+    frame(m, 11, R=(0.0, -2.5, 70, 8.0, 0.9, 0.3),    L=(-4.6, 4.6, -6),     root_y=2.3, pz=23.0, cpitch=0.24, croll=0.44, proll=0.2, pyaw=0.25, cyaw=-0.1, hpitch=0.55)
+    frame(m, 12, R=(1.4, 6.8, 78, 3.6, 1.05, 0.45),   L=(-4.4, 4.8, -6),     root_y=2.6, pz=22.8, cpitch=0.22, croll=0.5, proll=0.24, pyaw=-0.05, cyaw=0.1, hpitch=0.6, hroll=-0.3)
+    frame(m, 13, R=(5.6, 13.5, 60, 9.0, 0.8, 0.4),    L=(-4.2, 5.0, -5),     root_y=3.4, pz=23.0, cpitch=0.16, croll=0.5, proll=0.24, pyaw=-0.35, cyaw=0.2, hpitch=0.45, hroll=-0.3)
+    frame(m, 14, R=(8.2, 16.0, 50, 13.5, 0.6, 0.3),   L=(-4.0, 5.4, 5, 2.0), root_y=4.6, pz=23.6, cpitch=0.1, croll=0.46, proll=0.22, pyaw=-0.55, cyaw=0.25, hpitch=0.3, hroll=-0.28)
+    frame(m, 15, R=(8.8, 15.0, 40, 14.0, 0.4, 0.2),   L=(-3.6, 6.0, 12, 3.0), root_y=6.0, pz=24.0, cpitch=0.08, croll=0.42, proll=0.2, pyaw=-0.6, cyaw=0.25, hpitch=0.2, hroll=-0.25)
+    frame(m, 16, R=(6.8, 13.0, 30, 9.5, 0.2),         L=(-3.0, 7.5, 18, 3.5), root_y=7.8, pz=24.0, cpitch=0.08, croll=0.38, proll=0.18, pyaw=-0.45, cyaw=0.2, hpitch=0.15, hroll=-0.22)
+    frame(m, 17, R=(4.0, 12.0, 15, 4.0),              L=(-2.6, 9.5, 20, 4.0), root_y=9.8, pz=23.6, cpitch=0.1, croll=0.34, proll=0.16, pyaw=-0.3, cyaw=0.12, hroll=-0.2)
+    for f, kx in ((9, -0.8), (10, -1.0), (11, -0.9), (12, -0.6), (13, -0.2)): m.knee(f, 'R', kx, 1.0, -0.2)      # knee turned in
+    #           R arm (s1, a1, s2, a2)        L arm
+    for f, r, l in ((9, (-0.4, 0.9, 0.4, 0.6), (0.5, 1.3, 0.9, 0.9)), (10, (-0.6, 1.1, 0.4, 0.7), (0.6, 1.5, 0.9, 1.0)),
+                    (12, (0.0, 1.6, 0.4, 0.9), (0.9, 0.8, 1.3, 0.6)), (14, (0.3, 2.3, 0.5, 1.0), (0.9, 0.5, 1.3, 0.5)),
+                    (16, (0.2, 1.9, 0.6, 0.8), (0.6, 0.7, 1.0, 0.5))):
+        m.arms(f, 'R', *r); m.arms(f, 'L', *l)
     c = M.aim_ball(m, 12, 'boot', 'R', vin=(0.0, 0.0, 0.0), pre=0, off=(0, 0.6, 0.4))
     for f in range(0, 12): m.k(f, bx=c[0], by=c[1], bz=c[2], bvis=1.0)
     m.ball(13, path(11, speed=7.4, rise=0.12, curve=0.9, dip=0.3, start=(c[0], c[1] + 3.5, 3.6)), spin_x=1.4, spin_z=1.8)
-    return m
+    return run_out(retime(m, TRIVELA_TIME, ms=55, strike=12))
 
 
 @move('SH08', 'Volley')
