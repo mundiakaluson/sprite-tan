@@ -49,7 +49,7 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var turn_deg_per_s := 650.0
 ## positioning jog as a fraction of top speed
 @export_range(0.3, 1.0) var jog_factor := 0.7
-@export_range(0.5, 1.5) var sprint_factor := 1.1
+@export_range(0.5, 1.5) var sprint_factor := 1.06
 ## the ball carrier runs at this fraction of top speed
 @export_range(0.4, 1.0) var carry_factor := 0.8
 ## players push each other apart inside this distance
@@ -138,6 +138,14 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var clips_pass_long := PackedStringArray(["ps18_long_ball_forward", "air_pass_low", "ps10_switch_play"])
 @export var clips_pass_back := PackedStringArray(["ps17_return_pass", "ps25_reverse_pass"])
 @export var clips_pass_through := PackedStringArray(["ps01_through_ball", "ps15_killer_ball"])
+@export_group("Pressured clearance")
+## a lob/clearance with an opponent this close (0..1, see kick_pressure_radius) is a panicked hack
+@export_range(0.0, 1.0) var panic_pressure := 0.55
+## chance the clearance is the hack-and-fall version; otherwise he staggers on
+@export_range(0.0, 1.0) var panic_fall_chance := 0.55
+@export var clips_panic_clear := PackedStringArray(["cl01_panic_clear"])
+@export var clip_panic_fall := "cl02_panic_clear_fall"
+@export_group("Kick animations")
 @export var clips_pass_lob := PackedStringArray(["ps13_chipped_pass", "ps02_lofted_through"])
 @export var clips_shot_close := PackedStringArray(["sh01_side_foot_place", "sh14_toe_poke", "sh23_snap_shot", "sh24_one_touch_finish"])
 @export var clips_shot_far := PackedStringArray(["sh02_instep_drive", "sh07_power_blast", "sh22_rocket_long_shot", "sh19_dipping_drive"])

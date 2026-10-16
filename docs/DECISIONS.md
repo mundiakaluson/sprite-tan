@@ -182,3 +182,5 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - Playtest fixes: keeper save window + skill roll + only opponents' shots, ball closer to feet, screen-space facing, angular turning, GK claims slow loose balls.
 
 - Kicks use real pass/shot clips picked by distance and direction, played fast (kick_clip_time) and on the run (glide); scuff chances lowered to about 7% of passes; engagement now has tackle clips with falls/stumbles for the victim or a missed tackler.
+
+- Pressured clearances use dedicated panic clips (flinch/stagger or hack-and-fall). Sprite facing corrects for the sprite render elevation (30 deg). Sprint slightly toned down (1.06, 2.3 s).

@@ -236,3 +236,45 @@ def get_up():
              pz=pz, cpitch=cp, croll=-1.45 * (1 - s1), proll=-1.4 * (1 - s1), hyaw=-0.85 * (1 - s1), hpitch=0.3 * s1 * (1 - s3) + 0.05 * s3)
         d.arms(f, mix(LYING_R, mix((1.5, 0.5, 1.3, 0.2), REST, s3), s2), mix(LYING_L, mix((1.5, 0.6, 1.3, 0.2), REST, s3), s2))
     hidden(d); return d.m
+
+
+# ------------------------------------------------------------------------------------------------------------------ clearing under pressure
+def panic_clear(kind):
+    """kind: 'flinch' (shies away from the tackle, hacks it off the toe, staggers on) or 'fall' (hoofs it away off balance, the follow-through carries him over and he goes down).
+    Strike at frame 7. Both end ready for base_get_up ('fall') or upright and unsteady ('flinch')."""
+    N = 24; d = Dr(N, ms=55, speed=0.0); d.m.events = {'strike': 7}
+    for f in range(N): d.lt[f] = 0.0; d.sp[f] = 0.0
+    fall = kind == 'fall'
+    for f in range(N):
+        shy = sm(f / 4.0) * (1 - sm((f - 8.0) / 5.0))                    # hunches away, eyes on the opponent
+        swing = sm((f - 3.0) / 4.0) * (1 - sm((f - 8.0) / 3.5))          # the hack: leg whips through at frame 7
+        wind = sm((f - 1.0) / 2.5) * (1 - sm((f - 4.0) / 2.0))           # a short, ugly backswing
+        drop = sm((f - 8.0) / 8.0) if fall else 0.0
+        end = sm((f - 16.0) / 4.0) if fall else 0.0
+        stag = (1 - sm((f - 8.0) / 4.0)) * sm((f - 8.0) / 2.0) if not fall else 0.0
+        pz = lerp(22.7 - 1.8 * shy, 8.0, drop) - (0.8 * stag)
+        roll = -1.45 * drop - 0.15 * shy
+        yl = 1.0 + 8.5 * swing - 5.0 * wind
+        zl = 0.3 + 6.0 * swing
+        R = (lerp(2.8, 3.6, drop), lerp(0.8 + yl, -3.0, drop), -20 * swing + 20 * drop, (zl if f < 12 else None))
+        L = (lerp(-2.8, -0.5, drop), lerp(-0.6, -4.0, drop), 20 * drop, None)
+        d.at(f, R=R, L=L, pz=pz, cpitch=(-0.3 * shy + 0.5 * swing + 0.35 * stag) * (1 - drop) + 0.0, croll=roll, proll=roll + 0.05 * (1 - drop), ppitch=-0.12 * shy,
+             hyaw=-0.85 * drop + 0.35 * shy * (1 - drop), hpitch=0.3 * shy, hroll=-0.2 * shy, pyaw=0.3 * swing * (1 - drop))
+        up = mix(REST, (1.9, 0.9, 1.7, 0.0), shy)                         # hands come up to guard, then fling out for balance
+        flail = math.sin(f * 1.7) * 0.3 * (1 - end)
+        r = (up[0] + 0.5 * swing + flail, up[1], up[2], up[3]); l = (up[0] + 0.7 * swing - flail, up[1] + 0.2 * shy, up[2], up[3])
+        if fall:
+            r = mix(r, LYING_R, sm((f - 14.0) / 4.0)); l = mix(l, LYING_L, sm((f - 14.0) / 4.0))
+        d.arms(f, r, l)
+    if fall: d.lateral(**{'f3': 0.0, 'f12': 1.0, 'f15': 0.0})
+    hidden(d); return d.m
+
+
+@move('cl01_panic_clear', 'Panic Clear (flinch, hack, stagger)')
+def panic_flinch():
+    return panic_clear('flinch')
+
+
+@move('cl02_panic_clear_fall', 'Panic Clear (hack and fall)')
+def panic_fall():
+    return panic_clear('fall')

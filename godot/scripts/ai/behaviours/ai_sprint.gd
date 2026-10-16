@@ -13,7 +13,7 @@ extends AiBehaviour
 @export var break_gap := 4.5
 ## per second at PAC 60 and full stamina; he sprints for `duration` s
 @export var rate := 1.6
-@export var duration := 2.6
+@export var duration := 2.3
 @export var min_stamina := 0.4
 ## pitch depth (0 own goal .. 1 opponent goal) in which he sprints
 @export var min_depth := 0.3

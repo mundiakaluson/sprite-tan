@@ -55,7 +55,14 @@ func pick_clip(f: Footballer, action: String, to: Vector2) -> String:
 	match action:
 		"shot": list = s.clips_shot_far if d > s.shot_far_m else s.clips_shot_close
 		"through": list = s.clips_pass_through
-		"lob": list = s.clips_pass_lob
+		"lob":
+			list = s.clips_pass_lob
+			if _pressure(f) >= s.panic_pressure:                            # a clearance with an opponent on top of him: no time to set himself
+				if f.node.has_clip(s.clip_panic_fall) and g.rng.randf() < s.panic_fall_chance: return s.clip_panic_fall     # hacks it and goes down with it
+				var panic := PackedStringArray()
+				for c in s.clips_panic_clear:
+					if f.node.has_clip(c): panic.append(c)
+				if not panic.is_empty(): list = panic
 		_:
 			if back: list = s.clips_pass_back
 			elif d < s.pass_short_m: list = s.clips_pass_short
@@ -131,6 +138,11 @@ func _release(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over:
 	g.poss.launch(f, action, to, to_vel, o, receiver)
 	if g.carrier == f: return                                               # the ball was not released
 	if not passing: return
+	if f.clip == s.clip_panic_fall:                                         # the hack carries him over: lie there, then get up
+		stat_tumbles += 1
+		if f.node.has_clip("base_get_up"): _tumble_chain[f] = "base_get_up"
+		return
+	if f.clip in s.clips_panic_clear: return                                # the flinching clearance already staggers
 	var fall := bad and press > 0.0 and g.rng.randf() < s.fall_chance * (0.5 + press)
 	if fall: tumble(f, s.clips_fall)
 	elif bad: tumble(f, s.clips_stumble_medium)
