@@ -97,7 +97,7 @@ func update(dt: float) -> void:
 			else: f.stamina += s.rest_regen * dt
 			f.stamina = clampf(f.stamina, 0.0, 1.0)
 		var tb := Vector2(g.ball.phys.pos.x, g.ball.phys.pos.z) - f.pos
-		if f.is_keeper() and f.lock <= 0.0 and f.aim_done.is_null() and not gliding and f.vel.length() < s.keeper_watch_speed and tb.length() > 1.0:
+		if f.is_keeper() and f.lock <= 0.0 and f.aim_done.is_null() and not gliding and not f.ai.get("rush", false) and tb.length() > 1.0:   # eyes on the ball, always (but not when he charges out)
 			var kstep := deg_to_rad(s.keeper_turn_deg_per_s) * dt                  # a keeper keeps his chest to the ball while he shuffles across
 			f.face = f.face.rotated(clampf(f.face.angle_to(tb), -kstep, kstep)).normalized()
 		elif f.vel.length() > 0.5 and f.aim_done.is_null() and not gliding:
@@ -145,12 +145,13 @@ func _keeper_clip(f: Footballer, speed: float) -> String:
 	var s := g.settings
 	var ball := Vector2(g.ball.phys.pos.x, g.ball.phys.pos.z)
 	if speed > 0.4:
-		if speed < s.keeper_watch_speed:
+		if speed < s.keeper_watch_speed or not f.ai.get("rush", false):
 			var cross := absf(f.vel.dot(Vector2(-f.face.y, f.face.x)))
 			if cross > s.keeper_shuffle_lateral * speed: return s.clip_keeper_shuffle
 		return ""
 	var dist := absf(ball.x - (-MatchGame.HALF_L * f.team.dir))
 	var danger := g.carrier == null or g.carrier.team != f.team
+	if f.ai.get("set", false): return s.clip_keeper_set                  # his scan says a shot is coming: set, low, on his toes
 	if danger and dist < s.keeper_set_dist: return s.clip_keeper_set
 	if danger and dist < s.keeper_alert_dist: return s.clip_keeper_idle
 	return "base_idle"

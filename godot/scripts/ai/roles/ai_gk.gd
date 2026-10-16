@@ -95,6 +95,14 @@ func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 		x = line_x + c.dir * narrow_max * (1.0 - bd / near_range)
 	var close := 1.0 - clampf(bd / near_range, 0.0, 1.0)
 	var z := clampf(c.ball.y * (follow_z + follow_close * close), -z_limit, z_limit)
+	if f.ai.has("bisect_z"):                                           # his scan: stand on the bisector of the shooter's angle
+		z = lerpf(z, clampf(float(f.ai["bisect_z"]), -z_limit, z_limit), c.s.bisect_weight)
+	if f.ai.has("scan"):                                               # the ball is on its way: a step across towards where it will cross him, before he dives
+		var sc: Dictionary = f.ai["scan"]
+		if float(sc["t"]) < c.s.pre_step_time:
+			z = lerpf(f.pos.y, float(sc["z"]), c.s.pre_step_k)
+			x = f.pos.x
+			speed = c.s.sprint_factor
 	if absf(f.pos.x - x) > 6.0: speed = maxf(speed, c.s.jog_factor)    # a long way off his spot: hurry back
 	return _go(c, Vector2(x, z), speed)
 

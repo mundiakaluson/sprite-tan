@@ -517,3 +517,21 @@ static func layout(name_or_id: String) -> FormationLayout:
 @export var read_per_ref := 0.015
 ## each kick style's save_difficulty (data/kick_styles.csv) cuts the stop chance; good keepers cancel part of it: counter = (average REF HAN - 60) / 40 x keeper_counter, clamped 0..1
 @export_range(0.0, 1.0) var keeper_counter := 0.8
+
+@export_group("Keeper scan")
+## how often (s) each keeper re-reads the ball (KeeperScan)
+@export var scan_every := 0.1
+## the ball ray: only for balls faster than this (m/s) heading his way, traced this many seconds ahead; a crossing within the goal plus this margin (m) counts
+@export var scan_min_speed := 6.0
+@export var scan_horizon := 1.6
+@export var scan_post_margin := 0.8
+## when the ray says it is coming, he steps across this share of the way towards it before it arrives (only if it arrives within pre_step_time s)
+@export_range(0.0, 1.0) var pre_step_k := 0.35
+@export var pre_step_time := 1.0
+## perimeter rays: with an opponent on the ball within set_range m of goal he stands on the bisector of the shooter's angle (bisect_weight of the way) and gets set
+## when the carrier faces goal (dot of his facing and the way to goal over set_facing)
+@export var set_range := 30.0
+@export_range(0.0, 1.0) var bisect_weight := 0.8
+@export_range(-1.0, 1.0) var set_facing := 0.3
+## draw the rays (yellow: ball to the posts, cyan: where the bisector meets his line, red: the ball's traced flight and where it crosses him)
+@export var scan_debug := false

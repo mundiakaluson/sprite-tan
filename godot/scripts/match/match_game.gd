@@ -48,6 +48,7 @@ var kicking: MatchKicking
 var dribble: MatchDribble
 var aerial: MatchAerial
 var trail: BallTrail
+var scan: KeeperScan
 var command := MatchCommand.new()   ## what the human is doing right now (shown in the HUD box)
 var _next_kick: Team
 var _slow := false
@@ -82,12 +83,15 @@ func _ready() -> void:
 	trail = BallTrail.new()
 	stadium.actors.add_child(trail)
 	trail.setup(ball, stadium.camera, settings)
+	scan = KeeperScan.new()
+	stadium.actors.add_child(scan)
 	poss = MatchPossession.new(self)
 	motion = MatchMotion.new(self)
 	keeper = MatchKeeper.new(self)
 	kicking = MatchKicking.new(self)
 	dribble = MatchDribble.new(self)
 	aerial = MatchAerial.new(self)
+	scan.setup(self)
 	rules = MatchRules.new(self)
 	orders = MatchOrders.new(self)
 	cards = MatchCards.new(self)
