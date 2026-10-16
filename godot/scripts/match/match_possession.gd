@@ -78,7 +78,7 @@ func _loose(_dt: float) -> void:
 		var reach := s.pickup_reach
 		var max_h := s.reach_height
 		if f.is_keeper():
-			reach = s.keeper_reach + f.stat("REF", 60) * s.keeper_ref_reach
+			reach = s.keeper_ground_reach if bp.y < s.scoop_max_height else s.keeper_reach + f.stat("REF", 60) * s.keeper_ref_reach     # a ball on the grass: he has to get to it
 			max_h = s.keeper_reach_height
 		if f == g.pass_target: reach *= s.receiver_reach_k
 		if bp.y > max_h: continue
@@ -89,7 +89,10 @@ func _loose(_dt: float) -> void:
 	if best == null: return
 	if best.is_keeper():
 		if speed <= s.save_speed_base + best.stat("HAN", 60) * s.save_speed_per_han:
+			var ground := bp.y < s.scoop_max_height
 			take(best)
+			if ground and best.node.has_clip(s.clip_keeper_scoop):                # off the grass: he runs in, bends and scoops it up into his hands
+				g.motion.act(best, s.clip_keeper_scoop, 1.0, func(): pass, 0.0, s.scoop_time, true)
 		else:
 			b.phys.vel = Vector3(-b.phys.vel.x * 0.3, b.phys.vel.y * 0.5 + 2.0, b.phys.vel.z + g.rng.randf_range(-5.0, 5.0))
 			best.no_touch = 0.5

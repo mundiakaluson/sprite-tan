@@ -100,6 +100,16 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 						over["speed"] = plan["speed"]
 						g.poss.kick_action(f, i.action, plan["meet"], Vector2.ZERO, over, i.target)
 						return
+				if i.action in ["pass", "through"]:                             # a clever passer bends it round a defender in the lane (MatchSettings > Bent passes)
+					var lead := Data.num(Data.row("ball_actions", i.action).get("lead"), 0.5)
+					var curl := g.orders.plan_curl(f, i.target.pos + i.target.vel * lead, i.action)
+					if not curl.is_empty():
+						var ov := i.over.duplicate()
+						ov["_to_space"] = true
+						ov["style"] = curl["style"]
+						ov["speed"] = curl["speed"]
+						g.poss.kick_action(f, i.action, curl["aim"], Vector2.ZERO, ov, i.target)
+						return
 				g.poss.kick_action(f, i.action, i.target.pos, i.target.vel, i.over, i.target)
 			elif i.aim != Vector2.INF: g.poss.kick_action(f, i.action, i.aim)
 		"shoot":

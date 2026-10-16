@@ -35,9 +35,16 @@ func _draw() -> void:
 	if hud.dragging:
 		var d: Vector2 = hud.drag_to - hud.drag_from
 		var col := Color(1.0, 0.35, 0.3, 0.95) if hud.drag_shot else Color(1, 1, 1, 0.95)
-		draw_line(hud.drag_from, hud.drag_to, col, 2.0)
-		if d.length() > 6.0:
+		var tip := hud.drag_to
+		if hud.drag_path.size() >= 2:                                        # a bent pass: the line follows the curve
+			draw_polyline(hud.drag_path, col, 2.0)
+			tip = hud.drag_path[hud.drag_path.size() - 1]
+			d = tip - hud.drag_path[maxi(0, hud.drag_path.size() - 3)]
+			draw_line(tip, hud.drag_to, Color(col, 0.35), 1.0)
+		else:
+			draw_line(hud.drag_from, hud.drag_to, col, 2.0)
+		if d.length() > 0.5:
 			var u := d.normalized()
 			var side := Vector2(-u.y, u.x)
-			draw_colored_polygon(PackedVector2Array([hud.drag_to, hud.drag_to - u * 9.0 + side * 5.0, hud.drag_to - u * 9.0 - side * 5.0]), col)
+			draw_colored_polygon(PackedVector2Array([tip, tip - u * 9.0 + side * 5.0, tip - u * 9.0 - side * 5.0]), col)
 

@@ -116,6 +116,12 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var clips_fall := PackedStringArray(["base_fall", "base_fall_trip", "base_fall_back"])
 ## the keeper stands in this clip when he is not moving (a ready stance instead of the outfield idle)
 @export var clip_keeper_idle := "gk_ready_idle"
+## a keeper picking a loose ball off the grass (lower than scoop_max_height m) plays this (run in, bend, scoop it into his hands; the clip's ball track holds it) over scoop_time s
+@export var clip_keeper_scoop := "gk35_scoop_collect"
+@export var scoop_max_height := 0.45
+## how close (m) a keeper has to be to pick a ball up off the grass (balls in the air use keeper_reach + REF)
+@export var keeper_ground_reach := 1.0
+@export var scoop_time := 1.3
 @export var clip_keeper_set := "gk_set_low"
 @export var clip_keeper_shuffle := "gk_shuffle"
 ## the keeper reads the game: relaxed (outfield idle) when the ball is far or his team has it, alert (ready stance) when the opponents have it within keeper_alert_dist m of his goal line,
@@ -379,6 +385,28 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 ## seconds after the ball is struck before the runner reacts and sets off
 @export var through_react := 0.25
 
+@export_group("Bent passes")
+## a passer with game sense (PAS + DRI average >= pass_curl_sense_min) bends a pass / through ball of pass_curl_min_dist m or more round a defender who is
+## within pass_curl_block m of the straight lane (opponents within pass_curl_skip m of the passer or the receiver do not count: pressure / a marker)
+@export var pass_curl_on := true
+@export var pass_curl_sense_min := 70.0
+@export var pass_curl_min_dist := 12.0
+@export var pass_curl_block := 1.8
+@export var pass_curl_skip := 2.0
+## the bent path must clear the defenders by this much more than the straight one; the kick styles for each way of bending (data/kick_styles.csv)
+@export var pass_curl_gain := 0.8
+@export var pass_curl_style_cw := "K14"
+@export var pass_curl_style_ccw := "K15"
+## aim search: up to this many degrees off the straight line, in steps; the bent flight must pass within pass_curl_miss m of the target; speed x pass_curl_speed_k
+@export var pass_curl_max_deg := 35.0
+@export var pass_curl_step_deg := 2.5
+@export var pass_curl_miss := 1.2
+@export var pass_curl_speed_k := 1.0
+## the speeds tried (x the pass speed): a slower ball bends more
+@export var pass_curl_speeds := PackedFloat32Array([0.55, 0.7, 0.85, 1.0])
+## the bent path must keep at least this far (m) from every defender, or it is not played (they step across: a near miss is an interception)
+@export var pass_curl_need := 1.8
+
 @export_group("Through-ball runs")
 ## the human points the run: the pointer this many metres or more from the runner sets his direction (closer = straight up the pitch)
 @export var through_point_min := 1.5
@@ -483,6 +511,12 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 ## his body stops this far (m) short of the ball sideways so his hand meets it (a parry off the glove, not the chest); for a catch it is closer (the ball comes into both hands in front of him)
 @export var hand_offset := 1.0
 @export var catch_hand_offset := 0.4
+## the glove: a save only happens with the ball within glove_reach (+ glove_reach_per_ref x REF) of his hand sideways and glove_depth along the pitch
+@export var glove_reach := 0.35
+@export var glove_reach_per_ref := 0.003
+@export var glove_depth := 0.7
+## standing saves (catch / claim / palm): how far the hands reach sideways from his body
+@export var stand_arm := 0.55
 ## with the ball, the keeper carries it in his hands: this far in front of him (m) at this height (m)
 @export var keeper_hold_ahead := 0.25
 @export var keeper_hold_height := 1.0

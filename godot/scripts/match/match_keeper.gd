@@ -48,10 +48,18 @@ func _cover(k: Footballer, seconds: float) -> float:
 	var s := g.settings
 	return (s.dive_speed + k.stat("REF", 60) * s.dive_speed_per_ref) * seconds
 
+## the glove: an arm's length out to the dive side (hand_z, set in _start), at the body for catches in front of him
+func _hand(k: Footballer) -> Vector2:
+	var d: Dictionary = _dives.get(k, {})
+	return Vector2(k.pos.x, k.pos.y + float(d.get("hand_z", 0.0)))
+
+## the ball is touched only near the GLOVE (glove_reach, a little more with REF), not anywhere round his body
 func _in_reach(k: Footballer, _kind: String) -> bool:
 	var bp := g.ball.phys.pos
 	var s := g.settings
-	return absf(bp.x - k.pos.x) < s.save_depth and absf(bp.z - k.pos.y) < _reach(k) and bp.y < s.keeper_reach_height + s.jump_height
+	var h := _hand(k)
+	var r := s.glove_reach + k.stat("REF", 60) * s.glove_reach_per_ref
+	return absf(bp.x - h.x) < s.glove_depth and absf(bp.z - h.y) < r and bp.y < s.keeper_reach_height + s.jump_height
 
 ## the ball went past him (behind his x) without coming into reach
 func _passed(k: Footballer) -> bool:
@@ -146,7 +154,9 @@ func _start(k: Footballer, clip: String, kind: String, length: float, ts: float,
 	var to := Vector2(k.pos.x + k.team.dir * s.dive_forward, k.pos.y + reach_z)
 	g.motion.act(k, clip, 1.0, func(): pass)
 	k.lock = length + s.save_window_after
-	_dives[k] = {"from": k.pos, "to": to, "t": 0.0, "T": maxf(ts, 0.1), "strike": ts, "kind": kind, "lateral": lateral, "done": false, "plan": plan}
+	var arm := hand if kind in ["low", "mid", "far"] else s.stand_arm
+	var hand_z := clampf(lateral - reach_z, -arm, arm)                                  # the glove reaches from where his body ends up towards the ball line, an arm's length at most
+	_dives[k] = {"from": k.pos, "to": to, "t": 0.0, "T": maxf(ts, 0.1), "strike": ts, "kind": kind, "lateral": lateral, "done": false, "plan": plan, "hand_z": hand_z}
 
 # ---------------------------------------------------------------- the contact
 ## the stop chance (REF / HAN, how far he has to go, the kick style's difficulty countered by his class)
@@ -191,6 +201,9 @@ func _resolve(k: Footballer, kind: String, lateral: float, in_reach: bool, plan 
 		return
 	var parry := plan == "parry"
 	g.last_touch = k
+	var hp := _hand(k)                                                                 # the touch comes off the glove: the ball is where his hand is
+	b.phys.pos = Vector3(hp.x, bp.y, lerpf(bp.z, hp.y, 0.7))
+	bp = b.phys.pos
 	if plan == "catch":
 		save_event.emit(k, kind, "", "catch")
 		g.poss.take(k)

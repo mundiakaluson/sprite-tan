@@ -5,6 +5,8 @@ extends RefCounted
 var g: MatchGame
 const GHOST := preload("res://scenes/engagement/zap_ghost.tscn")
 var stat_curved := 0
+var stat_bent := 0
+var debug_curl := false
 var stat_straight := 0
 
 func _init(game: MatchGame) -> void:
@@ -64,26 +66,121 @@ func shoot_at(f: Footballer, spot: Vector2) -> void:
 
 ## kind = "pass" / "through" / "lob". To a team mate (the ball leads him; a through ball also sends him running) or to a spot.
 ## `point`: where the human pointed (pitch metres); for a through ball the run goes that way from the mate (MatchSettings > Through-ball runs).
+## A passer with game sense bends a through ball / long pass round a defender in the lane (plan_curl, MatchSettings > Bent passes).
 func pass_to(f: Footballer, kind: String, mate: Footballer, spot: Vector2, send_run := false, point := Vector2.INF) -> void:
 	if g.carrier != f:
 		g.hud.toast("%s has not got the ball" % f.display_name())
 		return
 	var action := kind if kind in ["pass", "through", "lob"] else "pass"
 	if mate != null:
-		var vel := Vector2.ZERO
-		var plan := {}
+		var pl := pass_plan(f, action, mate, send_run, point)
+		var vel: Vector2 = pl["vel"]
+		var plan: Dictionary = pl["run"]
+		var curl: Dictionary = pl["curl"]
 		if action == "through" or send_run:
-			var dir := Vector2(f.team.dir, 0.0)
-			if point != Vector2.INF and point.distance_to(mate.pos) >= g.settings.through_point_min: dir = (point - mate.pos).normalized()
-			vel = dir * g.settings.through_run_speed
-			plan = plan_run(mate, dir, f)
 			g.kicking.after_release(f, func(): send_runner(f, mate, vel, plan))  # he sets off when the ball is struck, not while the passer is still turning and winding up
-		g.command.show(action, "LOB OVER THE TOP" if (action == "lob" and send_run) else action.to_upper(), f, mate, ("%s curls his run" if plan.has("curve") else "%s runs onto it") % mate.display_name() if send_run or action == "through" else "", g.settings.command_hold)
+		var note := ("%s curls his run" if plan.has("curve") else "%s runs onto it") % mate.display_name() if send_run or action == "through" else ""
+		if not curl.is_empty(): note = "bent round the defender"
+		g.command.show(action, "LOB OVER THE TOP" if (action == "lob" and send_run) else action.to_upper(), f, mate, note, g.settings.command_hold)
 		if plan.has("curve"): g.poss.kick_action(f, action, plan["meet"], Vector2.ZERO, {"_to_space": true, "speed": plan["speed"]}, mate)       # into the space on his curved run, through a clear lane
+		elif not curl.is_empty(): g.poss.kick_action(f, action, curl["aim"], Vector2.ZERO, {"_to_space": true, "style": curl["style"], "speed": curl["speed"]}, mate)
 		else: g.poss.kick_action(f, action, mate.pos, mate.vel if vel == Vector2.ZERO else vel, {}, mate)
 	elif spot != Vector2.INF:
 		g.command.show(action, action.to_upper() + " (SPACE)", f, null, "", g.settings.command_hold)
 		g.poss.kick_action(f, action, spot)
+
+## what a pass / through ball to `mate` will be: {vel: the runner's run, run: plan_run(...), curl: plan_curl(...) or {}} (used by pass_to and the drag preview)
+func pass_plan(f: Footballer, action: String, mate: Footballer, send_run := false, point := Vector2.INF) -> Dictionary:
+	var vel := Vector2.ZERO
+	var plan := {}
+	if action == "through" or send_run:
+		var dir := Vector2(f.team.dir, 0.0)
+		if point != Vector2.INF and point.distance_to(mate.pos) >= g.settings.through_point_min: dir = (point - mate.pos).normalized()
+		vel = dir * g.settings.through_run_speed
+		plan = plan_run(mate, dir, f)
+	var curl := {}
+	if action != "lob" and not plan.has("curve"):
+		var lead := Data.num(Data.row("ball_actions", action).get("lead"), 0.5)
+		var target := mate.pos + (vel if vel != Vector2.ZERO else mate.vel) * lead
+		curl = plan_curl(f, target, action)
+	return {"vel": vel, "run": plan, "curl": curl}
+
+## a bent pass (MatchSettings > Bent passes): the passer has game sense, the pass is long enough and a defender sits in the straight lane ->
+## the bent-pass style (K14 / K15) and the aim that the simulated flight shows bending round him to `target`. {} when a straight ball is fine or nothing works.
+## {style, aim, speed, path (world points)}
+func plan_curl(f: Footballer, target: Vector2, action: String) -> Dictionary:
+	var s := g.settings
+	if not s.pass_curl_on: return {}
+	var sense := (f.stat("PAS", 60) + f.stat("DRI", 60)) * 0.5
+	var dist := f.pos.distance_to(target)
+	if sense < s.pass_curl_sense_min or dist < s.pass_curl_min_dist: return {}
+	var other := g.away if f.team == g.home else g.home
+	var straight := _lane_skip(other, f.pos, target)
+	if debug_curl: print("curl straight lane ", straight, " sense ", sense, " dist ", dist)
+	if straight >= s.pass_curl_block: return {}
+	var row := Data.row("ball_actions", action)
+	var speed := clampf(Data.num(row.get("base_speed"), 7.0) + Data.num(row.get("per_metre"), 0.9) * dist, Data.num(row.get("min_speed"), 9.0), Data.num(row.get("max_speed"), 28.0)) * s.pass_curl_speed_k
+	var from := Vector3(f.pos.x, g.ball.phys.rad, f.pos.y)
+	var dir := (target - f.pos).normalized()
+	var best := {}
+	var best_cl := maxf(straight + s.pass_curl_gain, s.pass_curl_need)
+	for combo in _curl_combos(speed):
+		var style: String = combo[0]
+		var sp: float = combo[1]
+		var found := {}
+		var miss := 1e9
+		var a := -s.pass_curl_max_deg
+		while a <= s.pass_curl_max_deg:
+			var aim := f.pos + dir.rotated(deg_to_rad(a)) * dist
+			var path := g.ball.simulate_path(from, aim, style, sp, 3.0)
+			var m := _closest(path, target)
+			if m["d"] < miss:
+				miss = m["d"]
+				found = {"aim": aim, "path": path, "i": m["i"], "speed": sp}
+			a += s.pass_curl_step_deg
+		if debug_curl: print("curl ", style, " miss ", miss, " aim ", found.get("aim"))
+		if found.is_empty() or miss > s.pass_curl_miss: continue
+		var pts: PackedVector3Array = found["path"]
+		var cl := 1e9
+		for i in range(0, int(found["i"]) + 1):
+			var q := Vector2(pts[i].x, pts[i].z)
+			for o in other.players:
+				if o.is_keeper() or o.pos.distance_to(f.pos) < s.pass_curl_skip or o.pos.distance_to(target) < s.pass_curl_skip: continue
+				cl = minf(cl, o.pos.distance_to(q))
+		if debug_curl: print("curl ", style, " clearance ", cl, " need > ", best_cl)
+		if cl > best_cl:
+			best_cl = cl
+			best = {"style": style, "aim": found["aim"], "speed": found["speed"], "path": pts.slice(0, int(found["i"]) + 1)}
+	if not best.is_empty(): stat_bent += 1
+	return best
+
+## the bent-pass tries: each bending style at each of the speed factors (MatchSettings pass_curl_speeds)
+func _curl_combos(speed: float) -> Array:
+	var s := g.settings
+	var out := []
+	for st in [s.pass_curl_style_cw, s.pass_curl_style_ccw]:
+		for k in s.pass_curl_speeds: out.append([st, speed * k])
+	return out
+
+## the closest point of a path to `p`: {d, i}
+func _closest(path: PackedVector3Array, p: Vector2) -> Dictionary:
+	var bd := 1e9
+	var bi := 0
+	for i in path.size():
+		var d := Vector2(path[i].x, path[i].z).distance_to(p)
+		if d < bd:
+			bd = d
+			bi = i
+	return {"d": bd, "i": bi}
+
+## the passing lane a -> b, ignoring opponents right on the passer or the receiver (pressure / a marker, not a block)
+func _lane_skip(team: Team, a: Vector2, b: Vector2) -> float:
+	var s := g.settings
+	var best := 1e9
+	for o in team.players:
+		if o.is_keeper() or o.pos.distance_to(a) < s.pass_curl_skip or o.pos.distance_to(b) < s.pass_curl_skip: continue
+		best = minf(best, o.pos.distance_to(Geometry2D.get_closest_point_to_segment(o.pos, a, b)))
+	return best
 
 ## the runner of a through ball sets off (after a short reaction) towards where the ball will be; with a plan that has a curve he bends round the defenders
 func send_runner(passer: Footballer, mate: Footballer, vel: Vector2, plan := {}) -> void:

@@ -12,3 +12,5 @@ K10,Flat bender (clockwise),30,6,-2,16,0,0,1.0,1.2,struck flat with a little sid
 K11,Flat bender (anticlockwise),30,6,2,-16,0,0,1.0,1.2,mirror of K10,0.12
 K12,Lofted finesse,18,22,-4,40,14,0,0.8,1.6,"inside of the boot, lifted: rises, bends and drops under the bar, slower and loopier than a drive",0.45
 K13,Lofted trivela,19,20,3,-38,8,28,0.85,2.2,"outside of the boot, lifted: swerves away then back as it drops",0.45
+K14,Bent pass (clockwise),20,12,0,60,5,0,0.6,1.1,a pass lifted to knee height with heavy side spin from the inside of the boot: bends round a defender into the runner,0
+K15,Bent pass (anticlockwise),20,12,0,-60,5,0,0.6,1.1,mirror of K14 (outside of the boot),0

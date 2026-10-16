@@ -109,9 +109,44 @@ func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 ## a pointed-at team mate further than this (m) gets it lofted, nearer ones rolled / passed
 @export var long_from := 30.0
 
-func _with_ball(f: Footballer, c: AiContext, _dt: float) -> AiIntent:
+@export_group("With the ball: calm")
+## after he gets it he takes the heat out: walks back this many metres towards the middle of his goal for calm_back_time s, then scans his options
+## (turns to look at the best calm_looks of them, calm_scan_time s in all) before he points / distributes. An opponent within calm_pressure m cuts it short.
+@export var calm_back_dist := 3.0
+@export var calm_back_time := 1.0
+@export var calm_scan_time := 1.4
+@export var calm_looks := 3
+@export var calm_pressure := 6.0
+@export var calm_walk := 0.35
+@export var calm_turn_deg := 220.0
+
+## seconds of the calm phase (walk back + scan) still to come for a keeper who has held it `hold` s; 0 = ready to play it
+func calm_left(f: Footballer, c: AiContext) -> float:
+	if c.pressure(f.pos) < calm_pressure: return 0.0
+	return maxf(0.0, calm_back_time + calm_scan_time - f.hold)
+
+func _with_ball(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 	var i := AiIntent.new()
 	i.move_to = f.pos
+	if f.hold < 0.05: f.ai["calm_from"] = f.pos                           # where he got it
+	if calm_left(f, c) > 0.0:
+		if f.hold < calm_back_time:                                       # walk back a few steps towards the middle of his goal, no hurry
+			var goal := c.own_goal()
+			var from: Vector2 = f.ai.get("calm_from", f.pos)
+			var back := from + (goal - from).normalized() * calm_back_dist
+			back.x = clampf(back.x, -MatchGame.HALF_L + 1.0, MatchGame.HALF_L - 1.0)
+			i.move_to = back
+			i.speed = calm_walk
+		else:                                                             # stand and look round: his best options, one after the other
+			var opts := _options(f, c)
+			if not opts.is_empty():
+				var n := mini(calm_looks, opts.size())
+				var k := clampi(int((f.hold - calm_back_time) / maxf(calm_scan_time / n, 0.05)), 0, n - 1)
+				var to: Vector2 = (opts[k] as Footballer).pos - f.pos
+				if to.length() > 0.5:
+					var step := deg_to_rad(calm_turn_deg) * dt
+					f.face = f.face.rotated(clampf(f.face.angle_to(to), -step, step)).normalized()
+		return i
 	if f.hold < c.s.hold_min: return i
 	var long := c.game.rng.randf() < c.f("directness") * (1.0 - c.s.patience) + c.f("counter") * long_counter
 	var best: Footballer = null
@@ -135,6 +170,16 @@ func _with_ball(f: Footballer, c: AiContext, _dt: float) -> AiIntent:
 		f.ai.erase("gk_target")
 	return i
 	
+
+## his team mates by how good an option they are (free, forward), best first
+func _options(f: Footballer, c: AiContext) -> Array:
+	var scored: Array = []
+	for m in c.team.players:
+		if m == f: continue
+		var sc := c.depth(m.pos) * 12.0 + c.pressure(m.pos) * 2.0 - (20.0 if c.lane_blocked(f.pos, m.pos, pass_lane) else 0.0)
+		scored.append([sc, m])
+	scored.sort_custom(func(a, b): return a[0] > b[0])
+	return scored.map(func(x): return x[1])
 
 # ---------------------------------------------------------------- one on one
 ## the carrier is through on goal and nobody can stop it but the keeper (see the exports above)

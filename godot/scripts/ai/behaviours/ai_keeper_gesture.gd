@@ -32,9 +32,10 @@ func _init() -> void:
 	roles = PackedStringArray(["GK"])
 	when = WITH_BALL
 
-func wants(f: Footballer, c: AiContext, _role: AiRole) -> bool:
+func wants(f: Footballer, c: AiContext, role: AiRole) -> bool:
 	if f.hold < 0.05: f.ai.erase("gestured")                              # a new possession
 	if f.ai.get("gestured", false) or f.lock > 0.0 or f.hold < 0.25: return false
+	if role is AiGk and (role as AiGk).calm_left(f, c) > 0.0: return false  # after he has walked back and looked round
 	f.ai["gestured"] = true
 	return c.game.rng.randf() < chance
 

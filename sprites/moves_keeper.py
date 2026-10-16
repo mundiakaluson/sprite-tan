@@ -615,6 +615,42 @@ def gk34():
     return d.done()
 
 
+@move('GK35', 'Scoop Collect')
+def gk35():
+    """a loose ball rolling at him: he runs in, slows and bends from the hips with both hands down in front (palms behind the ball), scoops it up off
+    the grass, gathers it to the chest as he straightens and walks out with it. The ball is in his palms from the contact on (ball track)."""
+    import gen_actions as A
+    from moves_fluid import mix
+    N, HIT = 28, 9
+    SCOOP = (0.35, 0.18, 0.45, -0.1)                                          # arms down and forward, hands just off the grass
+    d = K(N, speed=0.0)
+    d.speed(f0=2.9, f4=2.5, f8=0.8, f12=0.3, f18=0.9, f27=1.0)              # runs in, brakes into the scoop, walks out
+    ph = 0.0
+    for f in range(N):
+        sp = pch(d.sp, f)
+        ph += 0.085 * sp / 2.9 + 0.012                                         # the stride slows with him
+        k = A.run_pose(A.BASE, ph, 0.0)
+        bend = gk_ease((f - 3) / 5.0) * (1 - gk_ease((f - 11) / 7.0))          # 0 running -> 1 down at the ball -> 0 upright again
+        k['pz'] = k.get('pz', 23.0) - 4.5 * bend
+        k['cpitch'] = k.get('cpitch', 0.0) * (1 - bend) + 1.0 * bend
+        k['ppitch'] = k.get('ppitch', 0.0) * (1 - bend) + 0.75 * bend          # the bend is at the hips
+        k['hpitch'] = k.get('hpitch', 0.0) * (1 - bend) - 0.45 * bend           # eyes stay on the ball
+        run_r = (k['R_s1'], k['R_a1'], k['R_s2'], k['R_a2']); run_l = (k['L_s1'], k['L_a1'], k['L_s2'], k['L_a2'])
+        reach = gk_ease((f - 2) / 5.0)
+        gather = gk_ease((f - HIT) / 6.0)
+        r = mix(mix(run_r, SCOOP, reach), CLUTCH, gather); l = mix(mix(run_l, SCOOP, reach), CLUTCH, gather)
+        if f >= HIT + 6: r = l = CLUTCH
+        d.m.keys[f].update(k)
+        d.arms(f, r, l)
+    d.m.events = {'strike': HIT}
+    m = d.done()
+    poses = m.poses()
+    hit = (hand_pos(poses[HIT], 'R') + hand_pos(poses[HIT], 'L')) / 2
+    for f in range(HIT):                                                         # rolling slowly in to where his hands will be
+        m.keys[f].update(bx=float(hit[0]), by=float(hit[1]) + 0.9 * (HIT - f), bz=2.5, bvis=1.0)
+    return ball_in_hands(m, range(HIT, N))
+
+
 def build(ids=None):
     out = []
     for id_, (label, fn) in MOVES.items():

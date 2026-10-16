@@ -216,6 +216,32 @@ func predict_cross(from: Vector3, aim: Vector2, style_id: String, speed: float, 
 			return before.lerp(p.pos, clampf(absf(u), 0.0, 1.0))
 	return p.pos
 
+## the flight of a kick (no aim error): launched from `from` towards `aim` (pitch x / z) with a kick style and speed, a point every `every` s for `max_t` s
+## (stops early when it has stopped rolling). The same launch as Ball.kick, so what the planner sees is what the ball does.
+func simulate_path(from: Vector3, aim: Vector2, style_id: String, speed: float, max_t := 2.5, every := 1.0 / 30.0) -> PackedVector3Array:
+	var k := Data.row("kick_styles", style_id)
+	var p := copy_physics()
+	var out := PackedVector3Array()
+	var flat := Vector3(aim.x - from.x, 0.0, aim.y - from.z)
+	if flat.length() < 0.001: return out
+	flat = flat.normalized()
+	var ex := flat.rotated(Vector3.UP, -deg_to_rad(_f(k, "azim", 0.0)))
+	var elev := deg_to_rad(_f(k, "elev", 0.0))
+	var spin := ex * _f(k, "roll", 0.0) + Vector3.UP * _f(k, "side", 0.0) + ex.cross(Vector3.UP) * _f(k, "back", 0.0)
+	p.launch(from, ex * cos(elev) + Vector3.UP * sin(elev), speed, spin, 1.0)
+	out.append(p.pos)
+	var t := 0.0
+	var dt := 1.0 / 60.0
+	var next := every
+	while t < max_t:
+		p.step(dt)
+		t += dt
+		if t >= next:
+			out.append(p.pos)
+			next += every
+		if p.vel.length() < 0.5: break
+	return out
+
 ## seconds a kick from `from` to the spot `to` (pitch x / z) takes to get there with this style and speed (no aim error); INF if it stops short.
 ## Used to weight a through ball so it arrives when the runner does (MatchOrders.plan_run).
 func time_to_reach(from: Vector3, to: Vector2, style_id: String, speed: float, max_t := 4.0) -> float:

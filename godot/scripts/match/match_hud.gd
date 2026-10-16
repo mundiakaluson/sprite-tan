@@ -42,6 +42,7 @@ var snap_kind := ""
 var selected_node: Node2D
 var drag_from := Vector2.ZERO
 var drag_to := Vector2.ZERO
+var drag_path := PackedVector2Array()
 var dragging := false
 var drag_shot := false
 var aiming := false
@@ -201,7 +202,12 @@ func set_drag(from: Vector2, to: Vector2, shot := false) -> void:
 	drag_from = from
 	drag_to = to
 
+## the drag line follows a bent pass: screen points of the simulated flight (empty = a straight line)
+func set_drag_path(pts: PackedVector2Array) -> void:
+	drag_path = pts
+
 func clear_drag() -> void:
+	drag_path = PackedVector2Array()
 	dragging = false
 	snap_node = null
 	snap_kind = ""

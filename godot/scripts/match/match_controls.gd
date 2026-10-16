@@ -25,6 +25,8 @@ extends Node
 @export_group("Drag from the ball carrier")
 ## the drag snaps to the nearest team mate when the pointer is within this many pixels of him
 @export var snap_radius := 60.0
+## the bent-pass preview on the drag line is recomputed at most this often (s)
+@export var curl_preview_every := 0.15
 ## dragging further than this (pixels from the carrier) turns a pass into a through ball
 @export var through_pull := 170.0
 ## the shoot zone: inside this many metres of the goal line and this many metres either side of the goal centre
@@ -89,6 +91,7 @@ func _process(dt: float) -> void:
 			var end := p
 			if mate != null: end = mate.node.position + Vector2(0.0, -13.0 * mate.node.scale.y)
 			hud.set_drag(_down.node.position, end, plan["kind"] == "shoot")
+			hud.set_drag_path(_curl_preview(_down, plan))
 			hud.set_snap(mate.node if mate != null else null, plan["kind"])
 			_show_plan(plan)
 		else:
@@ -200,6 +203,28 @@ func _plan(p: Vector2, carrier: Footballer) -> Dictionary:
 	_through_mate = null
 	if spot != Vector2.INF: return {"kind": "space", "mate": null, "spot": spot}
 	return {"kind": "none", "mate": null, "spot": Vector2.INF}
+
+var _curl_cache := {}
+
+## the bent-pass flight the passer would play for this plan, in screen points (empty = straight); recomputed at most every curl_preview_every s
+func _curl_preview(carrier: Footballer, plan: Dictionary) -> PackedVector2Array:
+	var mate: Footballer = plan.get("mate")
+	if mate == null or not (plan["kind"] in ["pass", "through"]): return PackedVector2Array()
+	var now := Time.get_ticks_msec() / 1000.0
+	if _curl_cache.get("mate") == mate and _curl_cache.get("kind") == plan["kind"] and now - float(_curl_cache.get("t", -9.0)) < curl_preview_every:
+		return _screen_path(_curl_cache.get("path", PackedVector3Array()))
+	var pl := game.orders.pass_plan(carrier, plan["kind"], mate, false, plan.get("point", Vector2.INF))
+	var curl: Dictionary = pl["curl"]
+	_curl_cache = {"mate": mate, "kind": plan["kind"], "t": now, "path": curl.get("path", PackedVector3Array())}
+	return _screen_path(_curl_cache["path"])
+
+func _screen_path(pts: PackedVector3Array) -> PackedVector2Array:
+	var out := PackedVector2Array()
+	var cam := game.stadium.camera
+	for w in pts:
+		if cam.is_position_behind(w): return PackedVector2Array()
+		out.append(cam.unproject_position(Vector3(w.x, 0.05, w.z)))
+	return out
 
 func _nearest_mate(p: Vector2, not_him: Footballer) -> Footballer:
 	var best: Footballer = null
