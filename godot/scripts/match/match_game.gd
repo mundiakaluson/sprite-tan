@@ -46,6 +46,7 @@ var brain: AiBrain
 var keeper: MatchKeeper
 var kicking: MatchKicking
 var dribble: MatchDribble
+var aerial: MatchAerial
 var command := MatchCommand.new()   ## what the human is doing right now (shown in the HUD box)
 var _next_kick: Team
 var _slow := false
@@ -82,6 +83,7 @@ func _ready() -> void:
 	keeper = MatchKeeper.new(self)
 	kicking = MatchKicking.new(self)
 	dribble = MatchDribble.new(self)
+	aerial = MatchAerial.new(self)
 	rules = MatchRules.new(self)
 	orders = MatchOrders.new(self)
 	cards = MatchCards.new(self)
@@ -152,6 +154,7 @@ func _physics_process(dt: float) -> void:
 		get_tree().reload_current_scene()
 	kicking.update(dt)
 	dribble.update(dt)
+	aerial.update(dt)
 	motion.update(dt)
 	keeper.update(dt)
 	poss.update(dt)

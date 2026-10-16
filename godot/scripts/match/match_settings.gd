@@ -415,3 +415,56 @@ static func layout(name_or_id: String) -> FormationLayout:
 	for l in current.custom_formations:
 		if l != null and (l.layout_name == name_or_id or l.id == name_or_id): return l
 	return null
+
+@export_group("Aerial duels")
+## a ball in the air with this kick action (and an apex at least `aerial_min_apex` m) starts a contest: the nearest of each team goes to where it comes down to head height
+@export var aerial_actions := PackedStringArray(["lob"])
+@export var aerial_min_apex := 3.5
+## the ball counts as met at this height (m); the landing marker shows where it first touches the grass
+@export var head_height := 2.2
+## only players who can get there within this many seconds more than the ball takes, and within this distance (m), go for it
+@export var aerial_slack := 1.0
+@export var aerial_range := 24.0
+## standing next to the spot: closer than this he just waits (m)
+@export var aerial_wait_dist := 0.6
+## the contest is played when the ball is this many seconds from head height; the clip is stretched so its strike frame lands when the ball arrives
+@export var aerial_trigger := 0.6
+@export var aerial_clip_min := 0.5
+@export var aerial_clip_max := 1.4
+## a duel needs both within this distance (m) of the spot; otherwise the near one just waits and takes it
+@export var duel_reach := 3.2
+## the ball must be this close (m, along the ground) and between these heights at the strike frame, else he misses it
+@export var header_reach := 2.4
+@export var header_min_h := 0.5
+@export var header_max_h := 3.6
+## duel score = heading (PHY and DEF for defensive roles, SHO for the rest) + this share of PHY + noise (+/-) + bonus of the approach
+@export_range(0.0, 1.0) var jump_share := 0.4
+@export var duel_noise := 12.0
+@export var receiver_bonus := 4.0
+## push (shoulder shove, then chest it down): needs PHY at least this and this much more than the opponent; chance when allowed; bonus to his score; the opponent stumbles / falls
+@export var push_phy := 74
+@export var push_margin := 8
+@export_range(0.0, 1.0) var push_chance := 0.6
+@export var push_bonus := 18.0
+@export_range(0.0, 1.0) var push_fall_chance := 0.35
+## shoulder leap (hand on his shoulder, vault, header): "intelligence" = average of PAS and DRI, at least this; opponent this close (m); chance; bonus
+@export var smart_min := 70
+@export var leap_range := 2.4
+@export_range(0.0, 1.0) var leap_chance := 0.7
+@export var leap_bonus := 14.0
+## what he does with a won header: defensive roles clear; others shoot inside this distance (m) from goal, else head it to the best team mate (ball speeds in m/s)
+@export var defensive_roles := PackedStringArray(["CB", "LB", "RB", "CDM"])
+@export var head_shoot_range := 19.0
+@export var head_clear_speed := 17.0
+@export var head_pass_speed := 12.0
+@export var head_shot_speed := 21.0
+@export var head_clear_length := 34.0
+@export var head_noise := 6.0
+## clips
+@export var clip_wait_air := "ct01_wait_air"
+@export var clip_push := "ct02_push_chest"
+@export var clip_leap := "ct03_shoulder_leap"
+@export var clip_header_clear := "df16_header_clear"
+@export var clip_header_pass := "sh11_glancing_header"
+@export var clip_header_shot := "sh12_power_header"
+@export var clip_challenge := "base_jump"

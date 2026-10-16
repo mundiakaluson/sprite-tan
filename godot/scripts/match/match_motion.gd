@@ -20,6 +20,7 @@ func act(f: Footballer, clip_name: String, strike_frac: float, strike: Callable,
 		if duration > 0.0: length = duration
 		f.node.play_clip(clip_name)
 		f.clip = clip_name
+	elif duration > 0.0: length = duration                                  # clip not baked yet: the timing still holds
 	f.lock = minf(length, 1.1)
 	f.pending = strike
 	f.pending_t = length * strike_frac
@@ -109,6 +110,7 @@ func _show(f: Footballer) -> void:
 		elif speed > g.settings.sprint_clip_frac * raw and speed > 4.0: want_clip = "base_sprint"
 		elif speed > 3.2: want_clip = "base_jog"
 		elif speed > 0.4: want_clip = "base_walk"
+		if speed < 0.5 and f.ai.get("air_wait", false) and f.node.has_clip(g.settings.clip_wait_air): want_clip = g.settings.clip_wait_air      # waiting under a high ball, eyes up
 		if f.is_keeper():
 			var k := _keeper_clip(f, speed)
 			if k != "" and f.node.has_clip(k):
