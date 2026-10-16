@@ -452,12 +452,13 @@ def sh04():
     frame(m, 10, R=(-1.4, -12.5, 72, 15.5, 0.7, 0.15), L=(-4.6, 4.4, -6),    root_y=2.0, pz=23.2, cpitch=0.22, croll=0.36, proll=0.16, pyaw=0.42, cyaw=-0.25, hpitch=0.5)
     frame(m, 11, R=(0.0, -2.5, 70, 8.0, 0.9, 0.3),    L=(-4.6, 4.6, -6),     root_y=2.3, pz=23.0, cpitch=0.24, croll=0.44, proll=0.2, pyaw=0.25, cyaw=-0.1, hpitch=0.55)
     frame(m, 12, R=(1.4, 6.8, 78, 3.6, 1.05, 0.45),   L=(-4.4, 4.8, -6),     root_y=2.6, pz=22.8, cpitch=0.22, croll=0.5, proll=0.24, pyaw=-0.05, cyaw=0.1, hpitch=0.6, hroll=-0.3)
-    frame(m, 13, R=(5.6, 13.5, 60, 9.0, 0.8, 0.4),    L=(-4.2, 5.0, -5),     root_y=3.4, pz=23.0, cpitch=0.16, croll=0.5, proll=0.24, pyaw=-0.35, cyaw=0.2, hpitch=0.45, hroll=-0.3)
-    frame(m, 14, R=(8.2, 16.0, 50, 13.5, 0.6, 0.3),   L=(-4.0, 5.4, 5, 2.0), root_y=4.6, pz=23.6, cpitch=0.1, croll=0.46, proll=0.22, pyaw=-0.55, cyaw=0.25, hpitch=0.3, hroll=-0.28)
-    frame(m, 15, R=(8.8, 15.0, 40, 14.0, 0.4, 0.2),   L=(-3.6, 6.0, 12, 3.0), root_y=6.0, pz=24.0, cpitch=0.08, croll=0.42, proll=0.2, pyaw=-0.6, cyaw=0.25, hpitch=0.2, hroll=-0.25)
-    frame(m, 16, R=(6.8, 13.0, 30, 9.5, 0.2),         L=(-3.0, 7.5, 18, 3.5), root_y=7.8, pz=24.0, cpitch=0.08, croll=0.38, proll=0.18, pyaw=-0.45, cyaw=0.2, hpitch=0.15, hroll=-0.22)
-    frame(m, 17, R=(4.0, 12.0, 15, 4.0),              L=(-2.6, 9.5, 20, 4.0), root_y=9.8, pz=23.6, cpitch=0.1, croll=0.34, proll=0.16, pyaw=-0.3, cyaw=0.12, hroll=-0.2)
+    frame(m, 13, R=(6.5, 18.4, 55, 10.0, 0.8, 0.4),    L=(-4.2, 5.0, -5),     root_y=3.4, pz=23.0, cpitch=0.16, croll=0.5, proll=0.24, pyaw=-0.35, cyaw=0.2, hpitch=0.45, hroll=-0.3)
+    frame(m, 14, R=(9.5, 20.0, 45, 16.0, 0.6, 0.3),   L=(-4.0, 5.4, 5, 2.0), root_y=4.6, pz=23.6, cpitch=0.1, croll=0.46, proll=0.22, pyaw=-0.55, cyaw=0.25, hpitch=0.3, hroll=-0.28)
+    frame(m, 15, R=(10.5, 20.5, 35, 17.0, 0.4, 0.2),   L=(-3.6, 6.0, 12, 3.0), root_y=6.0, pz=24.0, cpitch=0.08, croll=0.42, proll=0.2, pyaw=-0.6, cyaw=0.25, hpitch=0.2, hroll=-0.25)
+    frame(m, 16, R=(9.0, 21.0, 25, 13.0, 0.2),         L=(-3.0, 7.5, 18, 3.5), root_y=7.8, pz=24.0, cpitch=0.08, croll=0.38, proll=0.18, pyaw=-0.45, cyaw=0.2, hpitch=0.15, hroll=-0.22)
+    frame(m, 17, R=(5.0, 20.8, 15, 5.0),              L=(-2.6, 9.5, 20, 4.0), root_y=9.8, pz=23.6, cpitch=0.1, croll=0.34, proll=0.16, pyaw=-0.3, cyaw=0.12, hroll=-0.2)
     for f, kx in ((9, -0.8), (10, -1.0), (11, -0.9), (12, -0.6), (13, -0.2)): m.knee(f, 'R', kx, 1.0, -0.2)      # knee turned in
+    for f in (14, 15, 16): m.knee(f, 'R', 0.3, 0.6, 1.0)                    # follow-through: the leg stays long, reaching out after the ball
     #           R arm (s1, a1, s2, a2)        L arm
     for f, r, l in ((9, (-0.4, 0.9, 0.4, 0.6), (0.5, 1.3, 0.9, 0.9)), (10, (-0.6, 1.1, 0.4, 0.7), (0.6, 1.5, 0.9, 1.0)),
                     (12, (0.0, 1.6, 0.4, 0.9), (0.9, 0.8, 1.3, 0.6)), (14, (0.3, 2.3, 0.5, 1.0), (0.9, 0.5, 1.3, 0.5)),
