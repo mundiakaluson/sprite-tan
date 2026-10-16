@@ -50,26 +50,7 @@ def idle(d, f0, f1, **kw):
     for f in range(f0, f1 + 1): ready(d, f, bounce=0.35 * math.sin(f * 0.7), **kw)
 
 
-def dive(d, f0, h=30.0, reach=(2.35, 0.5, 2.8, 0.2), lt=4.2, lie=8, roll=1.45):
-    """coil, push off, flight, land and lie; returns the first frame after the lie. Save frame = f0+3."""
-    d.at(f0, R=(3.0, 0.8, 0, None), L=(-3.0, -0.6, 0, None), pz=19.8, cpitch=0.7, hpitch=0.2, croll=-0.1); d.arms(f0, READY, READY)
-    d.at(f0 + 1, R=(4.2, -1.4, 20, 2.0), L=(-2.4, 0.4, 0, 5.0), pz=24.0, cpitch=0.4, croll=-0.5, proll=-0.35, hyaw=-0.3); d.arms(f0 + 1, (1.9, 0.45, 2.3, 0.3), (1.9, 0.45, 2.3, 0.3))
-    d.at(f0 + 2, R=(3.4, -3.0, 20, 9.0), L=(-1.4, -2.5, 20, 11.0), pz=h - 2, cpitch=0.1, croll=-0.9, proll=-0.8, hyaw=-0.7); d.arms(f0 + 2, reach, reach)
-    d.at(f0 + 3, R=(3.4, -3.5, 20, 12.0), L=(-1.0, -3.5, 20, 12.0), pz=h, cpitch=0.0, croll=-1.15, proll=-1.05, hyaw=-0.8); d.arms(f0 + 3, reach, reach)
-    d.at(f0 + 4, R=(3.4, -3.0, 20, 9.0), L=(-0.8, -3.8, 20, 9.0), pz=h * 0.55, cpitch=0.0, croll=-1.35, proll=-1.25, hyaw=-0.85); d.arms(f0 + 4, reach, reach)
-    for f in range(f0 + 5, f0 + 5 + lie):
-        d.at(f, R=(3.6, -3.0, 20, 5.0), L=(-0.5, -4.0, 20, 5.0), pz=8.0, cpitch=0.0, croll=-roll, proll=-roll + 0.05, hyaw=-0.85); d.arms(f, reach, reach)
-    e = f0 + 5 + lie
-    d.lateral(**{f'f{f0}': 0.0, f'f{f0 + 1}': lt * 0.6, f'f{f0 + 2}': lt, f'f{f0 + 4}': lt * 0.5, f'f{f0 + 5}': 0.3, f'f{f0 + 6}': 0.0})
-    return e
-
-
-def getup(d, f0, n=6):
-    for i in range(n):
-        u = (i + 1) / n; f = f0 + i
-        d.at(f, R=(3.0, 0.8, 0, None), L=(-3.0, -0.6, 0, None), pz=8.0 + 13.8 * u, cpitch=0.5 * u, croll=-1.45 * (1 - u), proll=-1.4 * (1 - u), hyaw=-0.85 * (1 - u), hpitch=0.25 * u)
-        d.arms(f, READY, READY)
-    return f0 + n
+from moves_fluid import dive, getup, DIVE_STRIKE      # smooth versions (continuous curves; strike frame = f0 + DIVE_STRIKE)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -87,11 +68,11 @@ def gk01():
 
 @move('GK02', 'Reach Dive')
 def gk02():
-    d = K(30); idle(d, 0, 4)
-    d.shot(8, (9.5, 5.0, 22.0), start=(12.0, 36.0, 6.0), f0=0, out=(0.9, 2.6, 1.4))
+    d = K(38); idle(d, 0, 4)
+    d.shot(10, (9.5, 5.0, 22.0), start=(12.0, 36.0, 6.0), f0=0, out=(0.9, 2.6, 1.4))
     e = dive(d, 5, h=33.0, reach=(2.5, 0.5, 2.9, 0.2), lt=4.4)
     # the ball hits at f8 above; long stretch to the top corner
-    getup(d, e, 30 - e) if e < 30 else None
+    getup(d, e, 38 - e) if e < 38 else None
     return d.done()
 
 
@@ -199,12 +180,12 @@ def gk08():
 
 @move('GK09', 'Low Dive')
 def gk09():
-    d = K(26); idle(d, 0, 2)
-    d.shot(5, (8.5, 5.0, 3.0), start=(11.0, 34.0, 2.5), out=(0.5, 2.0, 0.0), g=0.0)
+    d = K(34); idle(d, 0, 2)
+    d.shot(8, (8.5, 5.0, 3.0), start=(11.0, 34.0, 2.5), out=(0.5, 2.0, 0.0), g=0.0)
     e = dive(d, 3, h=16.0, reach=(2.0, 0.55, 2.3, 0.3), lt=4.2, lie=6, roll=1.5)
     d.W = {f: (min(v[0], 12.0), v[1], 2.0) for f, v in d.W.items()}
-    getup(d, e, 26 - e) if e < 26 else None
-    d.m.events = {'strike': 6}
+    getup(d, e, 34 - e) if e < 34 else None
+    d.m.events = {'strike': 8}
     return d.done()
 
 
@@ -416,25 +397,24 @@ def gk22():
 
 @move('GK23', 'Far Post Reach')
 def gk23():
-    d = K(30); idle(d, 0, 2)
+    d = K(40); idle(d, 0, 2)
     for f in range(3, 8):
         ph = 2 * PI * (f - 3) / 4.0; a = max(0.0, math.sin(ph)); b = max(0.0, -math.sin(ph))
         d.at(f, R=(3.2 + 1.0 * a, 0.8, 0, 2.0 + 3 * a) if a > .05 else (3.2, 0.8, 0, None), L=(-3.0 + 1.0 * b, -0.6, 0, 2.0 + 3 * b) if b > .05 else (-3.0, -0.6, 0, None), pz=21.0, cpitch=0.5, hpitch=0.2)
         d.arms(f, (1.2, 0.5, 1.5, 0.3), (1.2, 0.5, 1.5, 0.3))
     d.lateral(f3=1.6, f7=0.8, f8=0.0)
-    d.shot(11, (12.0, 5.0, 24.0), start=(15.0, 34.0, 10.0), out=(1.0, 2.8, 1.4))
+    d.shot(13, (12.0, 5.0, 24.0), start=(15.0, 34.0, 10.0), out=(1.0, 2.8, 1.4))
     e = dive(d, 8, h=31.0, reach=(2.45, 0.5, 2.9, 0.15), lt=4.4, lie=6)
-    getup(d, e, 30 - e) if e < 30 else None
+    getup(d, e, 40 - e) if e < 40 else None
     return d.done()
 
 
 @move('GK24', 'Fingertip Save')
 def gk24():
-    d = K(30); idle(d, 0, 4)
-    d.shot(8, (11.5, 5.0, 32.0), start=(14.0, 36.0, 10.0), out=(1.2, 3.0, 1.6), g=0.15)
+    d = K(38); idle(d, 0, 4)
+    d.shot(10, (11.5, 5.0, 32.0), start=(14.0, 36.0, 10.0), out=(1.2, 3.0, 1.6), g=0.15)
     e = dive(d, 5, h=36.0, reach=(2.55, 0.5, 3.0, 0.1), lt=4.8, lie=7, roll=1.4)
-    for f in range(5, e): d.m.k(f, hroll=-0.2)
-    getup(d, e, 30 - e) if e < 30 else None
+    getup(d, e, 38 - e) if e < 38 else None
     return d.done()
 
 

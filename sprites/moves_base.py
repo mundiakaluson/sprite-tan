@@ -65,6 +65,10 @@ def build(ids=None):
     for name, (label, fn, loop) in R.MOVES.items():
         if ids and name not in ids: continue
         m = fn(); m.loop = loop; m.save(name, label, 'base reaction, sprites/moves_reactions.py'); out.append(name)
+    import moves_fluid as FL
+    for name, (label, fn, loop) in FL.MOVES.items():
+        if ids and name not in ids: continue
+        m = fn(); m.loop = loop; m.save(name, label, 'smoother clips, sprites/moves_fluid.py'); out.append(name)
     import moves_turns as T
     for name, (label, fn, loop) in T.MOVES.items():
         if ids and name not in ids: continue

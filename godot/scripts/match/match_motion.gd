@@ -94,6 +94,7 @@ func _show(f: Footballer) -> void:
 	f.mirror = false
 	var speed := f.vel.length()
 	var want_clip := "base_idle"
+	if f.is_keeper() and speed <= 0.4 and f.node.has_clip(g.settings.clip_keeper_idle): want_clip = g.settings.clip_keeper_idle
 	if speed > 5.8: want_clip = "base_sprint"
 	elif speed > 3.2: want_clip = "base_jog"
 	elif speed > 0.4: want_clip = "base_walk"

@@ -152,7 +152,7 @@ func tumble(f: Footballer, list: PackedStringArray) -> void:
 	if not f.node.has_clip(clip): return
 	f.vel = f.face * g.settings.stumble_drift
 	_play(f, clip)
-	if clip == "base_fall" and f.node.has_clip("base_get_up"): _tumble_chain[f] = "base_get_up"
+	if clip.begins_with("base_fall") and f.node.has_clip("base_get_up"): _tumble_chain[f] = "base_get_up"
 
 func _play(f: Footballer, clip: String) -> void:
 	f.node.play_clip(clip)

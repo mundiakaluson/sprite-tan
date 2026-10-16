@@ -97,7 +97,9 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var stumble_drift := 1.5
 @export var clips_stumble_light := PackedStringArray(["base_stumble_fwd_s", "base_stumble_side_s", "base_stumble_back_s"])
 @export var clips_stumble_medium := PackedStringArray(["base_stumble_fwd_m", "base_stumble_side_m", "base_stumble_back_m"])
-@export var clips_fall := PackedStringArray(["base_fall"])
+@export var clips_fall := PackedStringArray(["base_fall", "base_fall_trip", "base_fall_back"])
+## the keeper stands in this clip when he is not moving (a ready stance instead of the outfield idle)
+@export var clip_keeper_idle := "gk_ready_idle"
 
 @export_group("Kick animations")
 ## the whole kick clip is played in this many seconds (the authored clips take ~1.5 s, far too slow for a pass); the ball goes at the clip's strike frame

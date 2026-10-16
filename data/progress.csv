@@ -57,3 +57,4 @@ Game,"AI behaviours: add a decision as one script + one list entry (example: joc
 Game,"Kick clip variations, passing on the run, tackle tumbles, softer scuffs",doing,"untested visually in Godot; headless: ~86 passes/match, ~7% scuffed, ~24 tumbles"
 Game,"Heavy pivot: run bends round with the turn, DRI-based turn speed and turn clips",doing,"untested visually in Godot"
 Animation,"Turn-with-ball clips tn01-tn04 (heavy / plant / sharp / spin), picked by DRI",doing,"authored, previewed; needs baking in the tool"
+Animation,"Smoother keeper idle/dives, jump, falls (+trip/back), get up",doing,"authored and previewed as GIFs; needs baking in the tool"
