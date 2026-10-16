@@ -240,33 +240,36 @@ def get_up():
 
 # ------------------------------------------------------------------------------------------------------------------ clearing under pressure
 def panic_clear(kind):
-    """kind: 'flinch' (shies away from the tackle, hacks it off the toe, staggers on) or 'fall' (hoofs it away off balance, the follow-through carries him over and he goes down).
-    Strike at frame 7. Both end ready for base_get_up ('fall') or upright and unsteady ('flinch')."""
-    N = 24; d = Dr(N, ms=55, speed=0.0); d.m.events = {'strike': 7}
+    """kind: 'flinch' or 'fall'. A hoof with everything behind it: a short flinch, the kicking leg cocked right back, planted left foot, then the whole leg whips through and up
+    (strike frame 8) with the body thrown back and the arms flung wide. 'flinch' recovers into a stagger, 'fall' is carried over by the follow-through and goes down."""
+    N = 26; d = Dr(N, ms=55, speed=0.0); d.m.events = {'strike': 8}
     for f in range(N): d.lt[f] = 0.0; d.sp[f] = 0.0
     fall = kind == 'fall'
     for f in range(N):
-        shy = sm(f / 4.0) * (1 - sm((f - 8.0) / 5.0))                    # hunches away, eyes on the opponent
-        swing = sm((f - 3.0) / 4.0) * (1 - sm((f - 8.0) / 3.5))          # the hack: leg whips through at frame 7
-        wind = sm((f - 1.0) / 2.5) * (1 - sm((f - 4.0) / 2.0))           # a short, ugly backswing
-        drop = sm((f - 8.0) / 8.0) if fall else 0.0
-        end = sm((f - 16.0) / 4.0) if fall else 0.0
-        stag = (1 - sm((f - 8.0) / 4.0)) * sm((f - 8.0) / 2.0) if not fall else 0.0
-        pz = lerp(22.7 - 1.8 * shy, 8.0, drop) - (0.8 * stag)
-        roll = -1.45 * drop - 0.15 * shy
-        yl = 1.0 + 8.5 * swing - 5.0 * wind
-        zl = 0.3 + 6.0 * swing
-        R = (lerp(2.8, 3.6, drop), lerp(0.8 + yl, -3.0, drop), -20 * swing + 20 * drop, (zl if f < 12 else None))
-        L = (lerp(-2.8, -0.5, drop), lerp(-0.6, -4.0, drop), 20 * drop, None)
-        d.at(f, R=R, L=L, pz=pz, cpitch=(-0.3 * shy + 0.5 * swing + 0.35 * stag) * (1 - drop) + 0.0, croll=roll, proll=roll + 0.05 * (1 - drop), ppitch=-0.12 * shy,
-             hyaw=-0.85 * drop + 0.35 * shy * (1 - drop), hpitch=0.3 * shy, hroll=-0.2 * shy, pyaw=0.3 * swing * (1 - drop))
-        up = mix(REST, (1.9, 0.9, 1.7, 0.0), shy)                         # hands come up to guard, then fling out for balance
-        flail = math.sin(f * 1.7) * 0.3 * (1 - end)
-        r = (up[0] + 0.5 * swing + flail, up[1], up[2], up[3]); l = (up[0] + 0.7 * swing - flail, up[1] + 0.2 * shy, up[2], up[3])
+        shy = sm(f / 3.0) * (1 - sm((f - 4.0) / 3.0))                    # a flinch away from the opponent
+        wind = sm((f - 1.0) / 4.0) * (1 - sm((f - 6.0) / 2.0))           # leg cocked right back
+        swing = sm((f - 6.0) / 2.5) * (1 - sm((f - 10.0) / 4.0))         # then whipped through, hard and fast
+        thru = sm((f - 8.0) / 3.0) * (1 - sm((f - 14.0) / 4.0))          # follow-through, foot high
+        drop = sm((f - 11.0) / 8.0) if fall else 0.0
+        end = sm((f - 19.0) / 4.0) if fall else 0.0
+        rec = sm((f - 14.0) / 5.0) if not fall else 0.0
+        lean = -0.55 * thru - 0.2 * shy + 0.3 * wind                      # leans back through the ball, forward as he winds
+        pz = lerp(22.7 - 1.6 * shy - 1.2 * wind + 0.6 * swing, 8.0, drop)
+        roll = -1.45 * drop
+        ry = lerp(0.8 - 11.0 * wind + 17.0 * swing + 6.0 * thru, -3.0, drop)
+        rz = 2.0 + 8.0 * wind + 6.0 * swing + 7.0 * thru
+        R = (lerp(2.8, 3.6, drop), ry, -50 * wind + 45 * (swing + thru) + 20 * drop, (rz if f < 15 else None))
+        L = (lerp(-2.8, -0.5, drop), lerp(-0.6 + 1.5 * wind, -4.0, drop), 20 * drop, None)     # the plant foot stays down
+        d.at(f, R=R, L=L, pz=pz, cpitch=lean * (1 - drop), croll=roll, proll=roll + 0.06 * (1 - drop), ppitch=0.15 * wind - 0.2 * thru,
+             hyaw=-0.85 * drop, hpitch=0.25 * shy - 0.15 * thru, hroll=-0.15 * shy, pyaw=-0.35 * wind + 0.5 * (swing + thru) * (1 - drop))
+        up = mix(REST, (1.9, 0.9, 1.7, 0.0), shy)
+        wide = (-0.9, 0.5, 0.3, 0.0)                                      # arms thrown out and back for the swing
+        r = mix(up, wide, max(swing, thru)); l = mix(up, (2.4, 0.7, 1.2, 0.0), max(swing, thru) * (1 - rec))
+        l = mix(l, (1.2 + 0.4 * math.sin(f * 1.7), 0.5, 1.0, 0.0), rec)
         if fall:
-            r = mix(r, LYING_R, sm((f - 14.0) / 4.0)); l = mix(l, LYING_L, sm((f - 14.0) / 4.0))
+            r = mix(r, LYING_R, sm((f - 15.0) / 4.0)); l = mix(l, LYING_L, sm((f - 15.0) / 4.0))
         d.arms(f, r, l)
-    if fall: d.lateral(**{'f3': 0.0, 'f12': 1.0, 'f15': 0.0})
+    if fall: d.lateral(**{'f3': 0.0, 'f13': 1.0, 'f16': 0.0})
     hidden(d); return d.m
 
 
