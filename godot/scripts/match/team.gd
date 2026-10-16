@@ -5,6 +5,7 @@ extends RefCounted
 var label := "HOME"
 var dir := 1.0                  ## +1 attacks towards +x (right of the screen), -1 towards -x
 var human := false
+var engage_auto := true         ## engagements: true = the AI manager picks the cards (Auto), false = the human picks (Manual)
 var score := 0
 var color := Color.WHITE
 var ai := {}                    ## team-level AI memory (one-two cooldown, ...)

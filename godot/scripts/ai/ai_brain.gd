@@ -84,6 +84,7 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 		var to := i.move_to - f.pos
 		var d := to.length()
 		f.want = to / d * minf(top * i.speed, d * 2.0) if d > 0.4 else Vector2.ZERO
+	if g.engage.frozen() and (g.engage.busy(f) or (i.target != null and g.engage.busy(i.target))): return      # the two in an engagement wait for the picks
 	match i.action:
 		"pass", "through", "lob":
 			if i.target != null:
@@ -104,9 +105,11 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 				if i.target != null and i.target.pos.distance_to(f.pos) > 0.5: f.face = (i.target.pos - f.pos).normalized()
 				f.want = Vector2.ZERO
 				g.motion.act(f, i.clip, 0.9, func(): pass, 0.0, i.speed_override)
-		"takeon": g.dribble.take_on(f, i.target)
-		"slide": g.dribble.slide_tackle(f, i.target)
+		"takeon":                                                                 # a duel: the engagement director may freeze it for card picks
+			if not g.engage.duel(f, i.target, f, "takeon"): g.dribble.take_on(f, i.target)
+		"slide":
+			if not g.engage.duel(i.target, f, f, "slide"): g.dribble.slide_tackle(f, i.target)
 		"tackle":
-			if i.target != null and g.carrier == i.target and f.lock <= 0.0 and f.no_touch <= 0.0:
+			if i.target != null and g.carrier == i.target and f.lock <= 0.0 and f.no_touch <= 0.0 and not g.engage.duel(i.target, f, f, "tackle"):
 				var won := g.rng.randf() < clampf(0.5 + (f.stat("DEF", 60) - i.target.stat("DRI", 60)) * 0.01, 0.15, 0.85)
 				g.poss.start_tackle(f, i.target, won)

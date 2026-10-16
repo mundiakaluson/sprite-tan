@@ -163,6 +163,56 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var shot_far_m := 22.0
 @export var pass_back_deg := 110.0
 
+@export_group("Engagements")
+## engagements on (design doc 9a / 9b): some duels freeze for card picks; off = the sim plays every duel by itself as before
+@export var engage_on := true
+## the home side: off = Manual (you pick a card in every engagement your team is in, attacking and defending), on = Auto (the AI manager picks for you). The away side is always Auto.
+@export var home_auto_engage := false
+## real seconds to pick; no pick in time = the free default (nothing spent)
+@export var engage_choose_time := 2.5
+## real seconds an Auto side takes to pick, and the reveal before the outcome plays out
+@export var engage_ai_think := 0.5
+@export var engage_reveal_time := 0.8
+## time scale while choosing (slow motion; the match clock is stopped)
+@export_range(0.01, 1.0) var engage_slowmo := 0.08
+## play seconds between two engagements at least; engagements per side (as the ball side) aimed at over the match, and how far ahead of that pace it may run
+@export var engage_min_gap := 4.0
+@export var engage_target := 20
+@export var engage_pace_slack := 3.0
+## the press trigger: the presser within this many metres of the carrier starts a duel (checked every engage_press_every s; the same presser tries again after engage_press_retry game seconds)
+@export var engage_press_zone := 2.6
+@export var engage_press_every := 0.2
+@export var engage_press_retry := 90.0
+## chance a duel becomes an engagement: carrier in his own end (depth 0) .. in their box (depth 1)
+@export_range(0.0, 1.0) var engage_chance_deep := 0.35
+@export_range(0.0, 1.0) var engage_chance_high := 1.0
+## resolution: P = clamp(succ + engage_k x (A - D), engage_p_min, engage_p_max) in %, A / D the two players' stats weighted by each card's stats
+@export var engage_k := 0.6
+@export var engage_p_min := 5.0
+@export var engage_p_max := 95.0
+## the free default's success %
+@export var engage_default_succ := 60.0
+## a won defending card turns into a foul with risk % x this
+@export_range(0.0, 1.0) var engage_risk_win_share := 0.15
+## a defender whose card failed and whose risk fired is out this much longer
+@export var engage_down_strand := 1.6
+## a shield card that wins: seconds nobody can tackle him
+@export var engage_shield_time := 1.2
+## a defender this close (m) tackles standing when he wins; further away he slides
+@export var engage_stand_reach := 2.2
+## ball speed (m/s) when it is poked away / squirts loose between them
+@export var engage_poke_speed := 5.0
+@export var engage_loose_speed := 3.5
+## a foul: seconds the carrier cannot be tackled while he gets up, seconds the defender is out
+@export var engage_foul_shield := 2.0
+@export var engage_foul_out := 1.2
+## AI manager: chance it plays a card when it has one (else the free default), and how greedy it is (low = nearly always its best card, high = random)
+@export_range(0.0, 1.0) var engage_ai_play := 0.75
+@export var engage_ai_temp := 0.12
+## a foul card is worth this much to the AI unless the carrier is past engage_ai_foul_depth (0..1 up the pitch): it fouls to stop a chance, not everywhere
+@export var engage_ai_foul_k := 0.3
+@export var engage_ai_foul_depth := 0.75
+
 @export_group("Take-on and slide tackles")
 ## a defender within takeon_box_dist m of his own goal bites this much less often (he stays on his feet in the box)
 @export var takeon_box_dist := 20.0

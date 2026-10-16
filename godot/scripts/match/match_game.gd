@@ -49,6 +49,8 @@ var dribble: MatchDribble
 var aerial: MatchAerial
 var trail: BallTrail
 var scan: KeeperScan
+var engage: EngagementDirector      ## engagements: freezes some duels for card picks (scripts/engagement/)
+var engage_view: EngagementView     ## what an engagement shows in the HUD
 var command := MatchCommand.new()   ## what the human is doing right now (shown in the HUD box)
 var _next_kick: Team
 var _slow := false
@@ -66,6 +68,7 @@ func _ready() -> void:
 	stadium.snap_camera()
 	var used := {}
 	home = Team.new(); home.label = "HOME"; home.dir = 1.0; home.human = true; home.kit = settings.home_kit; home.color = settings.home_kit.jersey
+	home.engage_auto = settings.home_auto_engage
 	away = Team.new(); away.label = "AWAY"; away.dir = -1.0; away.kit = settings.away_kit; away.color = settings.away_kit.jersey
 	home.build(MatchSettings.formation_id(settings.home_formation), used, rng)
 	away.build(MatchSettings.formation_id(settings.away_formation), used, rng)
@@ -96,6 +99,8 @@ func _ready() -> void:
 	orders = MatchOrders.new(self)
 	cards = MatchCards.new(self)
 	brain = AiBrain.new(self)
+	engage = EngagementDirector.new(self)
+	engage_view = EngagementView.new(self)
 	cards.deal()
 	hud.bind_command(command)
 	hud.set_team_colors(home.color, away.color)
@@ -138,6 +143,7 @@ func set_slowmo(on: bool) -> void:
 func _process(dt: float) -> void:
 	var real_dt := dt / maxf(Engine.time_scale, 0.05)
 	var target := settings.aim_slowmo if _slow and phase == Phase.PLAY else 1.0
+	if engage != null and engage.frozen(): target = settings.engage_slowmo
 	Engine.time_scale = move_toward(Engine.time_scale, target, 5.0 * real_dt)
 
 func _exit_tree() -> void:
@@ -146,7 +152,7 @@ func _exit_tree() -> void:
 func _physics_process(dt: float) -> void:
 	if not Data.ok or ball == null: return
 	if phase == Phase.PLAY:
-		clock += dt * GAME_SECONDS / (settings.match_minutes * 60.0)
+		if not engage.frozen(): clock += dt * GAME_SECONDS / (settings.match_minutes * 60.0)      # the clock stops during an engagement
 		if clock >= GAME_SECONDS:
 			phase = Phase.FULLTIME
 			hud.message("FULL TIME  %d - %d     R = play again" % [home.score, away.score], 999.0)
@@ -160,6 +166,8 @@ func _physics_process(dt: float) -> void:
 			else: _start(_next_kick)
 	elif Input.is_action_just_pressed("m_restart"):
 		get_tree().reload_current_scene()
+	engage.update(dt)
+	engage_view.update()
 	kicking.update(dt)
 	dribble.update(dt)
 	aerial.update(dt)

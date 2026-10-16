@@ -212,3 +212,8 @@ func set_aim(on: bool, to: Vector2) -> void:
 
 func card_used(i: int) -> void:
 	if i < _cards.size(): _cards[i].play("use")
+
+## greys out the hand cards that cannot be played now (in an engagement); an empty list puts them all back
+func set_playable(mask: Array) -> void:
+	for i in _cards.size():
+		_cards[i].play("unavailable" if i < mask.size() and not mask[i] else "ready")

@@ -147,7 +147,9 @@ func won_tackle(thief: Footballer, victim: Footballer) -> void:
 	steal(thief, victim)
 	thief.lock = minf(thief.lock, 0.15)
 	victim.aim_done = Callable()
-	if g.rng.randf() < s.tackle_victim_fall: g.kicking.tumble(victim, s.clips_fall)
+	var fall: bool = g.rng.randf() < s.tackle_victim_fall or victim.ai.get("engage_fall", false)       # an engagement can put him down (risk roll, a charge)
+	victim.ai.erase("engage_fall")
+	if fall: g.kicking.tumble(victim, s.clips_fall)
 	else: g.kicking.tumble(victim, s.clips_stumble_medium)
 
 ## he went in and missed: over-committed and stumbles or falls, and the carrier is knocked about a little
@@ -162,7 +164,8 @@ func failed_tackle(tackler: Footballer, carrier: Footballer) -> void:
 var stat_tackles := 0
 var stat_tackles_won := 0
 
-func start_tackle(f: Footballer, target: Footballer, won: bool) -> void:
+## force: an engagement decided it, so it lands even if he is a little out of reach
+func start_tackle(f: Footballer, target: Footballer, won: bool, force := false) -> void:
 	stat_tackles += 1
 	if won: stat_tackles_won += 1
 	var s := g.settings
@@ -172,10 +175,10 @@ func start_tackle(f: Footballer, target: Footballer, won: bool) -> void:
 	var clip: String = "" if list.is_empty() else list[g.rng.randi() % list.size()]
 	f.vel = (target.pos - f.pos).normalized() * 5.0
 	f.face = (target.pos - f.pos).normalized()
-	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.45), func(): _tackle_lands(f, target, won), 1.0, s.tackle_clip_time, true)
+	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.45), func(): _tackle_lands(f, target, won, force), 1.0, s.tackle_clip_time, true)
 
-func _tackle_lands(f: Footballer, target: Footballer, won: bool) -> void:
-	if g.carrier != target or f.pos.distance_to(target.pos) > 2.4: return
+func _tackle_lands(f: Footballer, target: Footballer, won: bool, force := false) -> void:
+	if g.carrier != target or (not force and f.pos.distance_to(target.pos) > 2.4): return
 	if won: won_tackle(f, target)
 	else: failed_tackle(f, target)
 

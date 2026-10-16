@@ -100,7 +100,7 @@ class CardsTab(ttk.Frame):
         ttk.Button(ff, text='Show all', command=self.clear_filter).grid(row=4, column=0, columnspan=2, sticky='ew', pady=(3, 0))
         ef = ttk.LabelFrame(tb, text='Selected card', padding=4); ef.pack(fill='x')
         self.sel_lbl = ttk.Label(ef, text='nothing selected', foreground='#8a90a0'); self.sel_lbl.grid(row=0, column=0, columnspan=2, sticky='w')
-        fields = (('name', 'entry', None), ('cat', 'combo', CARD_CATS), ('rarity', 'combo', RARITY), ('timing', 'combo', TIMING), ('kind', 'combo', KIND), ('stats', 'entry', None),
+        fields = (('name', 'entry', None), ('cat', 'combo', CARD_CATS), ('rarity', 'combo', RARITY), ('timing', 'combo', TIMING), ('kind', 'combo', KIND), ('stats', 'entry', None), ('engage', 'entry', None), ('effect', 'entry', None),
                   ('slots', 'spin', (1, 12)), ('succ', 'spin', (1, 100)), ('risk', 'spin', (0, 100)), ('cd', 'spin', (0, 99)),
                   ('ball_speed', 'spin', (0, 10)), ('ball_arc', 'spin', (0, 10)), ('ball_curve', 'spin', (-5, 5)),
                   ('move_mult', 'fspin', (0, 3)), ('anim_rate', 'fspin', (0.4, 2)), ('travel', 'fspin', (0, 2)), ('reach', 'fspin', (0, 10)), ('steer', 'fspin', (0, 10)), ('lock', 'fspin', (0, 10)))

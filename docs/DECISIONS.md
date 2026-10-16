@@ -196,3 +196,7 @@ Open / rough edges the user reported:
 - Headless tools used: scratchpad bal2.gd (full match counters), lob.gd (lob duels), chip.gd (chip / curler landing); recreate from godot/CLAUDE.md notes if needed. Do not `pkill -f` a script name: it kills the shell.
 - Facing bug found: sprite sheet rows start at facing-the-camera, the game's direction starts at away; rows were read upside down. Fixed with PlayerSprite.sheet_row (16 - direction); sprite_squash back to the exact 0.5.
 - Shots: visible curve (trail), low drive and flat bender styles, AI aims curlers by simulating the flight, keepers read bend by REF and cancel style difficulty by REF/HAN.
+- Engagements plug into the sim (design doc 9b): the sim's own moment (take-on, tackle, slide, press contact) is frozen, both sides pick, the cards feed the existing rolls, the normal clips play the result. Not a separate dice game.
+- Manual or Auto per side (home: MatchSettings home_auto_engage; away always Auto). Manual = pick in every engagement your team is in. No pick in time = free default (unless Auto). Cards are not a free pass: P = clamp(succ + k (A - D)), stats still decide.
+- Build order: duel first (done, stage 1), then the choice UI, shot + one-on-one, pass contest + aerial, opponent manager, deck / buffs / risk / clock, Titan last.
+- cards.csv new columns: `engage` (types: duel shot pass aerial one_on_one) and `effect` (key=value: move, strand, burst). 39 duel cards filled (DR01-DR30 except DR29, DF01/02/03/06/08/12/13/18/28/35).

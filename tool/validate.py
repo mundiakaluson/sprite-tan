@@ -68,6 +68,11 @@ def run():
         for s in (r.get('stats') or '').split('+'):
             if s and s not in OUT_STATS + GK_STATS: add('error', 'cards', i, f'unknown stat {s}')
         if not r.get('name'): add('error', 'cards', i, 'no name')
+        for t in (r.get('engage') or '').split():
+            if t not in ('duel', 'shot', 'pass', 'aerial', 'one_on_one'): add('error', 'cards', i, f'unknown engage type {t} (duel shot pass aerial one_on_one)')
+        for kv in (r.get('effect') or '').split():
+            if '=' not in kv: add('error', 'cards', i, f'effect "{kv}" must be key=value')
+        if r.get('engage') and r.get('timing') != 'ENGAGEMENT': add('warn', 'cards', i, 'engage is set but timing is not ENGAGEMENT')
         if len(r.get('description') or '') > 120: add('warn', 'cards', i, 'description is long for a card face')
     F = tables.table('formations').rows
     fam = {r['family'] for r in tables.table('formation_families').rows}

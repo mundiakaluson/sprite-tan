@@ -1,34 +1,73 @@
 class_name MatchCards
 extends RefCounted
-## The hand of 8 skill cards (data/cards.csv): deals it, plays a card with the selected player, runs the cooldowns. Only SHOT, PASS, DRIBBLE and DEFEND cards do
-## anything yet; success % decides a clean strike or a miscue. Cooldown seconds = cd x settings.cooldown_scale.
+## The hands of 8 skill cards (data/cards.csv), one per team: deals them, runs the cooldowns, answers what can be played in an engagement
+## (EngagementDirector), and outside engagements still plays SHOT / PASS cards with the selected player (the old slice: success % decides a
+## clean strike or a miscue). Duel cards (DRIBBLE / DEFEND with engage "duel") are only played in a duel. Cooldown seconds = cd x settings.cooldown_scale.
 
 var g: MatchGame
-var hand: Array = []
-var cooldown := {}
+var hands := {}                 ## Team -> Array of card rows (both sides hold a hand: the away AI plays its cards in engagements)
+var cooldowns := {}             ## Team -> {card id: seconds left}
+var hand: Array = []            ## the home hand (what the HUD shows)
+var cooldown := {}              ## the home cooldowns
 
 func _init(game: MatchGame) -> void:
 	g = game
 
 func deal() -> void:
-	hand.clear()
+	for t in g.teams:
+		hands[t] = _deal_one()
+		cooldowns[t] = {}
+	hand = hands[g.home]
+	cooldown = cooldowns[g.home]
+
+## 2 each of SHOT / PASS / DRIBBLE / DEFEND; with engagements on, the DRIBBLE and DEFEND ones are duel cards (decks come later)
+func _deal_one() -> Array:
+	var out: Array = []
 	var cards := Data.table("cards")
 	for cat in ["SHOT", "SHOT", "PASS", "PASS", "DRIBBLE", "DRIBBLE", "DEFEND", "DEFEND"]:
-		var pool := cards.filter(func(c): return c["cat"] == cat and not hand.has(c))
+		var duel: bool = g.settings.engage_on and cat in ["DRIBBLE", "DEFEND"]
+		var pool := cards.filter(func(c): return c["cat"] == cat and not out.has(c) and (not duel or "duel" in String(c.get("engage", "")).split(" ", false)))
 		if pool.is_empty(): continue
-		hand.append(pool[g.rng.randi() % pool.size()])
+		out.append(pool[g.rng.randi() % pool.size()])
+	return out
 
 func tick(dt: float) -> void:
-	for id in cooldown.keys():
-		cooldown[id] = maxf(0.0, float(cooldown[id]) - dt)
+	for t in cooldowns:
+		var cd: Dictionary = cooldowns[t]
+		for id in cd.keys():
+			cd[id] = maxf(0.0, float(cd[id]) - dt)
+
+func hand_of(team: Team) -> Array:
+	return hands.get(team, [])
+
+## off cooldown
+func ready(team: Team, c: Dictionary) -> bool:
+	return float(cooldowns.get(team, {}).get(String(c["id"]), 0.0)) <= 0.0
+
+## off cooldown and fits this engagement (type, side, the player's role)
+func can_play(team: Team, c: Dictionary, e: Engagement) -> bool:
+	return ready(team, c) and EngageCard.fits(c, e.type, e.side_of(team), e.player_of(team))
+
+func playable(team: Team, e: Engagement) -> Array:
+	return hand_of(team).filter(func(c): return can_play(team, c, e))
+
+func start_cooldown(team: Team, c: Dictionary) -> void:
+	if not cooldowns.has(team): cooldowns[team] = {}
+	cooldowns[team][String(c["id"])] = Data.num(c["cd"], 3.0) * g.settings.cooldown_scale
 
 func play(i: int) -> void:
+	if g.engage.waiting_for(g.home):                                            # in an engagement the hand is the pick
+		g.engage.pick_index(g.home, i)
+		return
 	if i >= hand.size() or g.phase != MatchGame.Phase.PLAY: return
 	var f := g.selected
+	var c: Dictionary = hand[i]
+	if g.settings.engage_on and String(c.get("engage", "")) != "" and String(c["cat"]) in ["DRIBBLE", "DEFEND"]:
+		g.hud.toast("%s: played in a duel" % c["name"])
+		return
 	if f == null:
 		g.hud.toast("Pick a player first")
 		return
-	var c: Dictionary = hand[i]
 	var id := String(c["id"])
 	if float(cooldown.get(id, 0.0)) > 0.0:
 		g.hud.toast("%s: cooling down" % c["name"])

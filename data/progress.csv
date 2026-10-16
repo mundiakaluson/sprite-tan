@@ -25,45 +25,46 @@ Animation,Skill card animations: DRIBBLE 29 (Hold Up Play animation removed; don
 Animation,Skill card animations: DEFEND 35 done (moves_defend.py); SUPPORT 30 done (auras + arm/head overlays on the current state) / KEEPER 25 done (moves_keeper.py) / TITAN 25 done (25 cinematic scenes, titan/scenes.py),in progress,checkpoint per category
 Packs,"Pack system: definitions + pools + schedule + pity, Packs tab, wrapper art, opening animation (skippable), simulator",done,tables + Packs tab + wrapper art from data + opening with skip + simulator. Next: pity state in the save, shop UI, Godot port
 Tool,Global EXPORT TO GAME button + tool/export_game.py,done,writes godot/data and godot/assets
-Game,"Godot: player scene with AnimationPlayer (all sheets) + AnimationTree flow graph from animation_flow.csv",doing,untested in Godot
+Game,Godot: player scene with AnimationPlayer (all sheets) + AnimationTree flow graph from animation_flow.csv,doing,untested in Godot
 Game,"Godot: card scenes with animations (done); port pack opening, Titan scenes and effects to Godot animations",doing,cards done; opening + titan + effects todo
-Game,"Stadiums + pitches + goals (3 to start)",done,"data/stadiums.csv, stadiums/stadiumlib.py, godot stadium scene"
+Game,Stadiums + pitches + goals (3 to start),done,"data/stadiums.csv, stadiums/stadiumlib.py, godot stadium scene"
 Tool,"Stadiums tab + Goal simulator tab (live perspective preview, goal feel tuning)",done,"tab_stadiums.py, tab_goalsim.py, stadiums/preview.py"
 Game,"Godot: modular goals with spring-mesh net + swinging posts (goal.gd, goal_net.gd)",doing,untested in Godot
 Game,"Replay camera shots (orbit, crane, push-in) from recorded play",todo,needs the match view
 Tool,"Ball studio tab (physics, textures, trajectory lab)",done,"tab_balls.py, balls/balllib.py, data/balls.csv"
 Game,"Godot ball: physics + roll sprite + stadium projection (ball.gd, ball_physics.gd)",doing,untested in Godot
-Game,"Players kick / control the ball using ball power + touch",todo,needs the match view
+Game,Players kick / control the ball using ball power + touch,todo,needs the match view
 Tool,"Kick styles + ball spin preview (trivela, finesse, knuckle...)",done,"data/kick_styles.csv, Ball studio tab"
-Game,"Godot ball sprite from real 3D spin (shader) + Ball.kick styles",doing,untested in Godot
+Game,Godot ball sprite from real 3D spin (shader) + Ball.kick styles,doing,untested in Godot
 Game,"Playable match scene: 11v11, ball, AI, goals, throw-ins / corners, clock, HUD, hand of 8 cards (shot / pass / dribble / defend)",doing,"scenes/match/match.tscn; untested in Godot; engagement slow-motion, support cards, keeper cards, Titans not built"
 Game,"Match controls: mouse / controller orders (menu, drag runs) and ball states (pass, through, lob, shot)",doing,"match_controls.gd, scripts/ball/states, data/ball_actions.csv; untested in Godot"
-Game,"Match refactor: thin MatchGame + modules, MatchSettings resource, AI brain + one file per role, build-up phases, HUD order buttons",doing,"untested in Godot; AI roles are first drafts to refine"
-Game,"Pitch map (zones + spots) for the AI; smaller HUD cards / tooltip with a team command area",doing,"scripts/ai/pitch_map.gd, data/pitch_zones.csv, pitch_spots.csv; team commands not defined yet"
-Game,"Inspector pass: AI roles as Resources (AiProfile .tres per team), remaining match constants moved to MatchSettings",doing,"untested in Godot; scenes/ai/profile_default.tres"
-Game,"AI formation file: 4-4-2 (F01) banks, press triggers, overlaps, striker pair",doing,"scripts/ai/formations/ai_442.gd; untested in Godot; next 4-3-3"
-Game,"Team kits and formation drop-downs in MatchSettings (kit atlas per player per kit)",doing,"needs Export to game again; untested in Godot"
-Game,"Kit colours live in the shader (KitColors resource per team, key-colour atlases) instead of per-kit images",doing,"needs Export to game again; untested in Godot"
+Game,"Match refactor: thin MatchGame + modules, MatchSettings resource, AI brain + one file per role, build-up phases, HUD order buttons",doing,untested in Godot; AI roles are first drafts to refine
+Game,Pitch map (zones + spots) for the AI; smaller HUD cards / tooltip with a team command area,doing,"scripts/ai/pitch_map.gd, data/pitch_zones.csv, pitch_spots.csv; team commands not defined yet"
+Game,"Inspector pass: AI roles as Resources (AiProfile .tres per team), remaining match constants moved to MatchSettings",doing,untested in Godot; scenes/ai/profile_default.tres
+Game,"AI formation file: 4-4-2 (F01) banks, press triggers, overlaps, striker pair",doing,scripts/ai/formations/ai_442.gd; untested in Godot; next 4-3-3
+Game,Team kits and formation drop-downs in MatchSettings (kit atlas per player per kit),doing,needs Export to game again; untested in Godot
+Game,"Kit colours live in the shader (KitColors resource per team, key-colour atlases) instead of per-kit images",doing,needs Export to game again; untested in Godot
 Game,"Team stances (TEAM buttons, auto rules) + current-command box + snapping pass / through drag",doing,"untested in Godot; scripts/ai/team_stance.gd, match_command.gd"
-Game,"HUD as an editable scene (match_hud.tscn) instead of built in code",doing,"untested in Godot"
-Game,"Match camera shows the whole pitch width; lob by right-button drag with snapping; help text replaced by the command box",doing,"untested in Godot"
+Game,HUD as an editable scene (match_hud.tscn) instead of built in code,doing,untested in Godot
+Game,Match camera shows the whole pitch width; lob by right-button drag with snapping; help text replaced by the command box,doing,untested in Godot
 Game,"HUD in pixel art: generator (hud/hudlib.py), PixelPanel / Label / Button nodes, strip + panels + rings",doing,"needs Export to game (HUD art step); untested in Godot; next: tool HUD tab, icons, banners"
-Game,"Formation AI for F02-F10 from tactico.pro (shared AiShapedFormation + one numbers file each)",doing,"untested in Godot; tune per formation in the inspector"
-Game,"AI interaction layer: cover for defenders who step out, striker finds space when a midfielder presses, player traits (roamer / Zionel Pessi)",doing,"untested in Godot; tune in AiProfile > Interact"
-Game,"Formations can be added from the Godot inspector (FormationLayout in MatchSettings > Custom Formations)",doing,"untested in Godot; example 3-4-2-1 included"
-Game,"Ball touch and keeper saves: smaller ball, eased first touch, keeper dive/catch/deflect clips with mirror",doing,"untested in Godot; tune in MatchSettings > Goalkeeper saves"
-Game,"Players turn before passing; scuffed or pressed passes cause stumble/fall",doing,"untested in Godot; tune in MatchSettings > Kick turn and stumble"
-Game,"AI behaviours: add a decision as one script + one list entry (example: jockey)",doing,"untested in Godot"
+Game,Formation AI for F02-F10 from tactico.pro (shared AiShapedFormation + one numbers file each),doing,untested in Godot; tune per formation in the inspector
+Game,"AI interaction layer: cover for defenders who step out, striker finds space when a midfielder presses, player traits (roamer / Zionel Pessi)",doing,untested in Godot; tune in AiProfile > Interact
+Game,Formations can be added from the Godot inspector (FormationLayout in MatchSettings > Custom Formations),doing,untested in Godot; example 3-4-2-1 included
+Game,"Ball touch and keeper saves: smaller ball, eased first touch, keeper dive/catch/deflect clips with mirror",doing,untested in Godot; tune in MatchSettings > Goalkeeper saves
+Game,Players turn before passing; scuffed or pressed passes cause stumble/fall,doing,untested in Godot; tune in MatchSettings > Kick turn and stumble
+Game,AI behaviours: add a decision as one script + one list entry (example: jockey),doing,untested in Godot
 Game,"Kick clip variations, passing on the run, tackle tumbles, softer scuffs",doing,"untested visually in Godot; headless: ~86 passes/match, ~7% scuffed, ~24 tumbles"
-Game,"Heavy pivot: run bends round with the turn, DRI-based turn speed and turn clips",doing,"untested visually in Godot"
+Game,"Heavy pivot: run bends round with the turn, DRI-based turn speed and turn clips",doing,untested visually in Godot
 Animation,"Turn-with-ball clips tn01-tn04 (heavy / plant / sharp / spin), picked by DRI",doing,"authored, previewed; needs baking in the tool"
-Animation,"Smoother keeper idle/dives, jump, falls (+trip/back), get up",doing,"authored and previewed as GIFs; needs baking in the tool"
+Animation,"Smoother keeper idle/dives, jump, falls (+trip/back), get up",doing,authored and previewed as GIFs; needs baking in the tool
 Game,"Keeper reads the game (line, speed, shuffle, relaxed/alert/set stances); fall arms fixed; dive hands out",doing,"headless: keeper 2-9 m off his line with the play; clips need baking (gk_ready_idle, gk_set_low, gk_shuffle)"
-Game,"Ball rolls to the foot (damped spring) and dribbles with a touch per stride; moving players easier to click, double click follows the runner",doing,"headless-checked for jumps; feel to be tested in Godot"
+Game,"Ball rolls to the foot (damped spring) and dribbles with a touch per stride; moving players easier to click, double click follows the runner",doing,headless-checked for jumps; feel to be tested in Godot
 Game,"AI take-ons (fake + burst), defenders bite (slide/stumble), AI standing and slide tackles",doing,"headless: ~7 take-ons, ~26 tackles, 1-2 slides per match; look in Godot"
-Game,"Sprint vs run clips by own top speed, stamina + tired run, AI sprint into space, keeper 1v1 rush (auto + Rush order)",doing,"headless-checked; feel to be tested in Godot (new Order_rush button in the HUD scene)"
-Game,"Panic clearance clips (flinch / hack and fall), run facing elevation fix, sprint nerf",doing,"bake cl01/cl02 in the tool then Export; test in Godot"
+Game,"Sprint vs run clips by own top speed, stamina + tired run, AI sprint into space, keeper 1v1 rush (auto + Rush order)",doing,headless-checked; feel to be tested in Godot (new Order_rush button in the HUD scene)
+Game,"Panic clearance clips (flinch / hack and fall), run facing elevation fix, sprint nerf",doing,bake cl01/cl02 in the tool then Export; test in Godot
 Game,"Through-ball runner timing, AI one-two, AI finishing (box shots, chip, curlers), panic clear rework",doing,"headless: ~15 shots, ~2 one-twos per match; look in Godot, bake cl01/cl02"
 Game,"Aerial contest: landing ring, wait under lobs, header / shove and chest / shoulder leap duels (+3 clips)",doing,"headless: ~4 events per match; bake ct01-ct03, test in Godot"
-Game,"Facing fix: sprite sheet rows were read upside down (row = 16 - direction)",done,"check running toward / away from the camera in Godot"
-Game,"Shot flight: trail, low drive / flat benders, simulated curler aim, keeper reads curve by stats",doing,"headless-measured; look at the trail and curls in Godot; run Export (new kick styles)"
+Game,Facing fix: sprite sheet rows were read upside down (row = 16 - direction),done,check running toward / away from the camera in Godot
+Game,"Shot flight: trail, low drive / flat benders, simulated curler aim, keeper reads curve by stats",doing,headless-measured; look at the trail and curls in Godot; run Export (new kick styles)
+Game,"Engagements stage 1: director, freeze + slow motion + clock stop, duel engagements (press trigger, take-ons, tackles), card picks Manual / Auto, AI manager picks, duel resolver",doing,"headless: 16-21 duels a match, all outcomes; test Manual picks in Godot. Next: choice UI (stage 2)"

@@ -17,7 +17,9 @@ func busy(f: Footballer) -> bool:
 	return _moves.has(f)
 
 # ---------------------------------------------------------------- take-on
-func take_on(f: Footballer, d: Footballer) -> bool:
+## forced: -1 = the bite is rolled from DRI vs DEF; 1 = he bites (an engagement the carrier won); 0 = he reads it and his tackle wins (the defender won).
+## clip_override: the card's clip; strand: x takeon_recover for a bitten defender; burst: x takeon_burst_speed.
+func take_on(f: Footballer, d: Footballer, forced := -1, clip_override := "", strand := 1.0, burst := 1.0) -> bool:
 	if d == null or g.carrier != f or f.lock > 0.0 or busy(f) or not f.aim_done.is_null(): return false
 	var s := g.settings
 	var dir := d.pos - f.pos
@@ -31,12 +33,14 @@ func take_on(f: Footballer, d: Footballer) -> bool:
 	var skilled := g.rng.randf() < clampf((f.stat("DRI", 60) - 60) / 40.0, 0.0, s.skill_max)
 	var clip := _pick(f, s.clips_takeon_skill if skilled else s.clips_takeon)
 	if clip == "": clip = _pick(f, s.clips_takeon)
+	if clip_override != "": clip = clip_override
 	var total := s.takeon_fake_time + s.takeon_burst_time
 	g.motion.act(f, clip, 1.0, func(): pass, 1.0, total, true)
 	var bite := s.takeon_bite_base + (f.stat("DRI", 60) - d.stat("DEF", 60)) * s.takeon_bite_per_stat
 	if d.pos.distance_to(Vector2(-MatchGame.HALF_L * d.team.dir, 0.0)) < s.takeon_box_dist: bite -= s.takeon_box_read      # in his own box he stays on his feet
 	bite = clampf(bite, 0.1, 0.9)
-	_moves[f] = {"def": d, "fake": fake, "cut": cut, "t": 0.0, "bit": g.rng.randf() < bite, "reacted": false}
+	var bit := g.rng.randf() < bite if forced < 0 else forced == 1
+	_moves[f] = {"def": d, "fake": fake, "cut": cut, "t": 0.0, "bit": bit, "reacted": false, "forced": forced, "strand": strand, "burst": burst}
 	stat_takeons += 1
 	return true
 
@@ -57,12 +61,13 @@ func update(dt: float) -> void:
 			want = m["fake"] * top * s.takeon_fake_speed
 			if m["bit"] and not m["reacted"] and m["t"] > fake_t * 0.5:                        # he commits to the faked side
 				m["reacted"] = true
-				_bite(d, m["fake"])
+				_bite(d, m["fake"], m["strand"])
 		else:
-			want = m["cut"] * top * s.takeon_burst_speed
+			want = m["cut"] * top * s.takeon_burst_speed * float(m["burst"])
 			if not m["reacted"]:
 				m["reacted"] = true
-				if d.lock <= 0.0 and d.no_touch <= 0.0 and d.pos.distance_to(f.pos) < s.takeon_read_reach:      # he read it: a tackle goes in
+				if m["forced"] == 0: g.poss.start_tackle(d, f, true, true)                          # the engagement says he read it: his tackle wins
+				elif d.lock <= 0.0 and d.no_touch <= 0.0 and d.pos.distance_to(f.pos) < s.takeon_read_reach:      # he read it: a tackle goes in
 					g.poss.start_tackle(d, f, g.rng.randf() < s.takeon_read_win)
 			if m["bit"]: f.shield = maxf(f.shield, s.takeon_shield)                          # nobody gets near him through the gap he made
 		f.vel = f.vel.lerp(want, clampf(dt * s.takeon_turn_rate, 0.0, 1.0))
@@ -70,14 +75,14 @@ func update(dt: float) -> void:
 		if f.vel.length() > 0.5: f.face = f.face.rotated(clampf(f.face.angle_to(f.vel), -step, step)).normalized()
 		if m["t"] >= fake_t + s.takeon_burst_time: _moves.erase(f)
 
-func _bite(d: Footballer, fake: Vector2) -> void:
+func _bite(d: Footballer, fake: Vector2, strand := 1.0) -> void:
 	var s := g.settings
 	if d.is_keeper() or d.lock > 0.0: return
 	stat_bitten += 1
 	d.pending = Callable()
 	d.aim_done = Callable()
 	d.face = fake
-	d.no_touch = s.takeon_recover
+	d.no_touch = s.takeon_recover * strand
 	if g.rng.randf() < s.takeon_bite_slide:                                                      # he lunges into the faked way
 		d.vel = fake * s.slide_speed * 0.8
 		var clip := _pick(d, s.clips_slide)
@@ -86,8 +91,10 @@ func _bite(d: Footballer, fake: Vector2) -> void:
 		g.kicking.tumble(d, s.clips_stumble_medium)                                              # wrong-footed
 
 # ---------------------------------------------------------------- slide tackle
-func slide_tackle(d: Footballer, c: Footballer) -> bool:
-	if c == null or g.carrier != c or d.lock > 0.0 or d.no_touch > 0.0 or busy(d) or d.is_keeper(): return false
+## forced: -1 = rolled at the strike frame (reach, DEF vs DRI); 1 = it wins, 0 = it misses (an engagement decided it)
+func slide_tackle(d: Footballer, c: Footballer, forced := -1) -> bool:
+	if c == null or g.carrier != c or d.is_keeper() or busy(d): return false
+	if forced < 0 and (d.lock > 0.0 or d.no_touch > 0.0): return false
 	var s := g.settings
 	var lead := c.pos + c.vel * s.slide_lead
 	var dir := lead - d.pos
@@ -97,13 +104,19 @@ func slide_tackle(d: Footballer, c: Footballer) -> bool:
 	d.vel = dir * s.slide_speed
 	var clip := _pick(d, s.clips_slide)
 	stat_slides += 1
-	g.motion.act(d, clip, g.motion.strike_frac(clip, 0.45), func(): _slide_lands(d, c), 1.0, s.slide_clip_time, true)
+	g.motion.act(d, clip, g.motion.strike_frac(clip, 0.45), func(): _slide_lands(d, c, forced), 1.0, s.slide_clip_time, true)
 	return true
 
-func _slide_lands(d: Footballer, c: Footballer) -> void:
+func _slide_lands(d: Footballer, c: Footballer, forced := -1) -> void:
 	var s := g.settings
 	if g.carrier != c: return
-	if d.pos.distance_to(c.pos) > s.slide_reach or c.shield > 0.0:
+	if forced == 1:
+		stat_slide_wins += 1
+		var l0 := d.lock
+		g.poss.won_tackle(d, c)
+		d.lock = maxf(d.lock, minf(l0, 0.35))
+		return
+	if forced == 0 or d.pos.distance_to(c.pos) > s.slide_reach or c.shield > 0.0:
 		g.poss.failed_tackle(d, c)                                                               # over-slid, he is past him
 		return
 	var p := clampf(s.slide_win_base + (d.stat("DEF", 60) - c.stat("DRI", 60)) * s.slide_per_stat, 0.1, 0.9)
