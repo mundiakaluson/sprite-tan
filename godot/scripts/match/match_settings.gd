@@ -45,8 +45,8 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 ## how fast a player gets up to speed / slows down (m/s squared): low = heavy, realistic running, high = arcade
 @export var accel := 7.0
 @export var brake := 12.0
-## how fast he turns to face where he runs (higher = snappier)
-@export var turn_rate := 9.0
+## how fast he turns to face where he runs (degrees per second; 400 = a leisurely turn, 900 = snappy)
+@export var turn_deg_per_s := 650.0
 ## positioning jog as a fraction of top speed
 @export_range(0.3, 1.0) var jog_factor := 0.7
 @export_range(0.5, 1.5) var sprint_factor := 1.1
@@ -95,7 +95,9 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var control_speed_base := 9.0
 @export var control_per_dri := 0.09
 ## the carried ball sits this far ahead of the feet (more when running)
-@export var touch_ahead := 0.5
+@export var touch_ahead := 0.3
+## the ball runs this much further ahead for each m/s he runs
+@export var touch_speed := 0.035
 @export var no_touch_after_kick := 0.35
 @export var tackle_reach := 1.3
 ## tackle attempts per second when a defender is on the carrier (x DEF / DRI)
@@ -202,6 +204,22 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var dive_extra := 0.9
 ## the dive also goes a bit forward (metres)
 @export var dive_forward := 0.5
+## the save happens the moment the ball is in his reach, from this many seconds before the clip's strike frame until this long after it (the ball is slower than his guess, so he waits for it)
+@export var save_window_before := 0.15
+@export var save_window_after := 0.6
+## the ball counts as in reach when it is this close to him along the pitch (metres)
+@export var save_depth := 1.8
+## how far sideways he gets (m/s, plus per REF point) in the time his clip takes: a shot further from him than speed x time + save_reach beats him
+@export var dive_speed := 2.0
+@export var dive_speed_per_ref := 0.03
+## how far from where he ends up the gloves reach (metres, plus keeper_ref_reach per REF point)
+@export var save_reach := 0.75
+## a ball in reach is still not always stopped: chance = (save_skill_base + average of his REF and HAN x save_skill_per_stat) x (1 - dive_difficulty x sideways distance / dive_range).
+## On failure it is a parry back into play with chance save_parry, else it beats him.
+@export_range(0.0, 1.0) var save_skill_base := 0.35
+@export var save_skill_per_stat := 0.004
+@export_range(0.0, 1.0) var dive_difficulty := 0.9
+@export_range(0.0, 1.0) var save_parry := 0.5
 ## how much of the sideways distance a stand-and-catch / claim / palm covers (0 = he stays put)
 @export_range(0.0, 1.0) var stand_travel := 0.6
 ## ball height (m) above which it is a high ball (claimed if slow, palmed if fast) and below which it is low
@@ -229,8 +247,8 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 
 @export_group("Goalkeeper and control")
 ## a keeper catches a shot slower than base + HAN x per_han (m/s), otherwise he parries
-@export var save_speed_base := 14.0
-@export var save_speed_per_han := 0.25
+@export var save_speed_base := 8.0
+@export var save_speed_per_han := 0.2
 ## keeper reach grows by REF x this
 @export var keeper_ref_reach := 0.012
 ## ball heights a player / keeper can reach (metres)

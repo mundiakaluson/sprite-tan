@@ -76,6 +76,15 @@ func add_actor(n: Node2D, pitch: Vector2) -> void:
 	_actors[n] = pitch
 	_project(n)
 
+## the direction a pitch direction (metres: x along, y across) points on the SCREEN at a spot: what a sprite should face. The camera's tilt squashes the across axis, so facing
+## by the pitch angle made diagonal runners look wrongly turned (and any camera yaw works too).
+func screen_dir(pos: Vector2, dir: Vector2) -> Vector2:
+	var w := Vector3(pos.x, 0.0, pos.y)
+	var a := camera.unproject_position(w)
+	var b := camera.unproject_position(w + Vector3(dir.x, 0.0, dir.y))
+	var d := b - a
+	return d if d.length() > 0.0001 else dir
+
 func set_actor_pos(n: Node2D, pitch: Vector2) -> void:
 	_actors[n] = pitch
 

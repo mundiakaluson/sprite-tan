@@ -30,7 +30,7 @@ func update(dt: float) -> void:
 
 func _carry(dt: float) -> void:
 	var c := g.carrier
-	var spot := c.pos + c.face * (g.settings.touch_ahead + 0.06 * c.vel.length())
+	var spot := c.pos + c.face * (g.settings.touch_ahead + g.settings.touch_speed * c.vel.length())
 	var b := g.ball
 	var target := Vector3(spot.x, b.phys.rad, spot.y)
 	if c.settle > 0.0:

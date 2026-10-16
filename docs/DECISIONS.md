@@ -179,3 +179,4 @@ All skill-card categories are baked: SHOT 30, PASS 25 (+3 air variants), DRIBBLE
 - Kicks pivot to face the target first; scuffed or pressed passes make the passer stumble or fall (match_kicking.gd). Untested.
 - AI behaviours: drop-in decision scripts (AiBehaviour) listed in AiProfile > Behaviours, tried before a role's own cases; example jockey.
 - AI behaviours are auto-discovered from scripts/ai/behaviours/ (no .tres or list needed); .tres in scenes/ai/behaviours/ optionally overrides numbers.
+- Playtest fixes: keeper save window + skill roll + only opponents' shots, ball closer to feet, screen-space facing, angular turning, GK claims slow loose balls.

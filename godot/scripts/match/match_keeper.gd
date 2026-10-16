@@ -5,6 +5,9 @@ extends RefCounted
 ## resolved (catch, palm / fingertip deflection, parry, or a miss if the ball is out of reach). Left dives mirror the clip (the clips are authored for dives to the keeper's right).
 ## Which clips he uses for which kind of ball is in MatchSettings > Goalkeeper saves (lists, he picks one at random: add more variants there). Every number lives there too.
 
+## for tests and the HUD: a dive started ("start"), or how it ended ("catch", "deflect", "miss")
+signal save_event(keeper: Footballer, kind: String, clip: String, outcome: String)
+
 var g: MatchGame
 var _dives := {}            ## Footballer -> {from, to, t, T}
 
@@ -21,11 +24,38 @@ func update(dt: float) -> void:
 		var u := clampf(float(d["t"]) / float(d["T"]), 0.0, 1.0)
 		f.pos = (d["from"] as Vector2).lerp(d["to"], 1.0 - (1.0 - u) * (1.0 - u))     # fast off the mark, easing into the reach
 		f.vel = Vector2.ZERO
-		if f.lock <= 0.0 or f.pos.distance_to(d["to"]) < 0.01 and float(d["t"]) > float(d["T"]) + 0.6:
+		# the contact is not at a fixed frame: from a little before the clip's strike frame until a little after it, the save happens the moment the ball is in reach
+		if not d["done"] and float(d["t"]) >= float(d["strike"]) - g.settings.save_window_before:
+			if _in_reach(f, d["kind"]):
+				d["done"] = true
+				_resolve(f, d["kind"], d["lateral"], true)
+			elif float(d["t"]) >= float(d["strike"]) + g.settings.save_window_after or _passed(f):
+				d["done"] = true
+				_resolve(f, d["kind"], d["lateral"], false)
+		if f.lock <= 0.0:
 			_dives.erase(f)
 	if g.phase != MatchGame.Phase.PLAY or g.carrier != null: return
 	for k in g.all:
 		if k.is_keeper() and k.lock <= 0.0 and not _dives.has(k): _consider(k)
+
+## how far from where he ends up a ball can still be touched (arms / gloves)
+func _reach(k: Footballer) -> float:
+	var s := g.settings
+	return s.save_reach + k.stat("REF", 60) * s.keeper_ref_reach
+
+## how far sideways he can get in the time the clip takes to reach the ball: a corner shot beats him
+func _cover(k: Footballer, seconds: float) -> float:
+	var s := g.settings
+	return (s.dive_speed + k.stat("REF", 60) * s.dive_speed_per_ref) * seconds
+
+func _in_reach(k: Footballer, _kind: String) -> bool:
+	var bp := g.ball.phys.pos
+	var s := g.settings
+	return absf(bp.x - k.pos.x) < s.save_depth and absf(bp.z - k.pos.y) < _reach(k) and bp.y < s.keeper_reach_height + s.jump_height
+
+## the ball went past him (behind his x) without coming into reach
+func _passed(k: Footballer) -> bool:
+	return (g.ball.phys.pos.x - k.pos.x) * k.team.dir < -g.settings.save_depth
 
 # ---------------------------------------------------------------- is a save needed
 func _consider(k: Footballer) -> void:
@@ -33,6 +63,7 @@ func _consider(k: Footballer) -> void:
 	var bp := g.ball.phys.pos
 	var v := g.ball.phys.vel
 	if v.length() < s.save_threat_speed or v.x * k.team.dir >= 0.0: return          # slow, or not heading for his goal
+	if g.last_touch == null or g.last_touch.team == k.team: return                   # a pass or clearance of his own side is no shot
 	var t := (k.pos.x - bp.x) / v.x
 	if t <= 0.0 or t > s.save_max_time: return
 	var z := bp.z + v.z * t
@@ -46,6 +77,7 @@ func _consider(k: Footballer) -> void:
 	var anim := k.node.anim_player.get_animation(clip)
 	var ts := _strike_time(anim)
 	if t > ts + s.save_reaction: return                                               # too early: wait until the clip would arrive with the ball
+	save_event.emit(k, kind, clip, "start")
 	_start(k, clip, kind, anim.length, ts, lateral, z, h)
 
 func _kind(lateral: float, h: float, speed: float) -> String:
@@ -88,37 +120,47 @@ func _start(k: Footballer, clip: String, kind: String, length: float, ts: float,
 	var right := Vector2(-face.y, face.x)                                             # his right on the screen
 	k.face = face
 	k.mirror = absf(lateral) > 0.5 and Vector2(0.0, signf(lateral)).dot(right) < 0.0     # clips dive to his right; a left dive is the mirrored clip
-	var reach_z := clampf(lateral, -s.dive_range, s.dive_range) * (1.0 if kind in ["low", "mid", "far"] else s.stand_travel)
+	var reach_z := clampf(lateral, -_cover(k, ts), _cover(k, ts)) * (1.0 if kind in ["low", "mid", "far"] else s.stand_travel)
 	var to := Vector2(k.pos.x + k.team.dir * s.dive_forward, k.pos.y + reach_z)
-	g.motion.act(k, clip, ts / length, func(): _resolve(k, kind, lateral))
-	k.lock = length
-	_dives[k] = {"from": k.pos, "to": to, "t": 0.0, "T": maxf(ts, 0.1)}
+	g.motion.act(k, clip, 1.0, func(): pass)
+	k.lock = length + s.save_window_after
+	_dives[k] = {"from": k.pos, "to": to, "t": 0.0, "T": maxf(ts, 0.1), "strike": ts, "kind": kind, "lateral": lateral, "done": false}
 
 # ---------------------------------------------------------------- the contact
-func _resolve(k: Footballer, kind: String, lateral: float) -> void:
+func _resolve(k: Footballer, kind: String, lateral: float, in_reach: bool) -> void:
 	var s := g.settings
 	var b := g.ball
 	var bp := b.phys.pos
 	var v := b.phys.vel
 	if g.carrier != null: return
-	var reach := s.keeper_reach + k.stat("REF", 60) * s.keeper_ref_reach + s.dive_extra
-	var max_h := s.keeper_reach_height + s.jump_height
-	if absf(bp.x - k.pos.x) > 1.8 or absf(bp.z - k.pos.y) > reach or bp.y > max_h:
+	if not in_reach:
 		k.no_touch = 0.4                                                               # a miss: the ball carries on
+		save_event.emit(k, kind, "", "miss")
 		return
+	var parry := false
+	var skill := s.save_skill_base + (k.stat("REF", 60) + k.stat("HAN", 60)) * 0.5 * s.save_skill_per_stat
+	var stop := clampf(skill * (1.0 - s.dive_difficulty * clampf(absf(lateral) / s.dive_range, 0.0, 1.0)), 0.02, 0.98)
+	if g.rng.randf() > stop:
+		if g.rng.randf() >= s.save_parry:                                              # it beats him
+			k.no_touch = 0.4
+			save_event.emit(k, kind, "", "miss")
+			return
+		parry = true                                                                   # a fingertip / palm parry round the post
 	var speed := v.length()
 	var clean := kind in ["catch", "claim"]
 	var limit := s.save_speed_base + k.stat("HAN", 60) * s.save_speed_per_han + (s.catch_bonus if clean else 0.0)
 	g.last_touch = k
-	if speed <= limit and kind != "palm":
+	if speed <= limit and kind != "palm" and not parry:
+		save_event.emit(k, kind, "", "catch")
 		g.poss.take(k)
 		return
 	var side := signf(lateral) if absf(lateral) > 0.3 else signf(bp.z - k.pos.y)
 	if side == 0.0: side = 1.0
 	if kind == "palm":
 		b.phys.vel = Vector3(-v.x * 0.2, s.palm_lift, side * s.deflect_wide)             # over the bar / round the post
-	elif kind == "far":
+	elif kind == "far" or parry:
 		b.phys.vel = Vector3(-v.x * 0.25, s.deflect_lift, side * s.deflect_wide * 1.3)   # fingertips round the post
 	else:
 		b.phys.vel = Vector3(-v.x * 0.3, v.y * 0.5 + 2.0, v.z + g.rng.randf_range(-5.0, 5.0))   # a parry back into play
 	k.no_touch = 0.5
+	save_event.emit(k, kind, "", "deflect")

@@ -19,6 +19,8 @@ extends AiRole
 ## short distribution: extra score for a centre back, lane width that counts as blocked
 @export var cb_bonus := 8.0
 @export var pass_lane := 1.8
+## a slow loose ball in his box (zone own_box, speed below this): he comes out and takes it if no team mate is clearly nearer
+@export var claim_speed := 14.0
 
 func _init() -> void:
 	push_weight = 0.0
@@ -27,6 +29,12 @@ func _init() -> void:
 
 func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 	if c.carrier == f: return _with_ball(f, c, dt)
+	if c.carrier == null and c.in_zone(c.ball, "own_box") and c.ball_vel.length() < claim_speed:
+		var mine := f.pos.distance_to(c.ball)
+		var nearest := true
+		for m in c.team.players:
+			if m != f and m.pos.distance_to(c.ball) < mine - 1.0: nearest = false
+		if nearest: return _go(c, c.ball + c.ball_vel * 0.3, c.s.sprint_factor)
 	var line_x := c.own_goal().x + c.dir * line_offset
 	var z := clampf(c.ball.y * follow_z, -z_limit, z_limit)
 	var x := line_x

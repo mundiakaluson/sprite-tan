@@ -41,7 +41,8 @@ func update(dt: float) -> void:
 		f.pos.y = clampf(f.pos.y, -MatchGame.HALF_W - 2.0, MatchGame.HALF_W + 2.0)
 		if g.carrier == f: f.carried += before.distance_to(f.pos)
 		if f.vel.length() > 0.5 and f.aim_done.is_null():
-			f.face = f.face.lerp(f.vel.normalized(), clampf(dt * s.turn_rate, 0.0, 1.0)).normalized()
+			var step := deg_to_rad(s.turn_deg_per_s) * dt                      # turns by an angle, so a U-turn can not collapse the vector
+			f.face = f.face.rotated(clampf(f.face.angle_to(f.vel), -step, step)).normalized()
 		f.want = Vector2.ZERO
 	for i in g.all.size():
 		for j in range(i + 1, g.all.size()):
@@ -56,7 +57,7 @@ func update(dt: float) -> void:
 func _show(f: Footballer) -> void:
 	g.stadium.set_actor_pos(f.node, g.stadium.pitch_pos(Vector3(f.pos.x, 0.0, f.pos.y)))
 	f.node.set_mirror(f.mirror and f.lock > 0.0)
-	f.node.face_vector(f.face)
+	f.node.face_vector(g.stadium.screen_dir(f.pos, f.face))          # the picture turns by what the camera sees, not by the pitch angle
 	if f.lock > 0.0: return
 	f.mirror = false
 	var speed := f.vel.length()
