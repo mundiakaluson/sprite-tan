@@ -11,7 +11,8 @@ var stat_passes := 0         ## counters for the headless balance runs
 var stat_scuffs := 0
 var stat_tumbles := 0
 var stat_shots := {}
-var stat_shot_speed := []    ## headless: [speed when the shot clip starts, speed at the strike] per shot         ## headless: "style clip" -> count of shots taken
+var stat_shot_speed := []
+var stat_kicks := {}          ## headless: "role action" -> count    ## headless: [speed when the shot clip starts, speed at the strike] per shot         ## headless: "style clip" -> count of shots taken
 
 func _init(game: MatchGame) -> void:
 	g = game
@@ -66,6 +67,7 @@ func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_i
 		var sho := clampf((f.stat("SHO", 60) - 40.0) / 50.0, 0.0, 1.0)
 		dur *= lerpf(g.settings.shot_time_slow, g.settings.shot_time_fast, sho)
 	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.5), func(): _release(f, action, to, to_vel, over, receiver), 1.0, dur, speed > 1.0)
+	stat_kicks["%s %s" % [f.role, action]] = int(stat_kicks.get("%s %s" % [f.role, action], 0)) + 1
 	if action == "shot":
 		f.glide_k = g.settings.shot_glide_k
 		stat_shot_speed.append([snappedf(speed, 0.1), -1.0])                 # shoots in his stride and runs on through it
