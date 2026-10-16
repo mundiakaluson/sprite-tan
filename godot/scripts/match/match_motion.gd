@@ -65,7 +65,7 @@ func update(dt: float) -> void:
 		if f.lock <= 0.0: f.glide = false
 		var want := f.want if (f.lock <= 0.0 and playing and f.aim_done.is_null()) else Vector2.ZERO
 		var gliding := (f.glide and f.lock > 0.0) or not f.aim_done.is_null()
-		var rate := s.glide_brake if gliding else (s.accel if want.length() > f.vel.length() - 0.1 else s.brake)
+		var rate := 0.0 if not f.aim_done.is_null() else s.glide_brake if gliding else (s.accel if want.length() > f.vel.length() - 0.1 else s.brake)
 		var before := f.pos
 		f.vel = f.vel.move_toward(want, rate * dt)
 		f.pos += f.vel * dt
@@ -90,7 +90,7 @@ func _show(f: Footballer) -> void:
 	g.stadium.set_actor_pos(f.node, g.stadium.pitch_pos(Vector3(f.pos.x, 0.0, f.pos.y)))
 	f.node.set_mirror(f.mirror and f.lock > 0.0)
 	f.node.face_vector(g.stadium.screen_dir(f.pos, f.face))          # the picture turns by what the camera sees, not by the pitch angle
-	if f.lock > 0.0: return
+	if f.lock > 0.0 or not f.aim_done.is_null(): return
 	f.mirror = false
 	var speed := f.vel.length()
 	var want_clip := "base_idle"

@@ -26,6 +26,7 @@ func kick(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: Dic
 		f.aim_t = 0.0
 		f.settle = maxf(f.settle, 0.3)                                   # the ball stays with him as he turns
 		f.aim_done = func(): _strike(f, action, to, to_vel, over, receiver)
+		_turn_clip(f)
 		return
 	_strike(f, action, to, to_vel, over, receiver)
 
@@ -65,6 +66,18 @@ func pick_clip(f: Footballer, action: String, to: Vector2) -> String:
 	if ok.is_empty(): return "ps03_driven_pass" if f.node.has_clip("ps03_driven_pass") else ""
 	return ok[g.rng.randi() % ok.size()]
 
+## the turn animation: a skilled player turns sharp, a heavy one plants and steps round
+func _turn_clip(f: Footballer) -> void:
+	var s := g.settings
+	var dri := f.stat("DRI", 60)
+	var list := s.clips_turn_skilled if dri >= s.skilled_dri else (s.clips_turn_heavy if dri < s.heavy_dri else s.clips_turn_normal)
+	var ok := PackedStringArray()
+	for c in list:
+		if f.node.has_clip(c): ok.append(c)
+	if ok.is_empty(): return
+	_play(f, ok[g.rng.randi() % ok.size()])
+	f.lock = 0.0                                                         # the clip is only a picture here; the pivot itself holds him
+
 func update(dt: float) -> void:
 	var s := g.settings
 	for f in g.all:
@@ -74,8 +87,12 @@ func update(dt: float) -> void:
 			else:
 				f.aim_t += dt
 				var a := f.face.angle_to(f.aim)
-				var step := deg_to_rad(s.pivot_deg_per_s) * dt
+				var agi := lerpf(s.agility_min, s.agility_max, clampf((f.stat("DRI", 60) - 40) / 50.0, 0.0, 1.0))
+				var step := deg_to_rad(s.pivot_deg_per_s) * agi / (1.0 + f.vel.length() * s.pivot_speed_drag) * dt
 				f.face = f.face.rotated(clampf(a, -step, step))
+				if f.vel.length() > 0.1:                                    # the run bends round with the turn and bleeds off speed
+					var sp := maxf(f.vel.length() - s.pivot_brake * dt, minf(f.vel.length(), s.pivot_min_speed))
+					f.vel = f.vel.rotated(clampf(f.vel.angle_to(f.aim), -step, step)).normalized() * sp
 				if absf(f.face.angle_to(f.aim)) < deg_to_rad(s.pivot_done_deg) or f.aim_t > s.pivot_max:
 					var cb := f.aim_done
 					f.aim_done = Callable()

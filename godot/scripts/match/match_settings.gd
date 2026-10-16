@@ -67,9 +67,21 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export_group("Kick turn and stumble")
 ## he turns to face the target first when it is more than this many degrees away from where he faces, at this speed (degrees per second); the kick starts when he is within `pivot_done_deg`, or after `pivot_max` s
 @export var pivot_min_deg := 65.0
-@export var pivot_deg_per_s := 520.0
+@export var pivot_deg_per_s := 600.0
 @export var pivot_done_deg := 14.0
-@export var pivot_max := 0.6
+@export var pivot_max := 0.9
+## the turn is heavy at speed: the rate is divided by (1 + speed x this), scaled by agility (DRI 40 -> x agility_min, DRI 90 -> x agility_max); he also slows at pivot_brake (m/s2) down to pivot_min_speed while turning, and his run bends round with him
+@export var pivot_speed_drag := 0.1
+@export var agility_min := 0.6
+@export var agility_max := 1.3
+@export var pivot_brake := 6.0
+@export var pivot_min_speed := 1.5
+## turn clips played during the pivot: sharp (DRI >= skilled_dri), normal, heavy (DRI < heavy_dri)
+@export var clips_turn_skilled := PackedStringArray(["dr09_cruyff_turn", "dr22_trap_and_turn", "dr21_spin_away"])
+@export var clips_turn_normal := PackedStringArray(["dr14_chop_cut", "dr22_trap_and_turn"])
+@export var clips_turn_heavy := PackedStringArray(["base_recover_step", "dr14_chop_cut"])
+@export var skilled_dri := 75
+@export var heavy_dri := 55
 ## an opponent closer than this (m) is pressing him (full pressure at his shoulder)
 @export var kick_pressure_radius := 3.0
 ## chance a pass is scuffed = base + (60 - PAS) * per_pas + pressure * pressure_k + (kicked before turning) * misaligned_k; a scuffed pass gets this much aim error (metres)
