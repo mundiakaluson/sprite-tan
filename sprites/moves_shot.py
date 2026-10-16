@@ -84,8 +84,22 @@ def finesse_windup(m):
 
 # new frame -> source frame: short run-in, slow wind-up with a hold at the top, a two-frame whip into contact (new frame 12),
 # a long follow-through that keeps the lean, then the recovery steps
+# (the tail stops at the follow-through landing, then settle_to_stand eases him upright watching the ball: no running steps in the clip)
 FINESSE_TIME = [4.0, 5.3, 6.6, 7.6, 8.2, 8.7, 9.2, 9.6, 9.9, 10.05, 10.15, 11.0, 12.0, 12.5, 13.0, 13.5, 14.0, 14.6, 15.2, 15.8, 16.4,
-                17.0, 17.6, 18.2, 18.8, 19.4, 20.0, 20.6]
+                17.0, 17.4, 17.7]
+
+
+def settle_to_stand(m, frames=6, watch=0.15):
+    """append `frames` frames easing from the last pose to a balanced stand (feet under him, arms down, head up following the ball):
+    after a shot he stops and watches it instead of stepping straight back into a run"""
+    last = dict(m.keys[m.N - 1]); goal = dict(last); goal.update(stand(0, last.get('root_y', 0.0)))
+    goal['hpitch'] = watch; goal['bvis'] = last.get('bvis', 0.0)
+    for k in ('bx', 'by', 'bz', 'brx', 'brz'): goal.pop(k, None)
+    for i in range(1, frames + 1):
+        u = i / frames; u = u * u * (3 - 2 * u)
+        m.keys[m.N - 1 + i] = {k: (last[k] + (goal[k] - last[k]) * u if k in goal and isinstance(last[k], float) else last[k]) for k in last}
+    m.N += frames
+    return m
 
 
 def finesse_bend(m, amt=1.0, roll=1.0, tilt=0.35, back=0.5, hips=-0.2, head=0.45, drift=2.2):
@@ -113,7 +127,7 @@ def finesse_bend(m, amt=1.0, roll=1.0, tilt=0.35, back=0.5, hips=-0.2, head=0.45
 
 @move('SH03', 'Finesse Curler')
 def sh03():
-    return retime(finesse_bend(finesse_windup(finesse_base())), FINESSE_TIME, ms=60, strike=12)
+    return settle_to_stand(retime(finesse_bend(finesse_windup(finesse_base())), FINESSE_TIME, ms=55, strike=12))
 
 
 @move('SH05', 'Chip Lob')

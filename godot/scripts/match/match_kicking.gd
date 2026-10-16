@@ -153,6 +153,9 @@ func _release(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over:
 			o["noise"] = maxf(float(o.get("noise", 0.0)), s.scuff_noise)
 			g.hud.toast("%s: scuffed" % f.display_name())
 	g.poss.launch(f, action, to, to_vel, o, receiver)
+	if action == "shot" and g.carrier != f:                                  # he watches it go instead of running straight off
+		f.lock += s.shot_recover
+		f.glide = false
 	var cb: Callable = _after.get(f, Callable())
 	_after.erase(f)
 	if g.carrier != f and not cb.is_null(): cb.call()

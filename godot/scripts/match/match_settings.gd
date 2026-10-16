@@ -131,7 +131,9 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var kick_clip_time := 0.7
 @export var shot_clip_time := 0.75
 ## curled shots play slower so the wind-up and the bend of the body can be seen (whole clip, seconds)
-@export var curl_clip_time := 1.2
+@export var curl_clip_time := 0.95
+## after a shot he stays put this long (on top of the rest of the clip) before he runs again
+@export var shot_recover := 0.45
 @export var clips_slow_kick := PackedStringArray(["sh03_finesse_curler", "sh04_trivela_bender", "sh17_far_post_bender", "sh21_lofted_finesse"])
 ## a player who kicks while running keeps moving: he slows at this rate (m/s2) during the clip instead of stopping dead
 @export var glide_brake := 4.0
