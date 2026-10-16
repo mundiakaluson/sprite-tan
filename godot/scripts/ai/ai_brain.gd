@@ -88,9 +88,18 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 	match i.action:
 		"pass", "through", "lob":
 			if i.target != null:
-				if i.action == "through":                                       # the runner sets off when the ball is struck
+				if i.action == "through":                                       # the runner sets off when the ball is struck (a smart one curls round defenders)
 					var mate := i.target
-					g.kicking.after_release(f, func(): g.orders.send_runner(f, mate, Vector2(f.team.dir * g.settings.through_run_speed, 0.0)))
+					var dir := mate.vel.normalized() if mate.vel.length() > 1.0 else Vector2(f.team.dir, 0.0)
+					if dir.x * f.team.dir < 0.2: dir = Vector2(f.team.dir, 0.0)
+					var plan := g.orders.plan_run(mate, dir, f)
+					g.kicking.after_release(f, func(): g.orders.send_runner(f, mate, Vector2(f.team.dir * g.settings.through_run_speed, 0.0), plan))
+					if plan.has("curve"):
+						var over := i.over.duplicate()
+						over["_to_space"] = true
+						over["speed"] = plan["speed"]
+						g.poss.kick_action(f, i.action, plan["meet"], Vector2.ZERO, over, i.target)
+						return
 				g.poss.kick_action(f, i.action, i.target.pos, i.target.vel, i.over, i.target)
 			elif i.aim != Vector2.INF: g.poss.kick_action(f, i.action, i.aim)
 		"shoot":

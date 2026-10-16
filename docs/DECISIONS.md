@@ -201,3 +201,4 @@ Open / rough edges the user reported:
 - Build order: duel first (done, stage 1), then the choice UI, shot + one-on-one, pass contest + aerial, opponent manager, deck / buffs / risk / clock, Titan last.
 - cards.csv new columns: `engage` (types: duel shot pass aerial one_on_one) and `effect` (key=value: move, strand, burst). 39 duel cards filled (DR01-DR30 except DR29, DF01/02/03/06/08/12/13/18/28/35).
 - Supernatural skill cards bend realism but stay understated (not Titan): Double Team = the nearest team mate zaps in on a thin cyan bolt with faint afterimages and a short crackle. Upfield he lands behind the carrier and nicks it; deep he lands goal side to cover.
+- Through-ball runs follow where the human points; clever players (game sense) curve round defenders, the ball is played into a clear lane on the curve, and the curved run is 20% faster with very faint afterimages ("0.2" read as +20%; curve_run_boost).

@@ -47,6 +47,7 @@ var _lob_down := false
 var _lob_drag := false
 var _lob_start := Vector2.ZERO
 var _last_click: Footballer
+var _through_mate: Footballer       ## the runner a through-ball drag is locked on (so the pointer can move away from him to point the run)
 var _last_click_ms := 0
 
 func setup(g: MatchGame, h: MatchHud) -> void:
@@ -160,7 +161,7 @@ func _release(p: Vector2) -> void:
 			var plan := _plan(p, _down)
 			match plan["kind"]:
 				"shoot": game.orders.shoot_at(_down, plan["spot"])
-				"pass", "through": game.orders.pass_to(_down, plan["kind"], plan["mate"], Vector2.INF)
+				"pass", "through": game.orders.pass_to(_down, plan["kind"], plan["mate"], Vector2.INF, false, plan.get("point", Vector2.INF))
 				"space": game.orders.pass_to(_down, "pass", null, plan["spot"])
 				_: game.command.clear()
 		else:
@@ -188,9 +189,15 @@ func _plan(p: Vector2, carrier: Footballer) -> Dictionary:
 	if spot != Vector2.INF and spot.x * game.home.dir > MatchGame.HALF_L - shoot_zone_x and absf(spot.y) < shoot_zone_z:
 		return {"kind": "shoot", "mate": null, "spot": spot}
 	var mate := _nearest_mate(p, carrier)
+	var pull := p.distance_to(carrier.node.position)
+	if mate == null and _through_mate != null and pull > through_pull and _through_mate != carrier:      # pointing the run: stay on him
+		var head := _through_mate.node.position + Vector2(0.0, -13.0 * _through_mate.node.scale.y)
+		if p.distance_to(head) < snap_radius * game.settings.through_point_reach: mate = _through_mate
 	if mate != null:
-		var pull := p.distance_to(carrier.node.position)
-		return {"kind": "through" if pull > through_pull else "pass", "mate": mate, "spot": Vector2.INF}
+		var kind := "through" if pull > through_pull else "pass"
+		_through_mate = mate if kind == "through" else null
+		return {"kind": kind, "mate": mate, "spot": Vector2.INF, "point": spot}
+	_through_mate = null
 	if spot != Vector2.INF: return {"kind": "space", "mate": null, "spot": spot}
 	return {"kind": "none", "mate": null, "spot": Vector2.INF}
 
@@ -209,7 +216,7 @@ func _show_plan(plan: Dictionary) -> void:
 	var c := game.command
 	match plan["kind"]:
 		"pass": c.show("pass", "PASS", _down, plan["mate"], "let go to pass. Drag further for a through ball")
-		"through": c.show("through", "THROUGH", _down, plan["mate"], "let go: through ball, he runs onto it")
+		"through": c.show("through", "THROUGH", _down, plan["mate"], "point where he runs, let go: through ball")
 		"shoot": c.show("shoot", "SHOOT", _down, null, "let go to shoot where the line ends")
 		"space": c.show("pass", "PASS (SPACE)", _down, null, "let go to play it into space")
 		_: c.show("pass", "PASS", _down, null, "drag onto the pitch")
@@ -238,7 +245,7 @@ func _lob_release(p: Vector2) -> void:
 		return
 	var plan := _plan(p, lober)
 	var mate: Footballer = plan["mate"]
-	if mate != null: game.orders.pass_to(lober, "lob", mate, Vector2.INF, plan["kind"] == "through")
+	if mate != null: game.orders.pass_to(lober, "lob", mate, Vector2.INF, plan["kind"] == "through", plan.get("point", Vector2.INF))
 	elif plan["spot"] != Vector2.INF: game.orders.pass_to(lober, "lob", null, plan["spot"])
 	else: game.command.clear()
 	clear()
@@ -324,6 +331,7 @@ func _confirm_aim(p: Vector2) -> void:
 	clear()
 
 func clear() -> void:
+	_through_mate = null
 	mode = Mode.IDLE
 	order = ""
 	selected = null

@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/engagement/zap_ghost.gd" id="1"]
 [ext_resource type="Shader" path="res://shaders/zap_ghost.gdshader" id="2"]
@@ -26,9 +26,27 @@ tracks/0/keys = {
 "values": [0.35, 0.0]
 }
 
+[sub_resource type="Animation" id="Animation_soft"]
+resource_name = "soft"
+length = 0.3
+loop_mode = 0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:fade")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.12, 0.0]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ghost"]
 _data = {
-&"fade": SubResource("Animation_fade")
+&"fade": SubResource("Animation_fade"),
+&"soft": SubResource("Animation_soft")
 }
 
 [node name="ZapGhost" type="Node2D"]

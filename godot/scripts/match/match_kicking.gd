@@ -47,7 +47,7 @@ func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_i
 	if g.carrier != f:
 		_after.erase(f)
 		return
-	if receiver != null: to = receiver.pos                                  # he may have moved while we turned
+	if receiver != null and not over_in.get("_to_space", false): to = receiver.pos      # he may have moved while we turned (not for a ball played into a planned spot)
 	var dir := to - f.pos
 	var speed := f.vel.length()
 	var over := over_in.duplicate()

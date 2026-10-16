@@ -216,6 +216,36 @@ func predict_cross(from: Vector3, aim: Vector2, style_id: String, speed: float, 
 			return before.lerp(p.pos, clampf(absf(u), 0.0, 1.0))
 	return p.pos
 
+## seconds a kick from `from` to the spot `to` (pitch x / z) takes to get there with this style and speed (no aim error); INF if it stops short.
+## Used to weight a through ball so it arrives when the runner does (MatchOrders.plan_run).
+func time_to_reach(from: Vector3, to: Vector2, style_id: String, speed: float, max_t := 4.0) -> float:
+	var k := Data.row("kick_styles", style_id)
+	var p := copy_physics()
+	var flat := Vector3(to.x - from.x, 0.0, to.y - from.z)
+	var dist := flat.length()
+	if dist < 0.1: return 0.0
+	flat = flat.normalized()
+	var elev := deg_to_rad(_f(k, "elev", 0.0))
+	p.launch(from, flat * cos(elev) + Vector3.UP * sin(elev), speed, Vector3.ZERO, 1.0)
+	var t := 0.0
+	var dt := 1.0 / 60.0
+	while t < max_t:
+		p.step(dt)
+		t += dt
+		if Vector2(p.pos.x - from.x, p.pos.z - from.z).length() >= dist: return t
+		if p.vel.length() < 0.3: return INF
+	return INF
+
+## the kick speed (m/s) that gets a kick to `to` in about `want_t` seconds, between lo and hi
+func speed_for_time(from: Vector3, to: Vector2, style_id: String, want_t: float, lo := 6.0, hi := 28.0) -> float:
+	var a := lo
+	var b := hi
+	for i in 14:
+		var mid := (a + b) * 0.5
+		if time_to_reach(from, to, style_id, mid) > want_t: a = mid
+		else: b = mid
+	return b
+
 ## called by the stadium each frame after it has placed this node: ground shadow offset in screen pixels (before this node's scale)
 func place_shadow(offset_px: Vector2, height_m: float) -> void:
 	shadow.position = offset_px / scale

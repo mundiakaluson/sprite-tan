@@ -379,6 +379,26 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 ## seconds after the ball is struck before the runner reacts and sets off
 @export var through_react := 0.25
 
+@export_group("Through-ball runs")
+## the human points the run: the pointer this many metres or more from the runner sets his direction (closer = straight up the pitch)
+@export var through_point_min := 1.5
+## once the drag is a through ball it stays on the runner while the pointer is within snap radius x this (room to point the run)
+@export var through_point_reach := 4.0
+## smart runs: game sense (PAS + DRI average) at least this curves the run round defenders on the straight line
+@export var curve_sense_min := 68.0
+## a defender within this many metres of the straight run blocks it; the bend (m) of the curve at its middle at curve_sense_min and at sense 99
+@export var curve_block := 2.5
+@export var curve_bend_min := 3.0
+@export var curve_bend_max := 5.5
+## the curve must clear defenders by this much more than the straight run to be worth it
+@export var curve_gain := 0.8
+## a curved run is this much faster (0.2 = +20%) and leaves faint afterimages every curve_ghost_every s (0 = none)
+@export var curve_run_boost := 0.2
+@export var curve_ghost_every := 0.14
+## he leaves the curve and runs at the ball once he reaches the meeting point or the ball is this close (m); aims this many seconds ahead of the rolling ball
+@export var curve_chase_dist := 5.0
+@export var curve_chase_lead := 0.35
+
 @export_group("Card effects")
 ## success roll: the card's stat difference to 60 counts this much per point (percent)
 @export var stat_roll_k := 0.3

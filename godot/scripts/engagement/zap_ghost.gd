@@ -30,8 +30,9 @@ func copy_from(p: Player) -> void:
 	s.scale = src.scale
 	s.flip_h = src.flip_h
 
-func start() -> void:
-	$AnimationPlayer.play("fade")
+## "fade" (a zap's afterimage) or "soft" (the very faint one of a curved run)
+func start(anim := "fade") -> void:
+	$AnimationPlayer.play(anim)
 
 func _push() -> void:
 	var s := get_node_or_null("Sprite") as Sprite2D
