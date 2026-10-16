@@ -33,15 +33,42 @@ def lag(fn, f, k=1.0):
     return fn(f - k)
 
 
-def idle_pose(d, f, ph, scale=1.0):
+def idle_pose(d, f, ph, scale=1.0, low=0.0, wide=0.0):
     """the keeper's ready stance at loop phase ph (0..2pi): knees soft, weight rocking, breathing, hands working, eyes scanning"""
     sw = math.sin(ph)                                        # weight side to side
     bob = 0.5 + 0.5 * math.sin(2 * ph - 1.2)                 # little knee dip twice per cycle
     toe = max(0.0, math.sin(2 * ph + 0.8)) ** 2              # a heel lifts now and then
     d.at(f, R=(3.1 + 0.25 * sw, 0.8, 0, 1.6 * toe if sw > 0 and toe > 0.15 else None), L=(-3.1 + 0.25 * sw, -0.6, 0, 1.6 * toe if sw < 0 and toe > 0.15 else None),
-         pz=21.6 + 0.35 * bob - 0.15 * abs(sw), cpitch=0.5 + 0.04 * math.sin(2 * ph + 0.4), croll=0.07 * sw * scale, proll=-0.05 * sw * scale, hyaw=0.18 * math.sin(ph + 0.8) * scale, hpitch=0.25 + 0.03 * math.sin(2 * ph))
+         pz=21.6 + 0.35 * bob - 0.15 * abs(sw), cpitch=0.5 + 0.35 * low + 0.04 * math.sin(2 * ph + 0.4), croll=0.07 * sw * scale, proll=-0.05 * sw * scale, hyaw=0.18 * math.sin(ph + 0.8) * scale, hpitch=0.25 + 0.03 * math.sin(2 * ph))
     wr = math.sin(2 * ph + 1.0)
     d.arms(f, (READY[0] + 0.06 * wr, READY[1] + 0.05 * math.sin(ph), READY[2] + 0.1 * wr, READY[3] + 0.08 * math.sin(2 * ph)), (READY[0] - 0.06 * wr, READY[1] - 0.05 * math.sin(ph), READY[2] - 0.1 * wr, READY[3] - 0.08 * math.sin(2 * ph + 0.5)))
+
+
+@move('gk_set_low', 'Keeper Set Low (shot coming)', True)
+def keeper_set_low():
+    """a shot is likely: wider and lower, hands out in front, still rocking on the toes"""
+    N = 20; d = Dr(N, ms=65, speed=0.0); d.m.loop = True; d.m.events = {}
+    for f in range(N): d.lt[f] = 0.0; d.sp[f] = 0.0
+    for f in range(N):
+        idle_pose(d, f, 2 * PI * f / N, scale=0.6, low=1.6, wide=0.9)
+        a = (1.35, 0.5, 1.7, 0.3); w = 0.08 * math.sin(4 * PI * f / N)
+        d.arms(f, (a[0] + w, a[1], a[2] + w, a[3]), (a[0] - w, a[1], a[2] - w, a[3]))
+    hidden(d); return d.m
+
+
+@move('gk_shuffle', 'Keeper Side Shuffle', True)
+def keeper_shuffle():
+    """sidesteps to his right with his chest to the ball: lead foot reaches, trail foot follows without crossing, knees bent, hands ready (the game mirrors it for a left shuffle)"""
+    N = 12; d = Dr(N, ms=55, speed=0.0); d.m.loop = True; d.m.events = {}
+    for f in range(N): d.lt[f] = 0.0; d.sp[f] = 0.0
+    for f in range(N):
+        ph = 2 * PI * f / N; c = math.cos(ph); sn = math.sin(ph)
+        lead = max(0.0, sn); trail = max(0.0, -sn)
+        d.at(f, R=(3.3 + 1.7 * (0.5 + 0.5 * c), 0.8, 0, 1.8 * lead if lead > 0.1 else None), L=(-3.3 + 1.7 * (0.5 + 0.5 * -c) + 0.0, -0.6, 0, 1.8 * trail if trail > 0.1 else None),
+             pz=21.2 - 0.35 * abs(sn), cpitch=0.5, croll=-0.06 * sn, proll=0.04 * sn, hyaw=-0.12, hpitch=0.25)
+        w = 0.1 * sn
+        d.arms(f, (READY[0] + w, READY[1], READY[2] + w, READY[3]), (READY[0] - w, READY[1], READY[2] - w, READY[3]))
+    hidden(d); return d.m
 
 
 @move('gk_ready_idle', 'Keeper Ready Idle', True)
@@ -88,15 +115,15 @@ def dive(d, f0, h=30.0, reach=(2.35, 0.5, 2.8, 0.2), lt=4.2, lie=6, roll=1.45):
         if i < 3: a = mix(READY, back, c)
         elif i < 6:
             u = sm((i - 2.0) / 3.0); a = mix(back, tuple(r * 1.04 for r in reach), u)
-        elif i < 9: a = mix(reach, (reach[0] * 0.78, reach[1], reach[2] * 0.7, reach[3] + 0.1), sm((i - 6) / 3.0))
-        else: a = mix((reach[0] * 0.78, reach[1], reach[2] * 0.7, reach[3] + 0.1), reach, sm((i - 9) / 3.0))
+        else: a = mix(tuple(r * 1.04 for r in reach), reach, sm((i - 5) / 3.0))                    # hands stay out at the ball (a parry, not a cradle)
         d.arms(f, a, a)
     lat = {f0: 0.0, f0 + 2: lt * 0.25, f0 + 4: lt * 1.0, f0 + 6: lt * 0.9, f0 + 8: lt * 0.65, f0 + 10: lt * 0.35, f0 + 12: 0.15 * lt, f0 + 13: 0.0}
     d.lateral(**{f'f{k}': v for k, v in lat.items()})
     for f in range(f0 + DIVE_LEN, f0 + DIVE_LEN + lie):
         e = f - (f0 + DIVE_LEN)
         d.at(f, R=LY['R'], L=LY['L'], pz=8.0 + 0.25 * math.sin(e * 1.4) * max(0.0, 1 - e / 4.0), cpitch=0.0, croll=-roll, proll=-roll + 0.05, hyaw=-0.85)
-        d.arms(f, reach, reach)
+        k = sm(e / 3.0); a = mix(reach, mix(reach, LYING_R, 0.55), k)                                  # the arms ease down onto the grass
+        d.arms(f, a, a)
     return f0 + DIVE_LEN + lie
 
 
@@ -107,7 +134,7 @@ def getup(d, f0, n=8):
         s1 = sm(u / 0.5); s2 = sm((u - 0.4) / 0.6)
         d.at(f, R=(3.0, 0.8, 0, None), L=(-3.0, -0.6, 0, None), pz=lerp(8.0, 21.8, s2 ** 0.85) + 1.5 * math.sin(PI * s2) * 0.0, cpitch=0.9 * math.sin(PI * min(1.0, u * 0.9)) * 0.7 + 0.5 * s2, croll=-1.45 * (1 - s1), proll=-1.4 * (1 - s1),
              hyaw=-0.85 * (1 - s1), hpitch=0.3 * s1)
-        d.arms(f, mix((2.35, 0.5, 2.8, 0.2), READY, s2), mix((2.35, 0.5, 2.8, 0.2), READY, s2))
+        d.arms(f, mix(mix(LYING_R, (1.5, 0.5, 1.5, 0.2), 0.6), READY, s2), mix(mix(LYING_R, (1.5, 0.5, 1.5, 0.2), 0.6), READY, s2))
     return f0 + n
 
 
@@ -137,9 +164,13 @@ def jump():
 
 
 # ------------------------------------------------------------------------------------------------------------------ falls
+LYING_R = (0.2, 0.25, 0.5, -0.05)       # arms along his body, slack, not up in the air
+LYING_L = (0.15, 0.3, 0.45, -0.05)
+
+
 def lying_pose(d, f, roll=1.45, pz=8.0):
     d.at(f, R=(3.6, -3.0, 20, 5.0), L=(-0.5, -4.0, 20, 5.0), pz=pz, cpitch=0.0, croll=-roll, proll=-roll + 0.05, hyaw=-0.85)
-    d.arms(f, (2.35, 0.5, 2.8, 0.2), (2.0, 0.6, 2.4, 0.2))
+    d.arms(f, LYING_R, LYING_L)
 
 
 def fall_clip(kind):
@@ -168,8 +199,9 @@ def fall_clip(kind):
         d.at(f, R=R, L=L, pz=pz, cpitch=cp * (1 - end), croll=roll, proll=roll + 0.08 * (1 - end), hyaw=-0.85 * drop + (0.5 * P['spin'] * sm(f / 6.0) * (1 - drop)), hroll=-0.2 * off * (1 - end), pyaw=0.45 * P['spin'] * off * (1 - drop))
         wind = math.sin(f * 1.6) * off * (1 - drop)                    # arms flail, then reach for the ground
         flail = (0.12 + 1.5 * off, 0.2 + 1.0 * off, 0.45 + 0.9 * off, -0.08 + 0.3 * off)
-        ground = (2.35, 0.5, 2.8, 0.2)
-        r = mix((flail[0] + 0.5 * wind, flail[1], flail[2], flail[3]), ground, sm((f - 5.0) / 4.0)); l = mix((flail[0] - 0.5 * wind, flail[1], flail[2], flail[3]), (2.0, 0.6, 2.4, 0.2), sm((f - 6.0) / 4.0))
+        ground = (1.5, 0.45, 1.2, 0.1)
+        r = mix((flail[0] + 0.5 * wind, flail[1], flail[2], flail[3]), ground, sm((f - 5.0) / 3.0)); l = mix((flail[0] - 0.5 * wind, flail[1], flail[2], flail[3]), (1.2, 0.5, 1.0, 0.1), sm((f - 6.0) / 3.0))
+        r = mix(r, LYING_R, sm((f - imp) / 4.0)); l = mix(l, LYING_L, sm((f - imp) / 4.0))               # braced at the ground, then the arms go slack
         d.arms(f, r, l)
     d.lateral(**{'f3': 0.0, f'f{imp - 3}': 1.2, f'f{imp}': 1.0, f'f{imp + 3}': 0.0})
     hidden(d); return d.m
@@ -202,5 +234,5 @@ def get_up():
         cp = 0.9 * s1 * (1 - s2) + 0.5 * s2 * (1 - s3) + 0.05 * s3
         d.at(f, R=(lerp(3.4, 3.0, s1), lerp(-3.0, 1.0, s1) + 0.1 * s2, 20 * (1 - s1), 5.0 * (1 - s1) if s1 < 1 else None), L=(lerp(-0.5, -3.0, s1), lerp(-4.0, -0.6, s1) - 0.8 * (1 - s2), 20 * (1 - s1), 5.0 * (1 - s1) if s1 < 1 else None),
              pz=pz, cpitch=cp, croll=-1.45 * (1 - s1), proll=-1.4 * (1 - s1), hyaw=-0.85 * (1 - s1), hpitch=0.3 * s1 * (1 - s3) + 0.05 * s3)
-        d.arms(f, mix((2.35, 0.5, 2.8, 0.2), mix((1.7, 0.5, 1.5, 0.2), REST, s3), s2), mix((2.0, 0.6, 2.4, 0.2), mix((1.7, 0.6, 1.5, 0.2), REST, s3), s2))
+        d.arms(f, mix(LYING_R, mix((1.5, 0.5, 1.3, 0.2), REST, s3), s2), mix(LYING_L, mix((1.5, 0.6, 1.3, 0.2), REST, s3), s2))
     hidden(d); return d.m

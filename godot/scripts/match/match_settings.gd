@@ -100,6 +100,15 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var clips_fall := PackedStringArray(["base_fall", "base_fall_trip", "base_fall_back"])
 ## the keeper stands in this clip when he is not moving (a ready stance instead of the outfield idle)
 @export var clip_keeper_idle := "gk_ready_idle"
+@export var clip_keeper_set := "gk_set_low"
+@export var clip_keeper_shuffle := "gk_shuffle"
+## the keeper reads the game: relaxed (outfield idle) when the ball is far or his team has it, alert (ready stance) when the opponents have it within keeper_alert_dist m of his goal line,
+## set (low, wide) when an opponent has it within keeper_set_dist. Below keeper_watch_speed he keeps his chest to the ball (turning at keeper_turn_deg_per_s) and sidesteps when the move is mostly sideways (share > keeper_shuffle_lateral)
+@export var keeper_alert_dist := 50.0
+@export var keeper_set_dist := 26.0
+@export var keeper_watch_speed := 4.2
+@export var keeper_turn_deg_per_s := 360.0
+@export_range(0.0, 1.0) var keeper_shuffle_lateral := 0.6
 
 @export_group("Kick animations")
 ## the whole kick clip is played in this many seconds (the authored clips take ~1.5 s, far too slow for a pass); the ball goes at the clip's strike frame

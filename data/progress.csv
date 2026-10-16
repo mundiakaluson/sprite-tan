@@ -58,3 +58,4 @@ Game,"Kick clip variations, passing on the run, tackle tumbles, softer scuffs",d
 Game,"Heavy pivot: run bends round with the turn, DRI-based turn speed and turn clips",doing,"untested visually in Godot"
 Animation,"Turn-with-ball clips tn01-tn04 (heavy / plant / sharp / spin), picked by DRI",doing,"authored, previewed; needs baking in the tool"
 Animation,"Smoother keeper idle/dives, jump, falls (+trip/back), get up",doing,"authored and previewed as GIFs; needs baking in the tool"
+Game,"Keeper reads the game (line, speed, shuffle, relaxed/alert/set stances); fall arms fixed; dive hands out",doing,"headless: keeper 2-9 m off his line with the play; clips need baking (gk_ready_idle, gk_set_low, gk_shuffle)"

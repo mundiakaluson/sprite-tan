@@ -72,7 +72,11 @@ func update(dt: float) -> void:
 		f.pos.x = clampf(f.pos.x, -MatchGame.HALF_L - 3.0, MatchGame.HALF_L + 3.0)
 		f.pos.y = clampf(f.pos.y, -MatchGame.HALF_W - 2.0, MatchGame.HALF_W + 2.0)
 		if g.carrier == f: f.carried += before.distance_to(f.pos)
-		if f.vel.length() > 0.5 and f.aim_done.is_null() and not gliding:
+		var tb := Vector2(g.ball.phys.pos.x, g.ball.phys.pos.z) - f.pos
+		if f.is_keeper() and f.lock <= 0.0 and f.aim_done.is_null() and not gliding and f.vel.length() < s.keeper_watch_speed and tb.length() > 1.0:
+			var kstep := deg_to_rad(s.keeper_turn_deg_per_s) * dt                  # a keeper keeps his chest to the ball while he shuffles across
+			f.face = f.face.rotated(clampf(f.face.angle_to(tb), -kstep, kstep)).normalized()
+		elif f.vel.length() > 0.5 and f.aim_done.is_null() and not gliding:
 			var step := deg_to_rad(s.turn_deg_per_s) * dt                      # turns by an angle, so a U-turn can not collapse the vector
 			f.face = f.face.rotated(clampf(f.face.angle_to(f.vel), -step, step)).normalized()
 		f.want = Vector2.ZERO
@@ -88,16 +92,38 @@ func update(dt: float) -> void:
 
 func _show(f: Footballer) -> void:
 	g.stadium.set_actor_pos(f.node, g.stadium.pitch_pos(Vector3(f.pos.x, 0.0, f.pos.y)))
-	f.node.set_mirror(f.mirror and (f.lock > 0.0 or not f.aim_done.is_null()))
-	f.node.face_vector(g.stadium.screen_dir(f.pos, f.face))          # the picture turns by what the camera sees, not by the pitch angle
-	if f.lock > 0.0 or not f.aim_done.is_null(): return
-	f.mirror = false
-	var speed := f.vel.length()
+	var busy := f.lock > 0.0 or not f.aim_done.is_null()
+	var shuffle_left := false
 	var want_clip := "base_idle"
-	if f.is_keeper() and speed <= 0.4 and f.node.has_clip(g.settings.clip_keeper_idle): want_clip = g.settings.clip_keeper_idle
-	if speed > 5.8: want_clip = "base_sprint"
-	elif speed > 3.2: want_clip = "base_jog"
-	elif speed > 0.4: want_clip = "base_walk"
+	if not busy:
+		var speed := f.vel.length()
+		if speed > 5.8: want_clip = "base_sprint"
+		elif speed > 3.2: want_clip = "base_jog"
+		elif speed > 0.4: want_clip = "base_walk"
+		if f.is_keeper():
+			var k := _keeper_clip(f, speed)
+			if k != "" and f.node.has_clip(k):
+				want_clip = k
+				if k == g.settings.clip_keeper_shuffle: shuffle_left = f.vel.dot(Vector2(-f.face.y, f.face.x)) < 0.0     # the clip shuffles to his right
+	f.node.set_mirror((f.mirror and busy) or shuffle_left)
+	f.node.face_vector(g.stadium.screen_dir(f.pos, f.face))          # the picture turns by what the camera sees, not by the pitch angle
+	if busy: return
+	f.mirror = false
 	if want_clip != f.clip and f.node.has_clip(want_clip):
 		f.node.play_clip(want_clip)
 		f.clip = want_clip
+
+## the keeper's own clips: sidesteps with his chest to the ball, and a stance that follows the danger (relaxed / alert / set for a shot)
+func _keeper_clip(f: Footballer, speed: float) -> String:
+	var s := g.settings
+	var ball := Vector2(g.ball.phys.pos.x, g.ball.phys.pos.z)
+	if speed > 0.4:
+		if speed < s.keeper_watch_speed:
+			var cross := absf(f.vel.dot(Vector2(-f.face.y, f.face.x)))
+			if cross > s.keeper_shuffle_lateral * speed: return s.clip_keeper_shuffle
+		return ""
+	var dist := absf(ball.x - (-MatchGame.HALF_L * f.team.dir))
+	var danger := g.carrier == null or g.carrier.team != f.team
+	if danger and dist < s.keeper_set_dist: return s.clip_keeper_set
+	if danger and dist < s.keeper_alert_dist: return s.clip_keeper_idle
+	return "base_idle"
