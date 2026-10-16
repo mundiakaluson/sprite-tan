@@ -6,7 +6,7 @@ extends RefCounted
 var move_to := Vector2.INF
 ## fraction of his top speed (the settings' jog_factor / sprint_factor / carry_factor are the usual values)
 var speed := 0.7
-## "" (just move), "pass", "through", "lob", "shoot"
+## "" (just move), "pass", "through", "lob", "shoot", "takeon" (target = the defender he beats), "tackle" / "slide" (target = the carrier)
 var action := ""
 ## team mate for a pass / through / lob
 var target: Footballer

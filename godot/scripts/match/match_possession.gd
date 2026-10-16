@@ -152,7 +152,12 @@ func failed_tackle(tackler: Footballer, carrier: Footballer) -> void:
 	if carrier.lock <= 0.0 and g.rng.randf() < s.tackle_miss_carrier_stumble: g.kicking.tumble(carrier, s.clips_stumble_light)
 
 ## a defender goes in on the carrier: plays the tackle clip, and at its strike frame it is won or lost
+var stat_tackles := 0
+var stat_tackles_won := 0
+
 func start_tackle(f: Footballer, target: Footballer, won: bool) -> void:
+	stat_tackles += 1
+	if won: stat_tackles_won += 1
 	var s := g.settings
 	var list := PackedStringArray()
 	for c in s.clips_tackle:

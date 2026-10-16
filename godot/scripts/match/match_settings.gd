@@ -135,6 +135,33 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var shot_far_m := 22.0
 @export var pass_back_deg := 110.0
 
+@export_group("Take-on and slide tackles")
+## a take-on: he shows the shoulder one way for fake_time s (at fake_speed x top speed), then bursts the other way for burst_time s (burst_speed x top speed, turning at turn_rate)
+@export var clips_takeon := PackedStringArray(["dr05_body_feint", "dr01_step_over", "dr14_chop_cut", "dr07_la_croqueta", "dr15_stepover_chain"])
+@export var takeon_fake_time := 0.3
+@export var takeon_burst_time := 0.5
+@export var takeon_fake_speed := 0.8
+@export var takeon_burst_speed := 1.1
+@export var takeon_turn_rate := 14.0
+## the defender buys the fake with chance base + (carrier DRI - his DEF) x per_stat; then he lunges / slides the faked way (share bite_slide) or is wrong-footed (stumble), and is out of play for `recover` s;
+## the carrier cannot be tackled for `shield` s after a bitten fake. A defender who read it gets a tackle (reach, win chance)
+@export var takeon_bite_base := 0.5
+@export var takeon_bite_per_stat := 0.008
+@export_range(0.0, 1.0) var takeon_bite_slide := 0.5
+@export var takeon_recover := 0.9
+@export var takeon_shield := 0.6
+@export var takeon_read_reach := 2.4
+@export_range(0.0, 1.0) var takeon_read_win := 0.6
+## the slide tackle: clips, how long it takes (s), how fast he slides (m/s), where he aims (the carrier's position this many s ahead), how far the ball can be at the strike frame (m),
+## win chance = base + (DEF - DRI) x per_stat; a missed slide leaves him on the floor (Tackle tumbles)
+@export var clips_slide := PackedStringArray(["df02_slide_tackle"])
+@export var slide_clip_time := 0.75
+@export var slide_speed := 8.0
+@export var slide_lead := 0.3
+@export var slide_reach := 1.9
+@export var slide_win_base := 0.55
+@export var slide_per_stat := 0.008
+
 @export_group("Tackle tumbles")
 ## a won tackle: the tackler slides in (clip below, played in tackle_clip_time s) and the ball changes hands at its strike frame; the victim then falls with this chance, else stumbles
 @export var clips_tackle := PackedStringArray(["df01_stand_tackle", "df03_poke_tackle"])

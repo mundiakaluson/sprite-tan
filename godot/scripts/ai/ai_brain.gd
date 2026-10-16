@@ -80,3 +80,9 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 			elif i.aim != Vector2.INF: g.poss.kick_action(f, i.action, i.aim)
 		"shoot":
 			g.poss.kick_action(f, "shot", i.aim, Vector2.ZERO, {})
+		"takeon": g.dribble.take_on(f, i.target)
+		"slide": g.dribble.slide_tackle(f, i.target)
+		"tackle":
+			if i.target != null and g.carrier == i.target and f.lock <= 0.0 and f.no_touch <= 0.0:
+				var won := g.rng.randf() < clampf(0.5 + (f.stat("DEF", 60) - i.target.stat("DRI", 60)) * 0.01, 0.15, 0.85)
+				g.poss.start_tackle(f, i.target, won)
