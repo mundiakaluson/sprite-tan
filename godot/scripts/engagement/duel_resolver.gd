@@ -11,6 +11,7 @@ extends RefCounted
 ## a won defending card is a foul instead with risk % x engage_risk_win_share.
 ## Card effect keys (cards.csv `effect`): move = feint / skill / flick / burst / shield (ball side), stand / slide / poke / charge / double / foul
 ## (challenge side); strand = how much longer a beaten defender is out of play; burst = burst speed factor.
+## Double Team (move=double): a team mate has zapped in first (DoubleTeam); the challenge stat gets double_stat_bonus and, upfield, the helper makes the tackle from behind.
 
 var g: MatchGame
 
@@ -25,6 +26,7 @@ func resolve(e: Engagement) -> void:
 	var cd := e.card_of(d.team)
 	var a := EngageCard.stat(c, ca, "DRI")
 	var dd := EngageCard.stat(d, cd, "DEF")
+	if e.helper != null: dd += s.double_stat_bonus                                 # two on one (Double Team)
 	var pa := clampf((s.engage_default_succ if ca.is_empty() else Data.num(ca["succ"], 60.0)) + s.engage_k * (a - dd), s.engage_p_min, s.engage_p_max)
 	var pd := clampf((s.engage_default_succ if cd.is_empty() else Data.num(cd["succ"], 60.0)) + s.engage_k * (dd - a), s.engage_p_min, s.engage_p_max)
 	var ra := g.rng.randf() * 100.0
@@ -44,7 +46,10 @@ func resolve(e: Engagement) -> void:
 	e.note = "%s %.0f%% vs %s %.0f%%" % [a_move, pa, d_move, pd]
 	match win:
 		"ball": _ball_wins(e, c, d, ca, a_move, g.rng.randf() < risk_d)
-		"challenge": _challenge_wins(e, c, d, cd, a_move, d_move, g.rng.randf() < risk_a)
+		"challenge":
+			if e.helper != null and not g.engage.double.deep and e.helper.pos.distance_to(c.pos) < s.engage_stand_reach + 1.0:
+				g.poss.start_tackle(e.helper, c, true, true)                          # upfield: the helper takes it from behind
+			else: _challenge_wins(e, c, d, cd, a_move, d_move, g.rng.randf() < risk_a)
 		"foul": _foul(c, d)
 		_: _loose(c, d)
 

@@ -143,7 +143,7 @@ func set_slowmo(on: bool) -> void:
 func _process(dt: float) -> void:
 	var real_dt := dt / maxf(Engine.time_scale, 0.05)
 	var target := settings.aim_slowmo if _slow and phase == Phase.PLAY else 1.0
-	if engage != null and engage.frozen(): target = settings.engage_slowmo
+	if engage != null and engage.frozen(): target = settings.double_slowmo if engage.zapping() else settings.engage_slowmo
 	Engine.time_scale = move_toward(Engine.time_scale, target, 5.0 * real_dt)
 
 func _exit_tree() -> void:
@@ -172,6 +172,7 @@ func _physics_process(dt: float) -> void:
 	dribble.update(dt)
 	aerial.update(dt)
 	motion.update(dt)
+	engage.double.update(dt)                                                    # a Double Team helper rides his zap after the normal motion step
 	keeper.update(dt)
 	poss.update(dt)
 	if phase == Phase.PLAY: rules.check()

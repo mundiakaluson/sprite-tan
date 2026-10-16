@@ -213,6 +213,29 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var engage_ai_foul_k := 0.3
 @export var engage_ai_foul_depth := 0.75
 
+@export_group("Double team")
+## Double Team (effect move=double): the nearest team mate of the defender within this many metres of the carrier (and further than double_min_range) zaps in
+@export var double_range := 30.0
+@export var double_min_range := 2.5
+## the carrier nearer than this to our goal = deep: the helper lands goal side (cover); further = upfield: he lands right behind the carrier
+@export var double_deep_dist := 32.0
+## upfield: metres behind the carrier; deep: metres goal side of the carrier and to the side away from the first defender
+@export var double_behind := 1.2
+@export var double_cover_dist := 3.0
+@export var double_cover_side := 1.2
+## the path: kinks and their sideways jitter (m); the zap itself runs on scenes/engagement/zap_trail.tscn's "zap" animation, this is only for aiming the carrier's spot
+@export var double_kinks := 5
+@export var double_jitter := 1.0
+@export var double_zap_time := 0.35
+## afterimages left along the path
+@export var double_ghosts := 4
+## time scale while he zaps in (lighter than the pick freeze)
+@export_range(0.05, 1.0) var double_slowmo := 0.5
+## added to the challenge side's stat in the duel roll (two on one)
+@export var double_stat_bonus := 10.0
+## his speed when he lands, x his top speed
+@export var double_arrive_speed := 0.4
+
 @export_group("Take-on and slide tackles")
 ## a defender within takeon_box_dist m of his own goal bites this much less often (he stays on his feet in the box)
 @export var takeon_box_dist := 20.0

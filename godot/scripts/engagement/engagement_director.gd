@@ -15,6 +15,7 @@ signal finished(e: Engagement)
 var g: MatchGame
 var ai: EngagementAi
 var duel_resolver: DuelResolver
+var double: DoubleTeam             ## Double Team's zap (cards with effect move=double)
 var current: Engagement = null
 var play_t := 0.0                  ## play seconds since the last engagement ended
 var count := {}                    ## Team -> engagements as the ball side
@@ -29,6 +30,7 @@ func _init(game: MatchGame) -> void:
 	g = game
 	ai = EngagementAi.new(game)
 	duel_resolver = DuelResolver.new(game)
+	double = DoubleTeam.new(game)
 	play_t = 999.0
 
 ## true while an engagement is being chosen or revealed (the clock stops, play is in slow motion)
@@ -148,6 +150,8 @@ func update(dt: float) -> void:
 			if e.picked(e.ball.team) and e.picked(e.challenger.team): _reveal(e)
 		Engagement.Step.REVEAL:
 			if e.t >= s.engage_reveal_time: _resolve(e)
+		Engagement.Step.ZAP:
+			if not double.active(): _finish_resolve(e)
 
 func _reveal(e: Engagement) -> void:
 	e.step = Engagement.Step.REVEAL
@@ -162,7 +166,18 @@ func _reveal(e: Engagement) -> void:
 			g.cards.start_cooldown(team, c)
 	revealed.emit(e)
 
+## true while a card's effect plays out between the reveal and the resolve (time runs at double_slowmo, not the freeze)
+func zapping() -> bool:
+	return current != null and current.step == Engagement.Step.ZAP
+
 func _resolve(e: Engagement) -> void:
+	if e.type == "duel" and EngageCard.effect_str(e.card_of(e.challenger.team), "move") == "double" and double.start(e):
+		e.step = Engagement.Step.ZAP                                       # the helper zaps in first; the duel resolves when he lands
+		e.t = 0.0
+		return
+	_finish_resolve(e)
+
+func _finish_resolve(e: Engagement) -> void:
 	e.ball.shield = 0.0
 	match e.type:
 		"duel": duel_resolver.resolve(e)
@@ -170,12 +185,14 @@ func _resolve(e: Engagement) -> void:
 
 func _end(e: Engagement, outcome: String) -> void:
 	if e.ball.shield > 50.0: e.ball.shield = 0.0
+	if e.helper != null and double.active(): e.helper.lock = 0.0             # cancelled mid-zap: let him go
+	double.clear()
 	e.outcome = outcome
 	e.step = Engagement.Step.DONE
 	var k := "%s %s" % [e.type, outcome]
 	stat_outcomes[k] = int(stat_outcomes.get(k, 0)) + 1
-	log.append("%5.0f  %s  %s (%s) %s  vs  %s (%s) %s  -> %s %s" % [e.start_clock, e.type, e.ball.display_name(), e.ball.role, EngageCard.label(e.card_of(e.ball.team), "default"),
-		e.challenger.display_name(), e.challenger.role, EngageCard.label(e.card_of(e.challenger.team), "default"), outcome, e.note])
+	log.append("%5.0f  %s  %s (%s) %s  vs  %s (%s) %s  -> %s %s%s" % [e.start_clock, e.type, e.ball.display_name(), e.ball.role, EngageCard.label(e.card_of(e.ball.team), "default"),
+		e.challenger.display_name(), e.challenger.role, EngageCard.label(e.card_of(e.challenger.team), "default"), outcome, e.note, ("  + %s (%s)" % [e.helper.display_name(), "deep" if double.deep else "upfield"]) if e.helper != null else ""])
 	current = null
 	play_t = 0.0
 	finished.emit(e)

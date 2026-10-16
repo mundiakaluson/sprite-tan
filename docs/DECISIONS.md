@@ -200,3 +200,4 @@ Open / rough edges the user reported:
 - Manual or Auto per side (home: MatchSettings home_auto_engage; away always Auto). Manual = pick in every engagement your team is in. No pick in time = free default (unless Auto). Cards are not a free pass: P = clamp(succ + k (A - D)), stats still decide.
 - Build order: duel first (done, stage 1), then the choice UI, shot + one-on-one, pass contest + aerial, opponent manager, deck / buffs / risk / clock, Titan last.
 - cards.csv new columns: `engage` (types: duel shot pass aerial one_on_one) and `effect` (key=value: move, strand, burst). 39 duel cards filled (DR01-DR30 except DR29, DF01/02/03/06/08/12/13/18/28/35).
+- Supernatural skill cards bend realism but stay understated (not Titan): Double Team = the nearest team mate zaps in on a thin cyan bolt with faint afterimages and a short crackle. Upfield he lands behind the carrier and nicks it; deep he lands goal side to cover.
