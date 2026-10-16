@@ -70,7 +70,7 @@ def gk01():
 def gk02():
     d = K(38); idle(d, 0, 4)
     d.shot(10, (9.5, 5.0, 22.0), start=(12.0, 36.0, 6.0), f0=0, out=(0.9, 2.6, 1.4))
-    e = dive(d, 5, h=33.0, reach=(2.5, 0.5, 2.9, 0.2), lt=4.4)
+    e = dive(d, 5, h=33.0, reach=(2.5, 0.5, 2.9, 0.2), lt=4.4, hands='top')
     # the ball hits at f8 above; long stretch to the top corner
     getup(d, e, 38 - e) if e < 38 else None
     return d.done()
@@ -182,7 +182,7 @@ def gk08():
 def gk09():
     d = K(34); idle(d, 0, 2)
     d.shot(8, (8.5, 5.0, 3.0), start=(11.0, 34.0, 2.5), out=(0.5, 2.0, 0.0), g=0.0)
-    e = dive(d, 3, h=16.0, reach=(2.0, 0.55, 2.3, 0.3), lt=4.2, lie=6, roll=1.5)
+    e = dive(d, 3, h=16.0, reach=(2.0, 0.55, 2.3, 0.3), lt=4.2, lie=6, roll=1.5, hands='bottom')
     d.W = {f: (min(v[0], 12.0), v[1], 2.0) for f, v in d.W.items()}
     getup(d, e, 34 - e) if e < 34 else None
     d.m.events = {'strike': 8}
@@ -404,7 +404,7 @@ def gk23():
         d.arms(f, (1.2, 0.5, 1.5, 0.3), (1.2, 0.5, 1.5, 0.3))
     d.lateral(f3=1.6, f7=0.8, f8=0.0)
     d.shot(13, (12.0, 5.0, 24.0), start=(15.0, 34.0, 10.0), out=(1.0, 2.8, 1.4))
-    e = dive(d, 8, h=31.0, reach=(2.45, 0.5, 2.9, 0.15), lt=4.4, lie=6)
+    e = dive(d, 8, h=31.0, reach=(2.45, 0.5, 2.9, 0.15), lt=4.4, lie=6, hands='top')
     getup(d, e, 40 - e) if e < 40 else None
     return d.done()
 
@@ -413,7 +413,7 @@ def gk23():
 def gk24():
     d = K(38); idle(d, 0, 4)
     d.shot(10, (11.5, 5.0, 32.0), start=(14.0, 36.0, 10.0), out=(1.2, 3.0, 1.6), g=0.15)
-    e = dive(d, 5, h=36.0, reach=(2.55, 0.5, 3.0, 0.1), lt=4.8, lie=7, roll=1.4)
+    e = dive(d, 5, h=36.0, reach=(2.55, 0.5, 3.0, 0.1), lt=4.8, lie=7, roll=1.4, hands='top', wrist=0.6)
     getup(d, e, 38 - e) if e < 38 else None
     return d.done()
 
@@ -435,6 +435,38 @@ def gk25():
     for i, q in enumerate(S.fly((1.4, 10.8, 2.5), (0.5, 3.4, 2.6), 18, g=0.2)): d.world(6 + i, *q)
     d.speed(f0=0.0, f4=0.8, f7=0.0)
     d.m.events = {'strike': 6}
+    return d.done()
+
+
+@move('GK26', 'Top Hand Stretch')
+def gk26():
+    """a ball heading for the top corner: big push off, the top hand reaches across over his head and fingertips it round the post"""
+    d = K(38); idle(d, 0, 4)
+    d.shot(10, (12.5, 5.0, 34.0), start=(14.0, 36.0, 12.0), out=(1.4, 2.6, 1.8), g=0.15)
+    e = dive(d, 5, h=38.0, reach=(2.7, 0.55, 3.05, 0.1), lt=5.2, lie=7, roll=1.4, hands='top', wrist=0.8)
+    getup(d, e, 38 - e) if e < 38 else None
+    return d.done()
+
+
+@move('GK27', 'Bottom Hand Save')
+def gk27():
+    """a low shot to the corner: he gets down quick and long, the bottom hand flat along the grass pushes it wide"""
+    d = K(34); idle(d, 0, 2)
+    d.shot(7, (10.0, 5.0, 2.5), start=(12.0, 34.0, 2.5), out=(1.4, 2.2, 0.0), g=0.0)
+    e = dive(d, 2, h=12.0, reach=(1.9, 0.6, 2.2, 0.35), lt=5.0, lie=6, roll=1.55, hands='bottom', wrist=0.7)
+    d.W = {f: (v[0], v[1], max(2.0, min(v[2], 3.0))) for f, v in d.W.items()}
+    getup(d, e, 34 - e) if e < 34 else None
+    d.m.events = {'strike': 7}
+    return d.done()
+
+
+@move('GK28', 'Strong Wrist Parry')
+def gk28():
+    """a hard shot at mid height: a short dive, one hand set firm and pushed through the ball to steer it away"""
+    d = K(34); idle(d, 0, 3)
+    d.shot(9, (8.0, 5.0, 20.0), start=(9.0, 34.0, 8.0), out=(1.6, 1.0, 0.8), g=0.15)
+    e = dive(d, 4, h=24.0, reach=(2.2, 0.6, 2.6, 0.2), lt=3.8, lie=6, roll=1.45, hands='top', wrist=1.0)
+    getup(d, e, 34 - e) if e < 34 else None
     return d.done()
 
 

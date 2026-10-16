@@ -38,6 +38,13 @@ extends AiBehaviour
 ## how far (m) outside the far post the curler is aimed, and its ball speed (m/s; faster ones balloon over and bend less)
 @export var curl_out := 2.0
 @export var curl_speed := 23.0
+## from this far (m) the curler is LIFTED (K12 lofted finesse / K13 lofted trivela): slower, rising, bending and dropping in at about lofted_height m;
+## its speed is solved between lofted_speed_min and _max (start lofted_speed)
+@export var lofted_min_dist := 13.0
+@export var lofted_height := 1.5
+@export var lofted_speed := 19.0
+@export var lofted_speed_min := 15.0
+@export var lofted_speed_max := 24.0
 ## which curl it is follows the geometry: the finesse (inside of the boot, K02) bends clockwise, the trivela (outside, K03) the other way, so one wing gets each
 
 @export_group("Shot quality")
@@ -150,10 +157,31 @@ func _curl(i: AiIntent, f: Footballer, c: AiContext, side: float, half_goal: flo
 	var out := Vector2(goal.x + c.dir * 1.5, side * (half_goal + curl_out))
 	var post := Vector2(goal.x, side * (half_goal - post_margin))
 	var cw := _cross(out - f.pos, post - out) < 0.0
-	i.style = "K02" if cw else "K03"
 	i.clip = clip_finesse if cw else clip_trivela
-	i.speed_override = curl_speed                                          # slower than a drive: more time to bend, and no ballooning from the backspin
+	if f.pos.distance_to(goal) >= lofted_min_dist:                        # from range: lifted, slower, dropping under the bar (K12 / K13)
+		i.style = "K12" if cw else "K13"
+		var sol := _solve_lofted(c, i.style, Vector2(goal.x, post.y), out)
+		i.aim = sol[0]
+		i.speed_override = sol[1]
+		return
+	i.style = "K02" if cw else "K03"
+	i.speed_override = curl_speed                                          # close in: low and quicker
 	i.aim = _solve(c, i.style, curl_speed, Vector2(goal.x, post.y), out)    # aim so the bend brings it into the post
+
+## a lifted curler: aim AND speed so it crosses the line at the post at `lofted_height` (simulated flight, Ball.predict_cross). Returns [aim, speed].
+func _solve_lofted(c: AiContext, style_id: String, target: Vector2, guess: Vector2) -> Array:
+	var b := c.game.ball
+	var from := b.phys.pos
+	var aim := guess
+	var speed := lofted_speed
+	for n in solve_steps + 3:
+		var hit := b.predict_cross(from, aim, style_id, speed, target.x)
+		var miss := target.y - hit.z
+		var high := lofted_height - hit.y
+		if absf(miss) < 0.2 and absf(high) < 0.25: break
+		aim.y += miss * 0.9
+		speed = clampf(speed + high * 0.9, lofted_speed_min, lofted_speed_max)
+	return [aim, speed]
 
 ## the aim that makes a kick with this style and speed cross the goal line at `target` (a few corrections of a simulated flight, Ball.predict_cross); starts from `guess`
 func _solve(c: AiContext, style_id: String, speed: float, target: Vector2, guess: Vector2) -> Vector2:

@@ -368,13 +368,20 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var deflect_wide := 6.0
 @export var palm_lift := 5.0
 @export var deflect_lift := 2.5
+## where a parry goes: an attacker within parry_danger m of the rebound spot (parry_spot m in front of him) = he pushes it wide round the post for a corner;
+## nobody close = he steers it back out to the flank, away from the attackers (parry_out m/s out, parry_side m/s wide). Low HAN adds parry_scatter m/s of randomness.
+@export var parry_danger := 8.0
+@export var parry_spot := 5.0
+@export var parry_out := 7.0
+@export var parry_side := 5.0
+@export var parry_scatter := 4.0
 @export_subgroup("Save clips (he picks one at random)")
 @export var clips_catch := PackedStringArray(["gk08_big_hands", "gk03_smother"])
 @export var clips_claim := PackedStringArray(["gk05_claim_cross"])
 @export var clips_palm := PackedStringArray(["gk10_high_palm", "gk04_punch_clear"])
-@export var clips_low := PackedStringArray(["gk09_low_dive", "gk20_cat_reflexes"])
-@export var clips_mid := PackedStringArray(["gk02_reach_dive", "gk12_starfish"])
-@export var clips_far := PackedStringArray(["gk24_fingertip_save", "gk23_far_post_reach"])
+@export var clips_low := PackedStringArray(["gk09_low_dive", "gk27_bottom_hand_save", "gk20_cat_reflexes"])
+@export var clips_mid := PackedStringArray(["gk02_reach_dive", "gk28_strong_wrist_parry", "gk12_starfish"])
+@export var clips_far := PackedStringArray(["gk24_fingertip_save", "gk26_top_hand_stretch", "gk23_far_post_reach"])
 
 @export_group("Goalkeeper and control")
 ## a keeper catches a shot slower than base + HAN x per_han (m/s), otherwise he parries

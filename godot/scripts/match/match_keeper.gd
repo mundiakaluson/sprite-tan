@@ -177,10 +177,20 @@ func _resolve(k: Footballer, kind: String, lateral: float, in_reach: bool) -> vo
 	if side == 0.0: side = 1.0
 	if kind == "palm":
 		b.phys.vel = Vector3(-v.x * 0.2, s.palm_lift, side * s.deflect_wide)             # over the bar / round the post
-	elif kind == "far" or parry:
-		b.phys.vel = Vector3(-v.x * 0.25, s.deflect_lift, side * s.deflect_wide * 1.3)   # fingertips round the post
 	else:
-		b.phys.vel = Vector3(-v.x * 0.3, v.y * 0.5 + 2.0, v.z + g.rng.randf_range(-5.0, 5.0))   # a parry back into play
+		var out := Vector2(k.team.dir, 0.0)                                            # away from his goal
+		var rebound := k.pos + out * s.parry_spot
+		var danger := false
+		for o in g.all:
+			if o.team != k.team and not o.is_keeper() and o.pos.distance_to(rebound) < s.parry_danger: danger = true
+		var scatter := s.parry_scatter * clampf((80.0 - k.stat("HAN", 60)) / 40.0, 0.0, 1.0)
+		if danger or kind == "far":                                                    # attackers waiting: push it round the post, out for a corner
+			b.phys.vel = Vector3(-v.x * 0.2, s.deflect_lift, side * s.deflect_wide * 1.3 + g.rng.randf_range(-scatter, scatter) * 0.3)
+			save_event.emit(k, kind, "", "parry_corner")
+		else:                                                                          # nobody there: steer it back out to the flank
+			var flank := side if absf(k.pos.y + side) > 0.0 else 1.0
+			b.phys.vel = Vector3(out.x * s.parry_out, 1.5, flank * s.parry_side) + Vector3(g.rng.randf_range(-scatter, scatter), 0.0, g.rng.randf_range(-scatter, scatter))
+			save_event.emit(k, kind, "", "parry_field")
 	k.no_touch = 0.5
 	save_event.emit(k, kind, "", "deflect")
 

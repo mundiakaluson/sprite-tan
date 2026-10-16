@@ -84,8 +84,11 @@ DIVE_STRIKE = 5            # frames after f0 where the hands meet the ball (the 
 DIVE_LEN = 13              # frames from f0 until he is lying
 
 
-def dive(d, f0, h=30.0, reach=(2.35, 0.5, 2.8, 0.2), lt=4.2, lie=6, roll=1.45):
+def dive(d, f0, h=30.0, reach=(2.35, 0.5, 2.8, 0.2), lt=4.2, lie=6, roll=1.45, hands='both', wrist=0.0):
     """sink and swing the arms back, drive off the push foot, stretch to full reach (frame f0+5), then fall away with the legs trailing, land on the hip and slide, lie.
+    hands: 'both' (two hands at the ball), 'top' (a high ball: the TOP hand, his left when diving right, stretches across over his head while the bottom arm
+    tucks in to the chest), 'bottom' (a low ball: the BOTTOM hand stretches along the grass past his head, the top arm comes over the body).
+    wrist: a late push of the leading hand through the strike frame (a strong-wrist parry towards the corner).
     Returns the first frame after the lie."""
     LY = dict(R=(3.6, -3.0, 20, 5.0), L=(-0.5, -4.0, 20, 5.0))
     for i in range(DIVE_LEN):
@@ -116,14 +119,28 @@ def dive(d, f0, h=30.0, reach=(2.35, 0.5, 2.8, 0.2), lt=4.2, lie=6, roll=1.45):
         elif i < 6:
             u = sm((i - 2.0) / 3.0); a = mix(back, tuple(r * 1.04 for r in reach), u)
         else: a = mix(tuple(r * 1.04 for r in reach), reach, sm((i - 5) / 3.0))                    # hands stay out at the ball (a parry, not a cradle)
-        d.arms(f, a, a)
+        if wrist and 4 <= i <= 8:
+            p = math.sin(PI * (i - 4) / 4.0) * wrist                                                 # the hand drives on through the ball
+            a = (a[0] + 0.25 * p, a[1] + 0.2 * p, a[2] + 0.35 * p, a[3])
+        if hands == 'both':
+            d.arms(f, a, a)
+        else:
+            lag = sm((i - 1.0) / 4.0)                                                               # the off arm follows the body, a beat late
+            if hands == 'top':
+                off = mix(back if i < 3 else READY, (1.5, 0.15, 2.5, 0.0), lag)                         # bottom arm folds in to the chest
+                d.arms(f, off, a)
+            else:
+                off = mix(back if i < 3 else READY, (1.5, 0.35, 1.7, 0.1), lag)                         # top arm comes over the body
+                d.arms(f, a, off)
     lat = {f0: 0.0, f0 + 2: lt * 0.25, f0 + 4: lt * 1.0, f0 + 6: lt * 0.9, f0 + 8: lt * 0.65, f0 + 10: lt * 0.35, f0 + 12: 0.15 * lt, f0 + 13: 0.0}
     d.lateral(**{f'f{k}': v for k, v in lat.items()})
     for f in range(f0 + DIVE_LEN, f0 + DIVE_LEN + lie):
         e = f - (f0 + DIVE_LEN)
         d.at(f, R=LY['R'], L=LY['L'], pz=8.0 + 0.25 * math.sin(e * 1.4) * max(0.0, 1 - e / 4.0), cpitch=0.0, croll=-roll, proll=-roll + 0.05, hyaw=-0.85)
         k = sm(e / 3.0); a = mix(reach, mix(reach, LYING_R, 0.55), k)                                  # the arms ease down onto the grass
-        d.arms(f, a, a)
+        if hands == 'both': d.arms(f, a, a)
+        elif hands == 'top': d.arms(f, mix((1.5, 0.15, 2.5, 0.0), LYING_R, k), a)
+        else: d.arms(f, a, mix((1.5, 0.35, 1.7, 0.1), LYING_L, k))
     return f0 + DIVE_LEN + lie
 
 

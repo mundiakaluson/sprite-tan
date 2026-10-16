@@ -10,3 +10,5 @@ K08,Whipped cross,22,22,-6,-40,20,16,0.8,3.0,outside-foot swerve with backspin,0
 K09,Low drive,28,7,0,0,-45,0,1.0,1.2,skims low with topspin and bounces in front of the keeper,0.2
 K10,Flat bender (clockwise),30,6,-2,16,0,0,1.0,1.2,struck flat with a little side spin: bends late away from the keeper,0.12
 K11,Flat bender (anticlockwise),30,6,2,-16,0,0,1.0,1.2,mirror of K10,0.12
+K12,Lofted finesse,18,22,-4,40,14,0,0.8,1.6,"inside of the boot, lifted: rises, bends and drops under the bar, slower and loopier than a drive",0.45
+K13,Lofted trivela,19,20,3,-38,8,28,0.85,2.2,"outside of the boot, lifted: swerves away then back as it drops",0.45
