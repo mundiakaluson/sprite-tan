@@ -1,7 +1,7 @@
 class_name AiLayOff
 extends AiBehaviour
 ## A striker with his back to goal (or a man tight on him) does not try to turn: he lays it off to a midfielder coming in support and spins in behind
-## into the gap in their line (AiRunInBehind.gap_spot); the midfielder then has the run to find with a through ball (AiThroughBall).
+## into the gap in their line only once he has checked it is on (AiRunInBehind: the team mate has time, faces forward, lane open); then AiThroughBall.
 
 @export_group("Lay off and spin")
 ## back to goal = facing less than this towards the goal (dot), or an opponent within `tight` m
@@ -41,14 +41,7 @@ func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 	i.target = m
 	i.note = "lay off and spin"
 	stat_layoffs += 1
-	var spot := AiRunInBehind.gap_spot(f, c, run_depth, 4.0, 6.0)
-	var game := c.game
-	var team := c.team
-	var t_run := run_time
-	c.game.kicking.after_release(f, func():                                # the moment it is played he spins and goes
-		f.ai["run_behind"] = {"until": Engine.get_physics_frames() / float(Engine.physics_ticks_per_second) + t_run, "spot": spot}
-		team.ai["runner"] = f
-		game.orders.send_run(f, spot, 0.1))
+	f.ai["run_cd"] = 0.0                                                   # free to read the next run straight away (AiRunInBehind scans first)
 	return i
 
 func _support(f: Footballer, c: AiContext) -> Footballer:

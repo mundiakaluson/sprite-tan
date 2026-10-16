@@ -90,7 +90,7 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 				if i.action == "through":                                       # the runner sets off when the ball is struck
 					var mate := i.target
 					g.kicking.after_release(f, func(): g.orders.send_runner(f, mate, Vector2(f.team.dir * g.settings.through_run_speed, 0.0)))
-				g.poss.kick_action(f, i.action, i.target.pos, i.target.vel, {}, i.target)
+				g.poss.kick_action(f, i.action, i.target.pos, i.target.vel, i.over, i.target)
 			elif i.aim != Vector2.INF: g.poss.kick_action(f, i.action, i.aim)
 		"shoot":
 			var over := {}

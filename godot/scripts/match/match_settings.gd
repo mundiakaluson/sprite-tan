@@ -164,6 +164,9 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var pass_back_deg := 110.0
 
 @export_group("Take-on and slide tackles")
+## a defender within takeon_box_dist m of his own goal bites this much less often (he stays on his feet in the box)
+@export var takeon_box_dist := 20.0
+@export_range(0.0, 1.0) var takeon_box_read := 0.18
 ## a take-on: he shows the shoulder one way for fake_time s (at fake_speed x top speed), then bursts the other way for burst_time s (burst_speed x top speed, turning at turn_rate)
 @export var clips_takeon := PackedStringArray(["dr01_step_over", "dr05_body_feint", "dr14_chop_cut", "dr02_drag_back", "dr28_pull_push", "dr27_outside_hook"])
 ## skill moves, used instead with chance (DRI - 60) / 40 (at most skill_max): elastico, croqueta, roulette, stepover chain, cruyff turn, spin

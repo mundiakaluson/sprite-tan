@@ -90,7 +90,7 @@ func _consider(k: Footballer) -> void:
 func _future(t: float) -> Vector3:
 	var src := g.ball.phys
 	var p := BallPhysics.new()
-	for key in ["g", "rad", "drag", "mag", "knu", "knu_v", "crisis", "crisis_v", "e", "mu", "roll", "sdec", "power", "touch", "mass", "pos", "vel", "spin", "t", "seed_value"]:
+	for key in ["g", "rad", "drag", "mag", "knu", "knu_v", "crisis", "crisis_v", "e", "mu", "roll", "sdec", "spin_drag", "power", "touch", "mass", "pos", "vel", "spin", "t", "seed_value"]:
 		p.set(key, src.get(key))
 	var dt := 1.0 / 60.0
 	var left := t

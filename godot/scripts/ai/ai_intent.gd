@@ -17,5 +17,7 @@ var style := ""
 var clip := ""
 ## ball speed for a shot (m/s), 0 = the shot's own
 var speed_override := 0.0
+## extra kick settings passed to the ball for passes (e.g. {"speed_k": 0.7} = an under-hit pass)
+var over := {}
 ## shown nowhere yet: handy to print while tuning a role
 var note := ""

@@ -23,6 +23,7 @@ var e := 0.75
 var mu := 0.6
 var roll := 0.25
 var sdec := 0.15
+var spin_drag := 0.0           # side spin costs speed (a curler slows as it bends); data/balls.csv spin_drag
 var power := 1.0
 var touch := 1.0
 var mass := 0.43
@@ -34,7 +35,7 @@ static func _f(row: Dictionary, key: String, d: float) -> float:
 func setup(row: Dictionary) -> void:
 	g = _f(row, "gravity", 9.81); rad = _f(row, "radius", 0.17); drag = _f(row, "air_drag", 0.012); mag = _f(row, "magnus", 0.0058); knu = _f(row, "knuckle", 0.0)
 	knu_v = _f(row, "knuckle_speed", 18.0); crisis = _f(row, "crisis", 0.0); crisis_v = _f(row, "crisis_speed", 14.0); e = _f(row, "restitution", 0.75)
-	mu = _f(row, "friction", 0.6); roll = _f(row, "roll_drag", 0.25); sdec = _f(row, "spin_decay", 0.15); power = _f(row, "power", 1.0); touch = _f(row, "touch", 1.0); mass = _f(row, "mass", 0.43)
+	mu = _f(row, "friction", 0.6); roll = _f(row, "roll_drag", 0.25); sdec = _f(row, "spin_decay", 0.15); spin_drag = _f(row, "spin_drag", 0.0); power = _f(row, "power", 1.0); touch = _f(row, "touch", 1.0); mass = _f(row, "mass", 0.43)
 	pos = Vector3(0, rad, 0)
 
 static func _phase(sd: float, k: float) -> float:
@@ -45,6 +46,7 @@ func accel() -> Vector3:
 	var a := Vector3(0, -g, 0)
 	var k := drag
 	if crisis > 0.0: k = drag * (1.0 + crisis * smoothstep(crisis_v + 2.5, crisis_v - 2.5, sp))    # drag jumps up below the critical speed
+	k *= 1.0 + spin_drag * minf(1.0, absf(spin.y) / 40.0)                                             # side spin costs speed: a curler slows as it bends
 	a -= vel * (k * sp)
 	a += spin.cross(vel) * mag                                                                          # Magnus: spin curves the ball
 	if knu > 0.0 and sp > 1.0:                                                                          # knuckle: a fast, nearly spin-free ball wobbles sideways

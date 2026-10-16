@@ -16,7 +16,7 @@ extends AiBehaviour
 @export var max_depth := 0.97
 ## in the final stretch (depth over final_depth) attackers try it final_boost times as often: they go at their man instead of passing back
 @export var final_depth := 0.72
-@export var final_boost := 2.5
+@export var final_boost := 1.6
 @export var attack_roles := PackedStringArray(["ST", "LW", "RW", "CAM"])
 ## not with another defender this close behind the first (a double team: pass instead)
 @export var second_man := 3.0

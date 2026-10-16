@@ -12,6 +12,10 @@ extends AiBehaviour
 ## lane check to the lead point (where he will be lead_s seconds on)
 @export var lead_s := 0.9
 @export var lane := 1.4
+## how often the pass is under-hit (x (1.3 - PAS/100)): half the time at PAS 80; an under-hit one goes at underhit_k of the speed, the runner has to check
+## and the defenders / keeper get a chance at it
+@export_range(0.0, 1.0) var underhit_chance := 0.6
+@export var underhit_k := 0.68
 
 static var stat_through := 0
 
@@ -34,6 +38,8 @@ func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 	if r == null: return i
 	i.action = "through"
 	i.target = r
+	if c.game.rng.randf() < underhit_chance * clampf(1.3 - f.stat("PAS", 60) / 100.0, 0.1, 1.0):
+		i.over = {"speed_k": underhit_k}
 	i.note = "through ball"
 	stat_through += 1
 	return i

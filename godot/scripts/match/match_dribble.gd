@@ -33,7 +33,9 @@ func take_on(f: Footballer, d: Footballer) -> bool:
 	if clip == "": clip = _pick(f, s.clips_takeon)
 	var total := s.takeon_fake_time + s.takeon_burst_time
 	g.motion.act(f, clip, 1.0, func(): pass, 1.0, total, true)
-	var bite := clampf(s.takeon_bite_base + (f.stat("DRI", 60) - d.stat("DEF", 60)) * s.takeon_bite_per_stat, 0.1, 0.9)
+	var bite := s.takeon_bite_base + (f.stat("DRI", 60) - d.stat("DEF", 60)) * s.takeon_bite_per_stat
+	if d.pos.distance_to(Vector2(-MatchGame.HALF_L * d.team.dir, 0.0)) < s.takeon_box_dist: bite -= s.takeon_box_read      # in his own box he stays on his feet
+	bite = clampf(bite, 0.1, 0.9)
 	_moves[f] = {"def": d, "fake": fake, "cut": cut, "t": 0.0, "bit": g.rng.randf() < bite, "reacted": false}
 	stat_takeons += 1
 	return true

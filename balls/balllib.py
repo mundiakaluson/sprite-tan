@@ -70,7 +70,7 @@ def check(rows):
         if i in ids: out.append(('error', i, 'duplicate id'))
         ids.add(i)
         for k, lo, hi in (('mass', 0.1, 2), ('radius', 0.05, 0.4), ('gravity', 0.5, 25), ('air_drag', 0, 0.1), ('magnus', 0, 0.03), ('knuckle', 0, 2), ('knuckle_speed', 3, 40), ('crisis', 0, 3), ('crisis_speed', 3, 40),
-                          ('restitution', 0, 1), ('friction', 0, 2), ('roll_drag', 0, 3), ('spin_decay', 0, 3), ('touch', 0.3, 2), ('power', 0.3, 2), ('shine', 0, 1)):
+                          ('restitution', 0, 1), ('friction', 0, 2), ('roll_drag', 0, 3), ('spin_decay', 0, 3), ('spin_drag', 0, 3), ('touch', 0.3, 2), ('power', 0.3, 2), ('shine', 0, 1)):
             v = num(r, k, -1e9)
             if not lo <= v <= hi: out.append(('error', i, f'{k} must be {lo} to {hi}'))
         if r.get('pattern') not in PATTERNS: out.append(('error', i, 'pattern must be ' + '/'.join(PATTERNS)))
@@ -95,11 +95,12 @@ class Ball:
         self.r = row; self.seed = seed; self.pos = np.array([0.0, num(row, 'radius', 0.17), 0.0]); self.vel = np.zeros(3); self.spin = np.zeros(3); self.t = 0.0
         self.g = num(row, 'gravity', 9.81); self.rad = num(row, 'radius', 0.17); self.drag = num(row, 'air_drag', 0.012); self.mag = num(row, 'magnus', 0.0058); self.knu = num(row, 'knuckle', 0)
         self.knu_v = num(row, 'knuckle_speed', 18); self.crisis = num(row, 'crisis', 0); self.crisis_v = num(row, 'crisis_speed', 14); self.e = num(row, 'restitution', 0.75)
-        self.mu = num(row, 'friction', 0.6); self.roll = num(row, 'roll_drag', 0.25); self.sdec = num(row, 'spin_decay', 0.15)
+        self.mu = num(row, 'friction', 0.6); self.roll = num(row, 'roll_drag', 0.25); self.sdec = num(row, 'spin_decay', 0.15); self.spin_drag = num(row, 'spin_drag', 0.0)
 
     def accel(self):
         v = self.vel; sp = float(np.linalg.norm(v)); a = np.array([0.0, -self.g, 0.0])
         k = self.drag * (1 + self.crisis * smooth(self.crisis_v + 2.5, self.crisis_v - 2.5, sp)) if self.crisis > 0 else self.drag      # drag jumps up below the critical speed
+        k *= 1 + self.spin_drag * min(1.0, abs(self.spin[1]) / 40.0)                                                                       # side spin costs speed: a curler slows as it bends
         a -= k * sp * v
         a += self.mag * np.cross(self.spin, v)                                                                                          # Magnus: spin curves the ball
         if self.knu > 0 and sp > 1.0:                                                                                                    # knuckle: fast, nearly spin-free ball wobbles sideways

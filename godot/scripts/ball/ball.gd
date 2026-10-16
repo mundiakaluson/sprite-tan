@@ -112,6 +112,7 @@ func play_action(action_id: String, target: Vector2, stats := {}, target_vel := 
 		return {}
 	var plan := st.plan(phys.pos, target, stats, target_vel)
 	for k in over: plan[k] = over[k]
+	if plan.has("speed_k"): plan["speed"] = float(plan["speed"]) * float(plan["speed_k"])     # an under- / over-hit pass
 	var tgt: Vector2 = plan["target"]
 	var from := phys.pos
 	var noise: float = plan["noise"]
@@ -187,7 +188,7 @@ func kick(from: Vector3, aim: Vector3, style_id: String, strength := 1.0, rng_se
 ## a copy of this ball's physics (same numbers, position, velocity and spin) to step forward for predictions
 func copy_physics() -> BallPhysics:
 	var p := BallPhysics.new()
-	for key in ["g", "rad", "drag", "mag", "knu", "knu_v", "crisis", "crisis_v", "e", "mu", "roll", "sdec", "power", "touch", "mass", "pos", "vel", "spin", "t", "seed_value"]:
+	for key in ["g", "rad", "drag", "mag", "knu", "knu_v", "crisis", "crisis_v", "e", "mu", "roll", "sdec", "spin_drag", "power", "touch", "mass", "pos", "vel", "spin", "t", "seed_value"]:
 		p.set(key, phys.get(key))
 	return p
 

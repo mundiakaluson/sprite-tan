@@ -20,6 +20,11 @@ extends AiBehaviour
 @export var cooldown := 3.5
 ## never closer to their goal line than this (m): he runs at the ball's landing, not into the keeper
 @export var goal_line_gap := 6.0
+## he only goes when he is sure: the carrier faces forward (dot over carrier_facing), the lane from the carrier to the spot is open (lane m), and it has
+## stayed like that while he checked over his shoulder for scan_time s (shorter with good PAS + DRI: game sense)
+@export_range(-1.0, 1.0) var carrier_facing := 0.3
+@export var lane := 1.6
+@export var scan_time := 0.55
 
 static var stat_runs := 0
 
@@ -43,11 +48,24 @@ func wants(f: Footballer, c: AiContext, _role: AiRole) -> bool:
 	if c.pressure(k.pos) < carrier_space: return false
 	if f.pos.distance_to(k.pos) > max_from_carrier: return false
 	if (f.pos.x - line_x(c)) * c.dir > ahead_max: return false
+	# scan: is it really on?
+	var spot := gap_spot(f, c, run_depth, gap_min, goal_line_gap)
+	var on := k.face.dot((c.goal() - k.pos).normalized()) > carrier_facing and not c.lane_blocked(k.pos, spot, lane)
+	if not on:
+		f.ai.erase("scan_since")
+		return false
+	var since := float(f.ai.get("scan_since", -1.0))
+	if since < 0.0:
+		f.ai["scan_since"] = _now()
+		return false
+	var sense := (f.stat("PAS", 60) + f.stat("DRI", 60)) * 0.5
+	if _now() - since < scan_time * clampf(1.6 - sense / 100.0, 0.5, 1.2): return false
 	return c.game.rng.randf() < rate * (0.5 + f.stat("PAC", 60) / 100.0) * c.game.get_physics_process_delta_time()
 
 func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 	var run = f.ai.get("run_behind", null)
 	if run == null:
+		f.ai.erase("scan_since")
 		run = {"until": _now() + run_time, "spot": gap_spot(f, c, run_depth, gap_min, goal_line_gap)}
 		f.ai["run_behind"] = run
 		f.ai["run_cd"] = _now() + run_time + cooldown

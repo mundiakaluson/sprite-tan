@@ -60,7 +60,7 @@ func predict() -> Dictionary:
 	var s := g.settings
 	var src := g.ball.phys
 	var p := BallPhysics.new()
-	for k in ["g", "rad", "drag", "mag", "knu", "knu_v", "crisis", "crisis_v", "e", "mu", "roll", "sdec", "power", "touch", "mass", "pos", "vel", "spin", "t", "seed_value"]:
+	for k in ["g", "rad", "drag", "mag", "knu", "knu_v", "crisis", "crisis_v", "e", "mu", "roll", "sdec", "spin_drag", "power", "touch", "mass", "pos", "vel", "spin", "t", "seed_value"]:
 		p.set(k, src.get(k))
 	var apex := p.pos.y
 	var out := {"apex": apex, "t_c": -1.0, "contest": Vector2(p.pos.x, p.pos.z), "t_land": 0.0, "land": Vector2(p.pos.x, p.pos.z)}

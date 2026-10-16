@@ -18,7 +18,7 @@ extends AiBehaviour
 ## a defender (not the keeper) standing right in the line: no shot (lane width m). The keeper is dealt with by choosing the corner.
 @export var lane_width := 1.1
 ## in the box with a body in the way he still has a go now and then (per second): shots get blocked, but strikers shoot
-@export var blocked_try := 0.6
+@export var blocked_try := 0.35
 ## seconds before he can decide to shoot again
 @export var cooldown := 0.6
 
