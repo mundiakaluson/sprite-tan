@@ -24,6 +24,13 @@ extends Camera3D
 ## as the ball goes towards the far touchline the camera slides this many metres that way (the near line may drop out of view); 0 = no pan
 @export var pan_far := 6.0
 @export var pan_speed := 3.0
+## follow the ball ACROSS the pitch too (up and down the screen), so the near and far touchlines come into view when the ball goes there.
+## The camera aims at the ball's z plus z_bias (m, + = towards the near touchline, so the ball sits a little above the middle of the screen),
+## kept within limit_z of the halfway line; zoom (distance / fov / pitch) is untouched. Off = the old fixed aim with pan_far.
+@export var follow_vertical := true
+@export var follow_z_speed := 3.0
+@export var z_bias := 3.0
+@export var limit_z := 30.0
 
 @export_group("Stadium")
 ## take height / back / aim / fov from the stadium (data/stadiums.csv, a TV view that cuts off the near touchline) instead of the numbers above
@@ -31,6 +38,7 @@ extends Camera3D
 
 var _x := 0.0
 var _pan := 0.0
+var _z := 0.0
 var _tween: Tween
 
 ## in the editor the camera re-aims every frame, so changing a value moves the Preview view live
@@ -40,11 +48,16 @@ func _process(_dt: float) -> void:
 func follow(target: Vector3, half_width: float, dt: float) -> void:
 	_x = lerpf(_x, clampf(target.x, -limit_x, limit_x), clampf(follow_speed * dt, 0.0, 1.0))
 	_pan = lerpf(_pan, _pan_for(target, half_width), clampf(pan_speed * dt, 0.0, 1.0))
+	_z = lerpf(_z, _z_for(target), clampf(follow_z_speed * dt, 0.0, 1.0))
 	_apply()
+
+func _z_for(target: Vector3) -> float:
+	return clampf(target.z + z_bias, -limit_z, limit_z)
 
 func snap(target: Vector3, half_width: float) -> void:
 	_x = clampf(target.x, -limit_x, limit_x)
 	_pan = _pan_for(target, half_width)
+	_z = _z_for(target)
 	_apply()
 
 ## ball on the near touchline -> 0 (bottom line in view), on the far touchline -> -pan_far
@@ -54,6 +67,7 @@ func _pan_for(target: Vector3, half_width: float) -> float:
 func _apply() -> void:
 	fov = fov_deg
 	var aim := Vector3(_x, 0.0, _pan) + aim_offset
+	if follow_vertical and not Engine.is_editor_hint(): aim = Vector3(_x + aim_offset.x, aim_offset.y, _z)
 	var p := deg_to_rad(pitch_deg)
 	var y := deg_to_rad(yaw_deg)
 	var off := Vector3(sin(y) * cos(p), sin(p), cos(y) * cos(p)) * distance
