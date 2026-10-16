@@ -10,7 +10,8 @@ var _after := {}             ## Footballer -> Callable to run when his kick is r
 var stat_passes := 0         ## counters for the headless balance runs
 var stat_scuffs := 0
 var stat_tumbles := 0
-var stat_shots := {}         ## headless: "style clip" -> count of shots taken
+var stat_shots := {}
+var stat_shot_speed := []    ## headless: [speed when the shot clip starts, speed at the strike] per shot         ## headless: "style clip" -> count of shots taken
 
 func _init(game: MatchGame) -> void:
 	g = game
@@ -65,6 +66,9 @@ func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_i
 		var sho := clampf((f.stat("SHO", 60) - 40.0) / 50.0, 0.0, 1.0)
 		dur *= lerpf(g.settings.shot_time_slow, g.settings.shot_time_fast, sho)
 	g.motion.act(f, clip, g.motion.strike_frac(clip, 0.5), func(): _release(f, action, to, to_vel, over, receiver), 1.0, dur, speed > 1.0)
+	if action == "shot":
+		f.glide_k = g.settings.shot_glide_k
+		stat_shot_speed.append([snappedf(speed, 0.1), -1.0])                 # shoots in his stride and runs on through it
 
 ## the kick clip for this action: by distance, direction behind him, and kind of pass; one at random from the list
 func pick_clip(f: Footballer, action: String, to: Vector2) -> String:
@@ -155,6 +159,7 @@ func _release(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over:
 			stat_scuffs += 1
 			o["noise"] = maxf(float(o.get("noise", 0.0)), s.scuff_noise)
 			g.hud.toast("%s: scuffed" % f.display_name())
+	if action == "shot" and not stat_shot_speed.is_empty() and stat_shot_speed[-1][1] < 0.0: stat_shot_speed[-1][1] = snappedf(f.vel.length(), 0.1)
 	g.poss.launch(f, action, to, to_vel, o, receiver)
 	var cb: Callable = _after.get(f, Callable())
 	_after.erase(f)

@@ -63,10 +63,12 @@ func update(dt: float) -> void:
 				var cb := f.pending
 				f.pending = Callable()
 				cb.call()
-		if f.lock <= 0.0: f.glide = false
+		if f.lock <= 0.0:
+			f.glide = false
+			f.glide_k = 1.0
 		var want := f.want if (f.lock <= 0.0 and playing and f.aim_done.is_null()) else Vector2.ZERO
 		var gliding := (f.glide and f.lock > 0.0) or not f.aim_done.is_null()
-		var rate := 0.0 if not f.aim_done.is_null() else s.glide_brake if gliding else (s.accel if want.length() > f.vel.length() - 0.1 else s.brake)
+		var rate := 0.0 if not f.aim_done.is_null() else s.glide_brake * f.glide_k if gliding else (s.accel if want.length() > f.vel.length() - 0.1 else s.brake)
 		var before := f.pos
 		f.vel = f.vel.move_toward(want, rate * dt)
 		f.pos += f.vel * dt

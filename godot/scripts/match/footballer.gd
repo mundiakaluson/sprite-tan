@@ -26,6 +26,7 @@ var pending_t := 0.0
 var aim := Vector2.ZERO          ## he is pivoting to face this way before a kick (MatchKicking)
 var aim_done := Callable()      ## runs when the pivot is finished; empty = not pivoting
 var aim_t := 0.0
+var glide_k := 1.0               ## multiplies glide_brake while gliding (a shot on the run keeps more of his speed)
 var glide := false               ## kicking on the move: he keeps his speed through the clip (slows gently) instead of stopping
 var mirror := false              ## play his clip mirrored (a left dive: the keeper clips are authored for the right)
 var ball_rel := Vector3.ZERO     ## the ball's velocity relative to him while it settles (a damped spring, so a pass rolls to his foot instead of snapping)

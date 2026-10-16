@@ -53,7 +53,8 @@ func wants(f: Footballer, c: AiContext, role: AiRole) -> bool:
 
 func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 	var i := AiIntent.new()
-	i.move_to = f.pos
+	i.move_to = f.pos + (f.vel if f.vel.length() > 0.5 else f.face).normalized() * 4.0       # passes on the move
+	i.speed = c.s.carry_factor
 	var ret = f.ai.get("onetwo_return", null)
 	if ret != null:                                                       # the return: a through ball to the runner
 		f.ai.erase("onetwo_return")

@@ -138,6 +138,8 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var clips_slow_kick := PackedStringArray(["sh03_finesse_curler", "sh04_trivela_bender", "sh17_far_post_bender", "sh21_lofted_finesse"])
 ## a player who kicks while running keeps moving: he slows at this rate (m/s2) during the clip instead of stopping dead
 @export var glide_brake := 4.0
+## shots on the run brake only this share of glide_brake: he strikes it in his stride and carries on running
+@export_range(0.0, 1.0) var shot_glide_k := 0.3
 ## pass clips by situation (right-footed clips; one is picked at random from the list)
 @export var clips_pass_short := PackedStringArray(["ps16_square_ball", "ps12_outside_foot_pass", "ps23_lay_off"])
 @export var clips_pass_medium := PackedStringArray(["ps03_driven_pass", "ps12_outside_foot_pass", "ps16_square_ball"])

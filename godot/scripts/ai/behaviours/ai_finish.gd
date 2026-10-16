@@ -84,7 +84,8 @@ func wants(f: Footballer, c: AiContext, role: AiRole) -> bool:
 
 func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 	var i := AiIntent.new()
-	i.move_to = f.pos
+	i.move_to = f.pos + (f.vel if f.vel.length() > 0.5 else f.face) .normalized() * 4.0     # keep running through the shot, no stopping to set himself
+	i.speed = c.s.carry_factor
 	i.action = "shoot"
 	f.ai["finish_cd"] = _now() + cooldown
 	var rng := c.game.rng
