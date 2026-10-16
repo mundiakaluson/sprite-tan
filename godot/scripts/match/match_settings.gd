@@ -168,6 +168,10 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export var engage_on := true
 ## the home side: off = Manual (you pick a card in every engagement your team is in, attacking and defending), on = Auto (the AI manager picks for you). The away side is always Auto.
 @export var home_auto_engage := false
+## the hands at kick-off: card ids from cards.csv (e.g. DF08 = Double Team), up to 8. Empty slots are filled at random
+## (2 shot, 2 pass, 2 dribble, 2 defend, skipping categories already covered). Deck building replaces this later.
+@export var home_hand := PackedStringArray(["DF08"])
+@export var away_hand := PackedStringArray()
 ## real seconds to pick; no pick in time = the free default (nothing spent)
 @export var engage_choose_time := 2.5
 ## real seconds an Auto side takes to pick, and the reveal before the outcome plays out

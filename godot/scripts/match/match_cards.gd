@@ -15,16 +15,28 @@ func _init(game: MatchGame) -> void:
 
 func deal() -> void:
 	for t in g.teams:
-		hands[t] = _deal_one()
+		hands[t] = _deal_one(g.settings.home_hand if t == g.home else g.settings.away_hand)
 		cooldowns[t] = {}
 	hand = hands[g.home]
 	cooldown = cooldowns[g.home]
 
-## 2 each of SHOT / PASS / DRIBBLE / DEFEND; with engagements on, the DRIBBLE and DEFEND ones are duel cards (decks come later)
-func _deal_one() -> Array:
+## the chosen cards first (MatchSettings home_hand / away_hand), then 2 each of SHOT / PASS / DRIBBLE / DEFEND at random for the slots left;
+## with engagements on, the random DRIBBLE and DEFEND ones are duel cards (decks come later)
+func _deal_one(chosen: PackedStringArray) -> Array:
 	var out: Array = []
 	var cards := Data.table("cards")
-	for cat in ["SHOT", "SHOT", "PASS", "PASS", "DRIBBLE", "DRIBBLE", "DEFEND", "DEFEND"]:
+	var cats := ["SHOT", "SHOT", "PASS", "PASS", "DRIBBLE", "DRIBBLE", "DEFEND", "DEFEND"]
+	for id in chosen:
+		var row := Data.row("cards", id.strip_edges().to_upper())
+		if row.is_empty():
+			push_warning("Hand: no card %s in cards.csv" % id)
+			continue
+		if out.size() >= 8 or out.has(row): continue
+		out.append(row)
+		var cat := String(row["cat"])
+		if cat in cats: cats.erase(cat)
+		else: cats.pop_back()
+	for cat in cats:
 		var duel: bool = g.settings.engage_on and cat in ["DRIBBLE", "DEFEND"]
 		var pool := cards.filter(func(c): return c["cat"] == cat and not out.has(c) and (not duel or "duel" in String(c.get("engage", "")).split(" ", false)))
 		if pool.is_empty(): continue
