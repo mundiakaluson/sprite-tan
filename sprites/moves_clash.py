@@ -64,6 +64,25 @@ def clash_hurdle():
     hidden(d); return d.m
 
 
+@move('cl03_clash_bolt', 'Clash Bolt (frozen head-on sprint)', True)
+def clash_bolt():
+    """the two have bolted at each other: caught mid-stride, thrown forward hard, the front knee driving up, the back leg stretched out behind
+    with only the toe still on the grass (the push-off), arms pumping opposite (front arm bent up in front, back arm driven behind), eyes on the man.
+    Held while the cards are picked: it strains (the lean, the knee and the arms shiver a little) so it never looks paused"""
+    N = 12; d = Dr(N, ms=70, speed=0.0); d.m.loop = True; d.m.events = {}
+    for f in range(N): d.lt[f] = 0.0; d.sp[f] = 0.0
+    for f in range(N):
+        ph = 2 * PI * f / N
+        sh = math.sin(ph * 2); tr = math.sin(ph * 3 + 0.7)
+        d.at(f, R=(1.6, 5.4 + 0.2 * sh, -30, 7.4 + 0.3 * tr), L=(-1.4, -11.0 - 0.2 * sh, 52, 0.6),
+             pz=20.2 + 0.25 * tr, cpitch=0.85 + 0.03 * sh, ppitch=0.35, croll=0.04 * tr, cyaw=0.12, pyaw=-0.1,
+             hpitch=-0.45, hyaw=-0.04 * tr)
+        front = (1.5 + 0.05 * sh, 0.15, 2.1, 0.0)                        # bent up in front (the arm opposite the driving knee)
+        back = (-1.0 - 0.05 * sh, 0.2, 0.7, 0.0)                         # driven back behind him
+        d.arms(f, back, front)
+    hidden(d); return d.m
+
+
 def build(ids=None):
     out = []
     for id_, (label, fn, loop) in MOVES.items():

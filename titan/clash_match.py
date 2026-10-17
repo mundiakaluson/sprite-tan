@@ -14,7 +14,7 @@ HOME, AWAY = 'home', 'away'
 RED = [(255, 236, 170), (255, 170, 70), (235, 90, 40)]
 BLUE = [(225, 245, 255), (130, 200, 255), (60, 120, 230)]
 BALL = P(210, 122)
-A_AT, D_AT = BALL + P(-9.5, 0.4), BALL + P(9.5, -0.4)          # where each stands in the lunge (toe on the ball)
+A_AT, D_AT = BALL + P(-8.0, 0.3), BALL + P(8.0, -0.3)          # where each is frozen in the bolt, the ball between the front feet
 
 T_HIT, T_SNAP = 16, 21          # the moment they meet, fully zoomed
 T_PICK = 44                     # your pick
@@ -96,17 +96,24 @@ def clash_match(c):
     for p, f, sk in ((P(160, 150), P(1, -0.3), HOME), (P(255, 92), P(-1, 0.4), AWAY), (P(150, 98), P(1, 0.2), HOME), (P(262, 150), P(-1, -0.2), AWAY)):
         stand(c, p, f, sk, i * slow)
     # ---- before: the carrier runs at the jockeying defender
-    if i < T_HIT:
-        a = A_AT + P((i - T_HIT) * 1.0, 0); d = D_AT + P(-(i - T_HIT) * 0.25, 0)
-        c.spr('run', int(i * 40 / 57) % 12, P(1, 0), HOME, a); c.ball(a + P(5.5, 0), 1.0 + abs(math.sin(i * 0.7)))
-        c.spr('df10_jockey', ak('df10_jockey', i, 0, loop=True), P(-1, 0), AWAY, d)
+    if i < T_HIT:                                                                  # both bolt at each other
+        a = A_AT + P((i - T_HIT) * 1.1, 0); d = D_AT + P(-(i - T_HIT) * 1.1, 0)
+        c.spr('base_sprint', int(i * 40 / 52) % 10, P(1, 0), HOME, a); c.ball(a + P(5.5, 0), 1.0 + abs(math.sin(i * 0.7)))
+        c.spr('base_sprint', int(i * 40 / 52 + 5) % 10, P(-1, 0), AWAY, d)
     # ---- the clash: both in the lunge, trembling, ball between the toes
     elif i < T_RES:
-        k = ak('cl01_clash_reach', i, T_HIT, 1.0, loop=True)
+        k = ak('cl03_clash_bolt', i, T_HIT, 1.0, loop=True)
         jit = (random.Random(i).uniform(-0.4, 0.4), 0) if i >= T_SNAP else (0, 0)
         push = 0.6 * math.sin(i * 0.9) * heat
-        c.spr('cl01_clash_reach', k, P(1, 0), HOME, A_AT + P(push + jit[0], 0))
-        c.spr('cl01_clash_reach', (k + 5) % 12, P(-1, 0), AWAY, D_AT + P(push - jit[0], 0))
+        for side, at, sk, sg in ((P(1, 0), A_AT, HOME, -1), (P(-1, 0), D_AT, AWAY, 1)):      # speed streaks left behind the bolt + dust off the back toe
+            for q in range(5):
+                y = at[1] - 4 - q * 4 + math.sin(q * 2.1) * 1.5
+                L = 10 + 6 * math.sin(q * 1.7 + i * 0.4) + 6 * (1 - heat)
+                x0 = at[0] + sg * 5
+                c.ud.line([(x0, y), (x0 + sg * L, y)], fill=(235, 240, 255, int(70 + 40 * (q % 2))), width=1)
+            fx.burst(c, at + P(sg * 6, 0.5), i % 6, i * 31 + sg, n=2, speed=0.6, col=(190, 175, 140), life=6, up=0.4)
+        c.spr('cl03_clash_bolt', k, P(1, 0), HOME, A_AT + P(push + jit[0], 0))
+        c.spr('cl03_clash_bolt', (k + 5) % 12, P(-1, 0), AWAY, D_AT + P(push - jit[0], 0))
         c.ball(BALL + P(push * 0.5, 0), 0.9)
         # auras meet at the ball
         wisps(c, A_AT, BALL + P(0, -2), RED, i, 11, 4 + int(3 * heat), 0.5 + 0.5 * heat)
