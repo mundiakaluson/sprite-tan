@@ -12,6 +12,11 @@ PI = math.pi
 MOVES = {}
 
 
+def retired(id_, label, loop=False):          # kept for reference, not built (looked poor at match zoom)
+    def deco(fn): return fn
+    return deco
+
+
 def move(id_, label, loop=False):
     def deco(fn):
         MOVES[id_] = (label, fn, loop); return fn
@@ -92,7 +97,7 @@ def held(N=12, ms=70):
     return d
 
 
-@move('cl04_clash_low_guard', 'Clash Low Guard', True)
+@retired('cl04_clash_low_guard', 'Clash Low Guard', True)
 def low_guard():
     """the defender's set: wide, low, weight on the toes, arms out low and wide to make himself big, eyes on the ball"""
     d = held()
@@ -171,7 +176,7 @@ def point():
     hidden(d); return d.m
 
 
-@move('cl11_clash_arms_crossed', 'Clash Arms Crossed', True)
+@retired('cl11_clash_arms_crossed', 'Clash Arms Crossed', True)
 def arms_crossed():
     """the wall: feet apart, arms folded across the chest, weight back, unimpressed"""
     d = held(16, 80)
@@ -216,6 +221,138 @@ def bull():
         a = (-0.95, 0.35 + 0.03 * tr, 0.8, 0.0)
         d.arms(f, a, (a[0], a[1], a[2], a[3]))
     hidden(d); return d.m
+
+
+# ================================================================ the big set: one builder, many stances
+# pose(f, ph) returns (R, L, body dict, right arm, left arm); `up` lifts the whole body (airborne). Tiers for the airborne ones: the game picks
+# how high / how extreme from the player's stats (PHY + PAC for height, DRI + SHO for the acrobatic ones), 1 = athletic, 2 = elite, 3 = godlike.
+UPA = (2.8, 0.25, 2.9, 0.1)        # arm straight up
+WIDE = (0.25, 1.55, 0.35, 0.2)     # arm out to the side
+BACK = (-1.0, 0.3, 0.7, 0.0)       # driven back
+FWD = (1.5, 0.15, 1.4, 0.0)        # straight out in front
+BENTUP = (1.5, 0.15, 2.2, 0.0)     # bent up in front (running)
+FLEX = (0.3, 1.45, 2.6, 0.3)       # upper arm out, forearm up: the bicep
+PALM = (1.1, 0.35, 1.3, 0.3)       # palm out, open
+
+
+def stance(id_, label, pose, N=12, ms=70):
+    def fn():
+        d = held(N, ms)
+        for f in range(d.N):
+            ph = 2 * PI * f / d.N
+            R, L, body, ra, la = pose(f, ph)
+            d.at(f, R=R, L=L, **body); d.arms(f, ra, la)
+        hidden(d); return d.m
+    MOVES[id_] = (label, fn, True)
+
+
+def air(lift, fl, ph):
+    return lift + 0.5 * math.sin(ph) * fl
+
+
+# ---- airborne family (tier in the id: a1 athletic, a2 elite, a3 godlike)
+stance('cl20_air_knee_drive_a1', 'Air Knee Drive (athletic)', lambda f, ph: (
+    (1.6, 2.5, -30, 7.5 + air(4, 1, ph)), (-1.6, -2.0, -40, 5.0 + air(4, 1, ph)),
+    dict(pz=24 + air(4, 1, ph), cpitch=0.1, hpitch=-0.2), UPA, WIDE))
+stance('cl21_air_scissor_a2', 'Air Scissor (elite)', lambda f, ph: (
+    (1.0, 8.5 + 0.6 * math.sin(ph * 2), 25, 9.0 + air(7, 1, ph)), (-1.2, -6.5 - 0.6 * math.sin(ph * 2), 45, 4.0 + air(7, 1, ph)),
+    dict(pz=24 + air(7, 1, ph), cpitch=0.05, ppitch=-0.1, hpitch=0.1, croll=0.05 * math.sin(ph)), WIDE, (0.4, 1.4, 0.5, 0.2)))
+stance('cl22_air_flying_kick_a2', 'Air Flying Side Kick (elite)', lambda f, ph: (
+    (1.0, 11.0, 15, 12.0 + air(7, 1, ph)), (-1.0, -2.5, -60, 6.5 + air(7, 1, ph)),
+    dict(pz=23 + air(7, 1, ph), cpitch=-0.55, ppitch=-0.45, croll=0.25, hpitch=0.35), (2.0, 1.1, 1.6, 0.2), (-0.6, 1.0, 0.4, 0.2)))
+stance('cl23_air_bicycle_a3', 'Air Bicycle Set (godlike)', lambda f, ph: (
+    (0.8, 6.0, -20, 18.0 + air(10, 1, ph)), (-0.8, 2.0, 30, 9.0 + air(10, 1, ph)),
+    dict(pz=22 + air(10, 1, ph), cpitch=-1.15, ppitch=-0.9, hpitch=0.6), (0.2, 1.5, 0.3, 0.3), (0.3, 1.4, 0.3, 0.3)))
+stance('cl24_air_superman_a3', 'Air Superman Dive (godlike)', lambda f, ph: (
+    (1.0, -9.0, 70, 10.0 + air(9, 1, ph)), (-1.0, -9.5, 70, 10.5 + air(9, 1, ph)),
+    dict(pz=19 + air(9, 1, ph), cpitch=1.35, ppitch=1.2, hpitch=-0.9), BACK, BACK))
+stance('cl25_air_split_a3', 'Air Split (godlike)', lambda f, ph: (
+    (1.2, 11.0, 10, 9.0 + air(10, 1, ph)), (-1.2, -11.0, 50, 9.0 + air(10, 1, ph)),
+    dict(pz=21 + air(10, 1, ph), cpitch=0.1, hpitch=-0.15), WIDE, WIDE))
+stance('cl26_air_tornado_a3', 'Air Tornado Twist (godlike)', lambda f, ph: (
+    (3.0, 6.0, 0, 8.0 + air(9, 1, ph)), (-1.0, -1.0, -50, 6.0 + air(9, 1, ph)),
+    dict(pz=24 + air(9, 1, ph), cyaw=0.9 + 0.12 * math.sin(ph * 2), pyaw=0.4, croll=-0.2, hyaw=-0.7), (0.9, 0.2, 2.2, -0.9), (0.9, 0.2, 2.2, -0.9)))
+stance('cl27_air_volley_cock_a2', 'Air Volley Cocked (elite)', lambda f, ph: (
+    (1.2, -6.5, 60, 13.0 + air(6, 1, ph)), (-1.2, 2.0, -30, 6.0 + air(6, 1, ph)),
+    dict(pz=24 + air(6, 1, ph), cpitch=0.5, ppitch=0.3, hpitch=0.4), FWD, (-0.4, 1.3, 0.4, 0.2)))
+stance('cl28_air_hover_god_a3', 'Air Hover (godlike)', lambda f, ph: (
+    (1.6, 1.5, -40, 6.0 + air(13, 1.6, ph)), (-1.6, -1.0, -40, 6.5 + air(13, 1.6, ph)),
+    dict(pz=24 + air(13, 1.6, ph), cpitch=-0.05, hpitch=-0.25), (0.35, 1.7, 0.6, 0.6), (0.35, 1.7, 0.6, 0.6)))
+stance('cl29_air_header_leap_a1', 'Air Header Leap (athletic)', lambda f, ph: (
+    (1.6, -2.0, -45, 6.5 + air(5, 1, ph)), (-1.6, -2.5, -45, 6.0 + air(5, 1, ph)),
+    dict(pz=24 + air(5, 1, ph), cpitch=-0.35, hpitch=-0.6), (2.3, 0.8, 2.0, 0.2), (2.3, 0.8, 2.0, 0.2)))
+stance('cl30_air_overhead_a3', 'Air Overhead Arc (godlike)', lambda f, ph: (
+    (0.8, 9.0, -30, 22.0 + air(11, 1, ph)), (-0.8, -3.0, 40, 12.0 + air(11, 1, ph)),
+    dict(pz=21 + air(11, 1, ph), cpitch=-1.35, ppitch=-1.1, croll=0.15, hpitch=0.8), UPA, WIDE))
+
+# ---- attackers on the ground
+stance('cl31_bolt_low', 'Bolt Low', lambda f, ph: (
+    (1.6, 6.0, -30, 6.0 + 0.3 * math.sin(ph * 3)), (-1.4, -12.0, 55, 0.5),
+    dict(pz=18.8 + 0.25 * math.sin(ph * 3), cpitch=1.05, ppitch=0.45, hpitch=-0.7), BACK, BENTUP))
+stance('cl32_cut_plant', 'Cut Planted', lambda f, ph: (
+    (5.5, 1.5, 0, None), (-1.0, -1.0, 0, 1.0),
+    dict(pz=19.0 + 0.2 * math.sin(ph * 3), croll=-0.45, proll=-0.25, cpitch=0.3, hyaw=-0.3), (0.6, 1.4, 0.6, 0.3), (0.8, 0.4, 1.2, 0.1)))
+stance('cl33_drag_back', 'Drag Back Freeze', lambda f, ph: (
+    (0.6, 3.5, 10, 4.2), (-2.2, -2.5, 0, None),
+    dict(pz=22.0, cpitch=-0.25, ppitch=-0.1, hpitch=0.2), (0.5, 0.9, 0.6, 0.2), (0.5, 0.9, 0.6, 0.2)))
+stance('cl34_spin_back', 'Spin, Back To Him', lambda f, ph: (
+    (2.6, 1.0, 0, None), (-2.6, -1.0, 0, None),
+    dict(pz=21.6, cyaw=2.6 + 0.08 * math.sin(ph * 2), pyaw=2.3, cpitch=0.3, hyaw=0.9), (0.4, 1.2, 0.5, 0.2), (0.9, 0.6, 1.0, 0.1)))
+stance('cl35_shoulder_drop', 'Shoulder Drop Feint', lambda f, ph: (
+    (3.2, 2.0, 0, None), (-2.6, -1.5, 0, 0.8),
+    dict(pz=20.4, croll=0.55 + 0.04 * math.sin(ph * 2), proll=0.2, cpitch=0.3, hyaw=0.4), (0.1, 0.6, 0.4, 0.1), (0.4, 1.6, 0.5, 0.3)))
+stance('cl36_heel_lift', 'Heel Lift Set', lambda f, ph: (
+    (0.2, -3.5, -60, 7.5), (-2.2, 0.5, 0, None),
+    dict(pz=22.6, cpitch=0.15, hpitch=0.2), (0.4, 1.2, 0.5, 0.2), (0.4, 1.2, 0.5, 0.2)))
+stance('cl37_scream_charge', 'Scream Charge', lambda f, ph: (
+    (2.0, 4.2, 0, 1.5), (-1.8, -6.5, 40, 0.5),
+    dict(pz=21.0, cpitch=0.25, hpitch=-0.6), (-0.6, 1.0, 0.4, 0.2), (-0.6, 1.0, 0.4, 0.2)))
+
+# ---- defenders
+stance('cl40_block_stretch', 'Block Stretch', lambda f, ph: (
+    (6.5, 4.0, 30, 2.5 + 0.2 * math.sin(ph * 3)), (-2.4, -1.5, 0, None),
+    dict(pz=18.6, croll=-0.35, cpitch=0.25, proll=-0.2), WIDE, (0.6, 0.5, 0.8, 0.2)))
+stance('cl41_stand_tackle', 'Stand Tackle Lunge', lambda f, ph: (
+    (0.9, 9.5, 20, 1.8 + 0.2 * math.sin(ph * 3)), (-2.2, -4.0, 0, None),
+    dict(pz=18.0, cpitch=0.55, ppitch=0.1, hpitch=0.35), BACK, (1.0, 0.8, 0.8, 0.2)))
+stance('cl42_jockey_side', 'Jockey Side-On', lambda f, ph: (
+    (3.4, 1.8 + 0.3 * math.sin(ph), 0, None), (-3.0, -2.2, 0, None),
+    dict(pz=20.4 + 0.2 * math.sin(ph * 2), cyaw=0.5, pyaw=0.35, cpitch=0.35, hyaw=-0.5), (0.7, 0.9, 0.9, 0.2), (0.5, 0.3, 0.9, 0.1)))
+stance('cl43_hip_check', 'Hip Check', lambda f, ph: (
+    (3.0, 2.0, 0, None), (-3.0, -2.0, 0, None),
+    dict(pz=20.8, pyaw=0.8, cyaw=0.6, proll=0.3, croll=0.15, cpitch=0.2, hyaw=-0.6), (-0.4, 0.5, 1.2, 0.0), (0.3, 1.0, 1.0, 0.2)))
+stance('cl44_intercept_reach', 'Intercept Reach', lambda f, ph: (
+    (5.0, 7.0, 25, 1.5), (-2.0, -3.0, 0, None),
+    dict(pz=18.4, croll=-0.4, cpitch=0.45, hyaw=0.3), FWD, (0.2, 1.4, 0.4, 0.2)))
+stance('cl45_slide_full', 'Full Slide', lambda f, ph: (
+    (0.8, 13.5 + 0.4 * math.sin(ph * 3), 70, 1.0), (-1.4, 1.0, 40, 1.0),
+    dict(pz=11.5, cpitch=-0.55, ppitch=-0.6, hpitch=0.5), (1.5, 0.6, 1.0, 0.1), (-0.5, 0.9, 0.2, 0.0)))
+
+# ---- showmen (the proud ones)
+stance('cl50_shrug', 'Shrug, Is That All', lambda f, ph: (
+    (3.0, 0.4, 0, None), (-3.0, -0.2, 0, None),
+    dict(pz=23.4 + 0.1 * math.sin(ph), cpitch=-0.12, hpitch=-0.2, hroll=0.15), (0.6, 1.2, 1.5, 0.6), (0.6, 1.2, 1.5, 0.6)), 16, 80)
+stance('cl51_finger_wag', 'Finger Wag, No No', lambda f, ph: (
+    (2.8, 0.6, 0, None), (-2.8, -0.4, 0, None),
+    dict(pz=23.3, cpitch=-0.08, hpitch=-0.15, hyaw=0.12 * math.sin(ph * 2)), (1.0, 0.3 + 0.35 * math.sin(ph * 2), 2.3, 0.0), HIP), 12, 75)
+stance('cl52_flex', 'Flex', lambda f, ph: (
+    (3.2, 0.3, 0, None), (-3.2, -0.3, 0, None),
+    dict(pz=23.2 + 0.1 * math.sin(ph), cpitch=-0.15, hpitch=-0.25), FLEX, FLEX), 16, 80)
+stance('cl53_roar', 'Roar', lambda f, ph: (
+    (3.4, 0.6, 0, None), (-3.4, -0.4, 0, None),
+    dict(pz=22.2 + 0.2 * math.sin(ph * 2), cpitch=0.3, hpitch=-0.75), (0.5, 0.9, 0.9, 0.4), (0.5, 0.9, 0.9, 0.4)))
+stance('cl54_hands_behind', 'Hands Behind, Calm', lambda f, ph: (
+    (2.6, 0.4, 0, None), (-2.6, -0.2, 0, None),
+    dict(pz=23.5 + 0.1 * math.sin(ph), cpitch=-0.1, hpitch=-0.15), (-0.5, 0.3, 1.4, 0.6), (-0.5, 0.3, 1.4, 0.6)), 16, 80)
+stance('cl55_temple', 'Finger To Temple', lambda f, ph: (
+    (2.8, 0.4, 0, None), (-2.8, -0.3, 0, None),
+    dict(pz=23.3, cpitch=-0.05, hpitch=-0.1), (0.4, 1.0, 2.9, -0.6), HIP), 16, 80)
+stance('cl56_salute', 'Salute', lambda f, ph: (
+    (2.6, 0.3, 0, None), (-2.6, -0.2, 0, None),
+    dict(pz=23.5, cpitch=-0.12, hpitch=-0.2), (1.2, 0.9, 2.8, -0.7), (0.1, 0.3, 0.3, 0.0)), 16, 80)
+stance('cl57_palm_out', 'Stop Sign Palm', lambda f, ph: (
+    (2.8, 0.8, 0, None), (-2.8, -0.6, 0, None),
+    dict(pz=23.2, cpitch=0.0, hpitch=-0.2, cyaw=-0.1), (1.5, 0.2, 1.65, 0.0), HIP), 16, 80)
 
 
 def build(ids=None):

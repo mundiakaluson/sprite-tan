@@ -12,17 +12,34 @@ import clash_match as CM
 HOME, AWAY = 'home', 'away'
 BALL = CM.BALL
 PAIRS = [   # (attacker stance, defender stance, gap each side of the ball in px, label)
-    ('cl03_clash_bolt', 'cl03_clash_bolt', 8.0, 'BOLT  vs  BOLT'),
-    ('cl06_clash_sole', 'cl11_clash_arms_crossed', 9.5, 'SOLE ON THE BALL  vs  ARMS CROSSED'),
-    ('cl07_clash_stepover', 'cl04_clash_low_guard', 9.0, 'STEP-OVER  vs  LOW GUARD'),
-    ('cl10_clash_point', 'cl14_clash_bull', 10.0, 'PROUD POINT  vs  BULL CHARGE'),
-    ('cl09_clash_aura_farm', 'cl08_clash_slide_load', 10.5, 'AURA FARM  vs  SLIDE LOADED'),
-    ('cl13_clash_airborne', 'cl13_clash_airborne', 8.5, 'AIRBORNE  vs  AIRBORNE'),
-    ('cl12_clash_beckon', 'cl05_clash_shoulder', 9.0, 'BECKON  vs  SHOULDER BRACE'),
-    ('cl01_clash_reach', 'cl01_clash_reach', 9.5, 'LUNGE  vs  LUNGE'),
+    ('cl28_air_hover_god_a3', 'cl30_air_overhead_a3', 9.0, 'GODLIKE: HOVER  vs  OVERHEAD ARC'),
+    ('cl31_bolt_low', 'cl41_stand_tackle', 9.0, 'BOLT LOW  vs  STAND TACKLE'),
+    ('cl10_clash_point', 'cl52_flex', 10.0, 'PROUD POINT  vs  FLEX'),
+    ('cl22_air_flying_kick_a2', 'cl21_air_scissor_a2', 9.0, 'ELITE: FLYING KICK  vs  SCISSOR'),
+    ('cl32_cut_plant', 'cl40_block_stretch', 9.5, 'CUT PLANTED  vs  BLOCK STRETCH'),
+    ('cl09_clash_aura_farm', 'cl53_roar', 10.5, 'AURA FARM  vs  ROAR'),
+    ('cl23_air_bicycle_a3', 'cl25_air_split_a3', 9.5, 'GODLIKE: BICYCLE  vs  SPLIT'),
+    ('cl35_shoulder_drop', 'cl42_jockey_side', 9.5, 'SHOULDER DROP  vs  JOCKEY SIDE-ON'),
+    ('cl50_shrug', 'cl51_finger_wag', 10.5, 'SHRUG  vs  FINGER WAG'),
+    ('cl20_air_knee_drive_a1', 'cl29_air_header_leap_a1', 8.5, 'ATHLETIC: KNEE DRIVE  vs  HEADER LEAP'),
+    ('cl34_spin_back', 'cl43_hip_check', 9.0, 'SPIN BACK  vs  HIP CHECK'),
+    ('cl55_temple', 'cl57_palm_out', 10.5, 'FINGER TO TEMPLE  vs  PALM OUT'),
+    ('cl26_air_tornado_a3', 'cl27_air_volley_cock_a2', 9.5, 'GODLIKE TORNADO  vs  ELITE VOLLEY'),
+    ('cl37_scream_charge', 'cl45_slide_full', 10.0, 'SCREAM CHARGE  vs  FULL SLIDE'),
+    ('cl06_clash_sole', 'cl54_hands_behind', 10.0, 'SOLE ON THE BALL  vs  HANDS BEHIND'),
+    ('cl24_air_superman_a3', 'cl56_salute', 10.0, 'GODLIKE SUPERMAN  vs  SALUTE'),
 ]
-SEG = 44
-RUN, HIT, HOLD_END = 8, 13, 38            # within a segment: run-in until RUN, zoomed by HIT, reveal at HOLD_END
+TIER_LIFT = {'a1': 4.0, 'a2': 7.0, 'a3': 10.0}
+
+
+def tier(st):
+    for t in ('a3', 'a2', 'a1'):
+        if st.endswith('_' + t): return int(t[1])
+    return 0
+
+
+SEG = 32
+RUN, HIT, HOLD_END = 6, 10, 26            # within a segment: run-in until RUN, zoomed by HIT, reveal at HOLD_END
 
 
 def seg_frame(c, pair, i):
@@ -42,7 +59,16 @@ def seg_frame(c, pair, i):
         jit = random.Random(i).uniform(-0.3, 0.3)
         c.spr(sa, ka, P(1, 0), HOME, A_AT + P(jit, 0))
         c.spr(sd, (kd + 5) % E.META[sd]['frames'], P(-1, 0), AWAY, D_AT + P(-jit, 0))
-        c.ball(BALL, 0.9)
+        ta, td = tier(sa), tier(sd)
+        hz = 0.9 + (TIER_LIFT.get('a%d' % max(ta, td), 0.0) + 4.0 if max(ta, td) else 0.0) * (0.8 + 0.1 * math.sin(i * 0.4))   # airborne: the ball is up between them
+        c.ball(BALL, hz)
+        for t_, at in ((ta, A_AT), (td, D_AT)):                                  # the tier shows: elite = a stronger aura, godlike = gold, a light column
+            if t_ >= 2: fx.glow(c, at + P(0, -12 - TIER_LIFT['a%d' % t_]), 8 + 3 * t_, (255, 220, 120) if t_ == 3 else (200, 220, 255), 0.25 + 0.12 * t_, 'under')
+            if t_ == 3:
+                for q in range(4):
+                    x = at[0] - 5 + q * 3.3 + math.sin(i * 0.5 + q) * 0.8
+                    c.ud.line([(x, at[1]), (x, at[1] - 34)], fill=(255, 230, 150, 50 + 20 * (q % 2)), width=1)
+                fx.burst(c, at + P(0, -10), i % 8, i * 17 + q, n=4, speed=0.8, col=(255, 230, 140), life=8, up=2.0)
         CM.wisps(c, A_AT, BALL + P(0, -2), CM.RED, i, 11, 4 + int(3 * heat), 0.5 + 0.5 * heat)
         CM.wisps(c, D_AT, BALL + P(0, -2), CM.BLUE, i, 23, 4 + int(3 * heat), 0.5 + 0.5 * heat)
         fx.glow(c, BALL + P(0, -2), 5 + 3 * heat, (255, 210, 140), 0.3 + 0.35 * heat, 'over')
@@ -57,6 +83,7 @@ def seg_frame(c, pair, i):
         c.after(CM.vignette(0.45 * smooth(clamp((i - RUN) / 4))))
     t = E.pix_text(label, (255, 240, 200), 1)
     c.scr.alpha_composite(t, (8, VH - 22))
+
 
 
 class Seg:
