@@ -105,13 +105,6 @@ def clash_match(c):
         k = ak('cl03_clash_bolt', i, T_HIT, 1.0, loop=True)
         jit = (random.Random(i).uniform(-0.4, 0.4), 0) if i >= T_SNAP else (0, 0)
         push = 0.6 * math.sin(i * 0.9) * heat
-        for side, at, sk, sg in ((P(1, 0), A_AT, HOME, -1), (P(-1, 0), D_AT, AWAY, 1)):      # speed streaks left behind the bolt + dust off the back toe
-            for q in range(5):
-                y = at[1] - 4 - q * 4 + math.sin(q * 2.1) * 1.5
-                L = 10 + 6 * math.sin(q * 1.7 + i * 0.4) + 6 * (1 - heat)
-                x0 = at[0] + sg * 5
-                c.ud.line([(x0, y), (x0 + sg * L, y)], fill=(235, 240, 255, int(70 + 40 * (q % 2))), width=1)
-            fx.burst(c, at + P(sg * 6, 0.5), i % 6, i * 31 + sg, n=2, speed=0.6, col=(190, 175, 140), life=6, up=0.4)
         c.spr('cl03_clash_bolt', k, P(1, 0), HOME, A_AT + P(push + jit[0], 0))
         c.spr('cl03_clash_bolt', (k + 5) % 12, P(-1, 0), AWAY, D_AT + P(push - jit[0], 0))
         c.ball(BALL + P(push * 0.5, 0), 0.9)

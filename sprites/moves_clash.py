@@ -83,6 +83,141 @@ def clash_bolt():
     hidden(d); return d.m
 
 
+# ---------------------------------------------------------------- more clash stances (held loops). Which one a player strikes comes from
+# his role and personality (players.csv traits): sprinters bolt, defenders crouch or load a slide, proud players aura-farm or point.
+HIP = (-0.15, 0.95, 1.55, -1.25)          # hand on the hip: elbow out, forearm folded back in
+def held(N=12, ms=70):
+    d = Dr(N, ms=ms, speed=0.0); d.m.loop = True; d.m.events = {}
+    for f in range(N): d.lt[f] = 0.0; d.sp[f] = 0.0
+    return d
+
+
+@move('cl04_clash_low_guard', 'Clash Low Guard', True)
+def low_guard():
+    """the defender's set: wide, low, weight on the toes, arms out low and wide to make himself big, eyes on the ball"""
+    d = held()
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; tr = math.sin(ph * 2)
+        d.at(f, R=(4.6, 1.2 + 0.2 * tr, 0, None), L=(-4.6, -0.6 - 0.2 * tr, 0, None), pz=18.4 + 0.25 * math.sin(ph * 3), cpitch=0.42, ppitch=0.15, hpitch=-0.1, croll=0.04 * tr)
+        a = (0.55, 1.05 + 0.04 * tr, 0.8, 0.25)
+        d.arms(f, a, (a[0], a[1] - 0.08 * tr, a[2], a[3]))
+    hidden(d); return d.m
+
+
+@move('cl05_clash_shoulder', 'Clash Shoulder Brace', True)
+def shoulder():
+    """turned side-on, the lead shoulder dropped into the contact, feet staggered and braced, lead arm tucked, back arm driving"""
+    d = held()
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; tr = math.sin(ph * 3 + 0.4)
+        d.at(f, R=(2.4, 3.8, 0, None), L=(-2.4, -4.8, 25, 0.4), pz=19.8 + 0.2 * tr, cpitch=0.35, ppitch=0.15, cyaw=0.62, pyaw=0.3, croll=0.22 + 0.03 * tr, hyaw=-0.45, hpitch=-0.1)
+        d.arms(f, (-0.6, 0.3, 0.7, 0.0), (0.3, 0.12, 1.7, -0.7))
+    hidden(d); return d.m
+
+
+@move('cl06_clash_sole', 'Clash Sole On The Ball', True)
+def sole():
+    """cocky: upright, the sole resting on top of the ball, hands on the hips, a little bounce, looking straight at him"""
+    d = held(14)
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N
+        d.at(f, R=(0.9, 5.2, 12, 4.4 + 0.25 * math.sin(ph)), L=(-2.2, -1.4, 0, None), pz=23.0 + 0.2 * math.sin(ph * 2), cpitch=-0.06, hpitch=-0.12, cyaw=0.1)
+        d.arms(f, HIP, HIP)
+    hidden(d); return d.m
+
+
+@move('cl07_clash_stepover', 'Clash Step-Over Freeze', True)
+def stepover():
+    """caught in the middle of a step-over: the leg circling out over the ball, body leaning the other way, arms wide for balance"""
+    d = held()
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; tr = math.sin(ph * 2)
+        d.at(f, R=(3.8 + 0.2 * tr, 4.4, 0, 4.2 + 0.3 * tr), L=(-2.6, -1.0, 0, None), pz=21.2, cpitch=0.25, croll=-0.28, proll=-0.1, hpitch=0.1)
+        d.arms(f, (0.7, 1.35, 0.5, 0.3), (0.5, 1.25 + 0.05 * tr, 0.6, 0.3))
+    hidden(d); return d.m
+
+
+@move('cl08_clash_slide_load', 'Clash Slide Loaded', True)
+def slide_load():
+    """dropping into a slide: back knee folded deep, the leading leg shot out along the grass at the ball, leaning back, one hand reaching down"""
+    d = held()
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; tr = math.sin(ph * 3)
+        d.at(f, R=(1.0, 12.4 + 0.3 * tr, 55, 1.2), L=(-2.0, -2.2, 0, None), pz=14.8 + 0.2 * tr, cpitch=-0.25, ppitch=-0.35, hpitch=0.3)
+        d.arms(f, (1.6, 0.5, 1.0, 0.1), (-0.3, 0.7, 0.2, 0.0))
+    hidden(d); return d.m
+
+
+@move('cl09_clash_aura_farm', 'Clash Aura Farm', True)
+def aura_farm():
+    """the proud one: does not bother to move. Stands tall, chest out, chin up, arms hanging a little away from the body, fists loose; just breathes"""
+    d = held(16, 80)
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; br = math.sin(ph)
+        d.at(f, R=(3.0, 0.4, 0, None), L=(-3.0, -0.2, 0, None), pz=23.5 + 0.15 * br, cpitch=-0.16 - 0.03 * br, hpitch=-0.28, croll=0.0)
+        a = (0.08, 0.42 + 0.03 * br, 0.25, 0.1)
+        d.arms(f, a, a)
+    hidden(d); return d.m
+
+
+@move('cl10_clash_point', 'Clash Proud Point', True)
+def point():
+    """points straight at the opponent, arm locked out, other hand on the hip, chin up: you, come on then"""
+    d = held(16, 80)
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; jab = 0.06 * math.sin(ph * 2)
+        d.at(f, R=(2.8, 0.6, 0, None), L=(-2.8, -0.4, 0, None), pz=23.3, cpitch=-0.1, hpitch=-0.2, cyaw=-0.15, pyaw=-0.08)
+        d.arms(f, (1.5 + jab, 0.12, 1.5 + jab, 0.0), HIP)
+    hidden(d); return d.m
+
+
+@move('cl11_clash_arms_crossed', 'Clash Arms Crossed', True)
+def arms_crossed():
+    """the wall: feet apart, arms folded across the chest, weight back, unimpressed"""
+    d = held(16, 80)
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; br = math.sin(ph)
+        d.at(f, R=(3.6, 0.2, 0, None), L=(-3.6, 0.0, 0, None), pz=23.2 + 0.12 * br, cpitch=-0.12, hpitch=-0.15)
+        d.arms(f, (0.45, 0.2, 1.65, -1.35), (0.5, 0.2, 1.6, -1.3))
+    hidden(d); return d.m
+
+
+@move('cl12_clash_beckon', 'Clash Beckon', True)
+def beckon():
+    """come on then: one hand out in front, palm up, fingers curling him in, the other on the hip, a little rock on the heels"""
+    d = held(12, 75)
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; cu = 0.5 + 0.5 * math.sin(ph * 2)
+        d.at(f, R=(2.8, 0.8, 0, None), L=(-2.8, -0.8, 0, None), pz=23.0 + 0.15 * math.sin(ph), cpitch=-0.05 - 0.05 * math.sin(ph), hpitch=-0.15)
+        d.arms(f, (1.0, 0.2, 1.8 + 0.8 * cu, 0.0), HIP)
+    hidden(d); return d.m
+
+
+@move('cl13_clash_airborne', 'Clash Airborne Kick', True)
+def airborne():
+    """both off the ground into it (the Tsubasa picture): leaping, the kicking leg cocked out high at the ball, the other tucked under,
+    leaning back, arms flung out for balance; hangs in the air with a slight float"""
+    d = held()
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; fl = math.sin(ph)
+        up = 5.5 + 0.4 * fl
+        d.at(f, R=(1.0, 9.0, 20, 9.5 + up), L=(-1.6, -2.4, -40, 4.5 + up), pz=23.0 + up, cpitch=-0.28, ppitch=-0.2, hpitch=0.35, croll=0.05 * fl)
+        d.arms(f, (2.2, 0.9, 1.8, 0.2), (-0.8, 0.85, 0.5, 0.2))
+    hidden(d); return d.m
+
+
+@move('cl14_clash_bull', 'Clash Bull Charge', True)
+def bull():
+    """head down, shoulders forward, arms thrown back, charging straight through him"""
+    d = held()
+    for f in range(d.N):
+        ph = 2 * PI * f / d.N; tr = math.sin(ph * 3)
+        d.at(f, R=(2.0, 4.6, 0, 1.0), L=(-1.8, -7.2, 42, 0.5), pz=20.4 + 0.2 * tr, cpitch=0.95, ppitch=0.3, hpitch=0.45)
+        a = (-0.95, 0.35 + 0.03 * tr, 0.8, 0.0)
+        d.arms(f, a, (a[0], a[1], a[2], a[3]))
+    hidden(d); return d.m
+
+
 def build(ids=None):
     out = []
     for id_, (label, fn, loop) in MOVES.items():
