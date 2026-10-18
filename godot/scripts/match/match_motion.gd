@@ -100,6 +100,9 @@ func update(dt: float) -> void:
 		if f.is_keeper() and f.lock <= 0.0 and f.aim_done.is_null() and not gliding and not f.ai.get("rush", false) and tb.length() > 1.0:   # eyes on the ball, always (but not when he charges out)
 			var kstep := deg_to_rad(s.keeper_turn_deg_per_s) * dt                  # a keeper keeps his chest to the ball while he shuffles across
 			f.face = f.face.rotated(clampf(f.face.angle_to(tb), -kstep, kstep)).normalized()
+		elif f.ai.has("look") and float(f.ai.get("look_until", -1.0)) > g.clock and f.vel.length() < s.look_max_speed and f.aim_done.is_null() and not gliding and f.lock <= 0.0:
+			var lstep := deg_to_rad(s.turn_deg_per_s) * dt                    # a glance over the shoulder / opening up for a pass
+			f.face = f.face.rotated(clampf(f.face.angle_to(f.ai["look"]), -lstep, lstep)).normalized()
 		elif f.vel.length() > 0.5 and f.aim_done.is_null() and not gliding:
 			var step := deg_to_rad(s.turn_deg_per_s) * dt                      # turns by an angle, so a U-turn can not collapse the vector
 			f.face = f.face.rotated(clampf(f.face.angle_to(f.vel), -step, step)).normalized()

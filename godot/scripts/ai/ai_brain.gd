@@ -26,6 +26,7 @@ func update(dt: float) -> void:
 		profiles[t].interact.compute(ctx[t])
 		profiles[t].line.compute(ctx[t], dt)
 		profiles[t].transition.compute(ctx[t], dt)
+		profiles[t].scan.compute(ctx[t], dt)
 	for f in g.all:
 		if f.lock > 0.0: continue
 		if g.phase == MatchGame.Phase.RESTART and g.rules.taker == f: continue          # the taker waits on the ball until the restart is ready
@@ -47,7 +48,12 @@ func update(dt: float) -> void:
 		profiles[f.team].interact.post(f, intent, ctx[f.team])
 		profiles[f.team].transition.post(f, intent, ctx[f.team])
 		profiles[f.team].line.post(f, intent, ctx[f.team])
+		profiles[f.team].scan.post(f, intent, ctx[f.team])
 		_apply(f, intent, ctx[f.team])
+
+## f just got the ball (MatchPossession.take); prev = who touched it before
+func received(f: Footballer, prev: Footballer) -> void:
+	if ctx.has(f.team): profiles[f.team].scan.on_take(f, prev, ctx[f.team])
 
 ## the stance a team plays right now: the HUD's choice, or for "auto" the profile's rules (protect a lead late, press when behind)
 func _stance(c: AiContext) -> TeamStance:
@@ -143,4 +149,7 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 func stats() -> Dictionary:
 	return {"traps": AiLine.stat_traps, "line_drop_frames": AiLine.stat_drops, "line_squeeze_frames": AiLine.stat_squeezes,
 		"counter_presses": AiTransition.stat_cp, "cp_regains": AiTransition.stat_cp_regain, "counters": AiTransition.stat_counters, "counter_shots": AiTransition.stat_counter_shots,
-		"recovery_sprint_frames": AiTransition.stat_recover_frames}
+		"recovery_sprint_frames": AiTransition.stat_recover_frames,
+		"scans": AiScan.stat_scans, "scan_time": AiScan.stat_time, "critical_scans": AiScan.stat_critical, "half_turns": AiScan.stat_turns, "protected": AiScan.stat_protect,
+		"blind_receptions": AiScan.stat_blind, "forward_passes_completed_played": AiScan.stat_fwd,
+		"set_backs": AiSetBack.stat_setbacks, "checks": AiCheckRun.stat_checks, "check_spins": AiCheckRun.stat_spins}

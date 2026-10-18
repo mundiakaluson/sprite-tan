@@ -52,6 +52,8 @@ const FALLBACK_FORMATIONS := ["4-4-2", "4-3-3", "4-2-3-1", "4-1-4-1", "4-3-2-1",
 @export_range(0.5, 1.5) var sprint_factor := 1.06
 ## the ball carrier runs at this fraction of top speed
 @export_range(0.4, 1.0) var carry_factor := 0.8
+## below this speed (m/s) a player can face somewhere other than where he runs (a scan glance, an open body while a pass comes; AiScan sets f.ai.look)
+@export var look_max_speed := 3.0
 ## players push each other apart inside this distance
 @export var separation := 0.9
 

@@ -168,6 +168,7 @@ func _release(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over:
 		var misaligned := float(o.get("_mis", 0.0))
 		o.erase("_mis")
 		var chance := s.scuff_base + (60 - f.stat("PAS", 60)) * s.scuff_per_pas + press * s.scuff_pressure + misaligned * s.scuff_misaligned
+		if f.ai.get("picture", false) and g.brain != null: chance *= g.brain.profiles[f.team].scan.scanned_scuff_k      # he knew what he would do before it came
 		bad = g.rng.randf() < chance
 		stat_passes += 1
 		if bad:

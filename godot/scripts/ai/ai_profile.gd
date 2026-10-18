@@ -39,6 +39,10 @@ extends Resource
 ## counter-press, recovery runs, rest defence, counter-attacks (scenes/ai/transition.tres)
 @export var transition: AiTransition
 
+@export_group("Scan")
+## scanning before receiving, open body shape, first touch away from pressure (scenes/ai/scan.tres)
+@export var scan: AiScan
+
 @export_group("Behaviours")
 ## every script in scripts/ai/behaviours/ is used automatically (see ai_behaviour.gd). Add an entry here only to give THIS team its own copy of one (different numbers, or switched off):
 ## it replaces the automatic one of the same script. Entries of other scripts are added to the list.
@@ -94,6 +98,7 @@ func fill() -> AiProfile:
 	interact.fill()
 	if line == null: line = AiLine.new()
 	if transition == null: transition = AiTransition.new()
+	if scan == null: scan = AiScan.new()
 	if goalkeeper == null: goalkeeper = AiGk.new()
 	if centre_back == null: centre_back = AiCb.new()
 	if fullback == null: fullback = AiFullback.new()

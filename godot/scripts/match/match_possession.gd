@@ -9,6 +9,7 @@ func _init(game: MatchGame) -> void:
 
 func take(f: Footballer) -> void:
 	if g.offside.touched(f): return                         # he was offside when it was played: free kick given instead
+	var prev := g.last_touch
 	g.carrier = f
 	g.last_touch = f
 	g.pass_target = null
@@ -23,6 +24,7 @@ func take(f: Footballer) -> void:
 		g.ball.phys.pos = Vector3(at.x, g.ball.phys.rad, at.y)
 		f.ball_rel = Vector3.ZERO
 	g.ball.hold()
+	if g.brain != null: g.brain.received(f, prev)              # first touch: scanned players turn / protect it (AiScan)
 
 ## every physics frame
 func update(dt: float) -> void:
@@ -120,6 +122,7 @@ func launch(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: D
 	if g.carrier != f: return
 	g.carrier = null
 	g.ball.preview_spin = Vector3.ZERO
+	AiScan.on_kick(f, to)
 	g.ball.play_action(action, to, f.row, to_vel, over)
 	f.no_touch = g.settings.no_touch_after_kick
 	g.last_touch = f

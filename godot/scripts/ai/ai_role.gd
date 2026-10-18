@@ -199,8 +199,13 @@ func _pick_pass(f: Footballer, c: AiContext) -> Dictionary:
 	var forward_w := forward_base + forward_directness * c.f("directness") - s.patience * forward_patience
 	var best := {}
 	var bs := -1e9
+	var sc: AiScan = c.profile.scan if c.profile != null else null
+	var blind: bool = sc != null and sc.scan_enabled and not bool(f.ai.get("picture", false))        # no scan before he got it: he does not see everything
 	for o in c.pass_options(f):
 		var m: Footballer = o["mate"]
+		if blind:
+			if o["blocked"] and c.game.rng.randf() < sc.blind_lane_miss: o["blocked"] = false
+			o["open"] = maxf(0.0, float(o["open"]) + c.game.rng.randf_range(-sc.blind_open_noise, sc.blind_open_noise))
 		var fw := forward_w + (c.profile.transition.counter_forward_bonus if c.countering and c.profile != null else 0.0)     # on a counter: forward first
 		var score: float = o["forward"] * fw + minf(o["open"], 10.0) * open_weight - absf(o["dist"] - s.ideal_pass) * length_penalty
 		if o["blocked"]: score -= blocked_penalty
