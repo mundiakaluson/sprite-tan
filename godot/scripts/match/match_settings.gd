@@ -694,6 +694,9 @@ static func layout(name_or_id: String) -> FormationLayout:
 ## opponents keep this far (m) from the ball until it is played (9.15 m by law; 2 m at a throw-in)
 @export var restart_distance := 9.15
 @export var restart_distance_throw := 2.0
+## the restart waits (on top of the times above) until everybody is within restart_ready_dist (m) of his set-piece spot, at most restart_max_wait real s in all
+@export var restart_ready_dist := 2.5
+@export var restart_max_wait := 9.0
 
 @export_group("Blocks and keeper claims")
 ## a ball faster than this (m/s) that hits a body (not the intended receiver) flies off it: up to deflect_deg off its line, keeping deflect_keep of its speed
@@ -712,3 +715,20 @@ static func layout(name_or_id: String) -> FormationLayout:
 @export var claim_k := 1.2
 ## he catches it (or punches it when it is faster than he can hold: MatchPossession's keeper rule)
 @export var claim_reach := 2.0
+
+@export_group("Referee")
+## a missed challenge is a foul with this chance (x 1.3 - DEF / 100): standing tackle, slide; one from behind adds foul_behind
+@export_range(0.0, 1.0) var foul_tackle := 0.22
+@export_range(0.0, 1.0) var foul_slide := 0.45
+@export_range(0.0, 1.0) var foul_behind := 0.25
+## yellow card chance by foul: standing, slide, from behind (added), tactical pull-back
+@export_range(0.0, 1.0) var card_tackle := 0.08
+@export_range(0.0, 1.0) var card_slide := 0.25
+@export_range(0.0, 1.0) var card_behind := 0.2
+@export_range(0.0, 1.0) var card_tactical := 0.9
+## advantage: the fouled side keeps the ball beyond this team-frame x (m from the centre, + = their half) with nobody within advantage_space (m)
+@export var advantage_from := 0.0
+@export var advantage_space := 3.0
+@export var restart_wait_penalty := 2.8
+## in his own box a defender risks a foul this much less (a careless challenge there is a penalty)
+@export_range(0.0, 1.0) var foul_box_care := 0.3

@@ -43,6 +43,10 @@ extends Resource
 ## box zones when the ball is wide: runners to near post / far post / spot / cut-back / edge, and defending the box (scenes/ai/box.tres)
 @export var box: AiBox
 
+@export_group("Set pieces")
+## who stands where at corners, free kicks (the wall), goal kicks, throw-ins and penalties (scenes/ai/set_piece.tres)
+@export var set_piece: AiSetPiece
+
 @export_group("Scan")
 ## scanning before receiving, open body shape, first touch away from pressure (scenes/ai/scan.tres)
 @export var scan: AiScan
@@ -104,6 +108,7 @@ func fill() -> AiProfile:
 	if transition == null: transition = AiTransition.new()
 	if scan == null: scan = AiScan.new()
 	if box == null: box = AiBox.new()
+	if set_piece == null: set_piece = AiSetPiece.new()
 	if goalkeeper == null: goalkeeper = AiGk.new()
 	if centre_back == null: centre_back = AiCb.new()
 	if fullback == null: fullback = AiFullback.new()

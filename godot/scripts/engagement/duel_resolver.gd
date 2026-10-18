@@ -41,7 +41,8 @@ func resolve(e: Engagement) -> void:
 	var risk_d := 0.0 if cd.is_empty() else Data.num(cd["risk"], 0.0) / 100.0
 	var a_move := EngageCard.effect_str(ca, "move", "takeon" if e.move == "takeon" else "keep")
 	var d_move := EngageCard.effect_str(cd, "move", e.move if e.move != "takeon" else "stand")
-	if win == "challenge" and (d_move == "foul" or g.rng.randf() < risk_d * s.engage_risk_win_share): win = "foul"
+	var care := s.foul_box_care if c.pos.x * d.team.dir < -MatchGame.HALF_L + 16.5 and absf(c.pos.y) < 20.16 else 1.0     # in his own box a defender is careful
+	if win == "challenge" and (d_move == "foul" or g.rng.randf() < risk_d * s.engage_risk_win_share * care): win = "foul"
 	e.outcome = win
 	e.note = "%s %.0f%% vs %s %.0f%%" % [a_move, pa, d_move, pd]
 	match win:
@@ -118,7 +119,7 @@ func _foul(c: Footballer, d: Footballer) -> void:
 	c.shield = maxf(c.shield, s.engage_foul_shield)
 	d.no_touch = maxf(d.no_touch, s.engage_foul_out)
 	g.kicking.tumble(d, s.clips_stumble_medium)
-	g.hud.message("FOUL", 1.2)
+	g.referee.foul(d, c, "engage")                                            # free kick (or advantage, or a penalty in the box)
 
 func _pick(f: Footballer, list: PackedStringArray) -> String:
 	var ok := PackedStringArray()

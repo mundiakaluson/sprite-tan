@@ -41,6 +41,7 @@ var poss: MatchPossession
 var motion: MatchMotion
 var rules: MatchRules
 var offside: MatchOffside           ## the offside law (judged at the pass, scripts/match/match_offside.gd)
+var referee: MatchReferee           ## fouls, advantage, cards, penalties (scripts/match/match_referee.gd)
 var orders: MatchOrders
 var cards: MatchCards
 var brain: AiBrain
@@ -97,6 +98,7 @@ func _ready() -> void:
 	aerial = MatchAerial.new(self)
 	scan.setup(self)
 	offside = MatchOffside.new(self)
+	referee = MatchReferee.new(self)
 	rules = MatchRules.new(self)
 	orders = MatchOrders.new(self)
 	cards = MatchCards.new(self)

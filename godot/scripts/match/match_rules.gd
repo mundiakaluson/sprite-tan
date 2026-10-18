@@ -11,6 +11,7 @@ var taker: Footballer
 var team: Team                     ## the side taking it
 var spot := Vector2.ZERO           ## where the ball is
 var indirect := false
+var _waited := 0.0
 var stat := {}                     ## kind -> count
 
 func _init(game: MatchGame) -> void:
@@ -71,17 +72,22 @@ func _out(bp: Vector3) -> void:
 	else:
 		restart("corner", attacking, Vector2(signf(bp.x) * (MatchGame.HALF_L - 0.8), signf(bp.z) * (MatchGame.HALF_W - 0.8)), "CORNER")
 
+## the set-piece positions in force (AiSetPiece) were last worked out for this
+func is_restart() -> bool:
+	return g.phase == MatchGame.Phase.RESTART
+
 ## a free kick to `taking` at `at` (offside, a foul); indirect = no goal straight from it
 func free_kick(taking: Team, at: Vector2, text: String, is_indirect := false) -> void:
 	restart("free_kick", taking, at, text)
 	indirect = is_indirect
 
 ## stop play and put the ball with the taker on `at`
-func restart(k: String, taking: Team, at: Vector2, text: String) -> void:
+func restart(k: String, taking: Team, at: Vector2, text: String, chosen: Footballer = null) -> void:
 	g.offside.clear()
-	var pick: Footballer = null
-	var best := 1e9
+	var pick: Footballer = chosen
+	var best := 1e9 if chosen == null else -1.0
 	for f in taking.players:
+		if chosen != null: break
 		if (k == "goal_kick") != f.is_keeper(): continue
 		var d := f.pos.distance_to(at)
 		if d < best:
@@ -107,6 +113,7 @@ func restart(k: String, taking: Team, at: Vector2, text: String) -> void:
 	stat[k] = int(stat.get(k, 0)) + 1
 	g.phase = MatchGame.Phase.RESTART
 	g.phase_t = _wait(k)
+	_waited = 0.0
 	g.hud.message(text, 1.2)
 
 func _wait(k: String) -> float:
@@ -115,6 +122,7 @@ func _wait(k: String) -> float:
 		"throw_in": return s.restart_wait_throw_in
 		"goal_kick": return s.restart_wait_goal_kick
 		"corner": return s.restart_wait_corner
+		"penalty": return s.restart_wait_penalty
 	return s.restart_wait_free_kick
 
 ## every physics frame while play is stopped for a restart: the taker waits on the ball, opponents keep their distance; then play resumes
@@ -126,13 +134,20 @@ func update_restart(dt: float) -> void:
 	taker.vel = Vector2.ZERO
 	var dist := g.settings.restart_distance_throw if kind == "throw_in" else g.settings.restart_distance
 	for f in g.all:
+		if kind == "penalty" and f != taker and not f.is_keeper():         # a penalty: everybody else outside the box
+			var gx := signf(spot.x) * (MatchGame.HALF_L - 16.5)
+			if f.pos.x * signf(spot.x) > gx * signf(spot.x) - 0.5: f.pos.x = gx - signf(spot.x) * 0.6
+		if kind == "goal_kick" and f.team != team and f.pos.x * team.dir < -MatchGame.HALF_L + 16.5 and absf(f.pos.y) < 20.16:
+			f.pos.x = (-MatchGame.HALF_L + 17.0) * team.dir                  # opponents outside the box at a goal kick
 		if f.team == team: continue
 		var d := f.pos - spot
 		if d.length() < dist:
 			f.pos = spot + (d.normalized() if d.length() > 0.05 else Vector2(-team.dir, 0.0)) * dist
 			if f.want.dot(-d) > 0.0: f.want = Vector2.ZERO
 	g.phase_t -= dt / maxf(Engine.time_scale, 0.05)
-	if g.phase_t <= 0.0:
+	_waited += dt / maxf(Engine.time_scale, 0.05)
+	var ready := g.brain == null or g.brain.unplaced == 0
+	if g.phase_t <= 0.0 and (ready or _waited > g.settings.restart_max_wait):
 		g.phase = MatchGame.Phase.PLAY
 		taker.think = minf(taker.think, 0.15)
 

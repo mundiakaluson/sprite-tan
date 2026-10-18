@@ -168,8 +168,10 @@ func won_tackle(thief: Footballer, victim: Footballer) -> void:
 	else: g.kicking.tumble(victim, s.clips_stumble_medium)
 
 ## he went in and missed: over-committed and stumbles or falls, and the carrier is knocked about a little
-func failed_tackle(tackler: Footballer, carrier: Footballer) -> void:
+func failed_tackle(tackler: Footballer, carrier: Footballer, kind := "tackle") -> void:
 	var s := g.settings
+	g.referee.challenge(tackler, carrier, kind)                               # a missed challenge can be a foul (MatchReferee)
+	if g.phase != MatchGame.Phase.PLAY: return
 	if g.rng.randf() < s.tackle_miss_fall: g.kicking.tumble(tackler, s.clips_fall)
 	else: g.kicking.tumble(tackler, s.clips_stumble_medium)
 	tackler.no_touch = maxf(tackler.no_touch, 0.4)

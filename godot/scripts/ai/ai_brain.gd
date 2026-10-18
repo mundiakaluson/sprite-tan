@@ -8,6 +8,7 @@ enum Phase { BUILD_UP, PROGRESS, FINAL_THIRD, ORGANISE, PRESS, TRANSITION }
 var g: MatchGame
 var profiles := {}  ## Team -> AiProfile (MatchSettings > AI: home_ai / away_ai; a missing one uses the role defaults)
 var ctx := {}       ## Team -> AiContext
+var unplaced := 0   ## during a restart: players not yet at their set-piece spot
 
 func _init(game: MatchGame) -> void:
 	g = game
@@ -26,11 +27,22 @@ func update(dt: float) -> void:
 		profiles[t].interact.compute(ctx[t])
 		profiles[t].line.compute(ctx[t], dt)
 		profiles[t].transition.compute(ctx[t], dt)
+	unplaced = 0
+	for t in g.teams:
 		profiles[t].scan.compute(ctx[t], dt)
 		profiles[t].box.compute(ctx[t], dt)
 	for f in g.all:
 		if f.lock > 0.0: continue
-		if g.phase == MatchGame.Phase.RESTART and g.rules.taker == f: continue          # the taker waits on the ball until the restart is ready
+		if g.phase == MatchGame.Phase.RESTART:
+			if g.rules.taker == f: continue                                       # the taker waits on the ball until the restart is ready
+			var sp: Vector2 = profiles[f.team].set_piece.place(f, ctx[f.team])            # everybody else takes up his set-piece position (AiSetPiece)
+			if sp != Vector2.INF:
+				var si := AiIntent.new()
+				si.move_to = sp
+				si.speed = g.settings.sprint_factor if f.pos.distance_to(sp) > 8.0 else g.settings.jog_factor
+				if f.pos.distance_to(sp) > g.settings.restart_ready_dist: unplaced += 1
+				_apply(f, si, ctx[f.team])
+				continue
 		if not f.order.is_empty() and not f.is_keeper():
 			g.orders.follow(f, dt)
 			continue
@@ -133,6 +145,7 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 			if i.speed_override > 0.0: over["speed"] = i.speed_override
 			g.poss.kick_action(f, "shot", i.aim, Vector2.ZERO, over)
 		"smother": g.keeper.smother(f, i.target)
+		"foul": if i.target != null and g.carrier == i.target: g.referee.foul(f, i.target, "tactical")
 		"gesture":                                                              # a keeper's gesture with the ball in his hands (AiKeeperGesture)
 			if f.lock <= 0.0 and i.clip != "":
 				if i.target != null and i.target.pos.distance_to(f.pos) > 0.5: f.face = (i.target.pos - f.pos).normalized()
@@ -155,6 +168,7 @@ func stats() -> Dictionary:
 		"scans": AiScan.stat_scans, "scan_time": AiScan.stat_time, "critical_scans": AiScan.stat_critical, "half_turns": AiScan.stat_turns, "protected": AiScan.stat_protect,
 		"blind_receptions": AiScan.stat_blind, "forward_passes_completed_played": AiScan.stat_fwd,
 		"set_backs": AiSetBack.stat_setbacks, "checks": AiCheckRun.stat_checks, "check_spins": AiCheckRun.stat_spins,
+		"set_pieces": AiSetPiece.stat_placed, "takers": AiSetPieceTaker.stat, "tactical_fouls": AiTacticalFoul.stat_fouls,
 		"wide_attacks": AiBox.stat_attacks, "deliveries": AiBox.stat_deliveries, "in_box_at_delivery": _avg(AiBox.stat_in_box), "cross_kinds": AiCross.stat, "block_frames": AiBlockShot.stat_blocks_set}
 
 static func _avg(a: Array) -> float:

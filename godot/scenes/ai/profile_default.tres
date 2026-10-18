@@ -24,9 +24,11 @@
 [ext_resource type="Resource" path="res://scenes/ai/transition.tres" id="r_transition"]
 [ext_resource type="Resource" path="res://scenes/ai/scan.tres" id="r_scan"]
 [ext_resource type="Resource" path="res://scenes/ai/box.tres" id="r_box"]
+[ext_resource type="Resource" path="res://scenes/ai/set_piece.tres" id="r_set_piece"]
 [ext_resource type="Resource" path="res://scenes/ai/transition.tres" id="r_transition"]
 [ext_resource type="Resource" path="res://scenes/ai/scan.tres" id="r_scan"]
 [ext_resource type="Resource" path="res://scenes/ai/box.tres" id="r_box"]
+[ext_resource type="Resource" path="res://scenes/ai/set_piece.tres" id="r_set_piece"]
 [ext_resource type="Resource" path="res://scenes/ai/roles/striker.tres" id="r_st"]
 [ext_resource type="Resource" path="res://scenes/ai/stances/auto.tres" id="r_stance_auto"]
 [ext_resource type="Resource" path="res://scenes/ai/stances/counter.tres" id="r_stance_counter"]
@@ -43,9 +45,11 @@ line = ExtResource("r_line")
 transition = ExtResource("r_transition")
 scan = ExtResource("r_scan")
 box = ExtResource("r_box")
+set_piece = ExtResource("r_set_piece")
 transition = ExtResource("r_transition")
 scan = ExtResource("r_scan")
 box = ExtResource("r_box")
+set_piece = ExtResource("r_set_piece")
 goalkeeper = ExtResource("r_gk")
 centre_back = ExtResource("r_cb")
 fullback = ExtResource("r_fb")

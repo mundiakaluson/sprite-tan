@@ -117,7 +117,7 @@ func _slide_lands(d: Footballer, c: Footballer, forced := -1) -> void:
 		d.lock = maxf(d.lock, minf(l0, 0.35))
 		return
 	if forced == 0 or d.pos.distance_to(c.pos) > s.slide_reach or c.shield > 0.0:
-		g.poss.failed_tackle(d, c)                                                               # over-slid, he is past him
+		g.poss.failed_tackle(d, c, "slide")                                                      # over-slid, he is past him
 		return
 	var p := clampf(s.slide_win_base + (d.stat("DEF", 60) - c.stat("DRI", 60)) * s.slide_per_stat, 0.1, 0.9)
 	if g.rng.randf() < p:
@@ -126,7 +126,7 @@ func _slide_lands(d: Footballer, c: Footballer, forced := -1) -> void:
 		g.poss.won_tackle(d, c)
 		d.lock = maxf(d.lock, minf(l, 0.35))                                                     # he finishes the slide
 	else:
-		g.poss.failed_tackle(d, c)
+		g.poss.failed_tackle(d, c, "slide")
 
 func _pick(f: Footballer, list: PackedStringArray) -> String:
 	var ok := PackedStringArray()
