@@ -200,6 +200,7 @@ func _resolve(k: Footballer, kind: String, lateral: float, in_reach: bool, plan 
 		save_event.emit(k, kind, "", "miss")
 		return
 	var parry := plan == "parry"
+	g.offside.touched(k)                                                               # a save by the keeper clears any offside
 	g.last_touch = k
 	var hp := _hand(k)                                                                 # the touch comes off the glove: the ball is where his hand is
 	b.phys.pos = Vector3(hp.x, bp.y, lerpf(bp.z, hp.y, 0.7))

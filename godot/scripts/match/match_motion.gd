@@ -66,7 +66,7 @@ func strike_frac(clip_name: String, fallback := 0.5) -> float:
 
 func update(dt: float) -> void:
 	var s := g.settings
-	var playing := g.phase == MatchGame.Phase.PLAY
+	var playing := g.phase == MatchGame.Phase.PLAY or g.phase == MatchGame.Phase.RESTART
 	for f in g.all:
 		f.no_touch = maxf(0.0, f.no_touch - dt)
 		f.lock = maxf(0.0, f.lock - dt)

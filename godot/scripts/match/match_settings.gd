@@ -669,3 +669,26 @@ static func layout(name_or_id: String) -> FormationLayout:
 @export_range(-1.0, 1.0) var set_facing := 0.3
 ## draw the rays (yellow: ball to the posts, cyan: where the bisector meets his line, red: the ball's traced flight and where it crosses him)
 @export var scan_debug := false
+
+@export_group("Offside")
+## the offside law (MatchOffside): judged when a team mate plays the ball; a player in an offside position who then touches it gives an indirect free kick
+@export var offside_on := true
+## level counts as onside; a player has to be this much (m) beyond the second-last opponent and the ball to be offside
+@export var offside_tolerance := 0.15
+## restarts the law does not apply to (law 11: throw-in, goal kick, corner)
+@export var offside_free_restarts := PackedStringArray(["throw_in", "goal_kick", "corner"])
+## a player who knows he is offside leaves the ball: chance = (PAS+DRI average - aware_min) / aware_span, clamped to aware_floor..aware_cap
+@export var offside_aware_min := 30.0
+@export var offside_aware_span := 60.0
+@export_range(0.0, 1.0) var offside_aware_floor := 0.2
+@export_range(0.0, 1.0) var offside_aware_cap := 0.95
+
+@export_group("Restarts")
+## after the ball goes out (or a free kick is given) play stops for this long (real s) while everybody takes up position; the clock runs on
+@export var restart_wait_throw_in := 1.4
+@export var restart_wait_goal_kick := 2.2
+@export var restart_wait_corner := 2.6
+@export var restart_wait_free_kick := 2.4
+## opponents keep this far (m) from the ball until it is played (9.15 m by law; 2 m at a throw-in)
+@export var restart_distance := 9.15
+@export var restart_distance_throw := 2.0

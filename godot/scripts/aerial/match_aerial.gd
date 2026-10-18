@@ -119,7 +119,7 @@ func _pick() -> void:
 		var best: Footballer = null
 		var bs := 1e9
 		for f in t.players:
-			if f.is_keeper() or f.lock > 0.0: continue
+			if f.is_keeper() or f.lock > 0.0 or g.offside.aware(f): continue
 			var d := f.pos.distance_to(c)
 			if d > s.aerial_range: continue
 			var need := d / maxf(f.top_speed() * s.sprint_factor, 0.1)
@@ -198,6 +198,7 @@ func _won(win: Dictionary, lose: Dictionary) -> void:
 	if g.carrier != null: return
 	var bp := g.ball.phys.pos
 	if w.pos.distance_to(Vector2(bp.x, bp.z)) > s.header_reach or bp.y > s.header_max_h or bp.y < s.header_min_h: return      # he missed it
+	if g.offside.touched(w): return                                       # he was offside when it was played
 	if win["approach"] == "push":
 		g.kicking.tumble(l, s.clips_fall if g.rng.randf() < s.push_fall_chance else s.clips_stumble_medium)
 		_chest(w, l)                                                         # chested down: the ball stays free and drops at his feet, no snapping
@@ -209,6 +210,7 @@ func _won(win: Dictionary, lose: Dictionary) -> void:
 	g.last_touch = w
 	g.pass_target = h["mate"]
 	w.no_touch = g.settings.no_touch_after_kick
+	g.offside.played(w, "")                                                   # a headed pass: offside is judged again from here
 
 ## the chest takes the pace off: the ball keeps its own physics, loses most of its speed and drops just ahead of him; he is first to it (receiver reach) and the loser is out of it for a moment
 func _chest(w: Footballer, l: Footballer) -> void:

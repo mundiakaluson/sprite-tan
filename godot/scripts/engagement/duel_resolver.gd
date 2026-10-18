@@ -104,6 +104,7 @@ func _knock_loose(c: Footballer, d: Footballer, speed: float) -> void:
 	var side := Vector2(-away.y, away.x) * (1.0 if g.rng.randf() < 0.5 else -1.0)
 	var dir := (side + away * 0.4).normalized()
 	g.carrier = null
+	g.offside.touched(d)
 	g.last_touch = d
 	c.no_touch = maxf(c.no_touch, 0.5)
 	d.no_touch = maxf(d.no_touch, 0.25)

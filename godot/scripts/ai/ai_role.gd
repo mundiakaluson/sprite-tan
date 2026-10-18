@@ -51,6 +51,8 @@ extends Resource
 @export var risk_penalty := 8.0
 ## best pass scoring below this is not worth it: keep the ball
 @export var min_pass_score := -6.0
+## a team mate standing offside: this much off the score, scaled by the passer's game sense (a poor passer does not always see it)
+@export var offside_penalty := 40.0
 ## forward gain weight = forward_base + forward_directness x the formation's directness - forward_patience x the settings' patience
 @export var forward_base := 0.25
 @export var forward_directness := 0.5
@@ -77,7 +79,7 @@ func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 			if b != null and b.applies(f, sit) and b.wants(f, c, self):
 				var o2 := b.act(f, c, self, dt)
 				if o2 != null: return o2
-	if c.game.pass_target == f and c.carrier == null: return _receive(f, c)
+	if c.game.pass_target == f and c.carrier == null and not c.game.offside.aware(f): return _receive(f, c)      # (one who knows he was offside leaves it)
 	if c.carrier == f: return _with_ball(f, c, dt)
 	if c.has_ball: return _support(f, c)
 	if c.carrier == null: return _loose(f, c)
@@ -107,6 +109,7 @@ func home_spot(f: Footballer, c: AiContext) -> Vector2:
 	spot.y *= c.f("width") / 0.6
 	spot.y += (c.ball.y - spot.y) * s.shift_to_ball * c.f("compactness")
 	spot.x += (c.ball.x - spot.x) * ball_follow_x
+	if not c.has_ball: spot.x = maxf((spot.x * c.dir) + c.line_shift, c.line_floor_t) * c.dir      # the block moves with the line (AiLine)
 	return c.clamp_pitch(spot, 2.0)
 
 func _go(_c: AiContext, spot: Vector2, speed: float) -> AiIntent:
@@ -200,6 +203,7 @@ func _pick_pass(f: Footballer, c: AiContext) -> Dictionary:
 		var m: Footballer = o["mate"]
 		var score: float = o["forward"] * forward_w + minf(o["open"], 10.0) * open_weight - absf(o["dist"] - s.ideal_pass) * length_penalty
 		if o["blocked"]: score -= blocked_penalty
+		if o["offside"]: score -= offside_penalty * clampf(((f.stat("PAS", 60) + f.stat("DRI", 60)) * 0.5 - 30.0) / 50.0, 0.25, 1.0)
 		if m.is_keeper(): score -= keeper_penalty
 		if c.depth(m.pos) > risk_depth and o["open"] < risk_open: score -= (1.0 - c.f("risk")) * risk_penalty
 		score += _pass_bias(f, m, c)

@@ -114,7 +114,8 @@ func _last_defender_t(c: AiContext) -> float:
 
 ## x (team frame) of a line: 0 back, 1 midfield, 2 front
 func _block_x(c: AiContext, line: int, trail: float) -> float:
-	var back := clampf(clampf(_ball_t(c) - trail, back_min, back_max) + c.stance.block_shift, -45.0, 40.0)
+	var back := clampf(clampf(_ball_t(c) - trail, back_min, back_max) + c.stance.block_shift + (0.0 if c.has_ball else c.line_shift), -45.0, 40.0)
+	if not c.has_ball: back = maxf(back, c.line_floor_t)                # AiLine: the line steps up / drops as one, never below its floor
 	var x := back
 	if line >= 1: x = minf(back + gap_back_mid, _ball_t(c) + ahead_of_ball)
 	if line >= 2: x = minf(back + gap_back_mid + gap_mid_st, _ball_t(c) + ahead_of_ball)
@@ -277,7 +278,8 @@ func _defend(f: Footballer, c: AiContext, role: AiRole) -> AiIntent:
 		if st != null: return _go(c, st.pos + (c.own_goal() - st.pos).normalized() * step_out_goal_side, c.s.sprint_factor)
 	var y := home.y
 	if f.role in ["CM", "CDM", "CAM"]: y *= mid_narrow
-	return _go(c, Vector2(t * c.dir, y), c.s.jog_factor)
+	var urgent := c.line_urgent and f.role in ["CB", "LB", "RB"]                # the line steps / drops at a run, together
+	return _go(c, Vector2(t * c.dir, y), c.s.sprint_factor if urgent else c.s.jog_factor)
 
 ## where (team frame x) the player stands when they have the ball; INF = not covered
 func _defend_line_x(f: Footballer, c: AiContext) -> float:

@@ -14,7 +14,7 @@ const HALF_W := 34.0
 const GOAL_HALF := 3.66
 const BAR := 2.44
 const GAME_SECONDS := 5400.0
-enum Phase { KICKOFF, PLAY, GOAL, FULLTIME }
+enum Phase { KICKOFF, PLAY, GOAL, FULLTIME, RESTART }   ## RESTART: play stopped for a throw-in / goal kick / corner / free kick (MatchRules), the clock runs on
 
 ## every tweakable number; edit it here in the inspector (scenes/match/match_settings.tres)
 @export var settings: MatchSettings
@@ -40,6 +40,7 @@ var clock := 0.0                    ## game seconds, 0 to 5400
 var poss: MatchPossession
 var motion: MatchMotion
 var rules: MatchRules
+var offside: MatchOffside           ## the offside law (judged at the pass, scripts/match/match_offside.gd)
 var orders: MatchOrders
 var cards: MatchCards
 var brain: AiBrain
@@ -95,6 +96,7 @@ func _ready() -> void:
 	dribble = MatchDribble.new(self)
 	aerial = MatchAerial.new(self)
 	scan.setup(self)
+	offside = MatchOffside.new(self)
 	rules = MatchRules.new(self)
 	orders = MatchOrders.new(self)
 	cards = MatchCards.new(self)
@@ -151,8 +153,9 @@ func _exit_tree() -> void:
 
 func _physics_process(dt: float) -> void:
 	if not Data.ok or ball == null: return
-	if phase == Phase.PLAY:
-		if not engage.frozen(): clock += dt * GAME_SECONDS / (settings.match_minutes * 60.0)      # the clock stops during an engagement
+	if phase == Phase.PLAY or phase == Phase.RESTART:
+		if not engage.frozen(): clock += dt * GAME_SECONDS / (settings.match_minutes * 60.0)      # the clock stops during an engagement (not at a restart)
+		if phase == Phase.RESTART: rules.update_restart(dt)
 		if clock >= GAME_SECONDS:
 			phase = Phase.FULLTIME
 			hud.message("FULL TIME  %d - %d     R = play again" % [home.score, away.score], 999.0)

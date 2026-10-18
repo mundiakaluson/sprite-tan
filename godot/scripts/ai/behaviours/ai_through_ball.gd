@@ -7,7 +7,7 @@ extends AiBehaviour
 ## chances per second when a run is on (scaled by PAS)
 @export var rate := 3.5
 ## the runner must already be running (m/s) and the pass this long at most (m)
-@export var min_runner_speed := 3.0
+@export var min_runner_speed := 1.5
 @export var max_length := 38.0
 ## lane check to the lead point (where he will be lead_s seconds on)
 @export var lead_s := 0.9
@@ -50,6 +50,11 @@ func _runner(f: Footballer, c: AiContext) -> Footballer:
 		var lead := m.pos + m.vel * lead_s
 		if f.pos.distance_to(lead) > max_length: continue
 		if (lead.x - f.pos.x) * c.dir < 2.0: continue                         # forward passes only
+		if c.game.offside.would_be(m, f.pos.x) and c.game.rng.randf() < _sees_offside(f): continue     # he is offside: a passer with game sense sees it and waits
 		if c.lane_blocked(f.pos, lead, lane): continue
 		return m
 	return null
+
+## chance (per look) that the passer notices his runner is offside: game sense 40 -> 0.5, 90 -> 0.97
+func _sees_offside(f: Footballer) -> float:
+	return clampf(0.5 + ((f.stat("PAS", 60) + f.stat("DRI", 60)) * 0.5 - 40.0) / 50.0 * 0.47, 0.3, 0.97)

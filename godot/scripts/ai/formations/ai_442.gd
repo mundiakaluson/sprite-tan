@@ -98,7 +98,8 @@ func _last_defender_t(c: AiContext) -> float:
 	return best
 
 func _block_x(c: AiContext, line: int, trail: float) -> float:
-	var back := clampf(clampf(_ball_t(c) - trail, back_min, back_max) + c.stance.block_shift, -45.0, 40.0)
+	var back := clampf(clampf(_ball_t(c) - trail, back_min, back_max) + c.stance.block_shift + (0.0 if c.has_ball else c.line_shift), -45.0, 40.0)
+	if not c.has_ball: back = maxf(back, c.line_floor_t)                # AiLine: the line steps up / drops as one, never below its floor
 	var x := back
 	if line >= 1: x = minf(back + gap_back_mid, _ball_t(c) + ahead_of_ball)
 	if line >= 2: x = minf(back + gap_back_mid + gap_mid_st, _ball_t(c) + ahead_of_ball)
@@ -218,7 +219,8 @@ func _defend(f: Footballer, c: AiContext, role: AiRole) -> AiIntent:
 			x = _block_x(c, 2, back_trail) * c.dir
 		_:
 			return null
-	return _go(c, Vector2(x, home.y), c.s.jog_factor)
+	var urgent := c.line_urgent and f.role in ["CB", "LB", "RB"]                # the line steps / drops at a run, together
+	return _go(c, Vector2(x, home.y), c.s.sprint_factor if urgent else c.s.jog_factor)
 
 ## the opposing centre back / pivot nearest the ball (not the carrier): the lane the second striker shadows
 func _cover_target(c: AiContext) -> Footballer:

@@ -28,6 +28,15 @@ var pushers: Array = []         ## team mates who stepped out of the line / are 
 var push_y := 0.0               ## average z of the pushers
 var outlet: Footballer          ## our presser, when his press should send the striker looking for space
 var poss_time := 0.0            ## seconds since this team won the ball (0 while it does not have it)
+# ---- the line (AiLine.compute, once per frame)
+var offside_t := 0.0            ## team-frame x (x * dir) of the offside line our forwards must stay behind (their second-last player or the ball)
+var line_shift := 0.0           ## metres our back line (and the block with it) is moved up (+) or dropped (-) by reading the ball
+var line_shift_base := 0.0      ## line_shift when an offside trap was sprung
+var line_target := 0.0
+var line_urgent := false        ## the line is stepping / dropping fast: defenders sprint to it
+var line_mode := ""             ## hold / squeeze / drop / trap / attack (debug, tests)
+var line_floor_t := -35.5       ## team-frame x the back line never drops below
+var trap_until := -1.0          ## game clock until which the offside trap step is on
 var base_form := {}             ## the formation's own numbers, before the stance
 var form := {}                  ## formations.csv numbers, family defaults filled in: line_height, width, compactness, press, overlap, directness, counter, risk
 
@@ -129,7 +138,8 @@ func pass_options(from_f: Footballer) -> Array:
 		if m == from_f: continue
 		var d := m.pos.distance_to(from_f.pos)
 		if d < s.pass_min or d > s.pass_max: continue
-		out.append({"mate": m, "dist": d, "forward": (m.pos.x - from_f.pos.x) * dir, "open": pressure(m.pos), "blocked": lane_blocked(from_f.pos, m.pos)})
+		out.append({"mate": m, "dist": d, "forward": (m.pos.x - from_f.pos.x) * dir, "open": pressure(m.pos), "blocked": lane_blocked(from_f.pos, m.pos),
+			"offside": game.offside.would_be(m, from_f.pos.x)})
 	return out
 
 ## styles.csv row of a formation style ("fullback", "anchor", ...)

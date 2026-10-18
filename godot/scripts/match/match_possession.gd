@@ -8,6 +8,7 @@ func _init(game: MatchGame) -> void:
 	g = game
 
 func take(f: Footballer) -> void:
+	if g.offside.touched(f): return                         # he was offside when it was played: free kick given instead
 	g.carrier = f
 	g.last_touch = f
 	g.pass_target = null
@@ -75,6 +76,7 @@ func _loose(_dt: float) -> void:
 	var bd := 1.0
 	for f in g.all:
 		if f.no_touch > 0.0 or (f.is_keeper() and (f.lock > 0.0 or g.keeper.busy(f))): continue
+		if g.offside.aware(f): continue                                   # he knows he was offside: he leaves it
 		var reach := s.pickup_reach
 		var max_h := s.reach_height
 		if f.is_keeper():
@@ -94,6 +96,7 @@ func _loose(_dt: float) -> void:
 			if ground and best.node.has_clip(s.clip_keeper_scoop):                # off the grass: he runs in, bends and scoops it up into his hands
 				g.motion.act(best, s.clip_keeper_scoop, 1.0, func(): pass, 0.0, s.scoop_time, true)
 		else:
+			if g.offside.touched(best): return
 			b.phys.vel = Vector3(-b.phys.vel.x * 0.3, b.phys.vel.y * 0.5 + 2.0, b.phys.vel.z + g.rng.randf_range(-5.0, 5.0))
 			best.no_touch = 0.5
 			g.last_touch = best
@@ -102,6 +105,7 @@ func _loose(_dt: float) -> void:
 	if speed <= limit:
 		take(best)
 	else:
+		if g.offside.touched(best): return
 		b.phys.vel *= s.bounce_off
 		best.no_touch = 0.4
 		g.last_touch = best
@@ -120,6 +124,7 @@ func launch(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: D
 	f.no_touch = g.settings.no_touch_after_kick
 	g.last_touch = f
 	g.pass_target = receiver
+	g.offside.played(f, g.rules.consume(f))                      # who is offside is decided now, as the ball is played
 
 # ---------------------------------------------------------------- tackles
 func try_tackle(f: Footballer) -> void:

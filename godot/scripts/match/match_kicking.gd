@@ -7,6 +7,7 @@ extends RefCounted
 var g: MatchGame
 var _tumble_chain := {}      ## Footballer -> clip to play after a fall
 var _after := {}             ## Footballer -> Callable to run when his kick is released (a runner sent off by a through ball)
+var _shaping := {}           ## Footballer -> {action, to}: the kick he is shaping to play (turning / in the clip), for defenders reading it (AiLine's offside trap)
 var stat_passes := 0         ## counters for the headless balance runs
 var stat_scuffs := 0
 var stat_tumbles := 0
@@ -24,12 +25,21 @@ func after_release(f: Footballer, cb: Callable) -> void:
 func busy(f: Footballer) -> bool:
 	return not f.aim_done.is_null()
 
+## the kick f is shaping to play right now ({action, to}), or {} (a defender can read the backswing)
+func shaping(f: Footballer) -> Dictionary:
+	if not _shaping.has(f): return {}
+	if g.carrier != f or (not busy(f) and f.lock <= 0.0):
+		_shaping.erase(f)
+		return {}
+	return _shaping[f]
+
 ## the entry point (MatchPossession.kick_action calls this)
 func kick(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: Dictionary, receiver: Footballer) -> void:
 	if g.carrier != f:
 		_after.erase(f)
 		return
-	if f.lock > 0.0 or busy(f): return
+	if f.lock > 0.0 or busy(f) or g.phase == MatchGame.Phase.RESTART: return     # nobody plays it before the restart is ready
+	_shaping[f] = {"action": action, "to": to}
 	var s := g.settings
 	var dir := to - f.pos
 	if dir.length() > 0.1 and absf(f.face.angle_to(dir)) > deg_to_rad(s.pivot_min_deg):
@@ -165,6 +175,7 @@ func _release(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over:
 			o["noise"] = maxf(float(o.get("noise", 0.0)), s.scuff_noise)
 			g.hud.toast("%s: scuffed" % f.display_name())
 	if action == "shot" and not stat_shot_speed.is_empty() and stat_shot_speed[-1][1] < 0.0: stat_shot_speed[-1][1] = snappedf(f.vel.length(), 0.1)
+	_shaping.erase(f)
 	g.poss.launch(f, action, to, to_vel, o, receiver)
 	var cb: Callable = _after.get(f, Callable())
 	_after.erase(f)

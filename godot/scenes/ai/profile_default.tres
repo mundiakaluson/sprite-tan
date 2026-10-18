@@ -20,6 +20,7 @@
 [ext_resource type="Resource" path="res://scenes/ai/formations/f10_541.tres" id="r_ff10"]
 [ext_resource type="Resource" path="res://scenes/ai/roles/goalkeeper.tres" id="r_gk"]
 [ext_resource type="Resource" path="res://scenes/ai/interact.tres" id="r_interact"]
+[ext_resource type="Resource" path="res://scenes/ai/line.tres" id="r_line"]
 [ext_resource type="Resource" path="res://scenes/ai/roles/striker.tres" id="r_st"]
 [ext_resource type="Resource" path="res://scenes/ai/stances/auto.tres" id="r_stance_auto"]
 [ext_resource type="Resource" path="res://scenes/ai/stances/counter.tres" id="r_stance_counter"]
@@ -32,6 +33,7 @@
 [resource]
 script = ExtResource("1")
 interact = ExtResource("r_interact")
+line = ExtResource("r_line")
 goalkeeper = ExtResource("r_gk")
 centre_back = ExtResource("r_cb")
 fullback = ExtResource("r_fb")
