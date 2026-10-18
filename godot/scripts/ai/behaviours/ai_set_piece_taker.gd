@@ -50,6 +50,7 @@ func act(f: Footballer, c: AiContext, role: AiRole, _dt: float) -> AiIntent:
 		"goal_kick": _goal_kick(f, c, i)
 		"throw_in": _throw(f, c, i)
 		"penalty": _penalty(f, c, i)
+	if i.action == "" and kind == "penalty": return i                           # still running up
 	if i.action == "": return null                                             # nothing special: the role plays it
 	stat["%s %s" % [kind, i.note]] = int(stat.get("%s %s" % [kind, i.note], 0)) + 1
 	return i
@@ -158,6 +159,20 @@ func _throw(f: Footballer, c: AiContext, i: AiIntent) -> void:
 		i.note = "short"
 
 func _penalty(f: Footballer, c: AiContext, i: AiIntent) -> void:
+	var s := c.s
+	if f.ai.has("ball_at"):                                                     # the run-up first: a few steps and the stutter, then the strike
+		if f.lock > 0.0: return
+		var spot: Vector2 = f.ai["ball_at"]
+		var to := spot - f.pos
+		if to.length() > 0.6 and not f.ai.get("pen_ran", false):
+			f.ai["pen_ran"] = true
+			f.face = to.normalized()
+			f.vel = to.normalized() * s.penalty_runup_speed
+			c.game.motion.act(f, s.clip_penalty_runup, 0.98, func(): f.ai.erase("ball_at"), 1.0, minf(s.penalty_runup_time, to.length() / s.penalty_runup_speed + 0.3), true)
+			i.note = "run-up"
+			return
+		f.ai.erase("ball_at")
+		f.ai.erase("pen_ran")
 	var goal := c.goal()
 	var side := 1.0 if c.game.rng.randf() < 0.5 else -1.0
 	var power := f.stat("SHO", 60) >= pen_power_sho and c.game.rng.randf() < 0.35

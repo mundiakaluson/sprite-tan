@@ -740,3 +740,37 @@ static func layout(name_or_id: String) -> FormationLayout:
 ## from this minute a side that is ahead takes its restarts this much slower
 @export var waste_after_minute := 75.0
 @export var waste_restart_k := 1.8
+
+@export_group("AI layer clips")
+## clips of the real-football AI layer (sprites/moves_ai.py; bake them and Export to game). Until baked the moment just plays without its clip.
+@export var clip_scan := "sc01_shoulder_check"
+## a scan glance plays the clip only when he is this slow (m/s); the clip lasts scan_clip_time s
+@export var scan_clip_speed := 1.5
+@export var scan_clip_time := 0.45
+@export var clip_throw_in := "ti01_throw_in"
+@export var clip_long_throw := "ti02_long_throw"
+## a throw longer than this (m) uses the long throw
+@export var long_throw_from := 20.0
+## clips whose own ball track holds the real ball (the ball stays in the thrower's hands)
+@export var clips_ball_tracked := PackedStringArray(["ti01_throw_in", "ti02_long_throw"])
+@export var clip_block := "bl01_block"
+@export var block_clip_time := 0.8
+@export var clip_punch := "gk36_punch"
+@export var clip_wall := "wl01_wall_stand"
+@export var clip_wall_jump := "wl02_wall_jump"
+@export var wall_jump_time := 0.9
+@export var clip_shield := "sh01_shield"
+@export var clip_jockey := "jk01_jockey"
+## the jockey / shield clips play while he moves slower than this (m/s)
+@export var stance_clip_speed := 3.5
+@export var clip_shirt_pull := "fl01_shirt_pull"
+@export var shirt_pull_time := 0.9
+@export var clip_penalty_runup := "pk01_penalty_runup"
+@export var penalty_runup_time := 1.2
+## the taker starts this far behind the ball and runs in at this speed (m/s)
+@export var penalty_runup_dist := 2.6
+@export var penalty_runup_speed := 2.4
+@export var clip_keeper_penalty := "gk37_penalty_line"
+@export var clip_offside_appeal := "ap01_offside_appeal"
+## how many defenders appeal when offside is given
+@export var appeal_count := 2

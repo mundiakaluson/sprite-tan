@@ -82,6 +82,7 @@ func _whistle(f: Footballer) -> void:
 	var defending := g.away if f.team == g.home else g.home
 	clear()
 	g.rules.free_kick(defending, spot, "OFFSIDE  %s" % f.display_name(), true)
+	g.rules.appeal(defending, spot)
 
 func stats() -> Dictionary:
 	return {"calls": stat_calls, "kicks_with_offside_players": stat_marked, "by_role": stat_by_role}

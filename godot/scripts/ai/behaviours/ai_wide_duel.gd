@@ -52,6 +52,7 @@ func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 	var d := f.pos.distance_to(spot)
 	i.move_to = spot
 	i.speed = c.s.sprint_factor if d > close_until else c.s.jog_factor * 0.6       # fast, then slow
+	f.ai["jockey_until"] = c.game.clock + c.game_s(0.25)                       # the side-on jockey clip (MatchMotion)
 	f.ai["look"] = (k.pos - f.pos).normalized()                                # side-on, eyes on the ball
 	f.ai["look_until"] = c.game.clock + c.game_s(0.2)
 	i.note = "wide duel"

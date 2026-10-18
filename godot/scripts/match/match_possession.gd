@@ -11,6 +11,7 @@ func take(f: Footballer) -> void:
 	if g.offside.touched(f): return                         # he was offside when it was played: free kick given instead
 	var prev := g.last_touch
 	f.ai.erase("feet")
+	f.ai.erase("ball_at")
 	f.ai.erase("shielding")
 	g.carrier = f
 	g.last_touch = f
@@ -54,6 +55,15 @@ func _carry(dt: float) -> void:
 		if tracked != Vector3.INF:
 			target = tracked
 			c.settle = 0.0
+	if not c.is_keeper() and c.clip in s.clips_ball_tracked:                          # a throw-in: the ball is in his hands, where the clip has it
+		var tr := g.motion.clip_ball(c)
+		if tr != Vector3.INF:
+			target = tr
+			c.settle = 0.0
+	if c.ai.has("ball_at"):                                                         # a penalty run-up: the ball waits on the spot
+		var at: Vector2 = c.ai["ball_at"]
+		target = Vector3(at.x, b.phys.rad, at.y)
+		c.settle = 0.0
 	var cv := Vector3(c.vel.x, 0.0, c.vel.y)
 	if c.settle > 0.0:
 		c.settle -= dt
@@ -139,7 +149,10 @@ func launch(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over: D
 	f.no_touch = g.settings.no_touch_after_kick
 	g.last_touch = f
 	g.pass_target = receiver
-	g.offside.played(f, g.rules.consume(f))                      # who is offside is decided now, as the ball is played
+	var restart := g.rules.consume(f)
+	g.offside.played(f, restart)                                 # who is offside is decided now, as the ball is played
+	f.ai.erase("ball_at")
+	if restart == "free_kick": g.rules.wall_jumps(action == "shot")             # the wall jumps for a shot, and breaks up either way
 
 # ---------------------------------------------------------------- tackles
 func try_tackle(f: Footballer) -> void:

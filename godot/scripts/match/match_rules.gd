@@ -84,6 +84,7 @@ func free_kick(taking: Team, at: Vector2, text: String, is_indirect := false) ->
 ## stop play and put the ball with the taker on `at`
 func restart(k: String, taking: Team, at: Vector2, text: String, chosen: Footballer = null) -> void:
 	g.offside.clear()
+	for f in g.all: f.ai.erase("wall")
 	var pick: Footballer = chosen
 	var best := 1e9 if chosen == null else -1.0
 	for f in taking.players:
@@ -99,10 +100,12 @@ func restart(k: String, taking: Team, at: Vector2, text: String, chosen: Footbal
 		f.aim_done = Callable()
 		f.order = {}
 	pick.pos = at - Vector2(taking.dir, 0.0) * 0.4 if k != "corner" else at
+	if k == "penalty": pick.pos = at - Vector2(signf(at.x), 0.0) * g.settings.penalty_runup_dist      # he stands back for his run-up
 	pick.vel = Vector2.ZERO
 	pick.face = Vector2(taking.dir, 0.0) if k != "corner" else (Vector2(-at.x * 0.4, -at.y)).normalized()
 	g.carrier = null
 	g.poss.take(pick)
+	if k == "penalty": pick.ai["ball_at"] = at                                    # the ball sits on the spot until he strikes it
 	pick.no_touch = 0.0
 	pick.lock = 0.0
 	kind = k
@@ -151,6 +154,25 @@ func update_restart(dt: float) -> void:
 	if g.phase_t <= 0.0 and (ready or _waited > g.settings.restart_max_wait):
 		g.phase = MatchGame.Phase.PLAY
 		taker.think = minf(taker.think, 0.15)
+
+## the free kick was struck: the wall jumps for a shot (or just breaks up for a pass)
+func wall_jumps(shot: bool) -> void:
+	var s := g.settings
+	for f in g.all:
+		if not f.ai.get("wall", false): continue
+		f.ai.erase("wall")
+		if shot and f.node.has_clip(s.clip_wall_jump): g.motion.act(f, s.clip_wall_jump, g.motion.strike_frac(s.clip_wall_jump, 0.4), func(): pass, 0.0, s.wall_jump_time)
+
+## the defenders appeal when offside is given (the nearest of the back line, arm up)
+func appeal(defending: Team, at: Vector2) -> void:
+	var s := g.settings
+	if s.clip_offside_appeal == "": return
+	var list: Array = []
+	for f in defending.players:
+		if f.role in ["CB", "LB", "RB", "CDM"] and f.node.has_clip(s.clip_offside_appeal): list.append(f)
+	list.sort_custom(func(a, b): return a.pos.distance_to(at) < b.pos.distance_to(at))
+	for f in list.slice(0, s.appeal_count):
+		g.motion.act(f, s.clip_offside_appeal, 0.5, func(): pass, 0.6)
 
 ## the taker's kick was released: returns the restart it took ("" in open play) and ends it
 func consume(f: Footballer) -> String:

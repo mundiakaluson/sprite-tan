@@ -1,4 +1,4 @@
-[gd_resource type="AnimationNodeStateMachine" load_steps=188 format=3]
+[gd_resource type="AnimationNodeStateMachine" load_steps=247 format=3]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_air_pass_high"]
 animation = &"air_pass_high"
@@ -8,6 +8,9 @@ animation = &"air_pass_low"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_air_pass_mid"]
 animation = &"air_pass_mid"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ap01_offside_appeal"]
+animation = &"ap01_offside_appeal"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_base_fall"]
 animation = &"base_fall"
@@ -71,6 +74,147 @@ animation = &"base_tired_run"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_base_walk"]
 animation = &"base_walk"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_bl01_block"]
+animation = &"bl01_block"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl01_clash_reach"]
+animation = &"cl01_clash_reach"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl02_clash_hurdle"]
+animation = &"cl02_clash_hurdle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl03_clash_bolt"]
+animation = &"cl03_clash_bolt"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl04_clash_low_guard"]
+animation = &"cl04_clash_low_guard"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl05_clash_shoulder"]
+animation = &"cl05_clash_shoulder"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl06_clash_sole"]
+animation = &"cl06_clash_sole"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl07_clash_stepover"]
+animation = &"cl07_clash_stepover"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl08_clash_slide_load"]
+animation = &"cl08_clash_slide_load"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl09_clash_aura_farm"]
+animation = &"cl09_clash_aura_farm"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl10_clash_point"]
+animation = &"cl10_clash_point"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl11_clash_arms_crossed"]
+animation = &"cl11_clash_arms_crossed"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl12_clash_beckon"]
+animation = &"cl12_clash_beckon"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl13_clash_airborne"]
+animation = &"cl13_clash_airborne"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl14_clash_bull"]
+animation = &"cl14_clash_bull"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl20_air_knee_drive_a1"]
+animation = &"cl20_air_knee_drive_a1"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl21_air_scissor_a2"]
+animation = &"cl21_air_scissor_a2"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl22_air_flying_kick_a2"]
+animation = &"cl22_air_flying_kick_a2"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl23_air_bicycle_a3"]
+animation = &"cl23_air_bicycle_a3"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl24_air_superman_a3"]
+animation = &"cl24_air_superman_a3"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl25_air_split_a3"]
+animation = &"cl25_air_split_a3"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl26_air_tornado_a3"]
+animation = &"cl26_air_tornado_a3"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl27_air_volley_cock_a2"]
+animation = &"cl27_air_volley_cock_a2"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl28_air_hover_god_a3"]
+animation = &"cl28_air_hover_god_a3"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl29_air_header_leap_a1"]
+animation = &"cl29_air_header_leap_a1"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl30_air_overhead_a3"]
+animation = &"cl30_air_overhead_a3"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl31_bolt_low"]
+animation = &"cl31_bolt_low"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl32_cut_plant"]
+animation = &"cl32_cut_plant"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl33_drag_back"]
+animation = &"cl33_drag_back"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl34_spin_back"]
+animation = &"cl34_spin_back"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl35_shoulder_drop"]
+animation = &"cl35_shoulder_drop"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl36_heel_lift"]
+animation = &"cl36_heel_lift"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl37_scream_charge"]
+animation = &"cl37_scream_charge"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl40_block_stretch"]
+animation = &"cl40_block_stretch"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl41_stand_tackle"]
+animation = &"cl41_stand_tackle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl42_jockey_side"]
+animation = &"cl42_jockey_side"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl43_hip_check"]
+animation = &"cl43_hip_check"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl44_intercept_reach"]
+animation = &"cl44_intercept_reach"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl45_slide_full"]
+animation = &"cl45_slide_full"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl50_shrug"]
+animation = &"cl50_shrug"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl51_finger_wag"]
+animation = &"cl51_finger_wag"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl52_flex"]
+animation = &"cl52_flex"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl53_roar"]
+animation = &"cl53_roar"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl54_hands_behind"]
+animation = &"cl54_hands_behind"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl55_temple"]
+animation = &"cl55_temple"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl56_salute"]
+animation = &"cl56_salute"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cl57_palm_out"]
+animation = &"cl57_palm_out"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_df01_stand_tackle"]
 animation = &"df01_stand_tackle"
@@ -267,6 +411,9 @@ animation = &"dr30_showboat_spin"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_finesse"]
 animation = &"finesse"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fl01_shirt_pull"]
+animation = &"fl01_shirt_pull"
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gk01_set_stance"]
 animation = &"gk01_set_stance"
 
@@ -342,11 +489,23 @@ animation = &"gk24_fingertip_save"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gk25_rebound_clear"]
 animation = &"gk25_rebound_clear"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gk36_punch"]
+animation = &"gk36_punch"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gk37_penalty_line"]
+animation = &"gk37_penalty_line"
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_guard"]
 animation = &"guard"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_jk01_jockey"]
+animation = &"jk01_jockey"
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_kick"]
 animation = &"kick"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_pk01_penalty_runup"]
+animation = &"pk01_penalty_runup"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ps01_through_ball"]
 animation = &"ps01_through_ball"
@@ -425,6 +584,12 @@ animation = &"ps25_reverse_pass"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_run"]
 animation = &"run"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_sc01_shoulder_check"]
+animation = &"sc01_shoulder_check"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_sh01_shield"]
+animation = &"sh01_shield"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_sh01_side_foot_place"]
 animation = &"sh01_side_foot_place"
@@ -519,11 +684,23 @@ animation = &"sh30_backheel_shot"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_slide"]
 animation = &"slide"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ti01_throw_in"]
+animation = &"ti01_throw_in"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ti02_long_throw"]
+animation = &"ti02_long_throw"
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tt05_bicycle_kick"]
 animation = &"tt05_bicycle_kick"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tt13_earthquake_tackle"]
 animation = &"tt13_earthquake_tackle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_wl01_wall_stand"]
+animation = &"wl01_wall_stand"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_wl02_wall_jump"]
+animation = &"wl02_wall_jump"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="Transition_start"]
 advance_mode = 2
@@ -581,24 +758,26 @@ states/air_pass_low/node = SubResource("AnimationNodeAnimation_air_pass_low")
 states/air_pass_low/position = Vector2(230, 940)
 states/air_pass_mid/node = SubResource("AnimationNodeAnimation_air_pass_mid")
 states/air_pass_mid/position = Vector2(460, 940)
+states/ap01_offside_appeal/node = SubResource("AnimationNodeAnimation_ap01_offside_appeal")
+states/ap01_offside_appeal/position = Vector2(0, 1080)
 states/base_fall/node = SubResource("AnimationNodeAnimation_base_fall")
 states/base_fall/position = Vector2(0, 0)
 states/base_get_up/node = SubResource("AnimationNodeAnimation_base_get_up")
 states/base_get_up/position = Vector2(345, 0)
 states/base_idle/node = SubResource("AnimationNodeAnimation_base_idle")
-states/base_idle/position = Vector2(0, 1080)
+states/base_idle/position = Vector2(0, 1220)
 states/base_jog/node = SubResource("AnimationNodeAnimation_base_jog")
-states/base_jog/position = Vector2(230, 1080)
+states/base_jog/position = Vector2(230, 1220)
 states/base_jump/node = SubResource("AnimationNodeAnimation_base_jump")
-states/base_jump/position = Vector2(460, 1080)
+states/base_jump/position = Vector2(460, 1220)
 states/base_knocked_off/node = SubResource("AnimationNodeAnimation_base_knocked_off")
 states/base_knocked_off/position = Vector2(0, 800)
 states/base_limp/node = SubResource("AnimationNodeAnimation_base_limp")
-states/base_limp/position = Vector2(690, 1080)
+states/base_limp/position = Vector2(690, 1220)
 states/base_recover_step/node = SubResource("AnimationNodeAnimation_base_recover_step")
 states/base_recover_step/position = Vector2(345, 160)
 states/base_sprint/node = SubResource("AnimationNodeAnimation_base_sprint")
-states/base_sprint/position = Vector2(920, 1080)
+states/base_sprint/position = Vector2(920, 1220)
 states/base_stumble_back_l/node = SubResource("AnimationNodeAnimation_base_stumble_back_l")
 states/base_stumble_back_l/position = Vector2(0, 240)
 states/base_stumble_back_m/node = SubResource("AnimationNodeAnimation_base_stumble_back_m")
@@ -618,312 +797,428 @@ states/base_stumble_side_m/position = Vector2(0, 640)
 states/base_stumble_side_s/node = SubResource("AnimationNodeAnimation_base_stumble_side_s")
 states/base_stumble_side_s/position = Vector2(0, 560)
 states/base_stun/node = SubResource("AnimationNodeAnimation_base_stun")
-states/base_stun/position = Vector2(1150, 1080)
+states/base_stun/position = Vector2(1150, 1220)
 states/base_tired_run/node = SubResource("AnimationNodeAnimation_base_tired_run")
-states/base_tired_run/position = Vector2(1380, 1080)
+states/base_tired_run/position = Vector2(1380, 1220)
 states/base_walk/node = SubResource("AnimationNodeAnimation_base_walk")
-states/base_walk/position = Vector2(1610, 1080)
+states/base_walk/position = Vector2(1610, 1220)
+states/bl01_block/node = SubResource("AnimationNodeAnimation_bl01_block")
+states/bl01_block/position = Vector2(0, 1360)
+states/cl01_clash_reach/node = SubResource("AnimationNodeAnimation_cl01_clash_reach")
+states/cl01_clash_reach/position = Vector2(0, 1500)
+states/cl02_clash_hurdle/node = SubResource("AnimationNodeAnimation_cl02_clash_hurdle")
+states/cl02_clash_hurdle/position = Vector2(230, 1500)
+states/cl03_clash_bolt/node = SubResource("AnimationNodeAnimation_cl03_clash_bolt")
+states/cl03_clash_bolt/position = Vector2(460, 1500)
+states/cl04_clash_low_guard/node = SubResource("AnimationNodeAnimation_cl04_clash_low_guard")
+states/cl04_clash_low_guard/position = Vector2(690, 1500)
+states/cl05_clash_shoulder/node = SubResource("AnimationNodeAnimation_cl05_clash_shoulder")
+states/cl05_clash_shoulder/position = Vector2(920, 1500)
+states/cl06_clash_sole/node = SubResource("AnimationNodeAnimation_cl06_clash_sole")
+states/cl06_clash_sole/position = Vector2(1150, 1500)
+states/cl07_clash_stepover/node = SubResource("AnimationNodeAnimation_cl07_clash_stepover")
+states/cl07_clash_stepover/position = Vector2(1380, 1500)
+states/cl08_clash_slide_load/node = SubResource("AnimationNodeAnimation_cl08_clash_slide_load")
+states/cl08_clash_slide_load/position = Vector2(1610, 1500)
+states/cl09_clash_aura_farm/node = SubResource("AnimationNodeAnimation_cl09_clash_aura_farm")
+states/cl09_clash_aura_farm/position = Vector2(0, 1580)
+states/cl10_clash_point/node = SubResource("AnimationNodeAnimation_cl10_clash_point")
+states/cl10_clash_point/position = Vector2(230, 1580)
+states/cl11_clash_arms_crossed/node = SubResource("AnimationNodeAnimation_cl11_clash_arms_crossed")
+states/cl11_clash_arms_crossed/position = Vector2(460, 1580)
+states/cl12_clash_beckon/node = SubResource("AnimationNodeAnimation_cl12_clash_beckon")
+states/cl12_clash_beckon/position = Vector2(690, 1580)
+states/cl13_clash_airborne/node = SubResource("AnimationNodeAnimation_cl13_clash_airborne")
+states/cl13_clash_airborne/position = Vector2(920, 1580)
+states/cl14_clash_bull/node = SubResource("AnimationNodeAnimation_cl14_clash_bull")
+states/cl14_clash_bull/position = Vector2(1150, 1580)
+states/cl20_air_knee_drive_a1/node = SubResource("AnimationNodeAnimation_cl20_air_knee_drive_a1")
+states/cl20_air_knee_drive_a1/position = Vector2(1380, 1580)
+states/cl21_air_scissor_a2/node = SubResource("AnimationNodeAnimation_cl21_air_scissor_a2")
+states/cl21_air_scissor_a2/position = Vector2(1610, 1580)
+states/cl22_air_flying_kick_a2/node = SubResource("AnimationNodeAnimation_cl22_air_flying_kick_a2")
+states/cl22_air_flying_kick_a2/position = Vector2(0, 1660)
+states/cl23_air_bicycle_a3/node = SubResource("AnimationNodeAnimation_cl23_air_bicycle_a3")
+states/cl23_air_bicycle_a3/position = Vector2(230, 1660)
+states/cl24_air_superman_a3/node = SubResource("AnimationNodeAnimation_cl24_air_superman_a3")
+states/cl24_air_superman_a3/position = Vector2(460, 1660)
+states/cl25_air_split_a3/node = SubResource("AnimationNodeAnimation_cl25_air_split_a3")
+states/cl25_air_split_a3/position = Vector2(690, 1660)
+states/cl26_air_tornado_a3/node = SubResource("AnimationNodeAnimation_cl26_air_tornado_a3")
+states/cl26_air_tornado_a3/position = Vector2(920, 1660)
+states/cl27_air_volley_cock_a2/node = SubResource("AnimationNodeAnimation_cl27_air_volley_cock_a2")
+states/cl27_air_volley_cock_a2/position = Vector2(1150, 1660)
+states/cl28_air_hover_god_a3/node = SubResource("AnimationNodeAnimation_cl28_air_hover_god_a3")
+states/cl28_air_hover_god_a3/position = Vector2(1380, 1660)
+states/cl29_air_header_leap_a1/node = SubResource("AnimationNodeAnimation_cl29_air_header_leap_a1")
+states/cl29_air_header_leap_a1/position = Vector2(1610, 1660)
+states/cl30_air_overhead_a3/node = SubResource("AnimationNodeAnimation_cl30_air_overhead_a3")
+states/cl30_air_overhead_a3/position = Vector2(0, 1740)
+states/cl31_bolt_low/node = SubResource("AnimationNodeAnimation_cl31_bolt_low")
+states/cl31_bolt_low/position = Vector2(230, 1740)
+states/cl32_cut_plant/node = SubResource("AnimationNodeAnimation_cl32_cut_plant")
+states/cl32_cut_plant/position = Vector2(460, 1740)
+states/cl33_drag_back/node = SubResource("AnimationNodeAnimation_cl33_drag_back")
+states/cl33_drag_back/position = Vector2(690, 1740)
+states/cl34_spin_back/node = SubResource("AnimationNodeAnimation_cl34_spin_back")
+states/cl34_spin_back/position = Vector2(920, 1740)
+states/cl35_shoulder_drop/node = SubResource("AnimationNodeAnimation_cl35_shoulder_drop")
+states/cl35_shoulder_drop/position = Vector2(1150, 1740)
+states/cl36_heel_lift/node = SubResource("AnimationNodeAnimation_cl36_heel_lift")
+states/cl36_heel_lift/position = Vector2(1380, 1740)
+states/cl37_scream_charge/node = SubResource("AnimationNodeAnimation_cl37_scream_charge")
+states/cl37_scream_charge/position = Vector2(1610, 1740)
+states/cl40_block_stretch/node = SubResource("AnimationNodeAnimation_cl40_block_stretch")
+states/cl40_block_stretch/position = Vector2(0, 1820)
+states/cl41_stand_tackle/node = SubResource("AnimationNodeAnimation_cl41_stand_tackle")
+states/cl41_stand_tackle/position = Vector2(230, 1820)
+states/cl42_jockey_side/node = SubResource("AnimationNodeAnimation_cl42_jockey_side")
+states/cl42_jockey_side/position = Vector2(460, 1820)
+states/cl43_hip_check/node = SubResource("AnimationNodeAnimation_cl43_hip_check")
+states/cl43_hip_check/position = Vector2(690, 1820)
+states/cl44_intercept_reach/node = SubResource("AnimationNodeAnimation_cl44_intercept_reach")
+states/cl44_intercept_reach/position = Vector2(920, 1820)
+states/cl45_slide_full/node = SubResource("AnimationNodeAnimation_cl45_slide_full")
+states/cl45_slide_full/position = Vector2(1150, 1820)
+states/cl50_shrug/node = SubResource("AnimationNodeAnimation_cl50_shrug")
+states/cl50_shrug/position = Vector2(1380, 1820)
+states/cl51_finger_wag/node = SubResource("AnimationNodeAnimation_cl51_finger_wag")
+states/cl51_finger_wag/position = Vector2(1610, 1820)
+states/cl52_flex/node = SubResource("AnimationNodeAnimation_cl52_flex")
+states/cl52_flex/position = Vector2(0, 1900)
+states/cl53_roar/node = SubResource("AnimationNodeAnimation_cl53_roar")
+states/cl53_roar/position = Vector2(230, 1900)
+states/cl54_hands_behind/node = SubResource("AnimationNodeAnimation_cl54_hands_behind")
+states/cl54_hands_behind/position = Vector2(460, 1900)
+states/cl55_temple/node = SubResource("AnimationNodeAnimation_cl55_temple")
+states/cl55_temple/position = Vector2(690, 1900)
+states/cl56_salute/node = SubResource("AnimationNodeAnimation_cl56_salute")
+states/cl56_salute/position = Vector2(920, 1900)
+states/cl57_palm_out/node = SubResource("AnimationNodeAnimation_cl57_palm_out")
+states/cl57_palm_out/position = Vector2(1150, 1900)
 states/df01_stand_tackle/node = SubResource("AnimationNodeAnimation_df01_stand_tackle")
-states/df01_stand_tackle/position = Vector2(0, 1220)
+states/df01_stand_tackle/position = Vector2(0, 2040)
 states/df02_slide_tackle/node = SubResource("AnimationNodeAnimation_df02_slide_tackle")
-states/df02_slide_tackle/position = Vector2(230, 1220)
+states/df02_slide_tackle/position = Vector2(230, 2040)
 states/df03_poke_tackle/node = SubResource("AnimationNodeAnimation_df03_poke_tackle")
-states/df03_poke_tackle/position = Vector2(460, 1220)
+states/df03_poke_tackle/position = Vector2(460, 2040)
 states/df04_intercept_lane/node = SubResource("AnimationNodeAnimation_df04_intercept_lane")
-states/df04_intercept_lane/position = Vector2(690, 1220)
+states/df04_intercept_lane/position = Vector2(690, 2040)
 states/df05_block_lane/node = SubResource("AnimationNodeAnimation_df05_block_lane")
-states/df05_block_lane/position = Vector2(920, 1220)
+states/df05_block_lane/position = Vector2(920, 2040)
 states/df06_tactical_foul/node = SubResource("AnimationNodeAnimation_df06_tactical_foul")
-states/df06_tactical_foul/position = Vector2(1150, 1220)
+states/df06_tactical_foul/position = Vector2(1150, 2040)
 states/df07_recovery_sprint/node = SubResource("AnimationNodeAnimation_df07_recovery_sprint")
-states/df07_recovery_sprint/position = Vector2(1380, 1220)
+states/df07_recovery_sprint/position = Vector2(1380, 2040)
 states/df08_double_team/node = SubResource("AnimationNodeAnimation_df08_double_team")
-states/df08_double_team/position = Vector2(1610, 1220)
+states/df08_double_team/position = Vector2(1610, 2040)
 states/df09_offside_trap/node = SubResource("AnimationNodeAnimation_df09_offside_trap")
-states/df09_offside_trap/position = Vector2(0, 1300)
+states/df09_offside_trap/position = Vector2(0, 2120)
 states/df10_jockey/node = SubResource("AnimationNodeAnimation_df10_jockey")
-states/df10_jockey/position = Vector2(230, 1300)
+states/df10_jockey/position = Vector2(230, 2120)
 states/df11_press_trigger/node = SubResource("AnimationNodeAnimation_df11_press_trigger")
-states/df11_press_trigger/position = Vector2(460, 1300)
+states/df11_press_trigger/position = Vector2(460, 2120)
 states/df12_shirt_tug/node = SubResource("AnimationNodeAnimation_df12_shirt_tug")
-states/df12_shirt_tug/position = Vector2(690, 1300)
+states/df12_shirt_tug/position = Vector2(690, 2120)
 states/df13_shoulder_charge/node = SubResource("AnimationNodeAnimation_df13_shoulder_charge")
-states/df13_shoulder_charge/position = Vector2(920, 1300)
+states/df13_shoulder_charge/position = Vector2(920, 2120)
 states/df14_clear_the_lines/node = SubResource("AnimationNodeAnimation_df14_clear_the_lines")
-states/df14_clear_the_lines/position = Vector2(1150, 1300)
+states/df14_clear_the_lines/position = Vector2(1150, 2120)
 states/df15_last_ditch_block/node = SubResource("AnimationNodeAnimation_df15_last_ditch_block")
-states/df15_last_ditch_block/position = Vector2(1380, 1300)
+states/df15_last_ditch_block/position = Vector2(1380, 2120)
 states/df16_header_clear/node = SubResource("AnimationNodeAnimation_df16_header_clear")
-states/df16_header_clear/position = Vector2(1610, 1300)
+states/df16_header_clear/position = Vector2(1610, 2120)
 states/df17_cut_out_cross/node = SubResource("AnimationNodeAnimation_df17_cut_out_cross")
-states/df17_cut_out_cross/position = Vector2(0, 1380)
+states/df17_cut_out_cross/position = Vector2(0, 2200)
 states/df18_snuff_out/node = SubResource("AnimationNodeAnimation_df18_snuff_out")
-states/df18_snuff_out/position = Vector2(230, 1380)
+states/df18_snuff_out/position = Vector2(230, 2200)
 states/df19_shadow_marking/node = SubResource("AnimationNodeAnimation_df19_shadow_marking")
-states/df19_shadow_marking/position = Vector2(460, 1380)
+states/df19_shadow_marking/position = Vector2(460, 2200)
 states/df20_zonal_cover/node = SubResource("AnimationNodeAnimation_df20_zonal_cover")
-states/df20_zonal_cover/position = Vector2(690, 1380)
+states/df20_zonal_cover/position = Vector2(690, 2200)
 states/df21_drop_deep/node = SubResource("AnimationNodeAnimation_df21_drop_deep")
-states/df21_drop_deep/position = Vector2(920, 1380)
+states/df21_drop_deep/position = Vector2(920, 2200)
 states/df22_step_up/node = SubResource("AnimationNodeAnimation_df22_step_up")
-states/df22_step_up/position = Vector2(1150, 1380)
+states/df22_step_up/position = Vector2(1150, 2200)
 states/df23_ball_hawk/node = SubResource("AnimationNodeAnimation_df23_ball_hawk")
-states/df23_ball_hawk/position = Vector2(1380, 1380)
+states/df23_ball_hawk/position = Vector2(1380, 2200)
 states/df24_body_block/node = SubResource("AnimationNodeAnimation_df24_body_block")
-states/df24_body_block/position = Vector2(1610, 1380)
+states/df24_body_block/position = Vector2(1610, 2200)
 states/df25_shadow_press/node = SubResource("AnimationNodeAnimation_df25_shadow_press")
-states/df25_shadow_press/position = Vector2(0, 1460)
+states/df25_shadow_press/position = Vector2(0, 2280)
 states/df26_rotate_cover/node = SubResource("AnimationNodeAnimation_df26_rotate_cover")
-states/df26_rotate_cover/position = Vector2(230, 1460)
+states/df26_rotate_cover/position = Vector2(230, 2280)
 states/df27_poachers_guard/node = SubResource("AnimationNodeAnimation_df27_poachers_guard")
-states/df27_poachers_guard/position = Vector2(460, 1460)
+states/df27_poachers_guard/position = Vector2(460, 2280)
 states/df28_rescue_tackle/node = SubResource("AnimationNodeAnimation_df28_rescue_tackle")
-states/df28_rescue_tackle/position = Vector2(690, 1460)
+states/df28_rescue_tackle/position = Vector2(690, 2280)
 states/df29_sweep/node = SubResource("AnimationNodeAnimation_df29_sweep")
-states/df29_sweep/position = Vector2(920, 1460)
+states/df29_sweep/position = Vector2(920, 2280)
 states/df30_clean_sheet_wall/node = SubResource("AnimationNodeAnimation_df30_clean_sheet_wall")
-states/df30_clean_sheet_wall/position = Vector2(1150, 1460)
+states/df30_clean_sheet_wall/position = Vector2(1150, 2280)
 states/df31_fox_in_the_box/node = SubResource("AnimationNodeAnimation_df31_fox_in_the_box")
-states/df31_fox_in_the_box/position = Vector2(1380, 1460)
+states/df31_fox_in_the_box/position = Vector2(1380, 2280)
 states/df32_backheel_clear/node = SubResource("AnimationNodeAnimation_df32_backheel_clear")
-states/df32_backheel_clear/position = Vector2(1610, 1460)
+states/df32_backheel_clear/position = Vector2(1610, 2280)
 states/df33_trap_the_winger/node = SubResource("AnimationNodeAnimation_df33_trap_the_winger")
-states/df33_trap_the_winger/position = Vector2(0, 1540)
+states/df33_trap_the_winger/position = Vector2(0, 2360)
 states/df34_tight_squeeze/node = SubResource("AnimationNodeAnimation_df34_tight_squeeze")
-states/df34_tight_squeeze/position = Vector2(230, 1540)
+states/df34_tight_squeeze/position = Vector2(230, 2360)
 states/df35_crunching_block/node = SubResource("AnimationNodeAnimation_df35_crunching_block")
-states/df35_crunching_block/position = Vector2(460, 1540)
+states/df35_crunching_block/position = Vector2(460, 2360)
 states/dr01_step_over/node = SubResource("AnimationNodeAnimation_dr01_step_over")
-states/dr01_step_over/position = Vector2(0, 1680)
+states/dr01_step_over/position = Vector2(0, 2500)
 states/dr02_drag_back/node = SubResource("AnimationNodeAnimation_dr02_drag_back")
-states/dr02_drag_back/position = Vector2(230, 1680)
+states/dr02_drag_back/position = Vector2(230, 2500)
 states/dr03_roulette/node = SubResource("AnimationNodeAnimation_dr03_roulette")
-states/dr03_roulette/position = Vector2(460, 1680)
+states/dr03_roulette/position = Vector2(460, 2500)
 states/dr04_nutmeg/node = SubResource("AnimationNodeAnimation_dr04_nutmeg")
-states/dr04_nutmeg/position = Vector2(690, 1680)
+states/dr04_nutmeg/position = Vector2(690, 2500)
 states/dr05_body_feint/node = SubResource("AnimationNodeAnimation_dr05_body_feint")
-states/dr05_body_feint/position = Vector2(920, 1680)
+states/dr05_body_feint/position = Vector2(920, 2500)
 states/dr06_sombrero_flick/node = SubResource("AnimationNodeAnimation_dr06_sombrero_flick")
-states/dr06_sombrero_flick/position = Vector2(1150, 1680)
+states/dr06_sombrero_flick/position = Vector2(1150, 2500)
 states/dr07_la_croqueta/node = SubResource("AnimationNodeAnimation_dr07_la_croqueta")
-states/dr07_la_croqueta/position = Vector2(1380, 1680)
+states/dr07_la_croqueta/position = Vector2(1380, 2500)
 states/dr08_elastico/node = SubResource("AnimationNodeAnimation_dr08_elastico")
-states/dr08_elastico/position = Vector2(1610, 1680)
+states/dr08_elastico/position = Vector2(1610, 2500)
 states/dr09_cruyff_turn/node = SubResource("AnimationNodeAnimation_dr09_cruyff_turn")
-states/dr09_cruyff_turn/position = Vector2(0, 1760)
+states/dr09_cruyff_turn/position = Vector2(0, 2580)
 states/dr10_fake_shot_turn/node = SubResource("AnimationNodeAnimation_dr10_fake_shot_turn")
-states/dr10_fake_shot_turn/position = Vector2(230, 1760)
+states/dr10_fake_shot_turn/position = Vector2(230, 2580)
 states/dr11_ball_roll/node = SubResource("AnimationNodeAnimation_dr11_ball_roll")
-states/dr11_ball_roll/position = Vector2(460, 1760)
+states/dr11_ball_roll/position = Vector2(460, 2580)
 states/dr12_shoulder_shield/node = SubResource("AnimationNodeAnimation_dr12_shoulder_shield")
-states/dr12_shoulder_shield/position = Vector2(690, 1760)
+states/dr12_shoulder_shield/position = Vector2(690, 2580)
 states/dr14_chop_cut/node = SubResource("AnimationNodeAnimation_dr14_chop_cut")
-states/dr14_chop_cut/position = Vector2(920, 1760)
+states/dr14_chop_cut/position = Vector2(920, 2580)
 states/dr15_stepover_chain/node = SubResource("AnimationNodeAnimation_dr15_stepover_chain")
-states/dr15_stepover_chain/position = Vector2(1150, 1760)
+states/dr15_stepover_chain/position = Vector2(1150, 2580)
 states/dr16_heel_flick/node = SubResource("AnimationNodeAnimation_dr16_heel_flick")
-states/dr16_heel_flick/position = Vector2(1380, 1760)
+states/dr16_heel_flick/position = Vector2(1380, 2580)
 states/dr17_drive_through/node = SubResource("AnimationNodeAnimation_dr17_drive_through")
-states/dr17_drive_through/position = Vector2(1610, 1760)
+states/dr17_drive_through/position = Vector2(1610, 2580)
 states/dr18_skill_combo/node = SubResource("AnimationNodeAnimation_dr18_skill_combo")
-states/dr18_skill_combo/position = Vector2(0, 1840)
+states/dr18_skill_combo/position = Vector2(0, 2660)
 states/dr19_fake_pass/node = SubResource("AnimationNodeAnimation_dr19_fake_pass")
-states/dr19_fake_pass/position = Vector2(230, 1840)
+states/dr19_fake_pass/position = Vector2(230, 2660)
 states/dr20_quick_touch/node = SubResource("AnimationNodeAnimation_dr20_quick_touch")
-states/dr20_quick_touch/position = Vector2(460, 1840)
+states/dr20_quick_touch/position = Vector2(460, 2660)
 states/dr21_spin_away/node = SubResource("AnimationNodeAnimation_dr21_spin_away")
-states/dr21_spin_away/position = Vector2(690, 1840)
+states/dr21_spin_away/position = Vector2(690, 2660)
 states/dr22_trap_and_turn/node = SubResource("AnimationNodeAnimation_dr22_trap_and_turn")
-states/dr22_trap_and_turn/position = Vector2(920, 1840)
+states/dr22_trap_and_turn/position = Vector2(920, 2660)
 states/dr23_slalom/node = SubResource("AnimationNodeAnimation_dr23_slalom")
-states/dr23_slalom/position = Vector2(1150, 1840)
+states/dr23_slalom/position = Vector2(1150, 2660)
 states/dr24_burst_of_pace/node = SubResource("AnimationNodeAnimation_dr24_burst_of_pace")
-states/dr24_burst_of_pace/position = Vector2(1380, 1840)
+states/dr24_burst_of_pace/position = Vector2(1380, 2660)
 states/dr25_wall_run/node = SubResource("AnimationNodeAnimation_dr25_wall_run")
-states/dr25_wall_run/position = Vector2(1610, 1840)
+states/dr25_wall_run/position = Vector2(1610, 2660)
 states/dr26_rainbow_flick/node = SubResource("AnimationNodeAnimation_dr26_rainbow_flick")
-states/dr26_rainbow_flick/position = Vector2(0, 1920)
+states/dr26_rainbow_flick/position = Vector2(0, 2740)
 states/dr27_outside_hook/node = SubResource("AnimationNodeAnimation_dr27_outside_hook")
-states/dr27_outside_hook/position = Vector2(230, 1920)
+states/dr27_outside_hook/position = Vector2(230, 2740)
 states/dr28_pull_push/node = SubResource("AnimationNodeAnimation_dr28_pull_push")
-states/dr28_pull_push/position = Vector2(460, 1920)
+states/dr28_pull_push/position = Vector2(460, 2740)
 states/dr29_dummy_run/node = SubResource("AnimationNodeAnimation_dr29_dummy_run")
-states/dr29_dummy_run/position = Vector2(690, 1920)
+states/dr29_dummy_run/position = Vector2(690, 2740)
 states/dr30_showboat_spin/node = SubResource("AnimationNodeAnimation_dr30_showboat_spin")
-states/dr30_showboat_spin/position = Vector2(920, 1920)
+states/dr30_showboat_spin/position = Vector2(920, 2740)
 states/finesse/node = SubResource("AnimationNodeAnimation_finesse")
-states/finesse/position = Vector2(0, 2060)
+states/finesse/position = Vector2(0, 2880)
+states/fl01_shirt_pull/node = SubResource("AnimationNodeAnimation_fl01_shirt_pull")
+states/fl01_shirt_pull/position = Vector2(0, 3020)
 states/gk01_set_stance/node = SubResource("AnimationNodeAnimation_gk01_set_stance")
-states/gk01_set_stance/position = Vector2(0, 2200)
+states/gk01_set_stance/position = Vector2(0, 3160)
 states/gk02_reach_dive/node = SubResource("AnimationNodeAnimation_gk02_reach_dive")
-states/gk02_reach_dive/position = Vector2(230, 2200)
+states/gk02_reach_dive/position = Vector2(230, 3160)
 states/gk03_smother/node = SubResource("AnimationNodeAnimation_gk03_smother")
-states/gk03_smother/position = Vector2(460, 2200)
+states/gk03_smother/position = Vector2(460, 3160)
 states/gk04_punch_clear/node = SubResource("AnimationNodeAnimation_gk04_punch_clear")
-states/gk04_punch_clear/position = Vector2(690, 2200)
+states/gk04_punch_clear/position = Vector2(690, 3160)
 states/gk05_claim_cross/node = SubResource("AnimationNodeAnimation_gk05_claim_cross")
-states/gk05_claim_cross/position = Vector2(920, 2200)
+states/gk05_claim_cross/position = Vector2(920, 3160)
 states/gk06_sweeper_rush/node = SubResource("AnimationNodeAnimation_gk06_sweeper_rush")
-states/gk06_sweeper_rush/position = Vector2(1150, 2200)
+states/gk06_sweeper_rush/position = Vector2(1150, 3160)
 states/gk07_quick_throw/node = SubResource("AnimationNodeAnimation_gk07_quick_throw")
-states/gk07_quick_throw/position = Vector2(1380, 2200)
+states/gk07_quick_throw/position = Vector2(1380, 3160)
 states/gk08_big_hands/node = SubResource("AnimationNodeAnimation_gk08_big_hands")
-states/gk08_big_hands/position = Vector2(1610, 2200)
+states/gk08_big_hands/position = Vector2(1610, 3160)
 states/gk09_low_dive/node = SubResource("AnimationNodeAnimation_gk09_low_dive")
-states/gk09_low_dive/position = Vector2(0, 2280)
+states/gk09_low_dive/position = Vector2(0, 3240)
 states/gk10_high_palm/node = SubResource("AnimationNodeAnimation_gk10_high_palm")
-states/gk10_high_palm/position = Vector2(230, 2280)
+states/gk10_high_palm/position = Vector2(230, 3240)
 states/gk11_backpedal/node = SubResource("AnimationNodeAnimation_gk11_backpedal")
-states/gk11_backpedal/position = Vector2(460, 2280)
+states/gk11_backpedal/position = Vector2(460, 3240)
 states/gk12_starfish/node = SubResource("AnimationNodeAnimation_gk12_starfish")
-states/gk12_starfish/position = Vector2(690, 2280)
+states/gk12_starfish/position = Vector2(690, 3240)
 states/gk13_parry_stance/node = SubResource("AnimationNodeAnimation_gk13_parry_stance")
-states/gk13_parry_stance/position = Vector2(920, 2280)
+states/gk13_parry_stance/position = Vector2(920, 3240)
 states/gk14_kick_save/node = SubResource("AnimationNodeAnimation_gk14_kick_save")
-states/gk14_kick_save/position = Vector2(1150, 2280)
+states/gk14_kick_save/position = Vector2(1150, 3240)
 states/gk15_command_the_line/node = SubResource("AnimationNodeAnimation_gk15_command_the_line")
-states/gk15_command_the_line/position = Vector2(1380, 2280)
+states/gk15_command_the_line/position = Vector2(1380, 3240)
 states/gk16_long_kick/node = SubResource("AnimationNodeAnimation_gk16_long_kick")
-states/gk16_long_kick/position = Vector2(1610, 2280)
+states/gk16_long_kick/position = Vector2(1610, 3240)
 states/gk17_roll_out/node = SubResource("AnimationNodeAnimation_gk17_roll_out")
-states/gk17_roll_out/position = Vector2(0, 2360)
+states/gk17_roll_out/position = Vector2(0, 3320)
 states/gk18_throw_long/node = SubResource("AnimationNodeAnimation_gk18_throw_long")
-states/gk18_throw_long/position = Vector2(230, 2360)
+states/gk18_throw_long/position = Vector2(230, 3320)
 states/gk19_read_the_run/node = SubResource("AnimationNodeAnimation_gk19_read_the_run")
-states/gk19_read_the_run/position = Vector2(460, 2360)
+states/gk19_read_the_run/position = Vector2(460, 3320)
 states/gk20_cat_reflexes/node = SubResource("AnimationNodeAnimation_gk20_cat_reflexes")
-states/gk20_cat_reflexes/position = Vector2(690, 2360)
+states/gk20_cat_reflexes/position = Vector2(690, 3320)
 states/gk21_dominate_box/node = SubResource("AnimationNodeAnimation_gk21_dominate_box")
-states/gk21_dominate_box/position = Vector2(920, 2360)
+states/gk21_dominate_box/position = Vector2(920, 3320)
 states/gk22_near_post_guard/node = SubResource("AnimationNodeAnimation_gk22_near_post_guard")
-states/gk22_near_post_guard/position = Vector2(1150, 2360)
+states/gk22_near_post_guard/position = Vector2(1150, 3320)
 states/gk23_far_post_reach/node = SubResource("AnimationNodeAnimation_gk23_far_post_reach")
-states/gk23_far_post_reach/position = Vector2(1380, 2360)
+states/gk23_far_post_reach/position = Vector2(1380, 3320)
 states/gk24_fingertip_save/node = SubResource("AnimationNodeAnimation_gk24_fingertip_save")
-states/gk24_fingertip_save/position = Vector2(1610, 2360)
+states/gk24_fingertip_save/position = Vector2(1610, 3320)
 states/gk25_rebound_clear/node = SubResource("AnimationNodeAnimation_gk25_rebound_clear")
-states/gk25_rebound_clear/position = Vector2(0, 2440)
+states/gk25_rebound_clear/position = Vector2(0, 3400)
+states/gk36_punch/node = SubResource("AnimationNodeAnimation_gk36_punch")
+states/gk36_punch/position = Vector2(230, 3400)
+states/gk37_penalty_line/node = SubResource("AnimationNodeAnimation_gk37_penalty_line")
+states/gk37_penalty_line/position = Vector2(460, 3400)
 states/guard/node = SubResource("AnimationNodeAnimation_guard")
-states/guard/position = Vector2(0, 2580)
+states/guard/position = Vector2(0, 3540)
+states/jk01_jockey/node = SubResource("AnimationNodeAnimation_jk01_jockey")
+states/jk01_jockey/position = Vector2(0, 3680)
 states/kick/node = SubResource("AnimationNodeAnimation_kick")
-states/kick/position = Vector2(0, 2720)
+states/kick/position = Vector2(0, 3820)
+states/pk01_penalty_runup/node = SubResource("AnimationNodeAnimation_pk01_penalty_runup")
+states/pk01_penalty_runup/position = Vector2(0, 3960)
 states/ps01_through_ball/node = SubResource("AnimationNodeAnimation_ps01_through_ball")
-states/ps01_through_ball/position = Vector2(0, 2860)
+states/ps01_through_ball/position = Vector2(0, 4100)
 states/ps02_lofted_through/node = SubResource("AnimationNodeAnimation_ps02_lofted_through")
-states/ps02_lofted_through/position = Vector2(230, 2860)
+states/ps02_lofted_through/position = Vector2(230, 4100)
 states/ps03_driven_pass/node = SubResource("AnimationNodeAnimation_ps03_driven_pass")
-states/ps03_driven_pass/position = Vector2(460, 2860)
+states/ps03_driven_pass/position = Vector2(460, 4100)
 states/ps04_one_two/node = SubResource("AnimationNodeAnimation_ps04_one_two")
-states/ps04_one_two/position = Vector2(690, 2860)
+states/ps04_one_two/position = Vector2(690, 4100)
 states/ps05_backheel_pass/node = SubResource("AnimationNodeAnimation_ps05_backheel_pass")
-states/ps05_backheel_pass/position = Vector2(920, 2860)
+states/ps05_backheel_pass/position = Vector2(920, 4100)
 states/ps06_no_look_pass/node = SubResource("AnimationNodeAnimation_ps06_no_look_pass")
-states/ps06_no_look_pass/position = Vector2(1150, 2860)
+states/ps06_no_look_pass/position = Vector2(1150, 4100)
 states/ps07_cross/node = SubResource("AnimationNodeAnimation_ps07_cross")
-states/ps07_cross/position = Vector2(1380, 2860)
+states/ps07_cross/position = Vector2(1380, 4100)
 states/ps08_driven_cross/node = SubResource("AnimationNodeAnimation_ps08_driven_cross")
-states/ps08_driven_cross/position = Vector2(1610, 2860)
+states/ps08_driven_cross/position = Vector2(1610, 4100)
 states/ps09_cutback/node = SubResource("AnimationNodeAnimation_ps09_cutback")
-states/ps09_cutback/position = Vector2(0, 2940)
+states/ps09_cutback/position = Vector2(0, 4180)
 states/ps10_switch_play/node = SubResource("AnimationNodeAnimation_ps10_switch_play")
-states/ps10_switch_play/position = Vector2(230, 2940)
+states/ps10_switch_play/position = Vector2(230, 4180)
 states/ps11_rabona_cross/node = SubResource("AnimationNodeAnimation_ps11_rabona_cross")
-states/ps11_rabona_cross/position = Vector2(460, 2940)
+states/ps11_rabona_cross/position = Vector2(460, 4180)
 states/ps12_outside_foot_pass/node = SubResource("AnimationNodeAnimation_ps12_outside_foot_pass")
-states/ps12_outside_foot_pass/position = Vector2(690, 2940)
+states/ps12_outside_foot_pass/position = Vector2(690, 4180)
 states/ps13_chipped_pass/node = SubResource("AnimationNodeAnimation_ps13_chipped_pass")
-states/ps13_chipped_pass/position = Vector2(920, 2940)
+states/ps13_chipped_pass/position = Vector2(920, 4180)
 states/ps14_pass_and_move/node = SubResource("AnimationNodeAnimation_ps14_pass_and_move")
-states/ps14_pass_and_move/position = Vector2(1150, 2940)
+states/ps14_pass_and_move/position = Vector2(1150, 4180)
 states/ps15_killer_ball/node = SubResource("AnimationNodeAnimation_ps15_killer_ball")
-states/ps15_killer_ball/position = Vector2(1380, 2940)
+states/ps15_killer_ball/position = Vector2(1380, 4180)
 states/ps16_square_ball/node = SubResource("AnimationNodeAnimation_ps16_square_ball")
-states/ps16_square_ball/position = Vector2(1610, 2940)
+states/ps16_square_ball/position = Vector2(1610, 4180)
 states/ps17_return_pass/node = SubResource("AnimationNodeAnimation_ps17_return_pass")
-states/ps17_return_pass/position = Vector2(0, 3020)
+states/ps17_return_pass/position = Vector2(0, 4260)
 states/ps18_long_ball_forward/node = SubResource("AnimationNodeAnimation_ps18_long_ball_forward")
-states/ps18_long_ball_forward/position = Vector2(230, 3020)
+states/ps18_long_ball_forward/position = Vector2(230, 4260)
 states/ps19_corner_delivery/node = SubResource("AnimationNodeAnimation_ps19_corner_delivery")
-states/ps19_corner_delivery/position = Vector2(460, 3020)
+states/ps19_corner_delivery/position = Vector2(460, 4260)
 states/ps20_short_corner/node = SubResource("AnimationNodeAnimation_ps20_short_corner")
-states/ps20_short_corner/position = Vector2(690, 3020)
+states/ps20_short_corner/position = Vector2(690, 4260)
 states/ps21_free_kick_cross/node = SubResource("AnimationNodeAnimation_ps21_free_kick_cross")
-states/ps21_free_kick_cross/position = Vector2(920, 3020)
+states/ps21_free_kick_cross/position = Vector2(920, 4260)
 states/ps22_quick_free_kick/node = SubResource("AnimationNodeAnimation_ps22_quick_free_kick")
-states/ps22_quick_free_kick/position = Vector2(1150, 3020)
+states/ps22_quick_free_kick/position = Vector2(1150, 4260)
 states/ps23_lay_off/node = SubResource("AnimationNodeAnimation_ps23_lay_off")
-states/ps23_lay_off/position = Vector2(1380, 3020)
+states/ps23_lay_off/position = Vector2(1380, 4260)
 states/ps24_flick_on/node = SubResource("AnimationNodeAnimation_ps24_flick_on")
-states/ps24_flick_on/position = Vector2(1610, 3020)
+states/ps24_flick_on/position = Vector2(1610, 4260)
 states/ps25_reverse_pass/node = SubResource("AnimationNodeAnimation_ps25_reverse_pass")
-states/ps25_reverse_pass/position = Vector2(0, 3100)
+states/ps25_reverse_pass/position = Vector2(0, 4340)
 states/run/node = SubResource("AnimationNodeAnimation_run")
-states/run/position = Vector2(0, 3240)
+states/run/position = Vector2(0, 4480)
+states/sc01_shoulder_check/node = SubResource("AnimationNodeAnimation_sc01_shoulder_check")
+states/sc01_shoulder_check/position = Vector2(0, 4620)
+states/sh01_shield/node = SubResource("AnimationNodeAnimation_sh01_shield")
+states/sh01_shield/position = Vector2(0, 4760)
 states/sh01_side_foot_place/node = SubResource("AnimationNodeAnimation_sh01_side_foot_place")
-states/sh01_side_foot_place/position = Vector2(0, 3380)
+states/sh01_side_foot_place/position = Vector2(230, 4760)
 states/sh02_instep_drive/node = SubResource("AnimationNodeAnimation_sh02_instep_drive")
-states/sh02_instep_drive/position = Vector2(230, 3380)
+states/sh02_instep_drive/position = Vector2(460, 4760)
 states/sh03_finesse_curler/node = SubResource("AnimationNodeAnimation_sh03_finesse_curler")
-states/sh03_finesse_curler/position = Vector2(460, 3380)
+states/sh03_finesse_curler/position = Vector2(690, 4760)
 states/sh04_trivela_bender/node = SubResource("AnimationNodeAnimation_sh04_trivela_bender")
-states/sh04_trivela_bender/position = Vector2(690, 3380)
+states/sh04_trivela_bender/position = Vector2(920, 4760)
 states/sh05_chip_lob/node = SubResource("AnimationNodeAnimation_sh05_chip_lob")
-states/sh05_chip_lob/position = Vector2(920, 3380)
+states/sh05_chip_lob/position = Vector2(1150, 4760)
 states/sh06_knuckleball/node = SubResource("AnimationNodeAnimation_sh06_knuckleball")
-states/sh06_knuckleball/position = Vector2(1150, 3380)
+states/sh06_knuckleball/position = Vector2(1380, 4760)
 states/sh07_power_blast/node = SubResource("AnimationNodeAnimation_sh07_power_blast")
-states/sh07_power_blast/position = Vector2(1380, 3380)
+states/sh07_power_blast/position = Vector2(1610, 4760)
 states/sh08_volley/node = SubResource("AnimationNodeAnimation_sh08_volley")
-states/sh08_volley/position = Vector2(1610, 3380)
+states/sh08_volley/position = Vector2(0, 4840)
 states/sh09_half_volley/node = SubResource("AnimationNodeAnimation_sh09_half_volley")
-states/sh09_half_volley/position = Vector2(0, 3460)
+states/sh09_half_volley/position = Vector2(230, 4840)
 states/sh10_diving_header/node = SubResource("AnimationNodeAnimation_sh10_diving_header")
-states/sh10_diving_header/position = Vector2(230, 3460)
+states/sh10_diving_header/position = Vector2(460, 4840)
 states/sh11_glancing_header/node = SubResource("AnimationNodeAnimation_sh11_glancing_header")
-states/sh11_glancing_header/position = Vector2(460, 3460)
+states/sh11_glancing_header/position = Vector2(690, 4840)
 states/sh12_power_header/node = SubResource("AnimationNodeAnimation_sh12_power_header")
-states/sh12_power_header/position = Vector2(690, 3460)
+states/sh12_power_header/position = Vector2(920, 4840)
 states/sh13_rabona_strike/node = SubResource("AnimationNodeAnimation_sh13_rabona_strike")
-states/sh13_rabona_strike/position = Vector2(920, 3460)
+states/sh13_rabona_strike/position = Vector2(1150, 4840)
 states/sh14_toe_poke/node = SubResource("AnimationNodeAnimation_sh14_toe_poke")
-states/sh14_toe_poke/position = Vector2(1150, 3460)
+states/sh14_toe_poke/position = Vector2(1380, 4840)
 states/sh15_outside_flick/node = SubResource("AnimationNodeAnimation_sh15_outside_flick")
-states/sh15_outside_flick/position = Vector2(1380, 3460)
+states/sh15_outside_flick/position = Vector2(1610, 4840)
 states/sh16_low_skimmer/node = SubResource("AnimationNodeAnimation_sh16_low_skimmer")
-states/sh16_low_skimmer/position = Vector2(1610, 3460)
+states/sh16_low_skimmer/position = Vector2(0, 4920)
 states/sh17_far_post_bender/node = SubResource("AnimationNodeAnimation_sh17_far_post_bender")
-states/sh17_far_post_bender/position = Vector2(0, 3540)
+states/sh17_far_post_bender/position = Vector2(230, 4920)
 states/sh18_near_post_lash/node = SubResource("AnimationNodeAnimation_sh18_near_post_lash")
-states/sh18_near_post_lash/position = Vector2(230, 3540)
+states/sh18_near_post_lash/position = Vector2(460, 4920)
 states/sh19_dipping_drive/node = SubResource("AnimationNodeAnimation_sh19_dipping_drive")
-states/sh19_dipping_drive/position = Vector2(460, 3540)
+states/sh19_dipping_drive/position = Vector2(690, 4920)
 states/sh20_rising_drive/node = SubResource("AnimationNodeAnimation_sh20_rising_drive")
-states/sh20_rising_drive/position = Vector2(690, 3540)
+states/sh20_rising_drive/position = Vector2(920, 4920)
 states/sh21_lofted_finesse/node = SubResource("AnimationNodeAnimation_sh21_lofted_finesse")
-states/sh21_lofted_finesse/position = Vector2(920, 3540)
+states/sh21_lofted_finesse/position = Vector2(1150, 4920)
 states/sh22_rocket_long_shot/node = SubResource("AnimationNodeAnimation_sh22_rocket_long_shot")
-states/sh22_rocket_long_shot/position = Vector2(1150, 3540)
+states/sh22_rocket_long_shot/position = Vector2(1380, 4920)
 states/sh23_snap_shot/node = SubResource("AnimationNodeAnimation_sh23_snap_shot")
-states/sh23_snap_shot/position = Vector2(1380, 3540)
+states/sh23_snap_shot/position = Vector2(1610, 4920)
 states/sh24_one_touch_finish/node = SubResource("AnimationNodeAnimation_sh24_one_touch_finish")
-states/sh24_one_touch_finish/position = Vector2(1610, 3540)
+states/sh24_one_touch_finish/position = Vector2(0, 5000)
 states/sh25_cut_inside_shot/node = SubResource("AnimationNodeAnimation_sh25_cut_inside_shot")
-states/sh25_cut_inside_shot/position = Vector2(0, 3620)
+states/sh25_cut_inside_shot/position = Vector2(230, 5000)
 states/sh26_shot_fake/node = SubResource("AnimationNodeAnimation_sh26_shot_fake")
-states/sh26_shot_fake/position = Vector2(230, 3620)
+states/sh26_shot_fake/position = Vector2(460, 5000)
 states/sh27_cross_shot/node = SubResource("AnimationNodeAnimation_sh27_cross_shot")
-states/sh27_cross_shot/position = Vector2(460, 3620)
+states/sh27_cross_shot/position = Vector2(690, 5000)
 states/sh28_composure_finish/node = SubResource("AnimationNodeAnimation_sh28_composure_finish")
-states/sh28_composure_finish/position = Vector2(690, 3620)
+states/sh28_composure_finish/position = Vector2(920, 5000)
 states/sh29_lob_volley/node = SubResource("AnimationNodeAnimation_sh29_lob_volley")
-states/sh29_lob_volley/position = Vector2(920, 3620)
+states/sh29_lob_volley/position = Vector2(1150, 5000)
 states/sh30_backheel_shot/node = SubResource("AnimationNodeAnimation_sh30_backheel_shot")
-states/sh30_backheel_shot/position = Vector2(1150, 3620)
+states/sh30_backheel_shot/position = Vector2(1380, 5000)
 states/slide/node = SubResource("AnimationNodeAnimation_slide")
-states/slide/position = Vector2(0, 3760)
+states/slide/position = Vector2(0, 5140)
+states/ti01_throw_in/node = SubResource("AnimationNodeAnimation_ti01_throw_in")
+states/ti01_throw_in/position = Vector2(0, 5280)
+states/ti02_long_throw/node = SubResource("AnimationNodeAnimation_ti02_long_throw")
+states/ti02_long_throw/position = Vector2(230, 5280)
 states/tt05_bicycle_kick/node = SubResource("AnimationNodeAnimation_tt05_bicycle_kick")
-states/tt05_bicycle_kick/position = Vector2(0, 3900)
+states/tt05_bicycle_kick/position = Vector2(0, 5420)
 states/tt13_earthquake_tackle/node = SubResource("AnimationNodeAnimation_tt13_earthquake_tackle")
-states/tt13_earthquake_tackle/position = Vector2(230, 3900)
+states/tt13_earthquake_tackle/position = Vector2(230, 5420)
+states/wl01_wall_stand/node = SubResource("AnimationNodeAnimation_wl01_wall_stand")
+states/wl01_wall_stand/position = Vector2(0, 5560)
+states/wl02_wall_jump/node = SubResource("AnimationNodeAnimation_wl02_wall_jump")
+states/wl02_wall_jump/position = Vector2(230, 5560)
 transitions = ["Start", "base_idle", SubResource("Transition_start"), "base_fall", "base_get_up", SubResource("Transition_0"), "base_stumble_back_s", "base_recover_step", SubResource("Transition_1"), "base_stumble_back_m", "base_recover_step", SubResource("Transition_2"), "base_stumble_back_l", "base_recover_step", SubResource("Transition_3"), "base_stumble_fwd_s", "base_recover_step", SubResource("Transition_4"), "base_stumble_fwd_m", "base_recover_step", SubResource("Transition_5"), "base_stumble_fwd_l", "base_recover_step", SubResource("Transition_6"), "base_stumble_side_s", "base_recover_step", SubResource("Transition_7"), "base_stumble_side_m", "base_recover_step", SubResource("Transition_8"), "base_stumble_side_l", "base_recover_step", SubResource("Transition_9"), "base_knocked_off", "base_recover_step", SubResource("Transition_10")]
 graph_offset = Vector2(-300, -60)

@@ -67,12 +67,17 @@ func _strike(f: Footballer, action: String, to: Vector2, to_vel: Vector2, over_i
 		f.settle = maxf(f.settle, 0.15)
 	var clip := String(over.get("_clip", ""))
 	over.erase("_clip")
+	var throw := g.rules.kind == "throw_in" and g.rules.taker == f                # a throw-in is thrown, not kicked
+	if throw:
+		var tc := g.settings.clip_long_throw if f.pos.distance_to(to) > g.settings.long_throw_from else g.settings.clip_throw_in
+		if f.node.has_clip(tc): clip = tc
 	if clip == "" or not f.node.has_clip(clip): clip = pick_clip(f, action, to)
 	if action == "shot":
 		var key := "%s %s" % [over.get("style", "K01"), clip]
 		stat_shots[key] = int(stat_shots.get(key, 0)) + 1
 	var dur := g.settings.shot_clip_time if action == "shot" else g.settings.kick_clip_time
 	if clip in g.settings.clips_slow_kick: dur = g.settings.curl_clip_time      # curlers: the wind-up has to be seen
+	if throw and clip in g.settings.clips_ball_tracked: dur = 0.0                # the throw plays at its own pace
 	if action == "shot":                                                    # a good finisher gets it off quicker
 		var sho := clampf((f.stat("SHO", 60) - 40.0) / 50.0, 0.0, 1.0)
 		dur *= lerpf(g.settings.shot_time_slow, g.settings.shot_time_fast, sho)

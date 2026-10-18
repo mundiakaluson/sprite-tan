@@ -85,6 +85,13 @@ func _glance(f: Footballer, c: AiContext, now: float) -> void:
 	var side := 1.0 if Vector2(-to_ball.y, to_ball.x).dot((c.goal() - f.pos).normalized()) > 0.0 else -1.0
 	f.ai["look"] = to_ball.rotated(deg_to_rad(glance_deg) * side)        # over the shoulder, on the side of their goal
 	f.ai["look_until"] = now + c.game_s(glance_time)
+	var s := c.s
+	if f.vel.length() < s.scan_clip_speed and f.lock <= 0.0 and c.carrier != f and f.node != null and f.node.has_clip(s.clip_scan):
+		g_act(f, c, s)
+		f.mirror = side > 0.0                                               # the clip looks over the right shoulder; the left one plays it mirrored
+
+func g_act(f: Footballer, c: AiContext, s: MatchSettings) -> void:
+	c.game.motion.act(f, s.clip_scan, 0.5, func(): pass, 1.0, s.scan_clip_time)
 
 func _critical(f: Footballer, c: AiContext, sense: float, now: float) -> void:
 	var v := c.ball_vel.length()

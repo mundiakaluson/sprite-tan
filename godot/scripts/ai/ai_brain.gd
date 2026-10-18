@@ -145,7 +145,15 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 			if i.speed_override > 0.0: over["speed"] = i.speed_override
 			g.poss.kick_action(f, "shot", i.aim, Vector2.ZERO, over)
 		"smother": g.keeper.smother(f, i.target)
-		"foul": if i.target != null and g.carrier == i.target: g.referee.foul(f, i.target, "tactical")
+		"foul":
+			if i.target != null and g.carrier == i.target and f.lock <= 0.0:
+				var victim := i.target
+				var clip := g.settings.clip_shirt_pull
+				f.face = (victim.pos - f.pos).normalized()
+				g.motion.act(f, clip, g.motion.strike_frac(clip, 0.35), func():
+					if g.carrier == victim and f.pos.distance_to(victim.pos) < 3.0:
+						g.kicking.tumble(victim, g.settings.clips_stumble_medium)
+						g.referee.foul(f, victim, "tactical"), 0.6, g.settings.shirt_pull_time)
 		"gesture":                                                              # a keeper's gesture with the ball in his hands (AiKeeperGesture)
 			if f.lock <= 0.0 and i.clip != "":
 				if i.target != null and i.target.pos.distance_to(f.pos) > 0.5: f.face = (i.target.pos - f.pos).normalized()

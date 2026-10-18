@@ -220,6 +220,7 @@ func _fk(c: AiContext, attacking: bool, side: float) -> Dictionary:
 	for i in mini(n_wall, pool.size()):
 		var m: Footballer = pool[i]
 		used[m] = true
+		m.ai["wall"] = true                                                    # stands in the wall (MatchMotion plays the wall clip), jumps at the strike
 		spots[m] = end + across * (wall_gap * i)
 	for m in pool:
 		if used.has(m): continue

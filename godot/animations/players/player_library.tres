@@ -1,4 +1,4 @@
-[gd_resource type="AnimationLibrary" load_steps=176 format=3]
+[gd_resource type="AnimationLibrary" load_steps=235 format=3]
 
 [sub_resource type="Animation" id="Animation_air_pass_high"]
 resource_name = "air_pass_high"
@@ -130,6 +130,36 @@ tracks/2/keys = {
 "args": ["strike"],
 "method": &"clip_event_fired"
 }]
+}
+
+[sub_resource type="Animation" id="Animation_ap01_offside_appeal"]
+resource_name = "ap01_offside_appeal"
+length = 1.3200
+loop_mode = 0
+step = 0.0600
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["ap01_offside_appeal"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0600, 0.1200, 0.1800, 0.2400, 0.3000, 0.3600, 0.4200, 0.4800, 0.5400, 0.6000, 0.6600, 0.7200, 0.7800, 0.8400, 0.9000, 0.9600, 1.0200, 1.0800, 1.1400, 1.2000, 1.2600),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 }
 
 [sub_resource type="Animation" id="Animation_base_fall"]
@@ -990,6 +1020,1447 @@ tracks/2/keys = {
 "args": ["strike"],
 "method": &"clip_event_fired"
 }]
+}
+
+[sub_resource type="Animation" id="Animation_bl01_block"]
+resource_name = "bl01_block"
+length = 0.8000
+loop_mode = 0
+step = 0.0500
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["bl01_block"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0500, 0.1000, 0.1500, 0.2000, 0.2500, 0.3000, 0.3500, 0.4000, 0.4500, 0.5000, 0.5500, 0.6000, 0.6500, 0.7000, 0.7500),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.3000),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["strike"],
+"method": &"clip_event_fired"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_cl01_clash_reach"]
+resource_name = "cl01_clash_reach"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl01_clash_reach"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl02_clash_hurdle"]
+resource_name = "cl02_clash_hurdle"
+length = 1.1000
+loop_mode = 0
+step = 0.0550
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl02_clash_hurdle"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0550, 0.1100, 0.1650, 0.2200, 0.2750, 0.3300, 0.3850, 0.4400, 0.4950, 0.5500, 0.6050, 0.6600, 0.7150, 0.7700, 0.8250, 0.8800, 0.9350, 0.9900, 1.0450),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.2200, 0.7150),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": ["takeoff"],
+"method": &"clip_event_fired"
+}, {
+"args": ["land"],
+"method": &"clip_event_fired"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_cl03_clash_bolt"]
+resource_name = "cl03_clash_bolt"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl03_clash_bolt"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl04_clash_low_guard"]
+resource_name = "cl04_clash_low_guard"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl04_clash_low_guard"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl05_clash_shoulder"]
+resource_name = "cl05_clash_shoulder"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl05_clash_shoulder"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl06_clash_sole"]
+resource_name = "cl06_clash_sole"
+length = 0.9800
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl06_clash_sole"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700, 0.8400, 0.9100),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+}
+
+[sub_resource type="Animation" id="Animation_cl07_clash_stepover"]
+resource_name = "cl07_clash_stepover"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl07_clash_stepover"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl08_clash_slide_load"]
+resource_name = "cl08_clash_slide_load"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl08_clash_slide_load"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl09_clash_aura_farm"]
+resource_name = "cl09_clash_aura_farm"
+length = 1.2800
+loop_mode = 1
+step = 0.0800
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl09_clash_aura_farm"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0800, 0.1600, 0.2400, 0.3200, 0.4000, 0.4800, 0.5600, 0.6400, 0.7200, 0.8000, 0.8800, 0.9600, 1.0400, 1.1200, 1.2000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_cl10_clash_point"]
+resource_name = "cl10_clash_point"
+length = 1.2800
+loop_mode = 1
+step = 0.0800
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl10_clash_point"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0800, 0.1600, 0.2400, 0.3200, 0.4000, 0.4800, 0.5600, 0.6400, 0.7200, 0.8000, 0.8800, 0.9600, 1.0400, 1.1200, 1.2000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_cl11_clash_arms_crossed"]
+resource_name = "cl11_clash_arms_crossed"
+length = 1.2800
+loop_mode = 1
+step = 0.0800
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl11_clash_arms_crossed"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0800, 0.1600, 0.2400, 0.3200, 0.4000, 0.4800, 0.5600, 0.6400, 0.7200, 0.8000, 0.8800, 0.9600, 1.0400, 1.1200, 1.2000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_cl12_clash_beckon"]
+resource_name = "cl12_clash_beckon"
+length = 0.9000
+loop_mode = 1
+step = 0.0750
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl12_clash_beckon"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0750, 0.1500, 0.2250, 0.3000, 0.3750, 0.4500, 0.5250, 0.6000, 0.6750, 0.7500, 0.8250),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl13_clash_airborne"]
+resource_name = "cl13_clash_airborne"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl13_clash_airborne"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl14_clash_bull"]
+resource_name = "cl14_clash_bull"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl14_clash_bull"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl20_air_knee_drive_a1"]
+resource_name = "cl20_air_knee_drive_a1"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl20_air_knee_drive_a1"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl21_air_scissor_a2"]
+resource_name = "cl21_air_scissor_a2"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl21_air_scissor_a2"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl22_air_flying_kick_a2"]
+resource_name = "cl22_air_flying_kick_a2"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl22_air_flying_kick_a2"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl23_air_bicycle_a3"]
+resource_name = "cl23_air_bicycle_a3"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl23_air_bicycle_a3"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl24_air_superman_a3"]
+resource_name = "cl24_air_superman_a3"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl24_air_superman_a3"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl25_air_split_a3"]
+resource_name = "cl25_air_split_a3"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl25_air_split_a3"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl26_air_tornado_a3"]
+resource_name = "cl26_air_tornado_a3"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl26_air_tornado_a3"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl27_air_volley_cock_a2"]
+resource_name = "cl27_air_volley_cock_a2"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl27_air_volley_cock_a2"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl28_air_hover_god_a3"]
+resource_name = "cl28_air_hover_god_a3"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl28_air_hover_god_a3"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl29_air_header_leap_a1"]
+resource_name = "cl29_air_header_leap_a1"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl29_air_header_leap_a1"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl30_air_overhead_a3"]
+resource_name = "cl30_air_overhead_a3"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl30_air_overhead_a3"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl31_bolt_low"]
+resource_name = "cl31_bolt_low"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl31_bolt_low"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl32_cut_plant"]
+resource_name = "cl32_cut_plant"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl32_cut_plant"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl33_drag_back"]
+resource_name = "cl33_drag_back"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl33_drag_back"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl34_spin_back"]
+resource_name = "cl34_spin_back"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl34_spin_back"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl35_shoulder_drop"]
+resource_name = "cl35_shoulder_drop"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl35_shoulder_drop"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl36_heel_lift"]
+resource_name = "cl36_heel_lift"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl36_heel_lift"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl37_scream_charge"]
+resource_name = "cl37_scream_charge"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl37_scream_charge"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl40_block_stretch"]
+resource_name = "cl40_block_stretch"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl40_block_stretch"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl41_stand_tackle"]
+resource_name = "cl41_stand_tackle"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl41_stand_tackle"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl42_jockey_side"]
+resource_name = "cl42_jockey_side"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl42_jockey_side"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl43_hip_check"]
+resource_name = "cl43_hip_check"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl43_hip_check"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl44_intercept_reach"]
+resource_name = "cl44_intercept_reach"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl44_intercept_reach"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl45_slide_full"]
+resource_name = "cl45_slide_full"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl45_slide_full"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl50_shrug"]
+resource_name = "cl50_shrug"
+length = 1.2800
+loop_mode = 1
+step = 0.0800
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl50_shrug"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0800, 0.1600, 0.2400, 0.3200, 0.4000, 0.4800, 0.5600, 0.6400, 0.7200, 0.8000, 0.8800, 0.9600, 1.0400, 1.1200, 1.2000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_cl51_finger_wag"]
+resource_name = "cl51_finger_wag"
+length = 0.9000
+loop_mode = 1
+step = 0.0750
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl51_finger_wag"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0750, 0.1500, 0.2250, 0.3000, 0.3750, 0.4500, 0.5250, 0.6000, 0.6750, 0.7500, 0.8250),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl52_flex"]
+resource_name = "cl52_flex"
+length = 1.2800
+loop_mode = 1
+step = 0.0800
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl52_flex"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0800, 0.1600, 0.2400, 0.3200, 0.4000, 0.4800, 0.5600, 0.6400, 0.7200, 0.8000, 0.8800, 0.9600, 1.0400, 1.1200, 1.2000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_cl53_roar"]
+resource_name = "cl53_roar"
+length = 0.8400
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl53_roar"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_cl54_hands_behind"]
+resource_name = "cl54_hands_behind"
+length = 1.2800
+loop_mode = 1
+step = 0.0800
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl54_hands_behind"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0800, 0.1600, 0.2400, 0.3200, 0.4000, 0.4800, 0.5600, 0.6400, 0.7200, 0.8000, 0.8800, 0.9600, 1.0400, 1.1200, 1.2000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_cl55_temple"]
+resource_name = "cl55_temple"
+length = 1.2800
+loop_mode = 1
+step = 0.0800
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl55_temple"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0800, 0.1600, 0.2400, 0.3200, 0.4000, 0.4800, 0.5600, 0.6400, 0.7200, 0.8000, 0.8800, 0.9600, 1.0400, 1.1200, 1.2000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_cl56_salute"]
+resource_name = "cl56_salute"
+length = 1.2800
+loop_mode = 1
+step = 0.0800
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl56_salute"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0800, 0.1600, 0.2400, 0.3200, 0.4000, 0.4800, 0.5600, 0.6400, 0.7200, 0.8000, 0.8800, 0.9600, 1.0400, 1.1200, 1.2000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_cl57_palm_out"]
+resource_name = "cl57_palm_out"
+length = 1.2800
+loop_mode = 1
+step = 0.0800
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["cl57_palm_out"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0800, 0.1600, 0.2400, 0.3200, 0.4000, 0.4800, 0.5600, 0.6400, 0.7200, 0.8000, 0.8800, 0.9600, 1.0400, 1.1200, 1.2000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 }
 
 [sub_resource type="Animation" id="Animation_df01_stand_tackle"]
@@ -3852,6 +5323,50 @@ tracks/2/keys = {
 }]
 }
 
+[sub_resource type="Animation" id="Animation_fl01_shirt_pull"]
+resource_name = "fl01_shirt_pull"
+length = 0.9900
+loop_mode = 0
+step = 0.0550
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["fl01_shirt_pull"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0550, 0.1100, 0.1650, 0.2200, 0.2750, 0.3300, 0.3850, 0.4400, 0.4950, 0.5500, 0.6050, 0.6600, 0.7150, 0.7700, 0.8250, 0.8800, 0.9350),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.3300),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["strike"],
+"method": &"clip_event_fired"
+}]
+}
+
 [sub_resource type="Animation" id="Animation_gk01_set_stance"]
 resource_name = "gk01_set_stance"
 length = 1.3200
@@ -4952,6 +6467,86 @@ tracks/2/keys = {
 }]
 }
 
+[sub_resource type="Animation" id="Animation_gk36_punch"]
+resource_name = "gk36_punch"
+length = 1.1000
+loop_mode = 0
+step = 0.0500
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["gk36_punch"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0500, 0.1000, 0.1500, 0.2000, 0.2500, 0.3000, 0.3500, 0.4000, 0.4500, 0.5000, 0.5500, 0.6000, 0.6500, 0.7000, 0.7500, 0.8000, 0.8500, 0.9000, 0.9500, 1.0000, 1.0500),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.2500, 0.5000, 0.7500),
+"transitions": PackedFloat32Array(1, 1, 1),
+"values": [{
+"args": ["takeoff"],
+"method": &"clip_event_fired"
+}, {
+"args": ["strike"],
+"method": &"clip_event_fired"
+}, {
+"args": ["land"],
+"method": &"clip_event_fired"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_gk37_penalty_line"]
+resource_name = "gk37_penalty_line"
+length = 1.2000
+loop_mode = 1
+step = 0.0600
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["gk37_penalty_line"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0600, 0.1200, 0.1800, 0.2400, 0.3000, 0.3600, 0.4200, 0.4800, 0.5400, 0.6000, 0.6600, 0.7200, 0.7800, 0.8400, 0.9000, 0.9600, 1.0200, 1.0800, 1.1400),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+}
+
 [sub_resource type="Animation" id="Animation_guard"]
 resource_name = "guard"
 length = 1.0200
@@ -4980,6 +6575,36 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_jk01_jockey"]
+resource_name = "jk01_jockey"
+length = 0.9600
+loop_mode = 1
+step = 0.0600
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["jk01_jockey"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0600, 0.1200, 0.1800, 0.2400, 0.3000, 0.3600, 0.4200, 0.4800, 0.5400, 0.6000, 0.6600, 0.7200, 0.7800, 0.8400, 0.9000),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 }
 
 [sub_resource type="Animation" id="Animation_kick"]
@@ -5019,6 +6644,50 @@ tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0.8400),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["strike"],
+"method": &"clip_event_fired"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_pk01_penalty_runup"]
+resource_name = "pk01_penalty_runup"
+length = 1.2000
+loop_mode = 0
+step = 0.0600
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["pk01_penalty_runup"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0600, 0.1200, 0.1800, 0.2400, 0.3000, 0.3600, 0.4200, 0.4800, 0.5400, 0.6000, 0.6600, 0.7200, 0.7800, 0.8400, 0.9000, 0.9600, 1.0200, 1.0800, 1.1400),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(1.1400),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": ["strike"],
@@ -6160,6 +7829,80 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_sc01_shoulder_check"]
+resource_name = "sc01_shoulder_check"
+length = 0.4500
+loop_mode = 0
+step = 0.0450
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["sc01_shoulder_check"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0450, 0.0900, 0.1350, 0.1800, 0.2250, 0.2700, 0.3150, 0.3600, 0.4050),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.1800),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["look"],
+"method": &"clip_event_fired"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_sh01_shield"]
+resource_name = "sh01_shield"
+length = 1.1700
+loop_mode = 1
+step = 0.0650
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["sh01_shield"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0650, 0.1300, 0.1950, 0.2600, 0.3250, 0.3900, 0.4550, 0.5200, 0.5850, 0.6500, 0.7150, 0.7800, 0.8450, 0.9100, 0.9750, 1.0400, 1.1050),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 }
 
 [sub_resource type="Animation" id="Animation_sh01_side_foot_place"]
@@ -7526,6 +9269,94 @@ tracks/2/keys = {
 }]
 }
 
+[sub_resource type="Animation" id="Animation_ti01_throw_in"]
+resource_name = "ti01_throw_in"
+length = 0.9900
+loop_mode = 0
+step = 0.0550
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["ti01_throw_in"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0550, 0.1100, 0.1650, 0.2200, 0.2750, 0.3300, 0.3850, 0.4400, 0.4950, 0.5500, 0.6050, 0.6600, 0.7150, 0.7700, 0.8250, 0.8800, 0.9350),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.3850),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["strike"],
+"method": &"clip_event_fired"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_ti02_long_throw"]
+resource_name = "ti02_long_throw"
+length = 1.3200
+loop_mode = 0
+step = 0.0550
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["ti02_long_throw"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0550, 0.1100, 0.1650, 0.2200, 0.2750, 0.3300, 0.3850, 0.4400, 0.4950, 0.5500, 0.6050, 0.6600, 0.7150, 0.7700, 0.8250, 0.8800, 0.9350, 0.9900, 1.0450, 1.1000, 1.1550, 1.2100, 1.2650),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.7150),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["strike"],
+"method": &"clip_event_fired"
+}]
+}
+
 [sub_resource type="Animation" id="Animation_tt05_bicycle_kick"]
 resource_name = "tt05_bicycle_kick"
 length = 1.8000
@@ -7614,11 +9445,92 @@ tracks/2/keys = {
 }]
 }
 
+[sub_resource type="Animation" id="Animation_wl01_wall_stand"]
+resource_name = "wl01_wall_stand"
+length = 1.1200
+loop_mode = 1
+step = 0.0700
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["wl01_wall_stand"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0700, 0.1400, 0.2100, 0.2800, 0.3500, 0.4200, 0.4900, 0.5600, 0.6300, 0.7000, 0.7700, 0.8400, 0.9100, 0.9800, 1.0500),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_wl02_wall_jump"]
+resource_name = "wl02_wall_jump"
+length = 0.9000
+loop_mode = 0
+step = 0.0500
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:sheet")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["wl02_wall_jump"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite:frame_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.0000, 0.0500, 0.1000, 0.1500, 0.2000, 0.2500, 0.3000, 0.3500, 0.4000, 0.4500, 0.5000, 0.5500, 0.6000, 0.6500, 0.7000, 0.7500, 0.8000, 0.8500),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.1500, 0.3500, 0.5500),
+"transitions": PackedFloat32Array(1, 1, 1),
+"values": [{
+"args": ["takeoff"],
+"method": &"clip_event_fired"
+}, {
+"args": ["strike"],
+"method": &"clip_event_fired"
+}, {
+"args": ["land"],
+"method": &"clip_event_fired"
+}]
+}
+
 [resource]
 _data = {
 &"air_pass_high": SubResource("Animation_air_pass_high"),
 &"air_pass_low": SubResource("Animation_air_pass_low"),
 &"air_pass_mid": SubResource("Animation_air_pass_mid"),
+&"ap01_offside_appeal": SubResource("Animation_ap01_offside_appeal"),
 &"base_fall": SubResource("Animation_base_fall"),
 &"base_get_up": SubResource("Animation_base_get_up"),
 &"base_idle": SubResource("Animation_base_idle"),
@@ -7640,6 +9552,53 @@ _data = {
 &"base_stun": SubResource("Animation_base_stun"),
 &"base_tired_run": SubResource("Animation_base_tired_run"),
 &"base_walk": SubResource("Animation_base_walk"),
+&"bl01_block": SubResource("Animation_bl01_block"),
+&"cl01_clash_reach": SubResource("Animation_cl01_clash_reach"),
+&"cl02_clash_hurdle": SubResource("Animation_cl02_clash_hurdle"),
+&"cl03_clash_bolt": SubResource("Animation_cl03_clash_bolt"),
+&"cl04_clash_low_guard": SubResource("Animation_cl04_clash_low_guard"),
+&"cl05_clash_shoulder": SubResource("Animation_cl05_clash_shoulder"),
+&"cl06_clash_sole": SubResource("Animation_cl06_clash_sole"),
+&"cl07_clash_stepover": SubResource("Animation_cl07_clash_stepover"),
+&"cl08_clash_slide_load": SubResource("Animation_cl08_clash_slide_load"),
+&"cl09_clash_aura_farm": SubResource("Animation_cl09_clash_aura_farm"),
+&"cl10_clash_point": SubResource("Animation_cl10_clash_point"),
+&"cl11_clash_arms_crossed": SubResource("Animation_cl11_clash_arms_crossed"),
+&"cl12_clash_beckon": SubResource("Animation_cl12_clash_beckon"),
+&"cl13_clash_airborne": SubResource("Animation_cl13_clash_airborne"),
+&"cl14_clash_bull": SubResource("Animation_cl14_clash_bull"),
+&"cl20_air_knee_drive_a1": SubResource("Animation_cl20_air_knee_drive_a1"),
+&"cl21_air_scissor_a2": SubResource("Animation_cl21_air_scissor_a2"),
+&"cl22_air_flying_kick_a2": SubResource("Animation_cl22_air_flying_kick_a2"),
+&"cl23_air_bicycle_a3": SubResource("Animation_cl23_air_bicycle_a3"),
+&"cl24_air_superman_a3": SubResource("Animation_cl24_air_superman_a3"),
+&"cl25_air_split_a3": SubResource("Animation_cl25_air_split_a3"),
+&"cl26_air_tornado_a3": SubResource("Animation_cl26_air_tornado_a3"),
+&"cl27_air_volley_cock_a2": SubResource("Animation_cl27_air_volley_cock_a2"),
+&"cl28_air_hover_god_a3": SubResource("Animation_cl28_air_hover_god_a3"),
+&"cl29_air_header_leap_a1": SubResource("Animation_cl29_air_header_leap_a1"),
+&"cl30_air_overhead_a3": SubResource("Animation_cl30_air_overhead_a3"),
+&"cl31_bolt_low": SubResource("Animation_cl31_bolt_low"),
+&"cl32_cut_plant": SubResource("Animation_cl32_cut_plant"),
+&"cl33_drag_back": SubResource("Animation_cl33_drag_back"),
+&"cl34_spin_back": SubResource("Animation_cl34_spin_back"),
+&"cl35_shoulder_drop": SubResource("Animation_cl35_shoulder_drop"),
+&"cl36_heel_lift": SubResource("Animation_cl36_heel_lift"),
+&"cl37_scream_charge": SubResource("Animation_cl37_scream_charge"),
+&"cl40_block_stretch": SubResource("Animation_cl40_block_stretch"),
+&"cl41_stand_tackle": SubResource("Animation_cl41_stand_tackle"),
+&"cl42_jockey_side": SubResource("Animation_cl42_jockey_side"),
+&"cl43_hip_check": SubResource("Animation_cl43_hip_check"),
+&"cl44_intercept_reach": SubResource("Animation_cl44_intercept_reach"),
+&"cl45_slide_full": SubResource("Animation_cl45_slide_full"),
+&"cl50_shrug": SubResource("Animation_cl50_shrug"),
+&"cl51_finger_wag": SubResource("Animation_cl51_finger_wag"),
+&"cl52_flex": SubResource("Animation_cl52_flex"),
+&"cl53_roar": SubResource("Animation_cl53_roar"),
+&"cl54_hands_behind": SubResource("Animation_cl54_hands_behind"),
+&"cl55_temple": SubResource("Animation_cl55_temple"),
+&"cl56_salute": SubResource("Animation_cl56_salute"),
+&"cl57_palm_out": SubResource("Animation_cl57_palm_out"),
 &"df01_stand_tackle": SubResource("Animation_df01_stand_tackle"),
 &"df02_slide_tackle": SubResource("Animation_df02_slide_tackle"),
 &"df03_poke_tackle": SubResource("Animation_df03_poke_tackle"),
@@ -7705,6 +9664,7 @@ _data = {
 &"dr29_dummy_run": SubResource("Animation_dr29_dummy_run"),
 &"dr30_showboat_spin": SubResource("Animation_dr30_showboat_spin"),
 &"finesse": SubResource("Animation_finesse"),
+&"fl01_shirt_pull": SubResource("Animation_fl01_shirt_pull"),
 &"gk01_set_stance": SubResource("Animation_gk01_set_stance"),
 &"gk02_reach_dive": SubResource("Animation_gk02_reach_dive"),
 &"gk03_smother": SubResource("Animation_gk03_smother"),
@@ -7730,8 +9690,12 @@ _data = {
 &"gk23_far_post_reach": SubResource("Animation_gk23_far_post_reach"),
 &"gk24_fingertip_save": SubResource("Animation_gk24_fingertip_save"),
 &"gk25_rebound_clear": SubResource("Animation_gk25_rebound_clear"),
+&"gk36_punch": SubResource("Animation_gk36_punch"),
+&"gk37_penalty_line": SubResource("Animation_gk37_penalty_line"),
 &"guard": SubResource("Animation_guard"),
+&"jk01_jockey": SubResource("Animation_jk01_jockey"),
 &"kick": SubResource("Animation_kick"),
+&"pk01_penalty_runup": SubResource("Animation_pk01_penalty_runup"),
 &"ps01_through_ball": SubResource("Animation_ps01_through_ball"),
 &"ps02_lofted_through": SubResource("Animation_ps02_lofted_through"),
 &"ps03_driven_pass": SubResource("Animation_ps03_driven_pass"),
@@ -7758,6 +9722,8 @@ _data = {
 &"ps24_flick_on": SubResource("Animation_ps24_flick_on"),
 &"ps25_reverse_pass": SubResource("Animation_ps25_reverse_pass"),
 &"run": SubResource("Animation_run"),
+&"sc01_shoulder_check": SubResource("Animation_sc01_shoulder_check"),
+&"sh01_shield": SubResource("Animation_sh01_shield"),
 &"sh01_side_foot_place": SubResource("Animation_sh01_side_foot_place"),
 &"sh02_instep_drive": SubResource("Animation_sh02_instep_drive"),
 &"sh03_finesse_curler": SubResource("Animation_sh03_finesse_curler"),
@@ -7789,6 +9755,10 @@ _data = {
 &"sh29_lob_volley": SubResource("Animation_sh29_lob_volley"),
 &"sh30_backheel_shot": SubResource("Animation_sh30_backheel_shot"),
 &"slide": SubResource("Animation_slide"),
+&"ti01_throw_in": SubResource("Animation_ti01_throw_in"),
+&"ti02_long_throw": SubResource("Animation_ti02_long_throw"),
 &"tt05_bicycle_kick": SubResource("Animation_tt05_bicycle_kick"),
-&"tt13_earthquake_tackle": SubResource("Animation_tt13_earthquake_tackle")
+&"tt13_earthquake_tackle": SubResource("Animation_tt13_earthquake_tackle"),
+&"wl01_wall_stand": SubResource("Animation_wl01_wall_stand"),
+&"wl02_wall_jump": SubResource("Animation_wl02_wall_jump")
 }

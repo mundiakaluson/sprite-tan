@@ -130,6 +130,11 @@ func _show(f: Footballer) -> void:
 		elif speed > 3.2: want_clip = "base_jog"
 		elif speed > 0.4: want_clip = "base_walk"
 		if speed < 0.5 and f.ai.get("air_wait", false) and f.node.has_clip(g.settings.clip_wait_air): want_clip = g.settings.clip_wait_air      # waiting under a high ball, eyes up
+		var st := g.settings
+		if speed < st.stance_clip_speed:                                            # the AI layer's stances (sprites/moves_ai.py)
+			if g.carrier == f and f.ai.get("shielding", false) and f.node.has_clip(st.clip_shield): want_clip = st.clip_shield
+			elif float(f.ai.get("jockey_until", -1.0)) > g.clock and f.node.has_clip(st.clip_jockey): want_clip = st.clip_jockey
+			elif speed < 0.6 and f.ai.get("wall", false) and g.rules.kind == "free_kick" and f.node.has_clip(st.clip_wall): want_clip = st.clip_wall
 		if f.is_keeper():
 			var k := _keeper_clip(f, speed)
 			if k != "" and f.node.has_clip(k):
@@ -154,6 +159,7 @@ func _keeper_clip(f: Footballer, speed: float) -> String:
 		return ""
 	var dist := absf(ball.x - (-MatchGame.HALF_L * f.team.dir))
 	var danger := g.carrier == null or g.carrier.team != f.team
+	if g.rules.kind == "penalty" and g.rules.team != f.team and f.node.has_clip(s.clip_keeper_penalty): return s.clip_keeper_penalty     # on his line, arms out, swaying
 	if f.ai.get("set", false): return s.clip_keeper_set                  # his scan says a shot is coming: set, low, on his toes
 	if danger and dist < s.keeper_set_dist: return s.clip_keeper_set
 	if danger and dist < s.keeper_alert_dist: return s.clip_keeper_idle

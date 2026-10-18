@@ -43,6 +43,11 @@ func act(f: Footballer, c: AiContext, _role: AiRole, _dt: float) -> AiIntent:
 	i.note = "block"
 	if f.pos.distance_to(at) < 0.8:
 		stat_blocks_set += 1
+		var sh := c.game.kicking.shaping(k)
+		var s := c.s
+		if not sh.is_empty() and String(sh["action"]) == "shot" and f.lock <= 0.0 and f.node.has_clip(s.clip_block) and f.ai.get("block_key", -1) != k.get_instance_id() + int(k.hold * 10.0):
+			f.ai["block_key"] = k.get_instance_id() + int(k.hold * 10.0)
+			c.game.motion.act(f, s.clip_block, c.game.motion.strike_frac(s.clip_block, 0.4), func(): pass, 0.2, s.block_clip_time)     # side-on, leg out, arms behind
 		f.ai["look"] = (k.pos - f.pos).normalized()
 		f.ai["look_until"] = c.game.clock + c.game_s(0.2)
 	return i

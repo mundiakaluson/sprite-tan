@@ -177,6 +177,7 @@ func _claim(k: Footballer, o: Footballer) -> void:
 	var p := clampf(s.claim_base + ((k.stat("HAN", 60) + k.stat("POS", 60)) * 0.5 - heading) * s.claim_k / 100.0, 0.15, 0.95)
 	var left := maxf(float(ev["t_c"]) - _t, 0.05)
 	var clip: String = s.clips_claim[0] if not s.clips_claim.is_empty() else ""
+	if g.ball.phys.vel.length() > s.save_speed_base + k.stat("HAN", 60) * s.save_speed_per_han and k.node.has_clip(s.clip_punch): clip = s.clip_punch      # too quick to hold: he punches it
 	var frac := g.motion.strike_frac(clip, 0.45)
 	var dur := clampf(left / frac, s.aerial_clip_min, s.aerial_clip_max)
 	if g.rng.randf() < p:
