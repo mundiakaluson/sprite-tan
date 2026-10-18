@@ -25,6 +25,7 @@ func update(dt: float) -> void:
 		ctx[t].tick(dt)
 		profiles[t].interact.compute(ctx[t])
 		profiles[t].line.compute(ctx[t], dt)
+		profiles[t].transition.compute(ctx[t], dt)
 	for f in g.all:
 		if f.lock > 0.0: continue
 		if g.phase == MatchGame.Phase.RESTART and g.rules.taker == f: continue          # the taker waits on the ball until the restart is ready
@@ -44,6 +45,7 @@ func update(dt: float) -> void:
 		var role: AiRole = profiles[f.team].role_for(f.role)
 		var intent := role.think(f, ctx[f.team], dt)
 		profiles[f.team].interact.post(f, intent, ctx[f.team])
+		profiles[f.team].transition.post(f, intent, ctx[f.team])
 		profiles[f.team].line.post(f, intent, ctx[f.team])
 		_apply(f, intent, ctx[f.team])
 
@@ -116,6 +118,7 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 				g.poss.kick_action(f, i.action, i.target.pos, i.target.vel, i.over, i.target)
 			elif i.aim != Vector2.INF: g.poss.kick_action(f, i.action, i.aim)
 		"shoot":
+			if c.countering: AiTransition.stat_counter_shots += 1
 			var over := {}
 			if i.style != "": over["style"] = i.style
 			if i.clip != "": over["_clip"] = i.clip
@@ -138,4 +141,6 @@ func _apply(f: Footballer, i: AiIntent, c: AiContext) -> void:
 
 ## headless counters of the team-play layers
 func stats() -> Dictionary:
-	return {"traps": AiLine.stat_traps, "line_drop_frames": AiLine.stat_drops, "line_squeeze_frames": AiLine.stat_squeezes}
+	return {"traps": AiLine.stat_traps, "line_drop_frames": AiLine.stat_drops, "line_squeeze_frames": AiLine.stat_squeezes,
+		"counter_presses": AiTransition.stat_cp, "cp_regains": AiTransition.stat_cp_regain, "counters": AiTransition.stat_counters, "counter_shots": AiTransition.stat_counter_shots,
+		"recovery_sprint_frames": AiTransition.stat_recover_frames}

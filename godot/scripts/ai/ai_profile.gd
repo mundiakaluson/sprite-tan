@@ -35,6 +35,10 @@ extends Resource
 ## the back line as one unit (step up / drop / offside trap) and forwards staying onside (scenes/ai/line.tres)
 @export var line: AiLine
 
+@export_group("Transition")
+## counter-press, recovery runs, rest defence, counter-attacks (scenes/ai/transition.tres)
+@export var transition: AiTransition
+
 @export_group("Behaviours")
 ## every script in scripts/ai/behaviours/ is used automatically (see ai_behaviour.gd). Add an entry here only to give THIS team its own copy of one (different numbers, or switched off):
 ## it replaces the automatic one of the same script. Entries of other scripts are added to the list.
@@ -89,6 +93,7 @@ func fill() -> AiProfile:
 	if interact == null: interact = AiInteract.new()
 	interact.fill()
 	if line == null: line = AiLine.new()
+	if transition == null: transition = AiTransition.new()
 	if goalkeeper == null: goalkeeper = AiGk.new()
 	if centre_back == null: centre_back = AiCb.new()
 	if fullback == null: fullback = AiFullback.new()

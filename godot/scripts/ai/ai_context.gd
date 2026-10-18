@@ -37,6 +37,16 @@ var line_urgent := false        ## the line is stepping / dropping fast: defende
 var line_mode := ""             ## hold / squeeze / drop / trap / attack (debug, tests)
 var line_floor_t := -35.5       ## team-frame x the back line never drops below
 var trap_until := -1.0          ## game clock until which the offside trap step is on
+# ---- transitions (AiTransition.compute)
+var lost_t := -1e9              ## game clock when we last lost the ball, and where
+var lost_at := Vector2.ZERO
+var won_t := -1e9               ## game clock when we last won it
+var counter_press := false      ## we are counter-pressing right now
+var countering := false         ## we are on a counter-attack right now
+var cp_players := {}            ## Footballer -> where he goes in the counter-press (carrier or a lane)
+var rest_marks := {}            ## rest defender -> their forward he watches
+var rest_list: Array = []
+var rest_frame := -1
 var base_form := {}             ## the formation's own numbers, before the stance
 var form := {}                  ## formations.csv numbers, family defaults filled in: line_height, width, compactness, press, overlap, directness, counter, risk
 
@@ -63,6 +73,10 @@ func setup(g: MatchGame, t: Team) -> void:
 func set_stance(st: TeamStance) -> void:
 	stance = st
 	for k in base_form: form[k] = clampf(float(base_form[k]) + st.delta(k), 0.0, 1.0)
+
+## game-clock seconds for `real` real seconds (the 90 minutes are played in MatchSettings.match_minutes)
+func game_s(real: float) -> float:
+	return real * MatchGame.GAME_SECONDS / (s.match_minutes * 60.0)
 
 ## once per frame: how long this team has had the ball
 func tick(dt: float) -> void:

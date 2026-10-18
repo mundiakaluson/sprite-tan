@@ -201,7 +201,8 @@ func _pick_pass(f: Footballer, c: AiContext) -> Dictionary:
 	var bs := -1e9
 	for o in c.pass_options(f):
 		var m: Footballer = o["mate"]
-		var score: float = o["forward"] * forward_w + minf(o["open"], 10.0) * open_weight - absf(o["dist"] - s.ideal_pass) * length_penalty
+		var fw := forward_w + (c.profile.transition.counter_forward_bonus if c.countering and c.profile != null else 0.0)     # on a counter: forward first
+		var score: float = o["forward"] * fw + minf(o["open"], 10.0) * open_weight - absf(o["dist"] - s.ideal_pass) * length_penalty
 		if o["blocked"]: score -= blocked_penalty
 		if o["offside"]: score -= offside_penalty * clampf(((f.stat("PAS", 60) + f.stat("DRI", 60)) * 0.5 - 30.0) / 50.0, 0.25, 1.0)
 		if m.is_keeper(): score -= keeper_penalty
