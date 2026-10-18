@@ -10,6 +10,8 @@ func _init(game: MatchGame) -> void:
 func take(f: Footballer) -> void:
 	if g.offside.touched(f): return                         # he was offside when it was played: free kick given instead
 	var prev := g.last_touch
+	f.ai.erase("feet")
+	f.ai.erase("shielding")
 	g.carrier = f
 	g.last_touch = f
 	g.pass_target = null
@@ -47,7 +49,8 @@ func _carry(dt: float) -> void:
 	if c.is_keeper():                                                                   # a keeper holds it in his hands, not at his feet
 		var hands := c.pos + c.face * g.settings.keeper_hold_ahead
 		target = Vector3(hands.x, g.settings.keeper_hold_height, hands.y)
-		var tracked := g.motion.clip_ball(c)                                            # during a catch / gesture clip: exactly where the clip has it
+		if c.ai.get("feet", false): target = Vector3(spot.x, b.phys.rad, spot.y)   # a back pass: he plays it with his feet
+		var tracked := g.motion.clip_ball(c) if not c.ai.get("feet", false) else Vector3.INF                                            # during a catch / gesture clip: exactly where the clip has it
 		if tracked != Vector3.INF:
 			target = tracked
 			c.settle = 0.0
@@ -92,6 +95,11 @@ func _loose(_dt: float) -> void:
 			best = f
 	if best == null: return
 	if best.is_keeper():
+		var back_pass := g.last_touch != null and g.last_touch.team == best.team and g.last_touch != best and b.action in ["pass", "through", "lob"]
+		if back_pass:                                                        # a team mate's pass: no hands (the back-pass law), he takes it with his feet
+			take(best)
+			best.ai["feet"] = true
+			return
 		if speed <= s.save_speed_base + best.stat("HAN", 60) * s.save_speed_per_han:
 			var ground := bp.y < s.scoop_max_height
 			take(best)
@@ -210,6 +218,7 @@ func _auto_tackles(dt: float) -> void:
 		if o.no_touch > 0.0 or o.lock > 0.0 or o.is_keeper(): continue
 		if o.pos.distance_to(c.pos) > s.tackle_reach: continue
 		var rate := s.tackle_rate * (o.stat("DEF", 60) + 30.0) / (c.stat("DRI", 60) + 30.0) * (1.0 if o.team.human else lerpf(0.6, 1.0, s.ai_level))
+		if c.ai.get("shielding", false): rate *= lerpf(s.shield_k_weak, s.shield_k_strong, clampf((c.stat("PHY", 60) - 50.0) / 40.0, 0.0, 1.0))      # his body is in the way
 		if g.rng.randf() < rate * dt:
 			start_tackle(o, c, true)
 			return

@@ -41,6 +41,18 @@ extends AiRole
 ## when the carrier is this close he stops running at him and holds his ground (m)
 @export var rush_stop := 1.4
 
+@export_group("Quick release and time")
+## right after he gets it, a forward (these roles) beyond quick_depth of the pitch with nobody within quick_space (m) and an open lane gets it at once
+@export var quick_roles := PackedStringArray(["ST", "LW", "RW", "CAM"])
+@export_range(0.0, 1.0) var quick_depth := 0.45
+@export var quick_space := 9.0
+@export var quick_after := 0.15
+@export var quick_window := 0.9
+## from this minute: leading, he takes waste_k times as long; losing, no calm at all
+@export var waste_after := 75.0
+@export var waste_k := 2.4
+static var stat_quick := 0
+
 @export_group("Reading the game")
 ## play is up the pitch (ball past the halfway line): he pushes up as the ball goes, smoothly from sweep_from to sweep_to of the pitch depth, to sweep_base + sweep_line x line height
 @export_range(0.0, 1.0) var sweep_from := 0.45
@@ -124,13 +136,38 @@ func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 
 ## seconds of the calm phase (walk back + scan) still to come for a keeper who has held it `hold` s; 0 = ready to play it
 func calm_left(f: Footballer, c: AiContext) -> float:
-	if c.pressure(f.pos) < calm_pressure: return 0.0
-	return maxf(0.0, calm_back_time + calm_scan_time - f.hold)
+	if c.pressure(f.pos) < calm_pressure or f.ai.get("feet", false): return 0.0
+	var minute := c.game.clock / 60.0
+	var diff := c.team.score - c.other.score
+	var k := 1.0
+	if minute >= waste_after and diff > 0: k = waste_k                     # protecting a lead late: no hurry at all (the law gives him 8 s)
+	elif minute >= waste_after and diff < 0: return 0.0                    # chasing the game: get it out quickly
+	return maxf(0.0, (calm_back_time + calm_scan_time) * k - f.hold)
+
+## a forward of ours with space to run into: release it at once (a throw / kick into his path) instead of calming things down
+func _quick_target(f: Footballer, c: AiContext) -> Footballer:
+	var best: Footballer = null
+	var bs := 0.0
+	for m in c.team.players:
+		if not (m.role in quick_roles) or c.depth(m.pos) < quick_depth: continue
+		var room := c.pressure(m.pos)
+		if room < quick_space or c.lane_blocked(f.pos, m.pos, pass_lane): continue
+		if room > bs:
+			bs = room
+			best = m
+	return best
 
 func _with_ball(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 	var i := AiIntent.new()
 	i.move_to = f.pos
 	if f.hold < 0.05: f.ai["calm_from"] = f.pos                           # where he got it
+	if f.hold > quick_after and f.hold < quick_window and not f.ai.get("feet", false):
+		var q := _quick_target(f, c)
+		if q != null:                                                      # the quick release: the counter is on
+			i.action = "lob" if q.pos.distance_to(f.pos) > long_from else "pass"
+			i.target = q
+			stat_quick += 1
+			return i
 	if calm_left(f, c) > 0.0:
 		if f.hold < calm_back_time:                                       # walk back a few steps towards the middle of his goal, no hurry
 			var goal := c.own_goal()

@@ -69,16 +69,16 @@ extends Resource
 @export var range_bonus := 0.0
 
 func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
-	var fx := c.profile.formation_for(c.formation_id) if c.profile != null else null
-	if fx != null:
-		var o := fx.think(f, c, self, dt)
-		if o != null: return o
-	if c.profile != null:
+	if c.profile != null:                                                       # a behaviour that wants him now (a run, a block, a set piece...) comes first
 		var sit := AiBehaviour.situation_of(f, c)
 		for b in c.profile.all_behaviours():
 			if b != null and b.applies(f, sit) and b.wants(f, c, self):
 				var o2 := b.act(f, c, self, dt)
 				if o2 != null: return o2
+	var fx := c.profile.formation_for(c.formation_id) if c.profile != null else null
+	if fx != null:                                                              # then the formation's team shape
+		var o := fx.think(f, c, self, dt)
+		if o != null: return o
 	if c.game.pass_target == f and c.carrier == null and not c.game.offside.aware(f): return _receive(f, c)      # (one who knows he was offside leaves it)
 	if c.carrier == f: return _with_ball(f, c, dt)
 	if c.has_ball: return _support(f, c)

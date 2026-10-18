@@ -113,6 +113,7 @@ func restart(k: String, taking: Team, at: Vector2, text: String, chosen: Footbal
 	stat[k] = int(stat.get(k, 0)) + 1
 	g.phase = MatchGame.Phase.RESTART
 	g.phase_t = _wait(k)
+	if g.clock / 60.0 >= g.settings.waste_after_minute and taking.score > (g.away if taking == g.home else g.home).score: g.phase_t *= g.settings.waste_restart_k     # protecting a lead: no hurry
 	_waited = 0.0
 	g.hud.message(text, 1.2)
 

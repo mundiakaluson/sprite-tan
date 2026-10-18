@@ -168,6 +168,8 @@ func stats() -> Dictionary:
 		"scans": AiScan.stat_scans, "scan_time": AiScan.stat_time, "critical_scans": AiScan.stat_critical, "half_turns": AiScan.stat_turns, "protected": AiScan.stat_protect,
 		"blind_receptions": AiScan.stat_blind, "forward_passes_completed_played": AiScan.stat_fwd,
 		"set_backs": AiSetBack.stat_setbacks, "checks": AiCheckRun.stat_checks, "check_spins": AiCheckRun.stat_spins,
+		"wide_duels": AiWideDuel.stat_duels, "two_v_one": AiWideDuel.stat_two_v_one, "push_on": AiPushOn.stat_push, "screen_frames": AiScreen.stat_frames,
+		"second_ball_frames": AiSecondBall.stat_frames, "switches": AiSwitch.stat_switches, "hold_ups": AiHoldUp.stat_holds, "keeper_quick": AiGk.stat_quick, "corner_flag_frames": AiCornerFlag.stat_frames,
 		"set_pieces": AiSetPiece.stat_placed, "takers": AiSetPieceTaker.stat, "tactical_fouls": AiTacticalFoul.stat_fouls,
 		"wide_attacks": AiBox.stat_attacks, "deliveries": AiBox.stat_deliveries, "in_box_at_delivery": _avg(AiBox.stat_in_box), "cross_kinds": AiCross.stat, "block_frames": AiBlockShot.stat_blocks_set}
 

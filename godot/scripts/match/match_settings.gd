@@ -696,7 +696,7 @@ static func layout(name_or_id: String) -> FormationLayout:
 @export var restart_distance_throw := 2.0
 ## the restart waits (on top of the times above) until everybody is within restart_ready_dist (m) of his set-piece spot, at most restart_max_wait real s in all
 @export var restart_ready_dist := 2.5
-@export var restart_max_wait := 9.0
+@export var restart_max_wait := 6.0
 
 @export_group("Blocks and keeper claims")
 ## a ball faster than this (m/s) that hits a body (not the intended receiver) flies off it: up to deflect_deg off its line, keeping deflect_keep of its speed
@@ -732,3 +732,11 @@ static func layout(name_or_id: String) -> FormationLayout:
 @export var restart_wait_penalty := 2.8
 ## in his own box a defender risks a foul this much less (a careless challenge there is a penalty)
 @export_range(0.0, 1.0) var foul_box_care := 0.3
+
+@export_group("Shielding and game management")
+## a carrier shielding the ball (AiHoldUp, AiCornerFlag) is tackled this much less often: shield_k_weak at PHY 50, shield_k_strong at PHY 90
+@export_range(0.0, 1.0) var shield_k_weak := 0.7
+@export_range(0.0, 1.0) var shield_k_strong := 0.3
+## from this minute a side that is ahead takes its restarts this much slower
+@export var waste_after_minute := 75.0
+@export var waste_restart_k := 1.8
