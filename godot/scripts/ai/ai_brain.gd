@@ -27,6 +27,7 @@ func update(dt: float) -> void:
 		profiles[t].line.compute(ctx[t], dt)
 		profiles[t].transition.compute(ctx[t], dt)
 		profiles[t].scan.compute(ctx[t], dt)
+		profiles[t].box.compute(ctx[t], dt)
 	for f in g.all:
 		if f.lock > 0.0: continue
 		if g.phase == MatchGame.Phase.RESTART and g.rules.taker == f: continue          # the taker waits on the ball until the restart is ready
@@ -47,6 +48,7 @@ func update(dt: float) -> void:
 		var intent := role.think(f, ctx[f.team], dt)
 		profiles[f.team].interact.post(f, intent, ctx[f.team])
 		profiles[f.team].transition.post(f, intent, ctx[f.team])
+		profiles[f.team].box.post(f, intent, ctx[f.team])
 		profiles[f.team].line.post(f, intent, ctx[f.team])
 		profiles[f.team].scan.post(f, intent, ctx[f.team])
 		_apply(f, intent, ctx[f.team])
@@ -152,4 +154,10 @@ func stats() -> Dictionary:
 		"recovery_sprint_frames": AiTransition.stat_recover_frames,
 		"scans": AiScan.stat_scans, "scan_time": AiScan.stat_time, "critical_scans": AiScan.stat_critical, "half_turns": AiScan.stat_turns, "protected": AiScan.stat_protect,
 		"blind_receptions": AiScan.stat_blind, "forward_passes_completed_played": AiScan.stat_fwd,
-		"set_backs": AiSetBack.stat_setbacks, "checks": AiCheckRun.stat_checks, "check_spins": AiCheckRun.stat_spins}
+		"set_backs": AiSetBack.stat_setbacks, "checks": AiCheckRun.stat_checks, "check_spins": AiCheckRun.stat_spins,
+		"wide_attacks": AiBox.stat_attacks, "deliveries": AiBox.stat_deliveries, "in_box_at_delivery": _avg(AiBox.stat_in_box), "cross_kinds": AiCross.stat, "block_frames": AiBlockShot.stat_blocks_set}
+
+static func _avg(a: Array) -> float:
+	var s := 0.0
+	for v in a: s += float(v)
+	return snappedf(s / maxf(a.size(), 1), 0.01)

@@ -128,8 +128,21 @@ func _pick() -> void:
 			if score < bs:
 				bs = score
 				best = f
+		var k := _claimer(t, c, left)
+		if k != null: best = k                                                # the keeper comes for it
 		if best != null: ev["parts"][t] = best
 		else: ev["parts"].erase(t)
+
+## the keeper of t, when the ball comes down in his area and he can get there
+func _claimer(t: Team, c: Vector2, left: float) -> Footballer:
+	var s := g.settings
+	if c.x * t.dir > -MatchGame.HALF_L + s.claim_depth or absf(c.y) > s.claim_width: return null
+	for f in t.players:
+		if not f.is_keeper() or f.lock > 0.0: continue
+		if (f.stat("HAN", 60) + f.stat("POS", 60)) * 0.5 < s.claim_min: return null
+		var need := f.pos.distance_to(c) / maxf(f.top_speed() * s.sprint_factor, 0.1)
+		if need + s.claim_slack <= left: return f
+	return null
 
 # ---------------------------------------------------------------- the contest
 func _resolve() -> void:
@@ -143,12 +156,57 @@ func _resolve() -> void:
 	if list.size() < 2:
 		stat_alone += 1                                                       # nobody to challenge: he waits and takes it
 		return
+	for k in list:
+		if k.is_keeper():
+			_claim(k, list[1] if list[0] == k else list[0])
+			return
 	stat_duels += 1
 	var pa := _plan(list[0], list[1])
 	var pb := _plan(list[1], list[0])
 	var win: Dictionary = pa if pa["score"] >= pb["score"] else pb
 	var lose: Dictionary = pb if win == pa else pa
 	_perform(win, lose)
+
+var stat_claims := 0
+var stat_claim_fails := 0
+
+## the keeper against an attacker under a high ball: he claims it (catch, or a punch if it is too quick to hold), or misjudges it and the attacker gets the header
+func _claim(k: Footballer, o: Footballer) -> void:
+	var s := g.settings
+	var heading := 0.5 * o.stat("PHY", 60) + 0.5 * o.stat("SHO", 60)
+	var p := clampf(s.claim_base + ((k.stat("HAN", 60) + k.stat("POS", 60)) * 0.5 - heading) * s.claim_k / 100.0, 0.15, 0.95)
+	var left := maxf(float(ev["t_c"]) - _t, 0.05)
+	var clip: String = s.clips_claim[0] if not s.clips_claim.is_empty() else ""
+	var frac := g.motion.strike_frac(clip, 0.45)
+	var dur := clampf(left / frac, s.aerial_clip_min, s.aerial_clip_max)
+	if g.rng.randf() < p:
+		stat_claims += 1
+		ev["acting"] = [k, o]
+		g.motion.act(k, clip, frac, func(): _claimed(k), 0.0, dur)
+		g.motion.act(o, s.clip_challenge, g.motion.strike_frac(s.clip_challenge, 0.45), func(): pass, 0.0, dur)
+		return
+	stat_claim_fails += 1                                                     # he comes and misses it: the attacker heads it
+	var win := _plan(o, k)
+	var lose := _plan(k, o)
+	ev["acting"] = [o, k]
+	g.motion.act(k, clip, frac, func(): pass, 0.0, dur)
+	var oclip := String(win["head"]["clip"])
+	g.motion.act(o, oclip, g.motion.strike_frac(oclip, 0.45), func(): _won(win, lose), 0.0, dur)
+
+func _claimed(k: Footballer) -> void:
+	if g.carrier != null: return
+	var bp := g.ball.phys.pos
+	if k.pos.distance_to(Vector2(bp.x, bp.z)) > g.settings.claim_reach or bp.y > g.settings.keeper_reach_height + 0.4: return
+	var s := g.settings
+	if g.ball.phys.vel.length() <= s.save_speed_base + k.stat("HAN", 60) * s.save_speed_per_han:
+		g.poss.take(k)
+	else:                                                                      # too hot to hold: punched clear
+		var away := Vector2(k.team.dir, g.rng.randf_range(-0.8, 0.8)).normalized()
+		g.offside.touched(k)
+		g.last_touch = k
+		g.ball.set_free()
+		g.ball.phys.vel = Vector3(away.x * 14.0, 6.0, away.y * 14.0)
+		k.no_touch = 0.4
 
 ## how one player goes for it: approach, header kind and a score
 func _plan(p: Footballer, o: Footballer) -> Dictionary:

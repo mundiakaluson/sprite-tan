@@ -68,6 +68,8 @@ func think(f: Footballer, c: AiContext, dt: float) -> AiIntent:
 					var o := b.act(f, c, self, dt)
 					if o != null: return o
 		return _with_ball(f, c, dt)
+	var claim := c.game.aerial.spot_for(f)                                      # he is coming for a high ball (MatchAerial picked him)
+	if claim != Vector2.INF and c.carrier == null: return _go(c, claim, c.s.sprint_factor if f.pos.distance_to(claim) > 1.0 else c.s.jog_factor)
 	if (c.carrier == null or c.carrier.team == f.team) and _now() > float(f.ai.get("rush_t", 0.0)): f.ai["rush"] = false
 	if c.carrier != null and c.carrier.team != f.team:
 		if _breakaway(f, c): return rush(f, c)

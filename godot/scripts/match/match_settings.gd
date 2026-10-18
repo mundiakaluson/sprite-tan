@@ -694,3 +694,21 @@ static func layout(name_or_id: String) -> FormationLayout:
 ## opponents keep this far (m) from the ball until it is played (9.15 m by law; 2 m at a throw-in)
 @export var restart_distance := 9.15
 @export var restart_distance_throw := 2.0
+
+@export_group("Blocks and keeper claims")
+## a ball faster than this (m/s) that hits a body (not the intended receiver) flies off it: up to deflect_deg off its line, keeping deflect_keep of its speed
+@export var deflect_speed := 11.0
+@export var deflect_deg := 55.0
+@export_range(0.0, 1.0) var deflect_keep := 0.5
+@export var deflect_up := 2.0
+## the keeper comes for a high ball coming down within claim_depth (m) of his goal line and claim_width (m) of the middle, if he gets there in time
+## (claim_slack s to spare) and his HAN + POS average is at least claim_min
+@export var claim_depth := 11.0
+@export var claim_width := 10.0
+@export var claim_slack := 0.25
+@export var claim_min := 50
+## against an attacker under it: he claims it with chance claim_base + (his HAN/POS average - the attacker's heading) x claim_k / 100
+@export var claim_base := 0.6
+@export var claim_k := 1.2
+## he catches it (or punches it when it is faster than he can hold: MatchPossession's keeper rule)
+@export var claim_reach := 2.0

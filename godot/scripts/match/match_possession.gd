@@ -108,7 +108,11 @@ func _loose(_dt: float) -> void:
 		take(best)
 	else:
 		if g.offside.touched(best): return
-		b.phys.vel *= s.bounce_off
+		if speed > s.deflect_speed and best != g.pass_target:                # it hits him and flies off (a block, a deflection)
+			var v := Vector2(b.phys.vel.x, b.phys.vel.z).rotated(deg_to_rad(g.rng.randf_range(-s.deflect_deg, s.deflect_deg))) * s.deflect_keep
+			b.phys.vel = Vector3(v.x, absf(b.phys.vel.y) * 0.3 + g.rng.randf_range(0.0, s.deflect_up), v.y)
+			stat_deflections += 1
+		else: b.phys.vel *= s.bounce_off
 		best.no_touch = 0.4
 		g.last_touch = best
 
@@ -173,6 +177,7 @@ func failed_tackle(tackler: Footballer, carrier: Footballer) -> void:
 
 ## a defender goes in on the carrier: plays the tackle clip, and at its strike frame it is won or lost
 var stat_tackles := 0
+var stat_deflections := 0
 var stat_tackles_won := 0
 
 ## force: an engagement decided it, so it lands even if he is a little out of reach

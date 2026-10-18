@@ -39,6 +39,10 @@ extends Resource
 ## counter-press, recovery runs, rest defence, counter-attacks (scenes/ai/transition.tres)
 @export var transition: AiTransition
 
+@export_group("Box")
+## box zones when the ball is wide: runners to near post / far post / spot / cut-back / edge, and defending the box (scenes/ai/box.tres)
+@export var box: AiBox
+
 @export_group("Scan")
 ## scanning before receiving, open body shape, first touch away from pressure (scenes/ai/scan.tres)
 @export var scan: AiScan
@@ -99,6 +103,7 @@ func fill() -> AiProfile:
 	if line == null: line = AiLine.new()
 	if transition == null: transition = AiTransition.new()
 	if scan == null: scan = AiScan.new()
+	if box == null: box = AiBox.new()
 	if goalkeeper == null: goalkeeper = AiGk.new()
 	if centre_back == null: centre_back = AiCb.new()
 	if fullback == null: fullback = AiFullback.new()

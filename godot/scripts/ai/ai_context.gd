@@ -47,6 +47,12 @@ var cp_players := {}            ## Footballer -> where he goes in the counter-pr
 var rest_marks := {}            ## rest defender -> their forward he watches
 var rest_list: Array = []
 var rest_frame := -1
+# ---- around the box (AiBox.compute)
+var box_jobs := {}              ## Footballer -> {spot, wait, zone / man, look}: his job in the box while the ball is out wide
+var box_go := false             ## our runners attack their zones now (the delivery is coming)
+var box_was := false
+var box_was_attack := false
+var box_until := -1.0
 var base_form := {}             ## the formation's own numbers, before the stance
 var form := {}                  ## formations.csv numbers, family defaults filled in: line_height, width, compactness, press, overlap, directness, counter, risk
 
